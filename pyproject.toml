@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "amongoc"
+version = "0.1.0"
+description = "An asynchronous MongoDB C driver library"
+authors = []
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+sphinx = "^8.0.2"
+sphinx-autobuild = "^2024.4.16"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

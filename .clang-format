@@ -1,0 +1,65 @@
+---
+Language: Cpp
+# Access specifiers are best unindented, to keep them easy to spot:
+AccessModifierOffset: -4
+# Keep them together. Would be preferable to put all arguments on a new line
+AlignAfterOpenBracket: true
+# Newline escapes should be aligned, they're prettier that way
+AlignEscapedNewlinesLeft: false
+# Same with OpenBracket alignment. No need for that.
+AlignOperands: false
+AlignTrailingComments: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: true
+AlwaysBreakAfterDefinitionReturnType: false
+AlwaysBreakTemplateDeclarations: true
+# Readability:
+AlwaysBreakBeforeMultilineStrings: true
+BreakBeforeBinaryOperators: All
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializersBeforeComma: true
+BinPackParameters: false
+BinPackArguments: false
+# Not a hard and fast rule, but yeah
+ColumnLimit: 100
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+ConstructorInitializerIndentWidth: 4
+DerivePointerAlignment: false
+IndentCaseLabels: false
+IndentWrappedFunctionNames: false
+IndentFunctionDeclarationAfterType: false
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: true
+NamespaceIndentation: None
+PenaltyBreakBeforeFirstCallParameter: 600
+PenaltyBreakComment: 300
+PenaltyBreakString: 1000
+PenaltyBreakFirstLessLess: 120
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60
+PointerAlignment: Left
+SpacesBeforeTrailingComments: 2
+Cpp11BracedListStyle: true
+Standard: Cpp11
+IndentWidth: 4
+TabWidth: 8
+UseTab: Never
+BreakBeforeBraces: Attach
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpaceInEmptyParentheses: false
+SpacesInCStyleCastParentheses: false
+SpaceAfterCStyleCast: false
+SpacesInContainerLiterals: true
+SpaceBeforeAssignmentOperators: true
+ContinuationIndentWidth: 4
+CommentPragmas: "^ IWYU pragma:"
+SpaceBeforeParens: ControlStatements
+DisableFormat: false

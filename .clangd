@@ -1,0 +1,7 @@
+CompileFlags:
+  CompilationDatabase: ./_build/
+  Remove:
+    - -fconcepts-diagnostics-depth=*
+  Add:
+    - -xc++
+    - -std=c++2b
