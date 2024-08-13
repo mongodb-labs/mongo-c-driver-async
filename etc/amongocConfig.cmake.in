@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+if(DEFINED amongoc_FIND_COMPONENTS)
+    message(SEND_ERROR "No COMPONENTS are supported for find_package(amongoc)")
+endif()
+
+# Target exports file that is install alongside this package-config file
+include(amongoc-targets.cmake)
