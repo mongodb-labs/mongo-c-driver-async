@@ -431,6 +431,16 @@ public:
         return make<std::decay_t<T>>(AM_FWD(value));
     }
 
+    // Prevent users from accidentally box-ing a box
+    static void from(box&)               = delete;
+    static void from(box&&)              = delete;
+    static void from(box const&)         = delete;
+    static void from(box const&&)        = delete;
+    static void from(unique_box&)        = delete;
+    static void from(unique_box&&)       = delete;
+    static void from(unique_box const&)  = delete;
+    static void from(unique_box const&&) = delete;
+
     /**
      * @brief Create a box that contains a `T` with an explicit destructor object type
      *
