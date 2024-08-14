@@ -4,7 +4,6 @@
 
 #include <neo/attrib.hpp>
 #include <neo/invoke.hpp>
-#include <neo/object_box.hpp>
 #include <neo/object_t.hpp>
 
 #include <utility>
@@ -56,8 +55,8 @@ public:
 private:
     template <typename R>
     struct [[nodiscard]] op {
-        NEO_NO_UNIQUE_ADDRESS neo::object_t<T> _value;
-        NEO_NO_UNIQUE_ADDRESS neo::object_t<R> _receiver;
+        NEO_NO_UNIQUE_ADDRESS T _value;
+        NEO_NO_UNIQUE_ADDRESS R _receiver;
 
         constexpr void start() noexcept {
             NEO_INVOKE(static_cast<R&&>(_receiver), static_cast<T&&>(_value));
