@@ -147,52 +147,6 @@ template <typename T>
 explicit konst(T&&) -> konst<T>;
 
 /**
- * @brief Wrap an invocable object with some arbitrary attached values.
- *
- * The attachment values aren't used by the invocable or exposed in any way, but their
- * lifetime is tied to the resulting invocable.
- *
- * @tparam F The underlying invocable that is adapted
- * @tparam Ts The types of objects that are attached
- *
- * Used to persist an object alongside an Asio handler, to be destroyed when
- * Asio is finished with the handler.
- *
- * This object forwards query() calls to the `f` function.
- */
-template <typename F, typename... Ts>
-class attached {
-public:
-    constexpr explicit attached(F&& fn, Ts&&... ts)
-        : _func(NEO_FWD(fn))
-        , _attached(NEO_FWD(ts)...) {}
-
-private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<F> _func;
-    NEO_NO_UNIQUE_ADDRESS std::tuple<Ts...> _attached;
-
-public:
-    constexpr auto operator()(auto&&... args) &  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&>(_func), NEO_FWD(args)...));
-
-    constexpr auto operator()(auto&&... args) const&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F const&>(_func), NEO_FWD(args)...));
-
-    constexpr auto operator()(auto&&... args) &&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&&>(_func), NEO_FWD(args)...));
-
-    constexpr auto operator()(auto&&... args) const&&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F const&&>(_func), NEO_FWD(args)...));
-
-    constexpr auto query(valid_query_for<F> auto q) const {
-        return static_cast<const F&>(_func).query(q);
-    }
-};
-
-template <typename F, typename... Ts>
-explicit attached(F&&, Ts&&...) -> attached<F, Ts...>;
-
-/**
  * @brief Variable template for an invocable that calls the constructor of an object
  *
  * @tparam T The type to be constructed.
