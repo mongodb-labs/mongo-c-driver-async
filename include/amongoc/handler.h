@@ -92,8 +92,67 @@ AMONGOC_EXTERN_C_END
 #ifdef __cplusplus
 namespace amongoc {
 
+// forward-decl from nano/result.hpp
 template <typename T, typename E>
 class result;
+
+// forward-decl from nano/stop.hpp
+struct get_stop_token_fn;
+
+/**
+ * @brief Provides a stoppable token based on an amongoc_handler
+ */
+class handler_stop_token {
+public:
+    // Construct a new stop token associated with the given handler object
+    explicit handler_stop_token(const amongoc_handler& hnd) noexcept
+        : _handler(&hnd) {}
+
+    // Whether the associated handler has stop functionality
+    bool stop_possible() const noexcept { return _handler->vtable->register_stop != nullptr; }
+
+    /**
+     * @brief NOTE: amongoc_handler only supports callback-based stopping, not stateful stopping
+     *
+     * @return false Always returns false
+     */
+    constexpr bool stop_requested() const noexcept { return false; }
+
+    // Default-compare based on the identity of the backing handler
+    bool operator==(const handler_stop_token&) const = default;
+
+    /**
+     * @brief Stop-callback type for the stop token
+     *
+     * @tparam F The stop handler function
+     */
+    template <typename F>
+    class callback_type {
+    public:
+        explicit callback_type(handler_stop_token self, F&& fn) noexcept
+            : _fn(AM_FWD(fn))
+            , _reg_cookie(amongoc_register_stop(self._handler, this, _do_stop)) {}
+
+        // The address of this object is part of its identity. Prevent it from moving
+        callback_type(callback_type&&) = delete;
+
+    private:
+        // The C-style stop callback that is registered with the handler.
+        static void _do_stop(void* cb) noexcept {
+            // Invoke the attached callback
+            static_cast<callback_type*>(cb)->_fn();
+        }
+
+        // The function object to be called
+        F _fn;
+        // The stop registration cookie
+        unique_box _reg_cookie;
+    };
+
+private:
+    // The handler for this token
+    const amongoc_handler* _handler;
+};
 
 /**
  * @brief Unique ownership wrapper for an `::amongoc_handler`
@@ -134,9 +193,6 @@ public:
         _handler = {};
         return h;
     }
-
-    amongoc_handler&       get() noexcept { return _handler; }
-    const amongoc_handler& get() const noexcept { return _handler; }
 
     /**
      * @brief Resolve the handler with the given status and value.
@@ -217,64 +273,15 @@ public:
         return unique_handler(std::move(ret));
     }
 
+    // Associate a stoppable token with the unique_handler
+    handler_stop_token query(const get_stop_token_fn&) const noexcept {
+        return handler_stop_token(_handler);
+    }
+
 private:
     amongoc_handler _handler{};
 };
 
-/**
- * @brief Provides a stoppable token based on an amongoc_handler
- */
-class handler_stop_token {
-public:
-    // Construct a new stop token associated with the given handler object
-    explicit handler_stop_token(const amongoc_handler& hnd) noexcept
-        : _handler(&hnd) {}
-
-    // Whether the associated handler has stop functionality
-    bool stop_possible() const noexcept { return _handler->vtable->register_stop != nullptr; }
-
-    /**
-     * @brief NOTE: amongoc_handler only supports callback-based stopping, not stateful stopping
-     *
-     * @return false Always returns false
-     */
-    constexpr bool stop_requested() const noexcept { return false; }
-
-    // Default-compare based on the identity of the backing handler
-    bool operator==(const handler_stop_token&) const = default;
-
-    /**
-     * @brief Stop-callback type for the stop token
-     *
-     * @tparam F The stop handler function
-     */
-    template <typename F>
-    class callback_type {
-    public:
-        explicit callback_type(handler_stop_token self, F&& fn) noexcept
-            : _fn(AM_FWD(fn))
-            , _reg_cookie(amongoc_register_stop(self._handler, this, _do_stop)) {}
-
-        // The address of this object is part of its identity. Prevent it from moving
-        callback_type(callback_type&&) = delete;
-
-    private:
-        // The C-style stop callback that is registered with the handler.
-        static void _do_stop(void* cb) noexcept {
-            // Invoke the attached callback
-            static_cast<callback_type*>(cb)->_fn();
-        }
-
-        // The function object to be called
-        F _fn;
-        // The stop registration cookie
-        unique_box _reg_cookie;
-    };
-
-private:
-    // The handler for this token
-    const amongoc_handler* _handler;
-};
 }  // namespace amongoc
 
 amongoc::unique_handler amongoc_handler::as_unique() && noexcept {
