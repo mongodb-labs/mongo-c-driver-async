@@ -65,7 +65,7 @@ struct amongoc_status {
 #endif
 };
 
-#define amongoc_status_okay (AMONGOC_INIT(amongoc_status){amongoc_status_category_generic, 0})
+#define amongoc_okay (AMONGOC_INIT(amongoc_status){amongoc_status_category_generic, 0})
 
 #ifdef __cplusplus
 namespace amongoc {

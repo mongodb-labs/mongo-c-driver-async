@@ -5,7 +5,7 @@
 #include <system_error>
 
 TEST_CASE("Status/Okay") {
-    amongoc_status st = amongoc_status_okay;
+    amongoc_status st = amongoc_okay;
     CHECK(st.code == 0);
     CHECK(st.category == amongoc_status_category_generic);
 }

@@ -217,7 +217,7 @@ public:
     void operator()(result<T, E> res) && {
         if (res.has_value()) {
             amongoc_complete(release(),
-                             amongoc_status_okay,
+                             amongoc_okay,
                              unique_box::from(AM_FWD(res).value()).release());
         } else {
             // NOTE: This expects that status::from() is valid with the error type of the result.
@@ -225,6 +225,11 @@ public:
             // objects.
             amongoc_complete(release(), status::from(res.error()), amongoc_nothing);
         }
+    }
+
+    /// Allow invocation with nullptr, implementing nanoreceiver<std::nullptr_t>
+    void operator()(decltype(nullptr)) && {
+        amongoc_complete(release(), amongoc_okay, amongoc_nothing);
     }
 
     /**
