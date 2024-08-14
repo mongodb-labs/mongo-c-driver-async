@@ -2,6 +2,7 @@
 
 #include "./box.h"
 #include "./config.h"
+#include "./emitter_result.h"
 #include "./handler.h"
 #include "./operation.h"
 #include "./status.h"
@@ -97,30 +98,6 @@ namespace amongoc {
 using emitter = ::amongoc_emitter;
 
 /**
- * @brief Special type to be used to capture the result of an amongoc_emitter as a pair of status
- * and boxed value
- */
-class emitter_result {
-public:
-    // Default-construct to an empty box and success
-    emitter_result() noexcept
-        : value(amongoc_nothing) {}
-
-    // Construct with an empty box and the given status
-    explicit emitter_result(amongoc_status st) noexcept
-        : status(st)
-        , value(amongoc_nothing) {}
-
-    // Construct with the given status and an existing box
-    explicit emitter_result(amongoc_status st, unique_box&& b) noexcept
-        : status(st)
-        , value(AM_FWD(b)) {}
-
-    amongoc_status status{0};
-    unique_box     value;
-};
-
-/**
  * @brief A move-only wrapper around `amongoc_emitter`
  */
 class unique_emitter {
@@ -209,7 +186,7 @@ struct nanosender_traits<unique_emitter> {
 
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
-        return AM_FWD(em).connect(as_handler(AM_FWD(recv)).as_unique());
+        return AM_FWD(em).connect(as_handler(AM_FWD(recv)));
     }
 };
 

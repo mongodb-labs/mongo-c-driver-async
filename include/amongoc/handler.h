@@ -2,6 +2,7 @@
 
 #include "./box.h"
 #include "./config.h"
+#include "./emitter_result.h"
 #include "./status.h"
 
 #ifdef __cplusplus
@@ -91,6 +92,9 @@ AMONGOC_EXTERN_C_END
 #ifdef __cplusplus
 namespace amongoc {
 
+template <typename T, typename E>
+class result;
+
 /**
  * @brief Unique ownership wrapper for an `::amongoc_handler`
  */
@@ -145,6 +149,26 @@ public:
     void complete(amongoc_status st, unique_box&& result) && noexcept {
         // The callback takes ownership of the handler and the result
         amongoc_complete(release(), st, result.release());
+    }
+
+    /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
+    void operator()(emitter_result&& r) && noexcept {
+        amongoc_complete(release(), r.status, r.value.release());
+    }
+
+    /// Allow invocation with a result<T, E>, implementing nanoreceiver<result<T, E>>
+    template <typename T, typename E>
+    void operator()(result<T, E> res) && {
+        if (res.has_value()) {
+            amongoc_complete(release(),
+                             amongoc_status_okay,
+                             unique_box::from(AM_FWD(res).value()).release());
+        } else {
+            // NOTE: This expects that status::from() is valid with the error type of the result.
+            // The result's default error is std::error_code, so this should work for most result
+            // objects.
+            amongoc_complete(release(), status::from(res.error()), amongoc_nothing);
+        }
     }
 
     /**
