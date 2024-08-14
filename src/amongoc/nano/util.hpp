@@ -8,7 +8,6 @@
 #include <neo/object_box.hpp>
 #include <neo/object_t.hpp>
 #include <neo/type_traits.hpp>
-#include <type_traits>
 
 namespace amongoc {
 
@@ -79,7 +78,7 @@ using size_constant = std::integral_constant<std::size_t, N>;
  *
  * The expression `atop(f, g)(x)` is equivalent to `f(g(x))`
  *
- * This object forwards query() calls to the `f` function.
+ * The `atop` object forwards `query()` calls to the `f` function.
  */
 template <typename F, typename G>
 class atop {
