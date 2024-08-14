@@ -184,6 +184,8 @@ template <>
 struct nanosender_traits<unique_emitter> {
     using sends_type = emitter_result;
 
+    // XXX: This relys on delayed lookup for as_handler(), which is defined in a
+    // private header. Move this whole specialization to a private header?
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
         return AM_FWD(em).connect(as_handler(AM_FWD(recv)));
