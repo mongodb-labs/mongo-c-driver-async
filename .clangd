@@ -2,6 +2,8 @@ CompileFlags:
   CompilationDatabase: ./_build/
   Remove:
     - -fconcepts-diagnostics-depth=*
+    - -fdeps-format=*
+    - -fmodule-mapper=*
   Add:
     - -xc++
     - -std=c++2b
