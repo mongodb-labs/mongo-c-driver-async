@@ -15,7 +15,7 @@ static_assert(not multishot_nanosender<just<std::unique_ptr<int>>>);
 // A reference-to-noncopyable is copyable itself, though:
 static_assert(multishot_nanosender<just<std::unique_ptr<int>&>>);
 
-TEST_CASE("Simple just") {
+TEST_CASE("just/42") {
     auto               x = amongoc::just(42);
     std::optional<int> oi;
     auto               op = x.connect([&](auto v) { oi = v; });
@@ -23,7 +23,7 @@ TEST_CASE("Simple just") {
     CHECK(oi == 42);
 }
 
-TEST_CASE("Copying") {
+TEST_CASE("just/Multi-shot") {
     auto                       x = amongoc::just(std::string("hey"));
     std::optional<std::string> got;
     {

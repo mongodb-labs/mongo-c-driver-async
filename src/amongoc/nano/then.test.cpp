@@ -8,9 +8,7 @@ using namespace amongoc;
 static_assert(nanosender<then_t<just<int>, std::function<double(int)>>>);
 static_assert(multishot_nanosender<then_t<just<int>, std::function<double(int)>>>);
 
-TEST_CASE("Create a continuation") { auto s = amongoc::just(31); }
-
-TEST_CASE("Pipeable then()") {
+TEST_CASE("then/operator|") {
     nanosender_of<std::string> auto c  //
         = just(42)                     //
         | then([](int n) { return std::to_string(n); });
