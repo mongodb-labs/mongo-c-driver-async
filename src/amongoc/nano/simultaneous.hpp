@@ -43,7 +43,12 @@ public:
                   NEO_FWD(ss)...) {}
 
     // Start all sub-operations
-    constexpr void start() noexcept { this->_start_all(); }
+    constexpr void start() noexcept {
+        this->_start_all();
+        if constexpr (sizeof...(Ss) == 0) {
+            this->_handler.empty_start();
+        }
+    }
 
 private:
     // Allow our simul_recv base class to call _nth_result
