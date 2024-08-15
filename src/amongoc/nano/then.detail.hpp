@@ -38,7 +38,8 @@ public:
         requires multishot_nanosender<InputSender> and std::copy_constructible<Transformer>
     {
         return amongoc::connect(static_cast<InputSender const&>(_input_sender),
-                                atop(NEO_FWD(recv), static_cast<Transformer const&>(_transformer)));
+                                atop(NEO_FWD(recv),
+                                     auto(static_cast<Transformer const&>(_transformer))));
     }
 
     constexpr auto query(valid_query_for<InputSender> auto q) const noexcept {

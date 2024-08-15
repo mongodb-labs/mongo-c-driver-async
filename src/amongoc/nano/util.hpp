@@ -93,19 +93,30 @@ private:
     NEO_NO_UNIQUE_ADDRESS neo::object_t<G> _g;
 
 public:
-    constexpr auto operator()(auto&& x) const&  //
+    template <typename X>
+        requires neo::invocable2<const G&, X&&>
+        and neo::invocable2<const F&, neo::invoke_result_t<const G&, X&&>>
+    constexpr auto operator()(X&& x) const&  //
         AMONGOC_RETURNS(NEO_INVOKE(static_cast<const F&>(_f),
                                    NEO_INVOKE(static_cast<const G&>(_g), NEO_FWD(x))));
 
-    constexpr auto operator()(auto&& x) &  //
+    template <typename X>
+        requires neo::invocable2<G&, X&&>
+        and neo::invocable2<F&, neo::invoke_result_t<G&, X&&>>
+    constexpr auto operator()(X&& x) &  //
         AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&>(_f),
                                    NEO_INVOKE(static_cast<G&>(_g), NEO_FWD(x))));
 
-    constexpr auto operator()(auto&& x) &&  //
+    template <typename X>
+        requires neo::invocable2<G&&, X&&> and neo::invocable2<F&&, neo::invoke_result_t<G&&, X&&>>
+    constexpr auto operator()(X&& x) &&  //
         AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&&>(_f),
                                    NEO_INVOKE(static_cast<G&&>(_g), NEO_FWD(x))));
 
-    constexpr auto operator()(auto&& x) const&&  //
+    template <typename X>
+        requires neo::invocable2<const G&&, X&&>
+        and neo::invocable2<const F&&, neo::invoke_result_t<const G&&, X&&>>
+    constexpr auto operator()(X&& x) const&&  //
         AMONGOC_RETURNS(NEO_INVOKE(static_cast<F const&&>(_f),
                                    NEO_INVOKE(static_cast<G const&&>(_g), NEO_FWD(x))));
 
