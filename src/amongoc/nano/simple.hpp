@@ -93,8 +93,8 @@ struct cxx_recv_handler_adaptor_base<R> {
 
     void invoke(status st, box&& res) {
         auto val = AM_FWD(res).as_unique();
-        if (st.code) {
-            static_cast<R&&>(_recv)(result<unique_box>(error(st.as_error_code())));
+        if (st.is_error()) {
+            static_cast<R&&>(_recv)(result<unique_box>(error(st)));
         } else {
             static_cast<R&&>(_recv)(result<unique_box>(success(AM_FWD(val))));
         }

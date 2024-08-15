@@ -32,7 +32,7 @@ emitter amongoc_then(emitter                  op,
                      amongoc_then_transformer tr) noexcept {
     auto userdata = NEO_MOVE(userdata_).as_unique();
     auto result   = co_await NEO_MOVE(op);
-    if ((flags & amongoc_then_forward_errors) and result.status.code != 0) {
+    if ((flags & amongoc_then_forward_errors) and result.status.is_error()) {
         // The result is errant and the caller wants to forward errors without
         // transforming them. Return it now.
         co_return result;
@@ -50,7 +50,7 @@ emitter amongoc_let(emitter                 op,
                     amongoc_let_transformer tr) noexcept {
     auto ud     = NEO_MOVE(userdata_).as_unique();
     auto result = co_await NEO_MOVE(op);
-    if ((flags & amongoc_then_forward_errors) and result.status.code != 0) {
+    if ((flags & amongoc_then_forward_errors) and result.status.is_error()) {
         co_return result;
     }
     emitter next_op = tr(ud.release(), result.status, result.value.release());

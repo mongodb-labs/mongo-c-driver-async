@@ -1,5 +1,7 @@
 #pragma once
 
+#include <amongoc/status.h>
+
 #include "./concepts.hpp"
 #include "./nano.hpp"
 #include "./util.hpp"
@@ -51,11 +53,11 @@ struct error_traits {};
  * success state, or an `E` in its error state.
  *
  * @tparam T The success-value type
- * @tparam E The error-value type (default is `std::error_code`)
+ * @tparam E The error-value type (default is `amongoc_status`)
  *
  * @note Construct using the `success` and `error` utilities in namespace scope
  */
-template <typename T, typename E = std::error_code>
+template <typename T, typename E = amongoc_status>
 class result {
 public:
     using success_type = T;
@@ -237,6 +239,11 @@ struct error_traits<std::error_code> {
 template <neo::derived_from<std::exception> E>
 struct error_traits<E> {
     [[noreturn]] static void throw_exception(const E& e) { throw e; }
+};
+
+template <>
+struct error_traits<amongoc_status> {
+    [[noreturn]] static void throw_exception(amongoc_status s) { throw amongoc::exception(s); }
 };
 
 template <typename T>

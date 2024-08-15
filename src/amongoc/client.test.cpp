@@ -101,7 +101,7 @@ TEST_CASE("C Client/Simple request") {
             doc.push_back("$db", "test");
             auto s1 = client_box->as<amongoc_client>().command(doc).as_unique();
             req_op = std::move(s1).connect([&](status ec, unique_box b) {
-                CHECK_FALSE(ec.as_error_code());
+                CHECK_FALSE(ec.is_error());
                 if (not ec.code) {
                     req_ec         = ec;
                     bson_view resp = b.as<bson_doc>();

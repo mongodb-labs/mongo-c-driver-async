@@ -37,7 +37,7 @@ public:
     explicit client(T&& sock)
         : _socket(NEO_FWD(sock)) {}
 
-    constexpr nanosender_of<result<bson_doc, std::error_code>> auto send_op_msg(bson_view doc) {
+    constexpr nanosender_of<result<bson_doc>> auto send_op_msg(bson_view doc) {
         // Building the message in this string:
         std::string snd_buf;
         auto        dbuf   = asio::dynamic_buffer(snd_buf);
@@ -87,7 +87,13 @@ public:
                    });
                    return NEO_MOVE(body);
                }})  //
-            ;
+            | amongoc::then([](result<bson_doc, asio::error_code>&& r) -> result<bson_doc> {
+                   if (r.has_error()) {
+                       return amongoc::error(status::from(r.error()));
+                   } else {
+                       return amongoc::success(NEO_MOVE(r.value()));
+                   }
+               });
     }
 
 public:

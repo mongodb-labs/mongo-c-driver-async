@@ -48,7 +48,7 @@ TEST_CASE("Async/Timeout") {
     auto start = std::chrono::steady_clock::now();
     amongoc_run_default_loop(&loop);
     auto end = std::chrono::steady_clock::now();
-    CHECK(got.as_error_code() == std::errc::timed_out);
+    CHECK(amongoc_is_timeout(got));
     // Should have stopped very quickly
     CHECK((end - start) < std::chrono::seconds(3));
     amongoc_destroy_default_loop(&loop);

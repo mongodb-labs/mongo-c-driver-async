@@ -223,7 +223,7 @@ public:
             // NOTE: This expects that status::from() is valid with the error type of the result.
             // The result's default error is std::error_code, so this should work for most result
             // objects.
-            amongoc_complete(release(), status::from(res.error()), amongoc_nothing);
+            amongoc_complete(release(), res.error(), amongoc_nothing);
         }
     }
 

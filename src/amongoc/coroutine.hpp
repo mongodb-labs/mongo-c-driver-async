@@ -370,6 +370,8 @@ struct emitter_promise : emitter_promise_alloc<Alloc> {
             throw;
         } catch (std::system_error const& err) {
             return_value(err.code());
+        } catch (amongoc::exception const& err) {
+            return_value(err.status());
         }
     }
 
