@@ -13,7 +13,7 @@ emitter returns_42() { return amongoc_just(amongoc_okay, unique_box::from(42).re
 TEST_CASE("Async/Just") {
     auto        em = returns_42().as_unique();
     amongoc_box got;
-    auto        op = amongoc_emitter_tie_output(em.release(), nullptr, &got).as_unique();
+    auto        op = amongoc_tie(em.release(), nullptr, &got).as_unique();
     op.start();
     CHECK(got.view.as<int>() == 42);
 }

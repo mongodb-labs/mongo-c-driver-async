@@ -101,4 +101,28 @@ amongoc_timeout_us(amongoc_loop* loop, amongoc_emitter em, int64_t timeout_us) A
  */
 amongoc_emitter amongoc_just(amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
 
+/**
+ * @brief Create a "detached" operation from an emitter. This returns a simple operation
+ * object that can be started. The final result from the emitter will simply be destroyed
+ * when it resolves.
+ */
+amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
+
+/**
+ * @brief Create an operation from an emitter which will store the final result
+ * status and value of the emitter in the pointed-to locations
+ *
+ * @param em The emitter to be connected
+ * @param status Storage destination for the output status (optional)
+ * @param value Storage destination for the output result (optional)
+ * @return amongoc_operation An operation than, when complete, will update `*status`
+ * and `*value` with the result of the emitter.
+ *
+ * If either parameter is a null pointer, then the associated object will be ignored.
+ *
+ * @note The pointed-to locations must remain valid until the operation is complete or is destroyed
+ */
+amongoc_operation
+amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT;
+
 AMONGOC_EXTERN_C_END

@@ -7,6 +7,7 @@
 
 #include "./coroutine.hpp"
 #include "./nano/first.hpp"
+#include "amongoc/status.h"
 
 using namespace amongoc;
 
@@ -66,4 +67,25 @@ emitter amongoc_just(status st, box value_) noexcept {
                        });
                })
         .release();
+}
+
+amongoc_operation
+amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT {
+    // Connect to a handler that stores the result values in the pointed-to locations
+    return AM_FWD(em)
+        .as_unique()
+        .connect([=](amongoc_status st, unique_box&& val) {
+            if (status) {
+                *status = st;
+            }
+            if (value) {
+                *value = val.release();
+            }
+        })
+        .release();
+}
+
+amongoc_operation amongoc_detach(amongoc_emitter em) AMONGOC_NOEXCEPT {
+    // Connect to a handler that simply discards the result values
+    return AM_FWD(em).as_unique().connect([=](auto&&...) {}).release();
 }

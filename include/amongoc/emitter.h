@@ -54,31 +54,6 @@ static inline amongoc_operation amongoc_emitter_connect(amongoc_emitter emit,
 }
 
 /**
- * @brief Create a "detached" operation from an emitter. This returns a simple operation
- * object that can be started. The final result from the emitter will simply be destroyed
- * when it resolves.
- */
-amongoc_operation amongoc_detached_operation(amongoc_emitter emit) AMONGOC_NOEXCEPT;
-
-/**
- * @brief Create an operation from an emitter which will store the final result
- * status and value of the emitter in the pointed-to locations
- *
- * @param em The emitter to be connected
- * @param status Storage destination for the output status (optional)
- * @param value Storage destination for the output result (optional)
- * @return amongoc_operation An operation than, when complete, will update `*status`
- * and `*value` with the result of the emitter.
- *
- * If either parameter is a null pointer, then the associated object will be ignored.
- *
- * @note The pointed-to locations must remain valid until the operation is complete or is destroyed
- */
-amongoc_operation amongoc_emitter_tie_output(amongoc_emitter em,
-                                             amongoc_status* status,
-                                             amongoc_box*    value) AMONGOC_NOEXCEPT;
-
-/**
  * @brief Discard and destroy an emitter that is otherwise unused
  *
  * @param em The emitter to be discarded.
