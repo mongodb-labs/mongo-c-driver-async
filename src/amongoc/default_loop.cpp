@@ -146,7 +146,7 @@ private:
 
     // The cookie for the registration of our stpo callbacks. NOTE that this object must be clear()d
     // before the handler is completed, since it may refer to data stored within the handler.
-    unique_box _stop_cookie = amongoc_nothing.as_unique();
+    unique_box _stop_cookie = amongoc_nil.as_unique();
 };
 
 template <typename Tr>

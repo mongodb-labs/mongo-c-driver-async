@@ -12,7 +12,7 @@ using namespace amongoc;
 emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us) {
     return unique_emitter::from_connector([=](unique_handler h) {
                return unique_operation::from_starter([=, h = AM_FWD(h)] mutable {
-                   loop->vtable->call_later(loop, duration_us, amongoc_nothing, h.release());
+                   loop->vtable->call_later(loop, duration_us, amongoc_nil, h.release());
                });
            })
         .release();

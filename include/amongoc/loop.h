@@ -71,7 +71,7 @@ struct amongoc_loop {
                 loop->vtable->call_soon(  //
                     loop,
                     amongoc_okay,
-                    amongoc_nothing,
+                    amongoc_nil,
                     amongoc::unique_handler::from([this](amongoc_status,
                                                          amongoc::unique_box) mutable {
                         static_cast<R&&>(_recv)(nullptr);
@@ -97,7 +97,7 @@ AMONGOC_EXTERN_C_BEGIN
  * @param loop The event loop upon which to schedule the completion
  * @return amongoc_emitter An emitter that will call `amongoc_complete()` from
  *      within the event loop. The emitter always resolves with zero status and
- *      an amongoc_nothing value
+ *      an amongoc_nil value
  */
 amongoc_emitter amongoc_schedule(amongoc_loop* loop);
 

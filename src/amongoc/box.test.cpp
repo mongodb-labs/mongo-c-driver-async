@@ -39,7 +39,7 @@ TEST_CASE("Box/Store an Object") {
 }
 
 TEST_CASE("Box/Destroy Nothing") {
-    amongoc_box b = amongoc_nothing;
+    amongoc_box b = amongoc_nil;
     amongoc_box_destroy(b);  // Nothing bad will happen
 }
 

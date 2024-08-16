@@ -22,13 +22,13 @@ TEST_CASE("Async/Transform with the C API") {
     auto em = returns_42().as_unique();
     em      = amongoc_then(em.release(),
                       amongoc_then_default,
-                      amongoc_nothing,
+                      amongoc_nil,
                       [](box, status* st, box value) noexcept {
                           amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
                           return value;
                       })
              .as_unique();
-    unique_box       got{amongoc_nothing};
+    unique_box       got{amongoc_nil};
     unique_operation op
         = std::move(em).connect([&](status st, unique_box b) { got = std::move(b); });
     op.start();

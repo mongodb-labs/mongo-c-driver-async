@@ -15,12 +15,12 @@ class emitter_result {
 public:
     // Default-construct to an empty box and success
     emitter_result() noexcept
-        : value(amongoc_nothing) {}
+        : value(amongoc_nil) {}
 
     // Construct with an empty box and the given status
     explicit emitter_result(amongoc_status st) noexcept
         : status(st)
-        , value(amongoc_nothing) {}
+        , value(amongoc_nil) {}
 
     // Construct with the given status and an existing box
     explicit emitter_result(amongoc_status st, unique_box&& b) noexcept

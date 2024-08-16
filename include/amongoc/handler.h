@@ -84,7 +84,7 @@ static inline amongoc_box amongoc_register_stop(const amongoc_handler* hnd,
     if (hnd->vtable->register_stop) {
         return hnd->vtable->register_stop(hnd->userdata.view, userdata, callback);
     }
-    return amongoc_nothing;
+    return amongoc_nil;
 }
 
 AMONGOC_EXTERN_C_END
@@ -223,13 +223,13 @@ public:
             // NOTE: This expects that status::from() is valid with the error type of the result.
             // The result's default error is std::error_code, so this should work for most result
             // objects.
-            amongoc_complete(release(), res.error(), amongoc_nothing);
+            amongoc_complete(release(), res.error(), amongoc_nil);
         }
     }
 
     /// Allow invocation with nullptr, implementing nanoreceiver<std::nullptr_t>
     void operator()(decltype(nullptr)) && {
-        amongoc_complete(release(), amongoc_okay, amongoc_nothing);
+        amongoc_complete(release(), amongoc_okay, amongoc_nil);
     }
 
     /**

@@ -325,12 +325,12 @@ AMONGOC_EXTERN_C_END
  * @brief A special amongoc_box value that represents no value. It is safe to
  * discard this value.
  */
-#define amongoc_nothing (AMONGOC_INIT(amongoc_box){})
+#define amongoc_nil (AMONGOC_INIT(amongoc_box){})
 
 static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) AMONGOC_NOEXCEPT {
     memcpy(dst, _amongocBoxDataPtr(&box->_storage), sz);
     amongoc_box_free_storage(*box);
-    *box = amongoc_nothing;
+    *box = amongoc_nil;
 }
 
 /**
@@ -340,7 +340,7 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
  * @param Dest An l-value expression of the type matching the contents of the box
  * @param Box The box to be moved-from.
  *
- * After this call, the box will contain `amongoc_nothing`
+ * After this call, the box will contain `amongoc_nil`
  *
  * @note DO NOT use this for C++ types! Use `unique_box::take`
  */
@@ -361,7 +361,7 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
  * @return amongoc_box A box that holds the pointer value
  */
 static inline amongoc_box amongoc_box_ptr(const void* p) AMONGOC_NOEXCEPT {
-    amongoc_box b = amongoc_nothing;
+    amongoc_box b = amongoc_nil;
     memcpy(b._storage.u.trivial_inline.bytes, &p, sizeof p);
     return b;
 }
@@ -378,18 +378,18 @@ public:
     // Move-construct from a box
     explicit unique_box(amongoc_box&& b) noexcept
         : _box(b) {
-        b = amongoc_nothing;
+        b = amongoc_nil;
     }
 
     unique_box(unique_box&& other) noexcept
         : _box(other._box) {
-        other._box = amongoc_nothing;
+        other._box = amongoc_nil;
     }
 
     unique_box& operator=(unique_box&& other) noexcept {
         amongoc_box_destroy(_box);
         _box       = other._box;
-        other._box = amongoc_nothing;
+        other._box = amongoc_nil;
         return *this;
     }
 
@@ -407,7 +407,7 @@ public:
      */
     [[nodiscard]] amongoc_box release() noexcept {
         box r = _box;
-        _box  = amongoc_nothing;
+        _box  = amongoc_nil;
         return r;
     }
 

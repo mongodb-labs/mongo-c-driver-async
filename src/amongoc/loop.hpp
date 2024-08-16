@@ -38,7 +38,7 @@ struct amongoc_loop_asio_executor {
     void execute(F&& fn) const {
         loop->vtable->call_soon(loop,
                                 amongoc_okay,
-                                amongoc_nothing,
+                                amongoc_nil,
                                 unique_handler::from([f = NEO_FWD(fn)](auto, auto) mutable {
                                     static_cast<F&&>(f)();
                                 }).release());
