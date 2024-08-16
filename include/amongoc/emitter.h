@@ -165,6 +165,11 @@ struct nanosender_traits<unique_emitter> {
     static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
         return AM_FWD(em).connect(as_handler(AM_FWD(recv)));
     }
+
+    // Special: We receive a handler directly, no need to convert it to a C handler
+    static unique_operation connect(unique_emitter&& em, unique_handler&& hnd) noexcept {
+        return AM_FWD(em).connect(AM_FWD(hnd));
+    }
 };
 
 }  // namespace amongoc

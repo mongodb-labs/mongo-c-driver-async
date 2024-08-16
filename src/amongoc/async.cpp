@@ -7,7 +7,7 @@
 
 #include "./coroutine.hpp"
 #include "./nano/first.hpp"
-#include "amongoc/status.h"
+#include "./nano/let.hpp"
 
 using namespace amongoc;
 
@@ -48,13 +48,24 @@ emitter amongoc_let(emitter                 op,
                     amongoc_then_flags      flags,
                     box                     userdata_,
                     amongoc_let_transformer tr) noexcept {
-    auto ud     = NEO_MOVE(userdata_).as_unique();
-    auto result = co_await NEO_MOVE(op);
-    if ((flags & amongoc_then_forward_errors) and result.status.is_error()) {
-        co_return result;
-    }
-    emitter next_op = tr(ud.release(), result.status, result.value.release());
-    co_return co_await NEO_MOVE(next_op);
+    // Note: We cannot use a coroutine like with amongoc_then, because the transformer
+    // may call amongo_let again, leading to an unbounded recursive awaiting. amongoc::let
+    // will handle such possibility correctly.
+    nanosender_of<emitter_result> auto l = amongoc::let(  //
+        AM_FWD(op).as_unique(),
+        [flags, userdata = AM_FWD(userdata_).as_unique(), tr](
+            emitter_result&& res) mutable -> unique_emitter {
+            if ((flags & amongoc_then_forward_errors) and res.status.is_error()) {
+                // The caller wants us to forward errors directly, so just return the
+                // error immediately
+                return amongoc_just(res.status, res.value.release()).as_unique();
+            }
+            // Call the transformer to obtain the next emitter. amongoc::let will handle
+            // connecting and starting it.
+            return tr(userdata.release(), res.status, res.value.release()).as_unique();
+        });
+    return as_emitter(AM_FWD(l)).release();
+    // // co_return co_await NEO_MOVE(next_op);
 }
 
 emitter amongoc_just(status st, box value_) noexcept {
