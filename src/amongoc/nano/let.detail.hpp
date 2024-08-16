@@ -18,14 +18,14 @@ namespace amongoc::detail {
  * @tparam NextReceiver The user's final receiver for the final result
  * @tparam NextOperation The operation state type that we will construct for the chained operation
  */
-template <typename Transformer, typename NextReceiver, typename NextOperation>
+template <typename T, typename Transformer, typename NextReceiver, typename NextOperation>
 class let_recv {
 public:
     constexpr explicit let_recv(Transformer&& h, NextReceiver&& r)
         : _transform(NEO_FWD(h))
         , _next_recv(NEO_FWD(r)) {}
 
-    constexpr void operator()(auto&& result) noexcept {
+    constexpr void operator()(T&& result) noexcept {
         // The let() receiver must be invoked at most once. A well-formed operation will only
         // invoke its receiver one time, so this should never occur. If this assertion fires, it
         // indicates that the input sender is erroneous.
@@ -107,7 +107,8 @@ private:
 
         /// The intermediate receiver. This accepts the incoming value and constucts+starts the
         /// subsequent operation.
-        using intermediate_receiver = let_recv<Transformer, FinalReceiver, next_operation>;
+        using intermediate_receiver
+            = let_recv<sends_t<InputSender>, Transformer, FinalReceiver, next_operation>;
 
         /// The input operation state.
         using input_operation = connect_t<InputSender, intermediate_receiver>;
