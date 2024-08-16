@@ -43,30 +43,35 @@ unknown_error_category unknown_category_inst;
 
 }  // namespace
 
-amongoc_status_category_vtable amongoc_generic_category = {
+constexpr amongoc_status_category_vtable amongoc_generic_category = {
     .name            = [] { return "generic"; },
-    .strdup_message  = [](int c) { return strdup(std::strerror(c)); },
+    .strdup_message  = [](int c) { return strdup(std::generic_category().message(c).data()); },
     .is_cancellation = [](int c) { return c == ECANCELED; },
     .is_timeout      = [](int c) { return c == ETIMEDOUT || c == ETIME; },
 };
 
-// On POSIX, the system is the same as the generic category.
-// TODO: On Windows, this will not be sufficient
-amongoc_status_category_vtable amongoc_system_category = amongoc_generic_category;
+constexpr amongoc_status_category_vtable amongoc_system_category = {
+    .name           = [] { return "system"; },
+    .strdup_message = [](int c) { return strdup(std::system_category().message(c).data()); },
+    // TODO: On Windows, this will not be sufficient
+    .is_cancellation = [](int c) { return c == ECANCELED; },
+    .is_timeout      = [](int c) { return c == ETIMEDOUT || c == ETIME; },
+};
+;
 
-amongoc_status_category_vtable amongoc_netdb_category = {
+constexpr amongoc_status_category_vtable amongoc_netdb_category = {
     .name = [] { return "amongoc.netdb"; },
     .strdup_message
     = [](int c) { return strdup(asio::error::get_netdb_category().message(c).data()); },
 };
 
-amongoc_status_category_vtable amongoc_addrinfo_category = {
+constexpr amongoc_status_category_vtable amongoc_addrinfo_category = {
     .name = [] { return "amongoc.addrinfo"; },
     .strdup_message
     = [](int c) { return strdup(asio::error::get_addrinfo_category().message(c).data()); },
 };
 
-amongoc_status_category_vtable amongoc_unknown_category = {
+constexpr amongoc_status_category_vtable amongoc_unknown_category = {
     .name           = [] { return "amongoc.unknown"; },
     .strdup_message = [](int c) { return strdup(("amongoc.unknown:" + std::to_string(c)).data()); },
 };

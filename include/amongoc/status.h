@@ -47,15 +47,15 @@ enum amongoc_status_category {
     amongoc_status_category_unknown = 99999,
 };
 
-extern struct amongoc_status_category_vtable amongoc_generic_category;
-extern struct amongoc_status_category_vtable amongoc_system_category;
-extern struct amongoc_status_category_vtable amongoc_netdb_category;
-extern struct amongoc_status_category_vtable amongoc_addrinfo_category;
-extern struct amongoc_status_category_vtable amongoc_unknown_category;
+extern const struct amongoc_status_category_vtable amongoc_generic_category;
+extern const struct amongoc_status_category_vtable amongoc_system_category;
+extern const struct amongoc_status_category_vtable amongoc_netdb_category;
+extern const struct amongoc_status_category_vtable amongoc_addrinfo_category;
+extern const struct amongoc_status_category_vtable amongoc_unknown_category;
 
 struct amongoc_status {
     // The category of the error. One of `amongoc_status_category`
-    struct amongoc_status_category_vtable* category;
+    struct amongoc_status_category_vtable const* category;
     // The error code integer value
     int code;
 
@@ -64,7 +64,7 @@ struct amongoc_status {
         : category(&amongoc_generic_category)
         , code(0) {}
 
-    amongoc_status(struct amongoc_status_category_vtable* cat, int code) noexcept
+    amongoc_status(struct amongoc_status_category_vtable const* cat, int code) noexcept
         : category(cat)
         , code(code) {}
 
@@ -94,13 +94,6 @@ struct amongoc_status {
 
 /**
  * @brief Test whether the given status code represents an error condition.
- *
- * @param st The status to be checked
- * @return true If the status is an error condition
- * @return false Otherwise
- *
- * @note A category can customize what counts as an error, so a status can have
- * more than one non-error integral value.
  */
 static inline bool amongoc_is_error(amongoc_status st) AMONGOC_NOEXCEPT {
     // If the category defines a way to check for errors, ask the category
@@ -114,18 +107,14 @@ static inline bool amongoc_is_error(amongoc_status st) AMONGOC_NOEXCEPT {
 
 /**
  * @brief Return `true` if the given status represents a cancellation
- *
- * @param st The status to be checked
- * @return true If `st` represents a cancellation
- * @return false Otherise
- *
- * @note The associated category must implement an `is_cancellation` function, otherwise
- * this function will always return `false`
  */
 static inline bool amongoc_is_cancellation(amongoc_status st) AMONGOC_NOEXCEPT {
     return st.category->is_cancellation && st.category->is_cancellation(st.code);
 }
 
+/**
+ * @brief Return `true` if the given status represents an operational time-out
+ */
 static inline bool amongoc_is_timeout(amongoc_status st) AMONGOC_NOEXCEPT {
     return st.category->is_timeout && st.category->is_timeout(st.code);
 }
