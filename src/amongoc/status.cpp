@@ -44,14 +44,14 @@ unknown_error_category unknown_category_inst;
 }  // namespace
 
 constexpr amongoc_status_category_vtable amongoc_generic_category = {
-    .name            = [] { return "generic"; },
+    .name            = [] { return "amongoc.generic"; },
     .strdup_message  = [](int c) { return strdup(std::generic_category().message(c).data()); },
     .is_cancellation = [](int c) { return c == ECANCELED; },
     .is_timeout      = [](int c) { return c == ETIMEDOUT || c == ETIME; },
 };
 
 constexpr amongoc_status_category_vtable amongoc_system_category = {
-    .name           = [] { return "system"; },
+    .name           = [] { return "amongoc.system"; },
     .strdup_message = [](int c) { return strdup(std::system_category().message(c).data()); },
     // TODO: On Windows, this will not be sufficient
     .is_cancellation = [](int c) { return c == ECANCELED; },
