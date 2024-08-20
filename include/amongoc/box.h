@@ -3,6 +3,7 @@
 #include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -354,17 +355,35 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
     static inline void FuncName(amongoc_box a) { RealName(amongoc_box_cast(Type)(a)); }            \
     static_assert(1, "");
 
-/**
- * @brief Create an amongoc_box that simply holds the given pointer
- *
- * @param p The pointer being contained in the box
- * @return amongoc_box A box that holds the pointer value
- */
-static inline amongoc_box amongoc_box_ptr(const void* p) AMONGOC_NOEXCEPT {
-    amongoc_box b = amongoc_nil;
-    memcpy(b._storage.u.trivial_inline.bytes, &p, sizeof p);
-    return b;
-}
+#define DECLARE_BOX_EZ(Name, Type)                                                                 \
+    static inline amongoc_box amongoc_box_##Name(Type val) AMONGOC_NOEXCEPT {                      \
+        amongoc_box b;                                                                             \
+        amongoc_box_init(b, Type) = val;                                                           \
+        return b;                                                                                  \
+    }
+
+DECLARE_BOX_EZ(pointer, const void*)
+DECLARE_BOX_EZ(float, float)
+DECLARE_BOX_EZ(double, double)
+DECLARE_BOX_EZ(char, char)
+DECLARE_BOX_EZ(short, short)
+DECLARE_BOX_EZ(int, int)
+DECLARE_BOX_EZ(unsigned, unsigned int)
+DECLARE_BOX_EZ(long, long)
+DECLARE_BOX_EZ(ulong, unsigned long)
+DECLARE_BOX_EZ(longlong, long long)
+DECLARE_BOX_EZ(ulonglong, unsigned long long)
+DECLARE_BOX_EZ(ptrdiff, ptrdiff_t)
+DECLARE_BOX_EZ(size, size_t)
+DECLARE_BOX_EZ(int8, int8_t)
+DECLARE_BOX_EZ(uint8, uint8_t)
+DECLARE_BOX_EZ(int16, int16_t)
+DECLARE_BOX_EZ(uint16, uint16_t)
+DECLARE_BOX_EZ(int32, int32_t)
+DECLARE_BOX_EZ(uint32, uint32_t)
+DECLARE_BOX_EZ(int64, int64_t)
+DECLARE_BOX_EZ(uint64, uint64_t)
+#undef DECLARE_BOX_EZ
 
 #ifdef __cplusplus
 
