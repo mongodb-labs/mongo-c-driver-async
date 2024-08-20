@@ -24,7 +24,7 @@ struct amongoc_loop_vtable {
     void (*call_soon)(amongoc_loop* self, amongoc_status st, amongoc_box arg, amongoc_handler recv);
 
     void (*call_later)(amongoc_loop*   self,
-                       int64_t         timeout_us,
+                       int64_t         duration_us,
                        amongoc_box     arg,
                        amongoc_handler recv);
 
@@ -90,27 +90,5 @@ struct amongoc_loop {
 };
 
 AMONGOC_EXTERN_C_BEGIN
-
-/**
- * @brief Schedule a completion on the given event loop.
- *
- * @param loop The event loop upon which to schedule the completion
- * @return amongoc_emitter An emitter that will call `amongoc_complete()` from
- *      within the event loop. The emitter always resolves with zero status and
- *      an amongoc_nil value
- */
-amongoc_emitter amongoc_schedule(amongoc_loop* loop);
-
-/**
- * @brief Schedule the completion of an operation after a duration has elapsed
- *
- * @param loop The event loop on which to schedule the wait
- * @param duration_us The duration to wait (microseconds)
- * @return amongoc_emitter An emitter that will `amongoc_complete` after the
- *      given duration has elapsed.
- *
- * @note The emitter may complete early with non-zero status in the case of an error or cancellation
- */
-amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us);
 
 AMONGOC_EXTERN_C_END

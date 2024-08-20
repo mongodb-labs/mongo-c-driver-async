@@ -1,5 +1,6 @@
 #include "amongoc/box.h"
 #include "amongoc/emitter.h"
+#include "amongoc/status.h"
 #include <amongoc/async.h>
 
 #include <amongoc/default_loop.h>
@@ -21,7 +22,7 @@ TEST_CASE("Async/Just") {
 TEST_CASE("Async/Transform with the C API") {
     auto em = returns_42().as_unique();
     em      = amongoc_then(em.release(),
-                      amongoc_then_default,
+                      amongoc_async_default,
                       amongoc_nil,
                       [](box, status* st, box value) noexcept {
                           amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
@@ -52,4 +53,20 @@ TEST_CASE("Async/Timeout") {
     // Should have stopped very quickly
     CHECK((end - start) < std::chrono::seconds(3));
     amongoc_destroy_default_loop(&loop);
+}
+
+TEST_CASE("Async/then_just") {
+    auto em = amongoc_just(amongoc_okay, amongoc_box_int(42)).as_unique();
+    em      = amongoc_then_just(em.release(),
+                           amongoc_async_forward_errors,
+                           amongoc_okay,
+                           amongoc_box_int(1729))
+             .as_unique();
+    status st;
+    box    val;
+    auto   op = amongoc_tie(em.release(), &st, &val).as_unique();
+    op.start();
+    CHECK(st.code == 0);
+    CHECK(st.category == &amongoc_generic_category);
+    CHECK(val.view.as<int>() == 1729);
 }

@@ -17,13 +17,12 @@
 AMONGOC_EXTERN_C_BEGIN
 
 /**
- * @brief Function type for the amongoc_then transformation callback
+ * @brief Function type for the `amongoc_then` transformation callback
  *
- * @param userdata The userdata box given when amongoc_then was called
+ * @param userdata The userdata box given when `amongoc_then` was called
  * @param status The status of the original operation. Can be modified to change
  * the status of the composed result
- * @param value The result value from the input operation. It is the function's
- * responsibility to destroy this box.
+ * @param value The result value from the input operation.
  *
  * @return The callback should return the new boxed value to become the result
  * of the composed operation
@@ -32,20 +31,30 @@ typedef amongoc_box (*amongoc_then_transformer)(amongoc_box     userdata,
                                                 amongoc_status* status,
                                                 amongoc_box     value) AMONGOC_NOEXCEPT;
 
+/**
+ * @brief Function type for the `amongoc_let` transformation callback
+ *
+ * @param userdata The userdata box given when `amongoc_let` was called
+ * @param status The status of the input operation.
+ * @param value The result value from the input operation.
+ *
+ * @return The callback should return a new `amongoc_emitter` value to provide the result
+ * of the composed operation
+ */
 typedef amongoc_emitter (*amongoc_let_transformer)(amongoc_box    userdata,
                                                    amongoc_status status,
                                                    amongoc_box    value) AMONGOC_NOEXCEPT;
 
-/// Flags to control the behavior of amongoc_then()
-enum amongoc_then_flags {
-    // Default option for then(). No special behavior
-    amongoc_then_default = 0,
+/// Flags to control the behavior of asynchronous utilities
+enum amongoc_async_flags {
+    // Default option. No special behavior.
+    amongoc_async_default = 0,
     /**
-     * @brief If given, and the input operation completes with a non-zero result
-     * status, the transformation function will not be called, instead the result
-     * will be forwarded immediately without change
+     * @brief If given, and the input operation completes with an error status, the
+     * transformation function will not be called, instead the result will be forwarded immediately
+     * without change
      */
-    amongoc_then_forward_errors = 1,
+    amongoc_async_forward_errors = 1,
 };
 
 /**
@@ -65,14 +74,26 @@ enum amongoc_then_flags {
  * `tr`, then the `userdata` box will be destroyed with `amongoc_box_destroy`.
  */
 amongoc_emitter amongoc_then(amongoc_emitter          em,
-                             enum amongoc_then_flags  flags,
+                             enum amongoc_async_flags flags,
                              amongoc_box              userdata,
                              amongoc_then_transformer tr) AMONGOC_NOEXCEPT;
 
-amongoc_emitter amongoc_let(amongoc_emitter em,
-                            enum amongoc_then_flags,
-                            amongoc_box             userdata,
-                            amongoc_let_transformer tr) AMONGOC_NOEXCEPT;
+/**
+ * @brief Transform the result of an asynchronous operation and continue to a
+ * new asynchronous operation.
+ *
+ * @param em An input operation to be transformed
+ * @param flags Flags to control the algorithm behavior
+ * @param userdata Arbitrary userdata that is forwarder to the transformer
+ * @param tr The transformation function that to be invoked.
+ * @return amongoc_emitter A new emitter for the composed operaiton.
+ * The returned emitter will resolve based on the result of the emitter that is returned by the
+ * transformer `tr`.
+ */
+amongoc_emitter amongoc_let(amongoc_emitter          em,
+                            enum amongoc_async_flags flags,
+                            amongoc_box              userdata,
+                            amongoc_let_transformer  tr) AMONGOC_NOEXCEPT;
 
 /**
  * @brief Attach a timeout to an operation
@@ -100,6 +121,44 @@ amongoc_timeout_us(amongoc_loop* loop, amongoc_emitter em, int64_t timeout_us) A
  * when its associated operation is started.
  */
 amongoc_emitter amongoc_just(amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
+
+/**
+ * @brief Create a continuation that replaces an emitter's result with the given
+ * status and result value
+ *
+ * @param in The input operation to be transformed
+ * @param flags Flags to control continuation behavior
+ * @param st The new status of the operation
+ * @param value The new result value of the operation
+ * @return amongoc_emitter An emitter that will complete with `st`+`value`
+ * according to the behavior set by `flags`.
+ */
+amongoc_emitter amongoc_then_just(amongoc_emitter          in,
+                                  enum amongoc_async_flags flags,
+                                  amongoc_status           st,
+                                  amongoc_box              value) AMONGOC_NOEXCEPT;
+
+/**
+ * @brief Schedule a completion on the given event loop.
+ *
+ * @param loop The event loop upon which to schedule the completion
+ * @return amongoc_emitter An emitter that will call `amongoc_complete()` from
+ *      within the event loop. The emitter always resolves with zero status and
+ *      an amongoc_nil value
+ */
+amongoc_emitter amongoc_schedule(amongoc_loop* loop);
+
+/**
+ * @brief Schedule the completion of an operation after a duration has elapsed
+ *
+ * @param loop The event loop on which to schedule the wait
+ * @param duration_us The duration to wait (microseconds)
+ * @return amongoc_emitter An emitter that will `amongoc_complete` after the
+ *      given duration has elapsed.
+ *
+ * @note The emitter may complete early with non-zero status in the case of an error or cancellation
+ */
+amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us);
 
 /**
  * @brief Create a "detached" operation from an emitter. This returns a simple operation

@@ -8,6 +8,7 @@
 #include "./coroutine.hpp"
 #include "./nano/first.hpp"
 #include "./nano/let.hpp"
+#include "./nano/then.hpp"
 
 using namespace amongoc;
 
@@ -27,12 +28,12 @@ emitter amongoc_timeout_us(amongoc_loop* loop, emitter em, int64_t timeout_us) n
 }
 
 emitter amongoc_then(emitter                  op,
-                     amongoc_then_flags       flags,
+                     amongoc_async_flags      flags,
                      box                      userdata_,
                      amongoc_then_transformer tr) noexcept {
     auto userdata = NEO_MOVE(userdata_).as_unique();
     auto result   = co_await NEO_MOVE(op);
-    if ((flags & amongoc_then_forward_errors) and result.status.is_error()) {
+    if ((flags & amongoc_async_forward_errors) and result.status.is_error()) {
         // The result is errant and the caller wants to forward errors without
         // transforming them. Return it now.
         co_return result;
@@ -45,7 +46,7 @@ emitter amongoc_then(emitter                  op,
 }
 
 emitter amongoc_let(emitter                 op,
-                    amongoc_then_flags      flags,
+                    amongoc_async_flags     flags,
                     box                     userdata_,
                     amongoc_let_transformer tr) noexcept {
     // Note: We cannot use a coroutine like with amongoc_then, because the transformer
@@ -55,7 +56,7 @@ emitter amongoc_let(emitter                 op,
         AM_FWD(op).as_unique(),
         [flags, userdata = AM_FWD(userdata_).as_unique(), tr](
             emitter_result&& res) mutable -> unique_emitter {
-            if ((flags & amongoc_then_forward_errors) and res.status.is_error()) {
+            if ((flags & amongoc_async_forward_errors) and res.status.is_error()) {
                 // The caller wants us to forward errors directly, so just return the
                 // error immediately
                 return amongoc_just(res.status, res.value.release()).as_unique();
@@ -68,9 +69,9 @@ emitter amongoc_let(emitter                 op,
     // // co_return co_await NEO_MOVE(next_op);
 }
 
-emitter amongoc_just(status st, box value_) noexcept {
+emitter amongoc_just(status st, box value) noexcept {
     return unique_emitter::from_connector(  //
-               [value = AM_FWD(value_).as_unique(),
+               [value = AM_FWD(value).as_unique(),
                 st](unique_handler&& hnd) mutable -> unique_operation {
                    return unique_operation::from_starter(
                        [hnd = AM_FWD(hnd), value = AM_FWD(value), st]() mutable {
@@ -79,6 +80,17 @@ emitter amongoc_just(status st, box value_) noexcept {
                })
         .release();
 }
+
+emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us) {
+    return unique_emitter::from_connector([=](unique_handler h) {
+               return unique_operation::from_starter([=, h = AM_FWD(h)] mutable {
+                   loop->vtable->call_later(loop, duration_us, amongoc_nil, h.release());
+               });
+           })
+        .release();
+}
+
+emitter amongoc_schedule(amongoc_loop* loop) { return as_emitter(loop->schedule()).release(); }
 
 amongoc_operation
 amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT {
@@ -99,4 +111,20 @@ amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMON
 amongoc_operation amongoc_detach(amongoc_emitter em) AMONGOC_NOEXCEPT {
     // Connect to a handler that simply discards the result values
     return AM_FWD(em).as_unique().connect([=](auto&&...) {}).release();
+}
+
+emitter amongoc_then_just(amongoc_emitter          in,
+                          enum amongoc_async_flags flags,
+                          amongoc_status           st,
+                          amongoc_box              value) noexcept {
+    return as_emitter(
+               amongoc::then(  //
+                   AM_FWD(in).as_unique(),
+                   [flags, st, value = AM_FWD(value).as_unique()](emitter_result&& res) mutable {
+                       if ((flags & amongoc_async_forward_errors) and res.status.is_error()) {
+                           return AM_FWD(res);
+                       }
+                       return emitter_result(st, AM_FWD(value));
+                   }))
+        .release();
 }
