@@ -25,7 +25,7 @@ TEST_CASE("C++ Client/Simple") {
 
     auto ep = asio::ip::tcp::endpoint(asio::ip::make_address_v4("127.0.0.1"), 27017);
     sock.connect(ep);
-    client cl{sock};
+    client cl{std::allocator<void>{}, sock};
 
     bson_doc doc;
     doc.push_back("hello", 1.0);

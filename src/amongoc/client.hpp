@@ -8,6 +8,7 @@
 #include "./nano/result.hpp"
 #include "./nano/then.hpp"
 
+#include <amongoc/alloc.h>
 #include <amongoc/bson/build.h>
 #include <amongoc/bson/view.h>
 #include <amongoc/client.h>
@@ -24,22 +25,29 @@
 #include <memory>
 #include <mutex>
 #include <ranges>
+#include <string>
 #include <system_error>
 #include <type_traits>
 #include <variant>
 
 namespace amongoc {
 
-template <typename T>
+template <typename T, typename Alloc = std::allocator<void>>
     requires readable_stream<T> and writable_stream<T>
 class client {
 public:
-    explicit client(T&& sock)
-        : _socket(NEO_FWD(sock)) {}
+    explicit client(Alloc alloc, T&& sock)
+        : _alloc(alloc)
+        , _socket(NEO_FWD(sock)) {}
+
+    using string_type
+        = std::basic_string<char,
+                            std::char_traits<char>,
+                            typename std::allocator_traits<Alloc>::template rebind_alloc<char>>;
 
     constexpr nanosender_of<result<bson_doc>> auto send_op_msg(bson_view doc) {
         // Building the message in this string:
-        std::string snd_buf;
+        string_type snd_buf{_alloc};
         auto        dbuf   = asio::dynamic_buffer(snd_buf);
         const auto  req_id = _req_id.fetch_add(1);
         // Build the operation:
@@ -103,8 +111,6 @@ public:
     const T& socket() const noexcept { return _socket; }
 
 public:
-    std::string _recv_buf;
-
     // Size of the MsgHeader (four 32-bit integers)
     static constexpr std::size_t _msg_header_size = sizeof(std::uint32_t) * 4;
 
@@ -153,13 +159,13 @@ public:
         dbuf.commit(section_size);
     }
 
+    Alloc _alloc;
+
     // The socket to which we read/write messages
     T _socket;
 
-    // Buffer of data that is waiting to be written
-    std::string _pending_buf;
-    // Buffer of data that is currently being written
-    std::string _writing_buf;
+    // Buffer the receives data from the socket
+    string_type _recv_buf{_alloc};
 
     // Lock for modifing pending_buf
     std::mutex _mtx;
@@ -203,7 +209,7 @@ public:
     }
 };
 
-template <typename T>
-explicit client(T&&) -> client<T>;
+template <typename A, typename T>
+explicit client(A, T&&) -> client<T, A>;
 
 }  // namespace amongoc

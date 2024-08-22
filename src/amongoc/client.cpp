@@ -16,17 +16,13 @@ using namespace amongoc;
 
 struct _amongoc_client_cxx {
     explicit _amongoc_client_cxx(tcp_connection_rw_stream&& conn)
-        : _client(std::move(conn)) {}
+        : _client(get_allocator(*conn.loop), std::move(conn)) {}
 
-    client<tcp_connection_rw_stream> _client;
+    client<tcp_connection_rw_stream, cxx_allocator<>> _client;
 };
 
 emitter amongoc_client::command(const bson_view& doc) noexcept {
     return amongoc_client_command(*this, doc);
-}
-
-amongoc_loop& amongoc_client::get_event_loop() const noexcept {
-    return *_impl->_client.socket().loop;
 }
 
 emitter amongoc_client_connect(amongoc_loop* loop, const char* name, const char* svc) noexcept {
@@ -43,3 +39,7 @@ emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
 }
 
 void amongoc_client_destroy(amongoc_client cl) noexcept { delete cl._impl; }
+
+amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) noexcept {
+    return cl._impl->_client.socket().loop;
+}
