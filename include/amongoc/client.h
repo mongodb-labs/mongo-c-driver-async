@@ -38,6 +38,13 @@ void amongoc_client_destroy(amongoc_client cl) AMONGOC_NOEXCEPT;
  */
 amongoc_emitter amongoc_client_command(amongoc_client cl, struct bson_view doc) AMONGOC_NOEXCEPT;
 
+/**
+ * @brief Get the event loop associated with a client
+ *
+ * @return A non-null pointer to the event loop used by the client
+ */
+amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) AMONGOC_NOEXCEPT;
+
 AMONGOC_EXTERN_C_END
 
 /**
@@ -51,7 +58,7 @@ struct amongoc_client {
     amongoc_emitter command(bson_view const& doc) noexcept;
 
     // Get the event loop associated with this client
-    amongoc_loop& get_event_loop() const noexcept;
+    amongoc_loop& get_event_loop() const noexcept { return *amongoc_client_get_event_loop(*this); }
 
     // Obtain the allocator associated with this client
     amongoc::cxx_allocator<> query(amongoc::get_allocator_fn q) const noexcept {
