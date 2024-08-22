@@ -43,14 +43,14 @@ struct amongoc_allocator {
 /**
  * @brief Allocate a new region using an `amongoc_allocator`
  */
-static inline void* amongoc_allocate(amongoc_allocator alloc, size_t sz) {
+inline void* amongoc_allocate(amongoc_allocator alloc, size_t sz) AMONGOC_NOEXCEPT {
     return alloc.reallocate(alloc.userdata, NULL, sz, 0, &sz);
 }
 
 /**
  * @brief Deallocate a region that was obtained from the given `amongoc_allocator`
  */
-static inline void amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) {
+inline void amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) AMONGOC_NOEXCEPT {
     alloc.reallocate(alloc.userdata, p, 0, sz, &sz);
 }
 

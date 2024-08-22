@@ -4,6 +4,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+extern inline void* amongoc_allocate(amongoc_allocator, size_t) noexcept(true);
+extern inline void  amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) noexcept(true);
+
 // Implementation of reallocate() for the default allocator
 static inline void* default_reallocate(void*,
                                        void*   ptr,
