@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./alloc.h"
 #include "./async.h"
 #include "./box.h"
 #include "./client.h"
