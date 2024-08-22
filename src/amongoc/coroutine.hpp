@@ -160,7 +160,7 @@ struct nanosender_awaitable {
         // Emplace the result and resume the associated coroutine
         void operator()(sends_t<S>&& result) {
             // Put the sent value into the awaitable's storage to be returned at await_resume
-            self->_sent_value.emplace(NEO_FWD(result));
+            self->_sent_value.emplace(AM_FWD(result));
             // Resume the coroutine immediately
             co.resume();
         }
@@ -192,82 +192,6 @@ struct nanosender_awaitable {
     sends_t<S> await_resume() noexcept { return static_cast<sends_t<S>&&>(*_sent_value); }
 };
 
-/**
- * @brief co_await semantics for an amongoc_emitter
- *
- */
-struct emitter_awaitable {
-    explicit emitter_awaitable(emitter&& em) noexcept
-        : em(std::exchange(em, emitter{})) {}
-
-    // Never immediately ready
-    constexpr static bool await_ready() noexcept { return false; }
-
-    // The awaited emitter
-    unique_emitter em;
-    // Storage for the operation to be connected
-    unique_operation op;
-    // Storage for the final result
-    emitter_result ret{};
-
-    // On resume, return the result of the operation
-    emitter_result await_resume() noexcept { return NEO_MOVE(ret); }
-
-    /**
-     * @brief await_suspend() within a coroutine that has a stop token
-     *
-     * @tparam Promise The promise type, which provides a stop token
-     * @param co The parent coroutine
-     */
-    template <typename Promise>
-        requires has_stop_token<Promise> and has_allocator<Promise>
-    void await_suspend(std::coroutine_handle<Promise> co) noexcept {
-        struct stopper {
-            void* userdata;
-            void (*callback)(void*);
-            void operator()() { this->callback(this->userdata); }
-        };
-        using stop_callback = stop_callback_t<get_stop_token_t<Promise>, stopper>;
-
-        struct state {
-            emitter_awaitable*             self;
-            std::coroutine_handle<Promise> co;
-        };
-        static const amongoc_handler_vtable vtable = {
-            .complete =
-                [](box p, status st, box value) noexcept {
-                    unique_box ub = NEO_MOVE(p).as_unique();
-                    state&     s  = ub.as<state>();
-                    s.self->ret   = emitter_result(st, unique_box(NEO_MOVE(value)));
-                    s.co.resume();
-                },
-            .register_stop
-            = [](amongoc_view p, void* userdata, void (*callback)(void*)) noexcept -> box {
-                return unique_box::make<stop_callback>(get_allocator(p.as<state>().co.promise()),
-                                                       get_stop_token(p.as<state>().co.promise()),
-                                                       stopper{userdata, callback})
-                    .release();
-            },
-        };
-        amongoc_handler handler;
-        handler.userdata = unique_box::from(terminating_allocator, state{this, co}).release();
-        handler.vtable   = &vtable;
-        op = AM_FWD(em).connect(get_allocator(co.promise()), unique_handler(NEO_MOVE(handler)));
-        op.start();
-    }
-
-    template <typename Promise>
-        requires has_allocator<Promise>
-    void await_suspend(std::coroutine_handle<Promise> co) noexcept {
-        op = AM_FWD(em).connect(get_allocator(co.promise()),
-                                [co, this](status st, unique_box&& val) {
-                                    ret = emitter_result(st, NEO_MOVE(val));
-                                    co.resume();
-                                });
-        op.start();
-    }
-};
-
 struct coroutine_promise_allocator_mixin {
     struct alloc_state {
         cxx_allocator<char> alloc;
@@ -292,11 +216,11 @@ struct coroutine_promise_allocator_mixin {
 
     // Allocate using the allocator from the event loop
     void* operator new(std::size_t n, amongoc_loop& loop, auto const&...) {
-        return operator new(n, get_allocator(loop));
+        return operator new(n, loop.get_allocator());
     }
     void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) {
         return operator new(n,
-                            loop ? get_allocator(*loop)
+                            loop ? loop->get_allocator()
                                  : cxx_allocator<>{amongoc_default_allocator});
     }
 
@@ -315,14 +239,14 @@ struct coroutine_promise_allocator_mixin {
         : alloc(a) {}
 
     coroutine_promise_allocator_mixin(amongoc_loop& loop, auto&&...)
-        : alloc(get_allocator(loop)) {}
+        : alloc(loop.get_allocator()) {}
 
     coroutine_promise_allocator_mixin(amongoc_loop* loop, auto&&...)
-        : alloc(loop ? get_allocator(*loop) : cxx_allocator<>{amongoc_default_allocator}) {}
+        : alloc(loop ? loop->get_allocator() : cxx_allocator<>{amongoc_default_allocator}) {}
 
     cxx_allocator<> alloc;
 
-    cxx_allocator<> query(get_allocator_fn) const noexcept { return alloc; }
+    cxx_allocator<> get_allocator() const noexcept { return alloc; }
 };
 
 /**
@@ -330,7 +254,6 @@ struct coroutine_promise_allocator_mixin {
  */
 struct emitter_promise : coroutine_promise_allocator_mixin {
     using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
-    using coroutine_promise_allocator_mixin::query;
 
     // The handler for the emitter coroutine
     unique_handler fin_handler;
@@ -362,10 +285,6 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     template <nanosender S>
     nanosender_awaitable<S, emitter_promise> await_transform(S&& s) noexcept {
         return {NEO_FWD(s)};
-    }
-
-    emitter_awaitable await_transform(emitter&& em) noexcept {
-        return emitter_awaitable{NEO_MOVE(em)};
     }
 
     // Starter function object for the amongoc_operation
@@ -474,7 +393,6 @@ public:
     /// Coroutine promise type for the co_task
     struct promise_type : coroutine_promise_allocator_mixin {
         using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
-        using coroutine_promise_allocator_mixin::query;
 
         std::optional<T>   _return_value;
         std::exception_ptr _exception;
@@ -498,11 +416,7 @@ public:
             return {NEO_FWD(s)};
         }
 
-        emitter_awaitable await_transform(emitter&& em) noexcept {
-            return emitter_awaitable{NEO_MOVE(em)};
-        }
-
-        in_place_stop_token query(get_stop_token_fn) const noexcept {
+        in_place_stop_token get_stop_token() const noexcept {
             // This should only be called after _recv has been connected
             assert(_recv);
             return _recv->stop_token();
