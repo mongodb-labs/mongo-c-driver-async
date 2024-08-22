@@ -48,16 +48,18 @@ public:
         return amongoc::just(std::monostate{})
             // Write the send-buffer
             | amongoc::let([this, s = NEO_MOVE(snd_buf)](auto) {
-                   return asio::async_write(_socket, asio::buffer(s), asio_as_nanosender);
+                   return asio::async_write(socket(), asio::buffer(s), asio_as_nanosender);
                })
             // Read back a message header's worth of data
             | amongoc::let(result_fmap{std::move([this](std::size_t) {
-                   return asio::async_read(_socket,
+                   return asio::async_read(socket(),
                                            asio::dynamic_buffer(_recv_buf),
                                            asio::transfer_exactly(_msg_header_size),
                                            asio_as_nanosender);
-               })})  //
-            | amongoc::then(result_join) | amongoc::let(result_fmap{[this](std::size_t n) {
+               })})
+            // Read a full message
+            | amongoc::then(result_join)
+            | amongoc::let(result_fmap{[this](std::size_t n) {
                    assert(n == _msg_header_size);
                    assert(_recv_buf.size() == _msg_header_size);
                    // Read a LE-uint32 from the beginning of the receive buffer. This is the
@@ -67,11 +69,12 @@ public:
                    assert(sz >= _msg_header_size);
                    // Read the remainder of the message.
                    auto remaining = sz - _msg_header_size;
-                   return asio::async_read(_socket,
+                   return asio::async_read(socket(),
                                            asio::dynamic_buffer(_recv_buf),
                                            asio::transfer_exactly(remaining),
                                            asio_as_nanosender);
-               }})  //
+               }})
+            // Parse the message into a bson_doc
             | amongoc::then(result_join) | amongoc::then(result_fmap{[this](std::size_t) {
                    auto dbuf         = asio::dynamic_buffer(_recv_buf);
                    auto section_data = dbuf.data() + _msg_header_size + sizeof(std::uint32_t);
@@ -95,6 +98,9 @@ public:
                    }
                });
     }
+
+    T&       socket() noexcept { return _socket; }
+    const T& socket() const noexcept { return _socket; }
 
 public:
     std::string _recv_buf;

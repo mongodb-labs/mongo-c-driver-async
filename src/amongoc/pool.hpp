@@ -14,10 +14,13 @@ namespace amongoc {
  *
  * @tparam T The type of objects stored within the pool. It is permitted to be immobile.
  */
-template <typename T>
+template <typename T, typename Alloc = std::allocator<T>>
 class object_pool {
 public:
-    object_pool() = default;
+    using allocator_type = Alloc;
+
+    object_pool() noexcept
+        : object_pool({}) {}
 
     /**
      * @brief Construct a new object pool with a constrained maximum count of objects
@@ -26,8 +29,19 @@ public:
      * objects will be destroyed when they attempt to return to the pool.
      */
     explicit object_pool(std::size_t max_size) noexcept
-        : _max_size(max_size) {}
+        : object_pool({}, max_size) {}
 
+    explicit object_pool(allocator_type alloc)
+        : object_pool(alloc, 1024) {}
+
+    explicit object_pool(allocator_type alloc, std::size_t max_size) noexcept
+        : _objects(alloc)
+        , _max_size(max_size) {}
+
+private:
+    using fwd_list = std::forward_list<T, allocator_type>;
+
+public:
     /**
      * @brief A move-only handle to an object stored in the pool
      *
@@ -64,14 +78,14 @@ public:
         }
 
     private:
-        friend object_pool<T>;
+        friend object_pool<T, Alloc>;
 
-        constexpr explicit ticket(object_pool& p, std::forward_list<T>&& l) noexcept
+        constexpr explicit ticket(object_pool& p, fwd_list&& l) noexcept
             : _parent(&p)
             , _one(std::move(l)) {}
 
-        object_pool*         _parent;
-        std::forward_list<T> _one;
+        object_pool* _parent;
+        fwd_list     _one;
     };
 
     /**
@@ -88,7 +102,7 @@ public:
      */
     template <typename F>
     constexpr ticket checkout(F&& factory) {
-        std::forward_list<T> one;
+        fwd_list one{_objects.get_allocator()};
         if (_objects.empty()) {
             // Nothing in the pool. Construct a new object
             one.emplace_front(defer_convert([&] { return std::forward<F>(factory)(); }));
@@ -102,7 +116,7 @@ public:
 
 private:
     // The actual objects
-    std::forward_list<T> _objects;
+    fwd_list _objects;
     // The current number of objects we hold (forward_list does not keep count)
     std::size_t _count = 0;
     // The maximum number of objects to retain in the pool
@@ -111,7 +125,7 @@ private:
     friend ticket;
 
     // Return an object to the pool, stored as a single item in a forward-list
-    void return_(std::forward_list<T>& one) {
+    void return_(fwd_list& one) {
         if (_count < _max_size) {
             // We are allowed to add to the pool. Splice to the front:
             _objects.splice_after(_objects.before_begin(), one, one.cbefore_begin());

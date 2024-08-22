@@ -17,12 +17,13 @@
 #include "./nano/simple.hpp"
 #include "./nano/stop.hpp"
 #include "./nano/util.hpp"
-#include "amongoc/loop.h"
 
 // C library headers
+#include <amongoc/alloc.h>
 #include <amongoc/box.h>
 #include <amongoc/emitter.h>
 #include <amongoc/handler.h>
+#include <amongoc/loop.h>
 #include <amongoc/operation.h>
 #include <amongoc/status.h>
 
@@ -137,6 +138,7 @@ explicit suspends_by(F&&) -> suspends_by<F>;
  * @tparam S The sender type to be awaited
  */
 template <nanosender S, typename Promise>
+    requires has_allocator<Promise>
 struct nanosender_awaitable {
     // The adapted nanosender
     S _sender;
@@ -218,7 +220,7 @@ struct emitter_awaitable {
      * @param co The parent coroutine
      */
     template <typename Promise>
-        requires has_stop_token<Promise>
+        requires has_stop_token<Promise> and has_allocator<Promise>
     void await_suspend(std::coroutine_handle<Promise> co) noexcept {
         struct stopper {
             void* userdata;
@@ -241,71 +243,99 @@ struct emitter_awaitable {
                 },
             .register_stop
             = [](amongoc_view p, void* userdata, void (*callback)(void*)) noexcept -> box {
-                return unique_box::make<stop_callback>(get_stop_token(p.as<state>().co.promise()),
+                return unique_box::make<stop_callback>(get_allocator(p.as<state>().co.promise()),
+                                                       get_stop_token(p.as<state>().co.promise()),
                                                        stopper{userdata, callback})
                     .release();
             },
         };
         amongoc_handler handler;
-        handler.userdata = unique_box::from(state{this, co}).release();
+        handler.userdata = unique_box::from(terminating_allocator, state{this, co}).release();
         handler.vtable   = &vtable;
-        op               = AM_FWD(em).connect(unique_handler(NEO_MOVE(handler)));
+        op = AM_FWD(em).connect(get_allocator(co.promise()), unique_handler(NEO_MOVE(handler)));
         op.start();
     }
 
-    void await_suspend(std::coroutine_handle<> co) noexcept {
-        op = AM_FWD(em).connect([co, this](status st, unique_box&& val) {
-            ret = emitter_result(st, NEO_MOVE(val));
-            co.resume();
-        });
+    template <typename Promise>
+        requires has_allocator<Promise>
+    void await_suspend(std::coroutine_handle<Promise> co) noexcept {
+        op = AM_FWD(em).connect(get_allocator(co.promise()),
+                                [co, this](status st, unique_box&& val) {
+                                    ret = emitter_result(st, NEO_MOVE(val));
+                                    co.resume();
+                                });
         op.start();
     }
 };
 
-template <typename Alloc>
-struct emitter_promise_alloc;
-
-template <>
-struct emitter_promise_alloc<std::allocator<void>> {};
-
-template <>
-struct emitter_promise_alloc<loop_allocator<>> {
+struct coroutine_promise_allocator_mixin {
     struct alloc_state {
-        amongoc_loop* loop;
+        cxx_allocator<char> alloc;
         alignas(std::max_align_t) char tail[1];
     };
 
-    void* operator new(std::size_t n, amongoc_loop& loop, auto&&...) {
-        // Pilfer a pointer to the loop within the allocated region
-        auto storage = loop_allocator<char>(loop).allocate(n + sizeof(alloc_state));
-        auto p       = new (storage) alloc_state{&loop};
+    // Allocate the coroutine state using our amongoc_allocator
+    template <typename T>
+    void* operator new(std::size_t n, cxx_allocator<T> const& alloc_, const auto&...) {
+        cxx_allocator<char> alloc   = alloc_;
+        auto                storage = alloc.allocate(n + sizeof(alloc_state));
+        // Pilfer a copy of the allocator within the allocated region
+        auto p = new (storage) alloc_state{alloc};
         // Return the tail of the struct as the storage for the coroutine
         return p->tail;
     }
-    void* operator new(std::size_t n, amongoc_loop* loop, auto&&...) {
-        return operator new(n, *loop);
+
+    // Adapt the C allocator to the C++ interface
+    void* operator new(std::size_t n, const amongoc_allocator& alloc, const auto&...) {
+        return operator new(n, cxx_allocator<>(alloc));
+    }
+
+    // Allocate using the allocator from the event loop
+    void* operator new(std::size_t n, amongoc_loop& loop, auto const&...) {
+        return operator new(n, get_allocator(loop));
+    }
+    void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) {
+        return operator new(n,
+                            loop ? get_allocator(*loop)
+                                 : cxx_allocator<>{amongoc_default_allocator});
     }
 
     void operator delete(void* p, std::size_t n) {
         // Adjust the pointer to coroutine storage back to the pointer to alloc_state
         // that we created in new()
         auto base = (alloc_state*)(static_cast<char*>(p) - offsetof(alloc_state, tail));
-        loop_allocator<char>(*base->loop)
-            .deallocate(reinterpret_cast<char*>(base), n + sizeof(alloc_state));
+        base->alloc.deallocate(reinterpret_cast<char*>(base), n + sizeof(alloc_state));
     }
+
+    template <typename T>
+    coroutine_promise_allocator_mixin(const cxx_allocator<T>& a, auto&&...)
+        : alloc(a) {}
+
+    coroutine_promise_allocator_mixin(const amongoc_allocator& a, auto&&...)
+        : alloc(a) {}
+
+    coroutine_promise_allocator_mixin(amongoc_loop& loop, auto&&...)
+        : alloc(get_allocator(loop)) {}
+
+    coroutine_promise_allocator_mixin(amongoc_loop* loop, auto&&...)
+        : alloc(loop ? get_allocator(*loop) : cxx_allocator<>{amongoc_default_allocator}) {}
+
+    cxx_allocator<> alloc;
+
+    cxx_allocator<> query(get_allocator_fn) const noexcept { return alloc; }
 };
 
 /**
  * @brief Coroutine promise for amongoc_emitter-base coroutines
  */
-template <typename Alloc>
-struct emitter_promise : emitter_promise_alloc<Alloc> {
+struct emitter_promise : coroutine_promise_allocator_mixin {
+    using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
+    using coroutine_promise_allocator_mixin::query;
+
     // The handler for the emitter coroutine
     unique_handler fin_handler;
     // Result storage for the coroutine
     emitter_result fin_result;
-
-    using emitter_promise::emitter_promise_alloc::emitter_promise_alloc;
 
     // Coroutine handle type
     using co_handle = std::coroutine_handle<emitter_promise>;
@@ -317,8 +347,7 @@ struct emitter_promise : emitter_promise_alloc<Alloc> {
     static auto final_suspend() noexcept {
         return suspends_by([](co_handle co) noexcept {
             emitter_promise& self = co.promise();
-            AM_FWD(self.fin_handler)
-                .complete(self.fin_result.status, NEO_MOVE(self.fin_result.value));
+            self.fin_handler.complete(self.fin_result.status, NEO_MOVE(self.fin_result.value));
         });
     }
     // Always start suspended
@@ -352,9 +381,9 @@ struct emitter_promise : emitter_promise_alloc<Alloc> {
         AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
         unique_co_handle<emitter_promise> _co;
 
-        unique_operation operator()(unique_handler hnd) noexcept {
-            _co.promise().fin_handler = NEO_MOVE(hnd);
-            return unique_operation::from_starter(starter{NEO_MOVE(_co)});
+        unique_operation operator()(unique_handler&& hnd) noexcept {
+            _co.promise().fin_handler = AM_FWD(hnd);
+            return unique_operation::from_starter(terminating_allocator, starter{NEO_MOVE(_co)});
         }
     };
 
@@ -362,7 +391,9 @@ struct emitter_promise : emitter_promise_alloc<Alloc> {
     amongoc_emitter get_return_object() noexcept {
         auto co = co_handle::from_promise(*this);
         static_assert(box_inlinable_type<connector>);
-        return unique_emitter::from_connector(connector{unique_co_handle(NEO_MOVE(co))}).release();
+        return unique_emitter::from_connector(terminating_allocator,
+                                              connector{unique_co_handle(NEO_MOVE(co))})
+            .release();
     }
 
     void unhandled_exception() {
@@ -441,7 +472,10 @@ private:
 
 public:
     /// Coroutine promise type for the co_task
-    struct promise_type {
+    struct promise_type : coroutine_promise_allocator_mixin {
+        using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
+        using coroutine_promise_allocator_mixin::query;
+
         std::optional<T>   _return_value;
         std::exception_ptr _exception;
         finisher_base*     _recv;
@@ -541,15 +575,5 @@ private:
 
 template <typename... Ts>
 struct std::coroutine_traits<amongoc_emitter, Ts...> {
-    using promise_type = amongoc::emitter_promise<std::allocator<void>>;
-};
-
-template <typename... Ts>
-struct std::coroutine_traits<amongoc_emitter, amongoc_loop*, Ts...> {
-    using promise_type = amongoc::emitter_promise<amongoc::loop_allocator<>>;
-};
-
-template <typename... Ts>
-struct std::coroutine_traits<amongoc_emitter, amongoc_loop&, Ts...> {
-    using promise_type = amongoc::emitter_promise<amongoc::loop_allocator<>>;
+    using promise_type = amongoc::emitter_promise;
 };

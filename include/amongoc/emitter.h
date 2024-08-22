@@ -6,6 +6,7 @@
 #include "./handler.h"
 #include "./operation.h"
 #include "./status.h"
+#include "amongoc/alloc.h"
 
 #ifdef __cplusplus
 namespace amongoc {
@@ -113,7 +114,7 @@ public:
      * @return unique_emitter An emitter that owns the associated connector object
      */
     template <typename F>
-    static unique_emitter from_connector(F&& fn) noexcept {
+    static unique_emitter from_connector(cxx_allocator<> alloc, F&& fn) noexcept {
         // Wrap the connector in an object, preserving reference semantics
         struct wrapped {
             AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
@@ -130,7 +131,7 @@ public:
             },
         };
         amongoc_emitter ret;
-        ret.userdata = unique_box::from(wrapped{AM_FWD(fn)}).release();
+        ret.userdata = unique_box::from(alloc, wrapped{AM_FWD(fn)}).release();
         ret.vtable   = &vtable;
         return unique_emitter(AM_FWD(ret));
     }
@@ -140,8 +141,8 @@ public:
             AM_FWD(fn)
             (st, AM_FWD(ub));
         }
-    unique_operation connect(F fn) && noexcept {
-        return ((unique_emitter&&)(*this)).connect(unique_handler::from(AM_FWD(fn)));
+    unique_operation connect(cxx_allocator<> a, F fn) && noexcept {
+        return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, AM_FWD(fn)));
     }
 
     unique_operation connect(amongoc::unique_handler&& hnd) && noexcept {
@@ -163,6 +164,7 @@ struct nanosender_traits<unique_emitter> {
     // private header. Move this whole specialization to a private header?
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
+        // TODO: An allocator here for as_handler?
         return AM_FWD(em).connect(as_handler(AM_FWD(recv)));
     }
 

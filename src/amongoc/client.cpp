@@ -1,4 +1,5 @@
 #include "./client.hpp"
+#include "amongoc/alloc.h"
 
 #include <amongoc/client.h>
 
@@ -24,16 +25,21 @@ emitter amongoc_client::command(const bson_view& doc) noexcept {
     return amongoc_client_command(*this, doc);
 }
 
+amongoc_loop& amongoc_client::get_event_loop() const noexcept {
+    return *_impl->_client.socket().loop;
+}
+
 emitter amongoc_client_connect(amongoc_loop* loop, const char* name, const char* svc) noexcept {
     auto addr   = *co_await async_resolve(*loop, name, svc);
     auto socket = *co_await async_connect(*loop, std::move(addr));
-    co_return unique_box::from(amongoc_client{new _amongoc_client_cxx{std::move(socket)}},
+    co_return unique_box::from(get_allocator(*loop),
+                               amongoc_client{new _amongoc_client_cxx{std::move(socket)}},
                                [](amongoc_client& cl) -> void { amongoc_client_destroy(cl); });
 }
 
 emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
     nanosender_of<result<bson_doc>> auto s = cl._impl->_client.send_op_msg(doc);
-    return as_emitter(std::move(s)).release();
+    return as_emitter(get_allocator(cl), std::move(s)).release();
 }
 
 void amongoc_client_destroy(amongoc_client cl) noexcept { delete cl._impl; }

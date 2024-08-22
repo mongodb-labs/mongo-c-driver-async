@@ -116,8 +116,8 @@ struct cxx_recv_handler_adaptor_base<R> {
  */
 template <typename R>
 struct cxx_recv_as_c_handler : cxx_recv_handler_adaptor_base<R> {
-    static void _complete(box self, status st, box result) noexcept {
-        AM_FWD(self).as_unique().as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
+    static void _complete(amongoc_view self, status st, box result) noexcept {
+        AM_FWD(self).as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
     }
 
     static constexpr amongoc_handler_vtable handler_vtable = {
@@ -129,8 +129,8 @@ struct cxx_recv_as_c_handler : cxx_recv_handler_adaptor_base<R> {
 template <typename R>
     requires has_stop_token<R>
 struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
-    static void _complete(box self, status st, box result) noexcept {
-        AM_FWD(self).as_unique().as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
+    static void _complete(amongoc_view self, status st, box result) noexcept {
+        AM_FWD(self).as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
     }
 
     struct stopper {
@@ -145,7 +145,11 @@ struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
     _register_stop(amongoc_view self_, void* userdata, void (*callback)(void*)) noexcept {
         auto&                self = self_.as<cxx_recv_as_c_handler>();
         stoppable_token auto tk   = get_stop_token(static_cast<R const&>(self._recv));
-        return unique_box::make<stop_callback>(tk, stopper{userdata, callback}).release();
+        /// TODO: Pass an allocator here
+        return unique_box::make<stop_callback>(cxx_allocator<>{amongoc_default_allocator},
+                                               tk,
+                                               stopper{userdata, callback})
+            .release();
     }
 
     static constexpr amongoc_handler_vtable handler_vtable = {
@@ -166,8 +170,11 @@ template <typename R>
 unique_handler as_handler(R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
-    ret.userdata = unique_box::from(adaptor_type{{AM_FWD(cxx_recv)}}).release();
-    ret.vtable   = &adaptor_type::handler_vtable;
+    /// TODO: Pass an allocator to from()
+    ret.userdata = unique_box::from(cxx_allocator<>{amongoc_default_allocator},
+                                    adaptor_type{{AM_FWD(cxx_recv)}})
+                       .release();
+    ret.vtable = &adaptor_type::handler_vtable;
     return AM_FWD(ret).as_unique();
 };
 
@@ -180,18 +187,22 @@ unique_handler as_handler(R&& cxx_recv) {
  * @return A new emitter that adapts the nanosender to the C API
  */
 template <nanosender S>
-unique_emitter as_emitter(S&& sender) {
+unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) {
     // The composed operation type with a unique_handler. This line will also
     // enforce that the nanosender sends a type that is compatible with the
     // unique_handler::operator()
     using operation_type = connect_t<std::remove_cvref_t<S>, unique_handler>;
     return unique_emitter::from_connector(  //
-        [s = NEO_FWD(sender)](unique_handler hnd) mutable -> unique_operation {
-            // Create an amongoc_operation from the C++ operation state
+        alloc,
+        [s = NEO_FWD(sender), alloc](unique_handler hnd) mutable -> unique_operation {
+            // Create an amongoc_operation from the C++ operation
+            // state
             amongoc_operation oper;
-            oper.userdata = unique_box::make<operation_type>(defer_convert([&] {
-                                return connect(NEO_MOVE(s), NEO_MOVE(hnd));
-                            })).release();
+            oper.userdata
+                = unique_box::make<operation_type>(alloc, defer_convert([&] {
+                                                       return connect(NEO_MOVE(s), NEO_MOVE(hnd));
+                                                   }))
+                      .release();
             oper.start_callback
                 = [](amongoc_view userdata) { userdata.as<operation_type>().start(); };
             return AM_FWD(oper).as_unique();

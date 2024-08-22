@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./alloc.h"
 #include "./config.h"
 #include "./emitter.h"
 #include "./loop.h"
@@ -48,5 +49,13 @@ struct amongoc_client {
 #ifdef __cplusplus
     /// Issue a command
     amongoc_emitter command(bson_view const& doc) noexcept;
+
+    // Get the event loop associated with this client
+    amongoc_loop& get_event_loop() const noexcept;
+
+    // Obtain the allocator associated with this client
+    amongoc::cxx_allocator<> query(amongoc::get_allocator_fn q) const noexcept {
+        return q(get_event_loop());
+    }
 #endif
 };

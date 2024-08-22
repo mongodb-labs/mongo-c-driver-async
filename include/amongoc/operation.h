@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./alloc.h"
 #include "./box.h"
 #include "./config.h"
 
@@ -98,9 +99,9 @@ public:
      * @param fn A function that, when called, will initiate the operation
      */
     template <typename F>
-    static unique_operation from_starter(F fn) noexcept {
+    static unique_operation from_starter(cxx_allocator<> a, F fn) noexcept {
         amongoc_operation ret;
-        ret.userdata       = unique_box::from((F&&)(fn)).release();
+        ret.userdata       = unique_box::from(a, (F&&)(fn)).release();
         ret.start_callback = [](amongoc_view f) { f.as<std::remove_cvref_t<F>>()(); };
         return AM_FWD(ret).as_unique();
     }

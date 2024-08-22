@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./alloc.h"
 #include "./box.h"
 #include "./config.h"
 #include "./emitter.h"
@@ -49,6 +50,8 @@ struct amongoc_loop_vtable {
 
     void* (*allocate)(amongoc_loop* self, size_t sz);
     void (*deallocate)(amongoc_loop* self, void*);
+
+    amongoc_allocator (*get_allocator)(const amongoc_loop* self);
 };
 
 struct amongoc_loop {
@@ -72,10 +75,12 @@ struct amongoc_loop {
                     loop,
                     amongoc_okay,
                     amongoc_nil,
-                    amongoc::unique_handler::from([this](amongoc_status,
+                    amongoc::unique_handler::from(amongoc::terminating_allocator,
+                                                  [this](amongoc_status,
                                                          amongoc::unique_box) mutable {
-                        static_cast<R&&>(_recv)(nullptr);
-                    }).release());
+                                                      static_cast<R&&>(_recv)(nullptr);
+                                                  })
+                        .release());
             }
         };
 
@@ -86,9 +91,29 @@ struct amongoc_loop {
     };
 
     sched_snd schedule() noexcept { return {this}; }
+
+    amongoc::cxx_allocator<> query(amongoc::get_allocator_fn) const noexcept {
+        if (vtable->get_allocator) {
+            return amongoc::cxx_allocator<>(vtable->get_allocator(this));
+        }
+        return amongoc::cxx_allocator<>(amongoc_default_allocator);
+    }
 #endif
 };
 
 AMONGOC_EXTERN_C_BEGIN
-
+/**
+ * @brief Obtain the allocator associated with an event loop, if present
+ *
+ * @param loop The event loop to be queried
+ * @return amongoc_allocator The allocator associated with the loop if the loop provides
+ * one. Otherwise, returns `amongoc_default_allocator`.
+ */
+static inline amongoc_allocator
+amongoc_loop_get_allocator(const amongoc_loop* loop) AMONGOC_NOEXCEPT {
+    if (loop->vtable->get_allocator) {
+        return loop->vtable->get_allocator(loop);
+    }
+    return amongoc_default_allocator;
+}
 AMONGOC_EXTERN_C_END

@@ -16,6 +16,7 @@
 #include <asio/io_context.hpp>
 #include <asio/ip/tcp.hpp>
 #include <asio/steady_timer.hpp>
+#include <asio/system_error.hpp>
 #include <asio/write.hpp>
 #include <neo/fwd.hpp>
 
@@ -29,19 +30,23 @@
 
 using namespace amongoc;
 
-using tcp_resolver        = asio::ip::tcp::resolver;
-using tcp_socket          = asio::ip::tcp::socket;
-using tcp_resolve_results = tcp_resolver::results_type;
+using asio::ip::tcp;
+using tcp_resolve_results = tcp::resolver::results_type;
 
 template <>
-constexpr bool amongoc::enable_trivially_relocatable_v<tcp_socket> = true;
+constexpr bool amongoc::enable_trivially_relocatable_v<tcp::socket> = true;
 template <>
 constexpr bool amongoc::enable_trivially_relocatable_v<tcp_resolve_results> = true;
+
+template <typename T>
+using pool = object_pool<T, cxx_allocator<T>>;
 
 namespace {
 
 // Takes an arbitrary value and wraps it in an amongoc_box
-auto as_box = [](auto&& x) -> unique_box { return unique_box::from(AM_FWD(x)); };
+auto as_box = [](cxx_allocator<> alloc) {
+    return [alloc](auto&& x) { return unique_box::from(alloc, AM_FWD(x)); };
+};
 
 /**
  * @brief Implement a pool of Asio cancellation signals, allowing the objects to
@@ -91,7 +96,7 @@ struct cancellation_pool {
     }
 };
 
-using cancellation_ticket = object_pool<asio::cancellation_signal>::ticket;
+using cancellation_ticket = pool<asio::cancellation_signal>::ticket;
 
 /**
  * @brief Adapt an amongoc_handler to an Asio completion handler that exposes
@@ -105,8 +110,12 @@ using cancellation_ticket = object_pool<asio::cancellation_signal>::ticket;
 template <typename Transform>
 class adapt_handler {
 public:
-    explicit adapt_handler(unique_handler&& h, Transform&& tr, cancellation_ticket&& sig)
-        : _handler(NEO_FWD(h))
+    explicit adapt_handler(cxx_allocator<>       alloc,
+                           unique_handler&&      h,
+                           Transform&&           tr,
+                           cancellation_ticket&& sig)
+        : _alloc(alloc)
+        , _handler(NEO_FWD(h))
         , _transform(NEO_FWD(tr))
         , _signal(NEO_MOVE(sig)) {
         if (_handler.stop_possible()) {
@@ -119,21 +128,24 @@ public:
 
     // Handler for Asio operations that complete with an error code and no value
     void operator()(asio::error_code ec) {
-        _stop_cookie.clear();
-        AM_FWD(_handler).complete(status::from(ec), std::move(_transform)(neo::unit{}));
+        _handler.complete(status::from(ec), std::move(_transform)(neo::unit{}));
     }
 
     // Handler for Asio operations that complete with a value and an error code (most operations)
     void operator()(asio::error_code ec, auto&& res) {
-        _stop_cookie.clear();
-        AM_FWD(_handler).complete(status::from(ec), std::move(_transform)(AM_FWD(res)));
+        _handler.complete(status::from(ec), std::move(_transform)(AM_FWD(res)));
     }
 
     // Expose the cancellation slot to asio::associated_cancellation_slot
     using cancellation_slot_type = asio::cancellation_slot;
     asio::cancellation_slot get_cancellation_slot() const noexcept { return _slot; }
 
+    // Expose the memory allocator of the loop to Asio
+    using allocator_type = cxx_allocator<>;
+    allocator_type get_allocator() const noexcept { return _alloc; }
+
 private:
+    cxx_allocator<> _alloc;
     // The adapted handler
     unique_handler _handler;
     // The transformer
@@ -144,8 +156,7 @@ private:
     // Cancellation slot, for Asio to use
     asio::cancellation_slot _slot = _signal->slot();
 
-    // The cookie for the registration of our stpo callbacks. NOTE that this object must be clear()d
-    // before the handler is completed, since it may refer to data stored within the handler.
+    // The cookie for the registration of our stop callback.
     unique_box _stop_cookie = amongoc_nil.as_unique();
 };
 
@@ -154,15 +165,17 @@ explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_han
 
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
+    cxx_allocator<> alloc;
+
     asio::io_context ioc;
 
-    object_pool<asio::cancellation_signal> _cancel_signals;
-    object_pool<tcp_resolver>              _resolvers;
-    object_pool<asio::steady_timer>        _timers;
+    pool<asio::cancellation_signal> _cancel_signals{alloc};
+    pool<tcp::resolver>             _resolvers{alloc};
+    pool<asio::steady_timer>        _timers{alloc};
 
     void call_soon(status st, box res, amongoc_handler h) {
         asio::post(ioc, [st, res = AM_FWD(res).as_unique(), h = AM_FWD(h).as_unique()] mutable {
-            AM_FWD(h).complete(st, AM_FWD(res));
+            h.complete(st, AM_FWD(res));
         });
     }
 
@@ -170,31 +183,41 @@ struct default_loop {
         auto uh    = AM_FWD(handler).as_unique();
         auto value = AM_FWD(value_).as_unique();
         auto timer = _timers.checkout([this] { return asio::steady_timer{ioc}; });
-        timer->expires_after(std::chrono::microseconds(dur_us));
+        try {
+            timer->expires_after(std::chrono::microseconds(dur_us));
+        } catch (const asio::system_error& exc) {
+            call_soon(status::from(exc.code()), amongoc_nil, handler);
+            return;
+        }
         auto go = timer->async_wait(asio::deferred);
-        go(asio::consign(adapt_handler(AM_FWD(uh),
-                                       konst(AM_FWD(value)),
-                                       _cancel_signals.checkout()),
-                         NEO_MOVE(timer)));
+        std::move(go)(asio::consign(adapt_handler(alloc,
+                                                  AM_FWD(uh),
+                                                  konst(AM_FWD(value)),
+                                                  _cancel_signals.checkout()),
+                                    NEO_MOVE(timer)));
     }
 
     void getaddrinfo(const char* name, const char* svc, amongoc_handler hnd) {
         auto uh  = AM_FWD(hnd).as_unique();
-        auto res = _resolvers.checkout([&] { return tcp_resolver{ioc}; });
+        auto res = _resolvers.checkout([&] { return tcp::resolver{ioc}; });
         auto go  = res->async_resolve(name, svc, asio::deferred);
-        go(asio::consign(adapt_handler(AM_FWD(uh), as_box, _cancel_signals.checkout()),
-                         NEO_MOVE(res)));
+        std::move(go)(asio::consign(adapt_handler(alloc,
+                                                  AM_FWD(uh),
+                                                  as_box(alloc),
+                                                  _cancel_signals.checkout()),
+                                    NEO_MOVE(res)));
     }
 
     void tcp_connect(amongoc_view ai, amongoc_handler on_connect) {
         auto uh   = AM_FWD(on_connect).as_unique();
-        auto sock = std::make_unique<tcp_socket>(ioc);
+        auto sock = std::make_unique<tcp::socket>(ioc);
         auto go   = asio::async_connect(*sock, ai.as<tcp_resolve_results>(), asio::deferred);
         std::move(go)(adapt_handler(
+            alloc,
             AM_FWD(uh),
-            [sock = NEO_MOVE(sock)](asio::ip::tcp::endpoint) {
+            [sock = NEO_MOVE(sock), this](asio::ip::tcp::endpoint) {
                 // Discard the endpoint and return the connected socket
-                return unique_box::from(NEO_MOVE(*sock));
+                return unique_box::from(alloc, NEO_MOVE(*sock));
             },
             _cancel_signals.checkout()));
     }
@@ -204,18 +227,20 @@ struct default_loop {
                         std::size_t     maxlen,
                         amongoc_handler on_write) {
         auto uh = AM_FWD(on_write).as_unique();
-        sock.as<tcp_socket>().async_write_some(asio::buffer(data, maxlen),
-                                               adapt_handler(AM_FWD(uh),
-                                                             as_box,
-                                                             _cancel_signals.checkout()));
+        sock.as<tcp::socket>().async_write_some(asio::buffer(data, maxlen),
+                                                adapt_handler(alloc,
+                                                              AM_FWD(uh),
+                                                              as_box(alloc),
+                                                              _cancel_signals.checkout()));
     }
 
     void tcp_read_some(amongoc_view sock, char* data, std::size_t maxlen, amongoc_handler on_read) {
         auto uh = AM_FWD(on_read).as_unique();
-        sock.as<tcp_socket>().async_read_some(asio::buffer(data, maxlen),
-                                              adapt_handler(AM_FWD(uh),
-                                                            as_box,
-                                                            _cancel_signals.checkout()));
+        sock.as<tcp::socket>().async_read_some(asio::buffer(data, maxlen),
+                                               adapt_handler(alloc,
+                                                             AM_FWD(uh),
+                                                             as_box(alloc),
+                                                             _cancel_signals.checkout()));
     }
 };
 
@@ -245,18 +270,22 @@ static constexpr amongoc_loop_vtable default_loop_vtable = {
     .tcp_connect    = adapt_memfun<&default_loop::tcp_connect>,
     .tcp_write_some = adapt_memfun<&default_loop::tcp_write_some>,
     .tcp_read_some  = adapt_memfun<&default_loop::tcp_read_some>,
+    .get_allocator  = [](const amongoc_loop* l) -> amongoc_allocator {
+        return l->userdata.view.as<default_loop>().alloc.c_allocator();
+    },
 };
 
-void amongoc_init_default_loop(amongoc_loop* loop) {
-    loop->userdata = unique_box::make<default_loop>().release();
-    loop->vtable   = &default_loop_vtable;
+void amongoc_default_loop_init_with_allocator(amongoc_loop* loop, amongoc_allocator alloc) {
+    loop->userdata
+        = unique_box::make<default_loop>(cxx_allocator<>{alloc}, cxx_allocator<>{alloc}).release();
+    loop->vtable = &default_loop_vtable;
 }
 
-void amongoc_run_default_loop(amongoc_loop* loop) {
+void amongoc_default_loop_run(amongoc_loop* loop) {
     auto& ioc = amongoc_box_cast(default_loop)(loop->userdata).ioc;
     // Restart the IO context, allowing us to call run() more than once
     ioc.restart();
     ioc.run();
 }
 
-void amongoc_destroy_default_loop(amongoc_loop* loop) { amongoc_box_destroy(loop->userdata); }
+void amongoc_default_loop_destroy(amongoc_loop* loop) { amongoc_box_destroy(loop->userdata); }

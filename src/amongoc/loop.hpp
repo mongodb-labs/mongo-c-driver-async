@@ -10,6 +10,7 @@
 #include "./nano/first.hpp"
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
+#include "amongoc/alloc.h"
 
 #include <amongoc/box.h>
 #include <amongoc/handler.h>
@@ -39,52 +40,12 @@ struct amongoc_loop_asio_executor {
         loop->vtable->call_soon(loop,
                                 amongoc_okay,
                                 amongoc_nil,
-                                unique_handler::from([f = NEO_FWD(fn)](auto, auto) mutable {
-                                    static_cast<F&&>(f)();
-                                }).release());
+                                unique_handler::from(get_allocator(*loop),
+                                                     [f = NEO_FWD(fn)](auto, auto) mutable {
+                                                         static_cast<F&&>(f)();
+                                                     })
+                                    .release());
     }
-};
-
-/**
- * @brief A C++ Allocator that allocates using an event loop's allocation functions
- */
-template <typename T = void>
-class loop_allocator {
-public:
-    using value_type = T;
-    using pointer    = value_type*;
-
-    explicit loop_allocator(amongoc_loop& loop)
-        : _loop(&loop) {}
-
-    template <typename U>
-    loop_allocator(loop_allocator<U> other) noexcept
-        : _loop(&other.get_loop()) {}
-
-    amongoc_loop& get_loop() const noexcept { return *_loop; }
-
-    pointer allocate(std::size_t n) {
-        if (_loop->vtable->allocate) {
-            return static_cast<pointer>(_loop->vtable->allocate(_loop, n * sizeof(T)));
-        } else {
-            std::allocator<T> a;
-            return std::allocator_traits<std::allocator<T>>::allocate(a, n);
-        }
-    }
-
-    void deallocate(pointer p, std::size_t n) {
-        if (_loop->vtable->deallocate) {
-            _loop->vtable->deallocate(_loop, p);
-        } else {
-            std::allocator<T> a;
-            std::allocator_traits<std::allocator<T>>::deallocate(a, p, n);
-        }
-    }
-
-    bool operator==(loop_allocator o) const noexcept { return _loop == o._loop; }
-
-private:
-    amongoc_loop* _loop;
 };
 
 /**
@@ -123,10 +84,13 @@ struct tcp_connection_rw_stream {
                                     conn,
                                     static_cast<char*>(buf.data()),
                                     buf.size(),
-                                    unique_handler::from([cb](status     st,
+                                    unique_handler::from(get_allocator(*loop),
+                                                         [cb](status     st,
                                                               unique_box nbytes) mutable {
-                                        cb(st.as_error_code(), nbytes.as<std::size_t>());
-                                    }).release());
+                                                             cb(st.as_error_code(),
+                                                                nbytes.as<std::size_t>());
+                                                         })
+                                        .release());
     }
 
     /**
@@ -142,10 +106,13 @@ struct tcp_connection_rw_stream {
                                      conn,
                                      static_cast<const char*>(buf.data()),
                                      buf.size(),
-                                     unique_handler::from([cb](status     st,
+                                     unique_handler::from(get_allocator(*loop),
+                                                          [cb](status     st,
                                                                unique_box nwritten) mutable {
-                                         cb(st.as_error_code(), nwritten.as<std::size_t>());
-                                     }).release());
+                                                              cb(st.as_error_code(),
+                                                                 nwritten.as<std::size_t>());
+                                                          })
+                                         .release());
     }
 };
 

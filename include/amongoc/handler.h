@@ -1,5 +1,6 @@
 #pragma once
 
+#include "./alloc.h"
 #include "./box.h"
 #include "./config.h"
 #include "./emitter_result.h"
@@ -20,7 +21,7 @@ typedef struct amongoc_handler amongoc_handler;
  *
  */
 struct amongoc_handler_vtable {
-    void (*complete)(amongoc_box userdata, amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
+    void (*complete)(amongoc_view userdata, amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
     amongoc_box (*register_stop)(amongoc_view hnd_userdata,
                                  void*        userdata,
                                  void (*callback)(void*)) AMONGOC_NOEXCEPT;
@@ -52,9 +53,9 @@ AMONGOC_EXTERN_C_BEGIN
  * @param result The result value for the operation. This call takes ownership of that value
  */
 static inline void
-amongoc_complete(amongoc_handler recv, amongoc_status st, amongoc_box result) AMONGOC_NOEXCEPT {
+amongoc_complete(amongoc_handler* recv, amongoc_status st, amongoc_box result) AMONGOC_NOEXCEPT {
     // Invoke the callback. The callback takes ownership of the userdata and the result value
-    recv.vtable->complete(recv.userdata, st, result);
+    recv->vtable->complete(recv->userdata.view, st, result);
 }
 
 /**
@@ -202,35 +203,32 @@ public:
      *
      * This method is &&-qualified to signify that it consumes the object
      */
-    void complete(amongoc_status st, unique_box&& result) && noexcept {
+    void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        amongoc_complete(release(), st, result.release());
+        amongoc_complete(&_handler, st, result.release());
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
-    void operator()(emitter_result&& r) && noexcept {
-        amongoc_complete(release(), r.status, r.value.release());
-    }
+    void operator()(emitter_result&& r) && noexcept { complete(r.status, AM_FWD(r).value); }
 
     /// Allow invocation with a result<T, E>, implementing nanoreceiver<result<T, E>>
     template <typename T, typename E>
     void operator()(result<T, E> res) && {
         if (res.has_value()) {
-            amongoc_complete(release(),
-                             amongoc_okay,
-                             unique_box::from(AM_FWD(res).value()).release());
+            /// TODO: Pass an allocator to from()
+            complete(amongoc_okay,
+                     unique_box::from(cxx_allocator<>{amongoc_default_allocator},
+                                      AM_FWD(res).value()));
         } else {
             // NOTE: This expects that status::from() is valid with the error type of the result.
             // The result's default error is std::error_code, so this should work for most result
             // objects.
-            amongoc_complete(release(), res.error(), amongoc_nil);
+            complete(res.error(), amongoc_nil.as_unique());
         }
     }
 
     /// Allow invocation with nullptr, implementing nanoreceiver<std::nullptr_t>
-    void operator()(decltype(nullptr)) && {
-        amongoc_complete(release(), amongoc_okay, amongoc_nil);
-    }
+    void operator()(decltype(nullptr)) && { complete(amongoc_okay, amongoc_nil.as_unique()); }
 
     /**
      * @brief Register a stop callback with the handler. @see `amongoc_register_stop`
@@ -249,7 +247,7 @@ public:
      * object when it is completed
      */
     template <typename F>
-    static unique_handler from(F&& fn) noexcept {
+    static unique_handler from(cxx_allocator<> alloc, F&& fn) noexcept {
         static_assert(
             requires(amongoc_status st, amongoc::unique_box b) {
                 fn(st, (amongoc::unique_box&&)b);
@@ -263,9 +261,8 @@ public:
             void call(status st, unique_box&& value) { static_cast<F&&>(func)(st, AM_FWD(value)); }
 
             // Completion callback
-            static void complete(box self, status st, box value) noexcept {
+            static void complete(amongoc_view self, status st, box value) noexcept {
                 AM_FWD(self)  //
-                    .as_unique()
                     .as<wrapped>()
                     .call(st, AM_FWD(value).as_unique());
             }
@@ -273,7 +270,7 @@ public:
         static amongoc_handler_vtable vt = {.complete = &wrapped::complete};
 
         amongoc_handler ret;
-        ret.userdata = unique_box::from(wrapped{AM_FWD(fn)}).release();
+        ret.userdata = unique_box::from(alloc, wrapped{AM_FWD(fn)}).release();
         ret.vtable   = &vt;
         return unique_handler(std::move(ret));
     }

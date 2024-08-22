@@ -17,6 +17,8 @@
  */
 #define AMONGOC_INIT(T) AMONGOC_IF_CXX(T) AMONGOC_IF_NOT_CXX((T))
 
+#define AMONGOC_ALIGNAS(T) AMONGOC_IF_CXX(alignas(T)) AMONGOC_IF_NOT_CXX(_Alignas(T))
+
 // Begin an `extern "C"` block
 #define AMONGOC_EXTERN_C_BEGIN AMONGOC_IF_CXX(extern "C" {)
 // End an `extern "C"` block
@@ -40,6 +42,9 @@
  */
 #define _amongoc_isEmpty(...) _amongocFirstArg(__VA_OPT__(0, ) 1, ~)
 #define _amongoc_nonEmpty(...) _amongocFirstArg(__VA_OPT__(1, ) 0, ~)
+
+#define _amongocArgCount(...) _amongocPickSixteenth(__VA_ARGS__ __VA_OPT__(,) 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define _amongocPickSixteenth(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, ...) _16
 
 /**
  * @brief Expand to the first argument if `Cond` is 1, the second argument if `Cond` is 0

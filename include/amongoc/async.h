@@ -8,6 +8,7 @@
  */
 #pragma once
 
+#include "./alloc.h"
 #include "./box.h"
 #include "./config.h"
 #include "./emitter.h"
@@ -63,6 +64,7 @@ enum amongoc_async_flags {
  *
  * @param em The input operation to be transformed
  * @param flags Flags to control the then() behavior
+ * @param alloc The allocator for for the operation
  * @param userdata Arbitrary userdata that will be forwarded to the transform.
  * @param tr The transformation function to be invoked.
  * @return amongoc_emitter A new emitter that resolves with the result of applying
@@ -73,8 +75,9 @@ enum amongoc_async_flags {
  * If the returned composed operation is otherwise destroyed without ever calling
  * `tr`, then the `userdata` box will be destroyed with `amongoc_box_destroy`.
  */
-amongoc_emitter amongoc_then(amongoc_emitter          em,
-                             enum amongoc_async_flags flags,
+amongoc_emitter amongoc_then(amongoc_emitter em,
+                             enum amongoc_async_flags,
+                             amongoc_allocator        alloc,
                              amongoc_box              userdata,
                              amongoc_then_transformer tr) AMONGOC_NOEXCEPT;
 
@@ -84,6 +87,7 @@ amongoc_emitter amongoc_then(amongoc_emitter          em,
  *
  * @param em An input operation to be transformed
  * @param flags Flags to control the algorithm behavior
+ * @param alloc The allocator for the operation
  * @param userdata Arbitrary userdata that is forwarder to the transformer
  * @param tr The transformation function that to be invoked.
  * @return amongoc_emitter A new emitter for the composed operaiton.
@@ -92,6 +96,7 @@ amongoc_emitter amongoc_then(amongoc_emitter          em,
  */
 amongoc_emitter amongoc_let(amongoc_emitter          em,
                             enum amongoc_async_flags flags,
+                            amongoc_allocator        alloc,
                             amongoc_box              userdata,
                             amongoc_let_transformer  tr) AMONGOC_NOEXCEPT;
 
@@ -120,7 +125,8 @@ amongoc_timeout_us(amongoc_loop* loop, amongoc_emitter em, int64_t timeout_us) A
  * @return amongoc_emitter An emitter that will immediately resolve to its handler
  * when its associated operation is started.
  */
-amongoc_emitter amongoc_just(amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
+amongoc_emitter
+amongoc_just(amongoc_status st, amongoc_box value, amongoc_allocator alloc) AMONGOC_NOEXCEPT;
 
 /**
  * @brief Create a continuation that replaces an emitter's result with the given
@@ -128,6 +134,7 @@ amongoc_emitter amongoc_just(amongoc_status st, amongoc_box value) AMONGOC_NOEXC
  *
  * @param in The input operation to be transformed
  * @param flags Flags to control continuation behavior
+ * @param alloc Allocator for state
  * @param st The new status of the operation
  * @param value The new result value of the operation
  * @return amongoc_emitter An emitter that will complete with `st`+`value`
@@ -135,6 +142,7 @@ amongoc_emitter amongoc_just(amongoc_status st, amongoc_box value) AMONGOC_NOEXC
  */
 amongoc_emitter amongoc_then_just(amongoc_emitter          in,
                                   enum amongoc_async_flags flags,
+                                  amongoc_allocator        alloc,
                                   amongoc_status           st,
                                   amongoc_box              value) AMONGOC_NOEXCEPT;
 

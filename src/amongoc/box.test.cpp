@@ -1,3 +1,4 @@
+#include "amongoc/alloc.h"
 #include <amongoc/box.h>
 
 #include <catch2/catch.hpp>
@@ -60,7 +61,8 @@ TEST_CASE("Box/Simple Destructor") {
 }
 
 TEST_CASE("Box/With C++ Object") {
-    auto b = unique_box::from(std::string("Hello, box world! I am a very long string that needs to "
+    auto b = unique_box::from(cxx_allocator<>{amongoc_default_allocator},
+                              std::string("Hello, box world! I am a very long string that needs to "
                                           "be dynamically allocated."))
                  .release();
     amongoc_box_destroy(b);  // Will release the string memory
