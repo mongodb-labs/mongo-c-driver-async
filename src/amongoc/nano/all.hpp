@@ -70,7 +70,10 @@ private:
         // Number of pending operations.
         std::atomic_size_t _n_remaining{sizeof...(Ss)};
 
-        constexpr auto query(valid_query_for<R> auto q) const noexcept { return _recv.query(q); }
+        template <valid_query_for<R> Q>
+        constexpr query_t<Q, R> query(Q q) const noexcept {
+            return q(_recv);
+        }
 
         // Handle the Nth result from a sub-operation
         template <std::size_t N>

@@ -120,8 +120,9 @@ public:
         AMONGOC_RETURNS(NEO_INVOKE(static_cast<F const&&>(_f),
                                    NEO_INVOKE(static_cast<G const&&>(_g), NEO_FWD(x))));
 
-    constexpr auto query(valid_query_for<F> auto q) const {
-        return static_cast<const F&>(_f).query(q);
+    template <valid_query_for<F> Q>
+    constexpr query_t<Q, F> query(Q q) const {
+        return q(static_cast<const F&>(_f));
     }
 };
 

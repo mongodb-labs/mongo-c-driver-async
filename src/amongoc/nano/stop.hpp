@@ -70,13 +70,20 @@ using stop_callback_t = Token::template callback_type<F>;
  * with the given object
  */
 inline constexpr struct get_stop_token_fn {
-    template <typename T>
-    constexpr stoppable_token auto operator()(const T& x) const noexcept
+    constexpr stoppable_token auto operator()(const auto& x) const noexcept
         requires requires {
             { x.query(*this) } -> stoppable_token;
-        }
+        } and (not requires { x.get_stop_token(); })
     {
         return x.query(*this);
+    }
+
+    constexpr stoppable_token auto operator()(const auto& x) const noexcept
+        requires requires {
+            { x.get_stop_token() } -> stoppable_token;
+        }
+    {
+        return x.get_stop_token();
     }
 } get_stop_token;
 

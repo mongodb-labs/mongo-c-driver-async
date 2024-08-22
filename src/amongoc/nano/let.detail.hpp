@@ -41,7 +41,10 @@ public:
         _next_operation->start();
     }
 
-    constexpr auto query(valid_query_for<NextReceiver> auto q) const { return _next_recv.query(q); }
+    template <valid_query_for<NextReceiver> Q>
+    constexpr query_t<Q, NextReceiver> query(Q q) const {
+        return q(_next_recv);
+    }
 
 private:
     NEO_NO_UNIQUE_ADDRESS Transformer  _transform;
@@ -69,8 +72,9 @@ public:
     using sends_type = sends_t<intermediate_sender_type>;
 
     /// Forward the scheduler from the input sender
-    constexpr auto query(valid_query_for<InputSender> auto q) const noexcept {
-        return _input_sender.get().query(q);
+    template <valid_query_for<InputSender> Q>
+    constexpr query_t<Q, InputSender> query(Q q) const noexcept {
+        return q(_input_sender.get());
     }
 
     // Move-connect the operation

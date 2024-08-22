@@ -74,7 +74,7 @@ namespace amongoc {
 
 struct get_allocator_fn {
     constexpr auto operator()(const auto& arg) const noexcept
-        requires requires { arg.query(*this); }
+        requires requires { arg.query(*this); } and (not requires { arg.get_allocator(); })
     {
         return arg.query(*this);
     }

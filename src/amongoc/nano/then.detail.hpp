@@ -3,6 +3,7 @@
 #include "./concepts.hpp"
 #include "./nano.hpp"
 #include "./util.hpp"
+#include "amongoc/nano/query.hpp"
 
 #include <neo/fwd.hpp>
 #include <neo/invoke.hpp>
@@ -42,8 +43,9 @@ public:
                                      auto(static_cast<Transformer const&>(_transformer))));
     }
 
-    constexpr auto query(valid_query_for<InputSender> auto q) const noexcept {
-        return static_cast<InputSender const&>(_input_sender).query(q);
+    template <valid_query_for<InputSender> Q>
+    constexpr query_t<Q, InputSender> query(Q q) const noexcept {
+        return q(static_cast<InputSender const&>(_input_sender));
     }
 
 private:

@@ -366,8 +366,9 @@ struct nanosender_traits<result<T, E>> {
         struct wrapped_recv {
             NEO_NO_UNIQUE_ADDRESS R _wrapped;
 
-            constexpr decltype(auto) query(valid_query_for<R> auto q) const {
-                return _wrapped.query(q);
+            template <valid_query_for<R> Q>
+            constexpr query_t<Q, R> query(Q q) const {
+                return q(_wrapped);
             }
 
             constexpr void operator()(inner_sends value) {

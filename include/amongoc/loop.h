@@ -92,7 +92,7 @@ struct amongoc_loop {
 
     sched_snd schedule() noexcept { return {this}; }
 
-    amongoc::cxx_allocator<> query(amongoc::get_allocator_fn) const noexcept {
+    amongoc::cxx_allocator<> get_allocator() const noexcept {
         if (vtable->get_allocator) {
             return amongoc::cxx_allocator<>(vtable->get_allocator(this));
         }

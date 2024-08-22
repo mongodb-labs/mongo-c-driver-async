@@ -12,6 +12,10 @@ namespace amongoc {
  * as an argument
  */
 template <typename Q, typename T>
-concept valid_query_for = requires(const T& obj, Q q) { obj.query(q); };
+concept valid_query_for = requires(const T& obj, const Q q) { q(obj); };
+
+template <typename Q, typename T>
+    requires valid_query_for<Q, T>
+using query_t = decltype(Q{}(*(const T*)(nullptr)));
 
 }  // namespace amongoc

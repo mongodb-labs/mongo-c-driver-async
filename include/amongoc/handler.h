@@ -275,10 +275,7 @@ public:
         return unique_handler(std::move(ret));
     }
 
-    // Associate a stoppable token with the unique_handler
-    handler_stop_token query(const get_stop_token_fn&) const noexcept {
-        return handler_stop_token(_handler);
-    }
+    handler_stop_token get_stop_token() const noexcept { return handler_stop_token(_handler); }
 
 private:
     amongoc_handler _handler{};
