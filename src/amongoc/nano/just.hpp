@@ -6,6 +6,7 @@
 #include <neo/invoke.hpp>
 #include <neo/object_t.hpp>
 
+#include <concepts>
 #include <utility>
 
 namespace amongoc {
@@ -21,11 +22,13 @@ namespace amongoc {
 template <typename T>
 class just {
 public:
-    // Default-construct is only available if the underlying value is defautl-constructbile
+    // Default-construct is only available if the underlying value is default-constructbile
     just() = default;
 
     // Forward-construct the value in-place
-    constexpr explicit just(T&& arg)
+    template <typename U>
+        requires std::constructible_from<T, U&&>
+    constexpr explicit(not std::convertible_to<U&&, T>) just(U&& arg)
         : _value(NEO_FWD(arg)) {}
 
     // We send the exact type that we are given (including references)
