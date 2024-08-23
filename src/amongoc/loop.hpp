@@ -137,7 +137,9 @@ async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
                 &loop,
                 name,
                 svc,
-                as_handler(atop(r.forward(), result_fmap(construct<address_info>))).release());
+                as_handler(loop.get_allocator(),
+                           atop(r.forward(), result_fmap(construct<address_info>)))
+                    .release());
         });
     });
 }
@@ -160,7 +162,8 @@ inline nanosender_of<result<tcp_connection_rw_stream>> auto async_connect(amongo
                     loop.vtable->tcp_connect(  //
                         &loop,
                         ai.box,
-                        as_handler(atop(r.forward(), result_fmap([&loop](unique_box b) {
+                        as_handler(loop.get_allocator(),
+                                   atop(r.forward(), result_fmap([&loop](unique_box b) {
                                             return tcp_connection_rw_stream(&loop, NEO_MOVE(b));
                                         })))
                             .release());

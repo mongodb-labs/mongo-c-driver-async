@@ -167,14 +167,11 @@ struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
  * is epxected by the nanoreceiver (see `cxx_recv_handler_adaptor_base::invoke`)
  */
 template <typename R>
-unique_handler as_handler(R&& cxx_recv) {
+unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
-    /// TODO: Pass an allocator to from()
-    ret.userdata = unique_box::from(cxx_allocator<>{amongoc_default_allocator},
-                                    adaptor_type{{AM_FWD(cxx_recv)}})
-                       .release();
-    ret.vtable = &adaptor_type::handler_vtable;
+    ret.userdata = unique_box::from(alloc, adaptor_type{{AM_FWD(cxx_recv)}}).release();
+    ret.vtable   = &adaptor_type::handler_vtable;
     return AM_FWD(ret).as_unique();
 };
 

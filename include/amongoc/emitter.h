@@ -164,8 +164,9 @@ struct nanosender_traits<unique_emitter> {
     // private header. Move this whole specialization to a private header?
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
-        // TODO: An allocator here for as_handler?
-        return AM_FWD(em).connect(as_handler(AM_FWD(recv)));
+        // TODO: A custom allocator here for as_handler?
+        return AM_FWD(em).connect(
+            as_handler(cxx_allocator<>{amongoc_default_allocator}, AM_FWD(recv)));
     }
 
     // Special: We receive a handler directly, no need to convert it to a C handler
