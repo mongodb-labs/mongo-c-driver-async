@@ -134,23 +134,23 @@ amongoc_just(amongoc_status st, amongoc_box value, amongoc_allocator alloc) AMON
  *
  * @param in The input operation to be transformed
  * @param flags Flags to control continuation behavior
- * @param alloc Allocator for state
  * @param st The new status of the operation
  * @param value The new result value of the operation
+ * @param alloc Allocator for state
  * @return amongoc_emitter An emitter that will complete with `st`+`value`
  * according to the behavior set by `flags`.
  */
 amongoc_emitter amongoc_then_just(amongoc_emitter          in,
                                   enum amongoc_async_flags flags,
-                                  amongoc_allocator        alloc,
                                   amongoc_status           st,
-                                  amongoc_box              value) AMONGOC_NOEXCEPT;
+                                  amongoc_box              value,
+                                  amongoc_allocator        alloc) AMONGOC_NOEXCEPT;
 
 /**
  * @brief Schedule a completion on the given event loop.
  *
  * @param loop The event loop upon which to schedule the completion
- * @return amongoc_emitter An emitter that will call `amongoc_complete()` from
+ * @return amongoc_emitter An emitter that will call `amongoc_handler_complete()` from
  *      within the event loop. The emitter always resolves with zero status and
  *      an amongoc_nil value
  */
@@ -161,7 +161,7 @@ amongoc_emitter amongoc_schedule(amongoc_loop* loop);
  *
  * @param loop The event loop on which to schedule the wait
  * @param duration_us The duration to wait (microseconds)
- * @return amongoc_emitter An emitter that will `amongoc_complete` after the
+ * @return amongoc_emitter An emitter that will `amongoc_handler_complete` after the
  *      given duration has elapsed.
  *
  * @note The emitter may complete early with non-zero status in the case of an error or cancellation

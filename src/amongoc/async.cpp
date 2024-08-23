@@ -129,9 +129,9 @@ amongoc_operation amongoc_detach(amongoc_emitter em) AMONGOC_NOEXCEPT {
 
 emitter amongoc_then_just(amongoc_emitter          in,
                           enum amongoc_async_flags flags,
-                          amongoc_allocator        alloc,
                           amongoc_status           st,
-                          amongoc_box              value) noexcept {
+                          amongoc_box              value,
+                          amongoc_allocator        alloc) noexcept {
     return as_emitter(cxx_allocator<>{alloc},
                       amongoc::then(  //
                           AM_FWD(in).as_unique(),

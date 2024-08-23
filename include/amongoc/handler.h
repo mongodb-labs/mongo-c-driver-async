@@ -52,8 +52,9 @@ AMONGOC_EXTERN_C_BEGIN
  * @param st The result status for the operation
  * @param result The result value for the operation. This call takes ownership of that value
  */
-static inline void
-amongoc_complete(amongoc_handler* recv, amongoc_status st, amongoc_box result) AMONGOC_NOEXCEPT {
+static inline void amongoc_handler_complete(amongoc_handler* recv,
+                                            amongoc_status   st,
+                                            amongoc_box      result) AMONGOC_NOEXCEPT {
     // Invoke the callback. The callback takes ownership of the userdata and the result value
     recv->vtable->complete(recv->userdata.view, st, result);
 }
@@ -79,9 +80,9 @@ static inline void amongoc_handler_discard(amongoc_handler hnd) AMONGOC_NOEXCEPT
  *
  * If the given handler has no stop callback registration, then this function is a no-op
  */
-static inline amongoc_box amongoc_register_stop(const amongoc_handler* hnd,
-                                                void*                  userdata,
-                                                void (*callback)(void*)) AMONGOC_NOEXCEPT {
+static inline amongoc_box amongoc_handler_register_stop(const amongoc_handler* hnd,
+                                                        void*                  userdata,
+                                                        void (*callback)(void*)) AMONGOC_NOEXCEPT {
     if (hnd->vtable->register_stop) {
         return hnd->vtable->register_stop(hnd->userdata.view, userdata, callback);
     }
@@ -132,7 +133,7 @@ public:
     public:
         explicit callback_type(handler_stop_token self, F&& fn) noexcept
             : _fn(AM_FWD(fn))
-            , _reg_cookie(amongoc_register_stop(self._handler, this, _do_stop)) {}
+            , _reg_cookie(amongoc_handler_register_stop(self._handler, this, _do_stop)) {}
 
         // The address of this object is part of its identity. Prevent it from moving
         callback_type(callback_type&&) = delete;
@@ -205,7 +206,7 @@ public:
      */
     void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        amongoc_complete(&_handler, st, result.release());
+        amongoc_handler_complete(&_handler, st, result.release());
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
@@ -234,7 +235,7 @@ public:
      * @brief Register a stop callback with the handler. @see `amongoc_register_stop`
      */
     [[nodiscard]] unique_box register_stop(void* userdata, void (*callback)(void*)) noexcept {
-        return amongoc_register_stop(&_handler, userdata, callback).as_unique();
+        return amongoc_handler_register_stop(&_handler, userdata, callback).as_unique();
     }
 
     /// Test whether the handler is able to request a stop

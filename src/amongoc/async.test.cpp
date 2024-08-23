@@ -69,9 +69,9 @@ TEST_CASE("Async/then_just") {
         = amongoc_just(amongoc_okay, amongoc_box_int(42), amongoc_default_allocator).as_unique();
     em = amongoc_then_just(em.release(),
                            amongoc_async_forward_errors,
-                           amongoc_default_allocator,
                            amongoc_okay,
-                           amongoc_box_int(1729))
+                           amongoc_box_int(1729),
+                           amongoc_default_allocator)
              .as_unique();
     status st;
     box    val;
