@@ -1263,12 +1263,8 @@ public:
     }
 
     bson_doc(bson_doc const& other) { _mut = bson_mut_copy(other._mut); }
-    bson_doc(bson_doc&& other) {
-        // Steal the data from the other
-        _mut = other._mut;
-        // Set the other's pointer to null, to prevent it from being doubule-freed
-        other._mut._bson_document_data = nullptr;
-    }
+    bson_doc(bson_doc&& other)
+        : _mut(((bson_doc&&)other).release()) {}
 
     bson_doc& operator=(const bson_doc& other) noexcept {
         _del();
@@ -1278,8 +1274,7 @@ public:
 
     bson_doc& operator=(bson_doc&& other) noexcept {
         _del();
-        _mut                           = other._mut;
-        other._mut._bson_document_data = nullptr;
+        _mut = ((bson_doc&&)other).release();
         return *this;
     }
 
@@ -1335,6 +1330,12 @@ public:
             _del();
             throw;
         }
+    }
+
+    bson_mut release() && noexcept {
+        auto m                   = _mut;
+        _mut._bson_document_data = nullptr;
+        return m;
     }
 
 private:

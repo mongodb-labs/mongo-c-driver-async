@@ -210,26 +210,7 @@ public:
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
-    void operator()(emitter_result&& r) && noexcept { complete(r.status, AM_FWD(r).value); }
-
-    /// Allow invocation with a result<T, E>, implementing nanoreceiver<result<T, E>>
-    template <typename T, typename E>
-    void operator()(result<T, E> res) && {
-        if (res.has_value()) {
-            /// TODO: Pass an allocator to from()
-            complete(amongoc_okay,
-                     unique_box::from(cxx_allocator<>{amongoc_default_allocator},
-                                      AM_FWD(res).value()));
-        } else {
-            // NOTE: This expects that status::from() is valid with the error type of the result.
-            // The result's default error is std::error_code, so this should work for most result
-            // objects.
-            complete(res.error(), amongoc_nil.as_unique());
-        }
-    }
-
-    /// Allow invocation with nullptr, implementing nanoreceiver<std::nullptr_t>
-    void operator()(decltype(nullptr)) && { complete(amongoc_okay, amongoc_nil.as_unique()); }
+    void operator()(emitter_result&& r) noexcept { complete(r.status, AM_FWD(r).value); }
 
     /**
      * @brief Register a stop callback with the handler. @see `amongoc_register_stop`

@@ -102,7 +102,9 @@ emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us) {
 }
 
 emitter amongoc_schedule(amongoc_loop* loop) {
-    return as_emitter(get_allocator(*loop), loop->schedule()).release();
+    return as_emitter(get_allocator(*loop),
+                      loop->schedule() | amongoc::then([](auto) { return emitter_result(); }))
+        .release();
 }
 
 amongoc_operation
