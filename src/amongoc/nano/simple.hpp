@@ -206,4 +206,8 @@ unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) {
         });
 }
 
+// Emitters and handlers are valid senders/receiver, but we don't want to double-wrap them
+unique_handler as_handler(cxx_allocator<>, unique_handler&&) = delete;
+unique_emitter as_emitter(cxx_allocator<>, unique_emitter&&) = delete;
+
 }  // namespace amongoc
