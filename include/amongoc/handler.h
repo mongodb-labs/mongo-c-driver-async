@@ -206,7 +206,7 @@ public:
      */
     void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        amongoc_handler_complete(&_handler, st, result.release());
+        amongoc_handler_complete(&_handler, st, AM_FWD(result).release());
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>

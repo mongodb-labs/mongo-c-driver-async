@@ -445,7 +445,7 @@ public:
     /**
      * @brief Release ownership of the box, returning the C-style `amongoc_box`
      */
-    [[nodiscard]] amongoc_box release() noexcept {
+    [[nodiscard]] amongoc_box release() && noexcept {
         box r = _box;
         _box  = amongoc_nil;
         return r;
@@ -454,7 +454,7 @@ public:
     template <typename T>
     T take() noexcept {
         T ret = (T&&)as<T>();
-        amongoc_box_free_storage(release());
+        amongoc_box_free_storage(((unique_box&&)*this).release());
         return ret;
     }
 

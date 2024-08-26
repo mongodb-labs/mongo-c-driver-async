@@ -43,8 +43,10 @@ emitter amongoc_then(emitter                  in,
                            // transforming them. Return it now.
                            return AM_FWD(res);
                        }
-                       res.value
-                           = tr(userdata.release(), &res.status, res.value.release()).as_unique();
+                       res.value = tr(AM_FWD(userdata).release(),
+                                      &res.status,
+                                      AM_FWD(res).value.release())
+                                       .as_unique();
                        return AM_FWD(res);
                    }))
         .release();
@@ -65,11 +67,12 @@ emitter amongoc_let(emitter                 op,
             if ((flags & amongoc_async_forward_errors) and res.status.is_error()) {
                 // The caller wants us to forward errors directly, so just return the
                 // error immediately
-                return amongoc_just(res.status, res.value.release(), alloc).as_unique();
+                return amongoc_just(res.status, AM_FWD(res).value.release(), alloc).as_unique();
             }
             // Call the transformer to obtain the next emitter. amongoc::let will handle
             // connecting and starting it.
-            return tr(userdata.release(), res.status, res.value.release()).as_unique();
+            return tr(AM_FWD(userdata).release(), res.status, AM_FWD(res).value.release())
+                .as_unique();
         });
     return as_emitter(cxx_allocator<>{alloc}, AM_FWD(l)).release();
 }
@@ -118,7 +121,7 @@ amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMON
                          *status = st;
                      }
                      if (value) {
-                         *value = val.release();
+                         *value = AM_FWD(val).release();
                      }
                  })
         .release();
