@@ -146,7 +146,7 @@ public:
     }
 
     unique_operation connect(amongoc::unique_handler&& hnd) && noexcept {
-        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), hnd.release())
+        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), AM_FWD(hnd).release())
             .as_unique();
     }
 

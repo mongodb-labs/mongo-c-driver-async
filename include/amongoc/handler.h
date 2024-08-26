@@ -172,12 +172,12 @@ public:
 
     // Move-construct
     unique_handler(unique_handler&& o) noexcept
-        : _handler(o.release()) {}
+        : _handler(AM_FWD(o).release()) {}
 
     // Move-assign
     unique_handler& operator=(unique_handler&& o) noexcept {
         amongoc_handler_discard(_handler);
-        _handler = o.release();
+        _handler = AM_FWD(o).release();
         return *this;
     }
 
@@ -190,7 +190,7 @@ public:
     /**
      * @brief Relinquish ownership of the underlying `::amongoc_handler` and return it
      */
-    [[nodiscard]] amongoc_handler release() noexcept {
+    [[nodiscard]] amongoc_handler release() && noexcept {
         auto h   = _handler;
         _handler = {};
         return h;

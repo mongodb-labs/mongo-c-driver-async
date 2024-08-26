@@ -98,7 +98,10 @@ emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us) {
                    return unique_operation::from_starter(  //
                        get_allocator(*loop),
                        [=, h = AM_FWD(h)] mutable {
-                           loop->vtable->call_later(loop, duration_us, amongoc_nil, h.release());
+                           loop->vtable->call_later(loop,
+                                                    duration_us,
+                                                    amongoc_nil,
+                                                    AM_FWD(h).release());
                        });
                })
         .release();
