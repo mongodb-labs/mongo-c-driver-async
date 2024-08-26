@@ -87,20 +87,20 @@ public:
     }
 
     unique_emitter(unique_emitter&& other) noexcept
-        : _emitter(other.release()) {}
+        : _emitter(AM_FWD(other).release()) {}
 
-    ~unique_emitter() { amongoc_emitter_discard(release()); }
+    ~unique_emitter() { amongoc_emitter_discard(((unique_emitter&&)*this).release()); }
 
     unique_emitter& operator=(unique_emitter&& other) noexcept {
-        amongoc_emitter_discard(release());
-        _emitter = other.release();
+        amongoc_emitter_discard(((unique_emitter&&)*this).release());
+        _emitter = AM_FWD(other).release();
         return *this;
     }
 
     /**
      * @brief Relinquish ownership of the emitter and return it to the caller
      */
-    [[nodiscard]] emitter release() noexcept {
+    [[nodiscard]] emitter release() && noexcept {
         auto e   = _emitter;
         _emitter = {};
         return e;
@@ -146,7 +146,8 @@ public:
     }
 
     unique_operation connect(amongoc::unique_handler&& hnd) && noexcept {
-        return amongoc_emitter_connect(release(), hnd.release()).as_unique();
+        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), hnd.release())
+            .as_unique();
     }
 
 private:
