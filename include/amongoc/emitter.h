@@ -127,7 +127,7 @@ public:
                 // Invoke the wrapped function object. Wrap the handler in a unique_handler
                 unique_operation op = static_cast<F&&>(
                     AM_FWD(userdata).as_unique().as<wrapped>()._fn)(AM_FWD(recv).as_unique());
-                return op.release();
+                return AM_FWD(op).release();
             },
         };
         amongoc_emitter ret;

@@ -71,20 +71,20 @@ public:
     }
 
     unique_operation(unique_operation&& other) noexcept
-        : _oper(other.release()) {}
+        : _oper(AM_FWD(other).release()) {}
 
-    ~unique_operation() { amongoc_operation_destroy(release()); }
+    ~unique_operation() { amongoc_operation_destroy(((unique_operation&&)*this).release()); }
 
     unique_operation& operator=(unique_operation&& other) noexcept {
         amongoc_operation_destroy(_oper);
-        _oper = other.release();
+        _oper = AM_FWD(other).release();
         return *this;
     }
 
     /**
      * @brief Relinquish ownership of the underlying operation and return it
      */
-    [[nodiscard]] amongoc_operation release() noexcept {
+    [[nodiscard]] amongoc_operation release() && noexcept {
         auto e = _oper;
         _oper  = {};
         return e;
