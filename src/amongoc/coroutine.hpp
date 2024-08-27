@@ -226,13 +226,15 @@ struct coroutine_promise_allocator_mixin {
     }
 
     // Allocate using the allocator from the event loop
-    void* operator new(std::size_t n, amongoc_loop& loop, auto const&...) {
-        return operator new(n, loop.get_allocator());
-    }
     void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) {
         return operator new(n,
                             loop ? loop->get_allocator()
                                  : cxx_allocator<>{amongoc_default_allocator});
+    }
+
+    // Allocate where the first parameter provides an allocator
+    void* operator new(std::size_t n, has_allocator auto const& x, auto const&...) {
+        return operator new(n, amongoc::get_allocator(x));
     }
 
     void operator delete(void* p, std::size_t n) {
@@ -249,11 +251,12 @@ struct coroutine_promise_allocator_mixin {
     coroutine_promise_allocator_mixin(const amongoc_allocator& a, auto&&...)
         : alloc(a) {}
 
-    coroutine_promise_allocator_mixin(amongoc_loop& loop, auto&&...)
-        : alloc(loop.get_allocator()) {}
-
     coroutine_promise_allocator_mixin(amongoc_loop* loop, auto&&...)
         : alloc(loop ? loop->get_allocator() : cxx_allocator<>{amongoc_default_allocator}) {}
+
+    template <has_allocator X>
+    coroutine_promise_allocator_mixin(const X& x, auto&&...)
+        : alloc(amongoc::get_allocator(x)) {}
 
     cxx_allocator<> alloc;
 

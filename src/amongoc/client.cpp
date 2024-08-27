@@ -1,5 +1,4 @@
 #include "./client.hpp"
-#include "amongoc/alloc.h"
 #include "amongoc/bson/build.h"
 
 #include <amongoc/client.h>
@@ -35,21 +34,12 @@ emitter amongoc_client_connect(amongoc_loop* loop, const char* name, const char*
 }
 
 emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
-    nanosender_of<emitter_result> auto s
-        = cl._impl->_client.send_op_msg(doc)
-        | amongoc::then([cl](result<bson_doc>&& r) -> emitter_result {
-              if (r.has_value()) {
-                  bson_mut m = std::move(r).value().release();
-                  return emitter_result(  //
-                      0,
-                      unique_box::from(get_allocator(cl), m, [](bson_mut& m) {
-                          bson_mut_delete(m);
-                      }));
-              } else {
-                  return emitter_result(r.error());
-              }
-          });
-    return as_emitter(get_allocator(cl), std::move(s)).release();
+    result<bson_doc> resp = co_await cl._impl->_client.send_op_msg(doc);
+    if (resp.has_value()) {
+        bson_mut m = std::move(resp).value().release();
+        co_return unique_box::from(cl.get_allocator(), m, [](bson_mut& m) { bson_mut_delete(m); });
+    }
+    co_return resp.error();
 }
 
 void amongoc_client_destroy(amongoc_client cl) noexcept { delete cl._impl; }

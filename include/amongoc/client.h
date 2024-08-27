@@ -60,9 +60,23 @@ struct amongoc_client {
     // Get the event loop associated with this client
     amongoc_loop& get_event_loop() const noexcept { return *amongoc_client_get_event_loop(*this); }
 
-    // Obtain the allocator associated with this client
-    amongoc::cxx_allocator<> query(amongoc::get_allocator_fn q) const noexcept {
-        return q(get_event_loop());
+    // Obtain the allocator associated with this client (from the event loop)
+    amongoc::cxx_allocator<> get_allocator() const noexcept {
+        return this->get_event_loop().get_allocator();
     }
 #endif
 };
+
+AMONGOC_EXTERN_C_BEGIN
+
+/**
+ * @brief Obtain the memory allocator associated with a client object
+ *
+ * @param cl The client to be queried
+ * @return amongoc_allocator The allocator for the client (originates from the event loop)
+ */
+static inline amongoc_allocator amongoc_client_get_allocator(amongoc_client cl) AMONGOC_NOEXCEPT {
+    return amongoc_loop_get_allocator(amongoc_client_get_event_loop(cl));
+}
+
+AMONGOC_EXTERN_C_END
