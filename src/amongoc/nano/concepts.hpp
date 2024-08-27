@@ -120,8 +120,6 @@ template <typename T>
 struct nanosender_traits<T> {
     using sends_type = T::sends_type;
 
-    static constexpr bool is_oneshot = requires { requires static_cast<bool>(T::is_oneshot); };
-
     template <neo::alike<T> S, nanoreceiver_of<sends_type> R>
     static constexpr decltype(auto) connect(S&& sender, R&& recv) noexcept
         requires requires {
@@ -130,6 +128,40 @@ struct nanosender_traits<T> {
     {
         return NEO_FWD(sender).connect(NEO_FWD(recv));
     }
+
+    // Check for is_immediate() as a member function
+    static constexpr bool is_immediate(const T& sender) noexcept
+        requires requires { sender.is_immediate(); }
+    {
+        return sender.is_immediate();
+    }
+
+    // If no is_immediate() is present, assume it is not immediate
+    static constexpr bool is_immediate(const T&) noexcept { return false; }
+
+    // Statically-checked is_immediate()
+    static constexpr bool is_immediate() noexcept
+        requires requires { requires T::is_immediate(); }
+    {
+        return true;
+    }
+    static constexpr bool is_immediate() noexcept { return false; }
 };
+
+/**
+ * @brief Evaluates to `true` if the given nanosender has statically immediate (i.e. its immediacy
+ * is guaranteed)
+ */
+template <typename S>
+concept statically_immediate
+    = nanosender<S> and requires { requires nanosender_traits<S>::is_immediate(); };
+
+/**
+ * @brief Returns `true` if the given nanosender will send its value immediately
+ */
+template <nanosender S>
+constexpr bool is_immediate(const S& s) {
+    return statically_immediate<S> or nanosender_traits<S>::is_immediate(s);
+}
 
 }  // namespace amongoc

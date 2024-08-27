@@ -11,3 +11,5 @@ static_assert(multishot_nanosender<let_t<just<int>, std::function<just<std::stri
 static_assert(
     not multishot_nanosender<
         let_t<just<std::unique_ptr<int>>, std::function<just<std::string>(std::unique_ptr<int>)>>>);
+
+static_assert(statically_immediate<let_t<just<int>, std::function<just<std::string>(int)>>>);

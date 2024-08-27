@@ -174,6 +174,8 @@ struct nanosender_traits<unique_emitter> {
     static unique_operation connect(unique_emitter&& em, unique_handler&& hnd) noexcept {
         return AM_FWD(em).connect(AM_FWD(hnd));
     }
+
+    static constexpr bool is_immediate(unique_emitter const&) noexcept { return false; }
 };
 
 }  // namespace amongoc

@@ -48,6 +48,17 @@ public:
         return q(static_cast<InputSender const&>(_input_sender));
     }
 
+    // This sender is immediate if the input sender is also immediate
+    constexpr bool is_immediate() const noexcept {
+        return amongoc::is_immediate(_input_sender.get());
+    }
+
+    constexpr static bool is_immediate() noexcept
+        requires statically_immediate<InputSender>
+    {
+        return true;
+    }
+
 private:
     NEO_NO_UNIQUE_ADDRESS neo::object_t<InputSender> _input_sender;
     NEO_NO_UNIQUE_ADDRESS neo::object_t<Transformer> _transformer;

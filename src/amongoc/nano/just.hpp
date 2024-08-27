@@ -55,6 +55,8 @@ public:
         return op<R>{static_cast<const T&>(_value), NEO_FWD(recv)};
     }
 
+    constexpr static bool is_immediate() noexcept { return true; }
+
 private:
     template <typename R>
     struct [[nodiscard]] op {

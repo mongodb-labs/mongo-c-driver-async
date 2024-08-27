@@ -94,6 +94,24 @@ public:
         return op<R>{auto(_input_sender.get()), auto(_transformer.get()), NEO_FWD(recv)};
     }
 
+    // We are an immediate sender type if:
+    // 1. The input sender is immediate
+    // 2. The intermediate sender is statically immediate (i.e. we know it is immediate before
+    //    even getting an instance of it)
+    constexpr bool is_immediate() const noexcept
+        requires statically_immediate<intermediate_sender_type>
+    {
+        return amongoc::is_immediate(_input_sender.get());
+    }
+
+    // We are statically immediate if both sender types are statically immediate
+    constexpr static bool is_immediate() noexcept
+        requires statically_immediate<InputSender>
+        and statically_immediate<intermediate_sender_type>
+    {
+        return true;
+    }
+
 private:
     /// The let operation state type
     template <typename FinalReceiver>

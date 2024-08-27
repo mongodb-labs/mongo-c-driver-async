@@ -116,6 +116,20 @@ public:
                         std::index_sequence_for<Ss...>{});
     }
 
+    constexpr bool is_immediate() const noexcept {
+        return std::apply(
+            [](const auto&... ss) {
+                return (amongoc::is_immediate(static_cast<const Ss&>(ss)) and ...);
+            },
+            _senders);
+    }
+
+    constexpr static bool is_immediate() noexcept
+        requires(statically_immediate<Ss> and ...)
+    {
+        return true;
+    }
+
 private:
     NEO_NO_UNIQUE_ADDRESS neo::object_t<Predicate> _predicate;
     NEO_NO_UNIQUE_ADDRESS std::tuple<neo::object_t<Ss>...> _senders;

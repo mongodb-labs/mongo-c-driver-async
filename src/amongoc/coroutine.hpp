@@ -315,7 +315,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
             .release();
     }
 
-    void unhandled_exception() {
+    void unhandled_exception() noexcept {
         try {
             throw;
         } catch (std::system_error const& err) {
@@ -342,6 +342,7 @@ template <typename T>
 class co_task {
 public:
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+
     /**
      * @brief Coroutine acts as a sender by sending the result type
      */
@@ -368,18 +369,18 @@ private:
     // Abstract base that defines the continuation when connected to a receiver
     struct finisher_base {
         // Callback when the coroutine returns
-        virtual void on_return(T&&) noexcept = 0;
-        void         on_exception(std::exception_ptr e) noexcept {
+        virtual std::coroutine_handle<> on_return(T&&) noexcept = 0;
+        virtual std::coroutine_handle<> on_exception(std::exception_ptr e) noexcept {
             try {
                 if constexpr (supports_exceptions) {
-                    on_return(T::from_exception(e));
+                    return on_return(T::from_exception(e));
                 } else {
                     std::rethrow_exception(e);
                 }
             } catch (std::exception const& ex) {
                 std::fprintf(stderr,
                              "Attempted to throw an unsupported exception from within a co_task<> "
-                                     "that does not support it: what(): %s\n",
+                             "that does not support it: what(): %s\n",
                              ex.what());
                 std::fflush(stderr);
                 std::terminate();
@@ -392,23 +393,37 @@ private:
 public:
     /// Coroutine promise type for the co_task
     struct promise_type : coroutine_promise_allocator_mixin {
+        // Inherit constructors
         using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
 
-        std::optional<T>   _return_value;
-        std::exception_ptr _exception;
-        finisher_base*     _recv;
+        // Our handle type
+        using co_handle = std::coroutine_handle<promise_type>;
 
+        // Storage for the return value
+        std::optional<neo::object_box<T>> _return_value;
+        // A possible exception raised by the coroutine
+        std::exception_ptr _exception;
+        // Handles the completion of the coroutine. Set by connect() or nested_awaitable
+        finisher_base* _finisher = nullptr;
+
+        // Final suspend of the co_task
         static auto final_suspend() noexcept {
-            return suspends_by([](std::coroutine_handle<promise_type> co) {
-                promise_type& self = co.promise();
-                if (self._recv) {
+            return suspends_by(
+                [](std::coroutine_handle<promise_type> co) -> std::coroutine_handle<> {
+                    promise_type& self = co.promise();
+                    // We will only be launched after a finisher is connected
+                    assert(self._finisher);
                     if (self._exception) {
-                        self._recv->on_exception(self._exception);
+                        // Let the finisher decide how to handle the exception
+                        return self._finisher->on_exception(self._exception);
                     } else {
-                        self._recv->on_return(NEO_MOVE(*self._return_value));
+                        // Regular return value. Note that we only pass an r-value reference,
+                        // and it is up to the target to move-from the return value.
+                        // nested_awaitable will not move from the return value and instead leaves
+                        // it in place
+                        return self._finisher->on_return(NEO_MOVE(*self._return_value).get());
                     }
-                }
-            });
+                });
         }
 
         template <nanosender S>
@@ -416,10 +431,86 @@ public:
             return {NEO_FWD(s)};
         }
 
+        /**
+         * @brief Special awaitable that handles nested awaiting of co_task
+         *
+         * This allows the propagation of exceptions between co_task, which is
+         * not always possible when treating the co_task as a plain nanosender
+         */
+        template <typename U>
+        struct nesting_awaitable {
+            // The other task type
+            using other_type = co_task<U>;
+            // The other promise type
+            using other_promise_type = std::coroutine_traits<other_type>::promise_type;
+            // The other coroutine's handle type
+            using other_handle_type = std::coroutine_handle<other_promise_type>;
+
+            // The other co_task's abstract finisher base class
+            using other_finisher_type = other_type::finisher_base;
+
+            // Construct an awaitable from our own handle and ther other coroutine's handle
+            nesting_awaitable(co_handle self, other_handle_type h)
+                : _other_co(h)
+                , _handoff(self) {}
+
+            // Implementation of a finisher that will resume the parent coroutine when the child
+            // completes
+            struct task_handoff_finisher : other_finisher_type {
+                explicit task_handoff_finisher(co_handle h)
+                    : self(h) {}
+
+                co_handle self;
+                // Don't move-from the return value/exception: We'll do that during await_resume()
+                std::coroutine_handle<> on_return(U&&) noexcept override {
+                    // Return our own coroutine handle so that the child resumes us during its final
+                    // suspend
+                    return self;
+                }
+                std::coroutine_handle<> on_exception(std::exception_ptr) noexcept override {
+                    return self;
+                }
+                // Forward our stop token
+                in_place_stop_token stop_token() const noexcept override {
+                    return self.promise().get_stop_token();
+                }
+            };
+
+            // Handle to the coroutine we are awaiting
+            other_handle_type _other_co;
+            // The finisher that will resume us when the other coroutine finishes
+            task_handoff_finisher _handoff;
+
+            std::coroutine_handle<> await_suspend(std::coroutine_handle<promise_type> self) {
+                // Connect our special resuming finisher with the child
+                _other_co.promise()._finisher = &_handoff;
+                // Tell the runtime to resume the child coroutine immediately.
+                return _other_co;
+            }
+
+            U await_resume() const {
+                if (_other_co.promise()._exception) {
+                    // The child threw an exception. Re-throw it now
+                    std::rethrow_exception(_other_co.promise()._exception);
+                } else {
+                    // Perfect-forward from the child's object_box
+                    return NEO_MOVE(*_other_co.promise()._return_value).get();
+                }
+            }
+
+            // We are never immediately ready
+            static constexpr bool await_ready() noexcept { return false; }
+        };
+
+        template <typename U>
+        nesting_awaitable<U> await_transform(co_task<U>&& other) noexcept {
+            return nesting_awaitable<U>{co_handle::from_promise(*this), other._co.get()};
+        }
+
         in_place_stop_token get_stop_token() const noexcept {
-            // This should only be called after _recv has been connected
-            assert(_recv);
-            return _recv->stop_token();
+            // This should only be called after _finisher has been connected
+            assert(_finisher);
+            return _finisher->stop_token();
         }
 
         // Always start suspended
@@ -440,6 +531,10 @@ public:
     };
 
 private:
+    // Allow other task's to access our internal state
+    template <typename>
+    friend class co_task;
+
     using co_handle = std::coroutine_handle<promise_type>;
 
     explicit co_task(co_handle&& co) noexcept
@@ -456,10 +551,10 @@ private:
     struct operation {
         explicit operation(R&& recv, unique_co_handle<promise_type>&& co) noexcept
             : _co(NEO_MOVE(co))
-            , _launcher(NEO_FWD(recv)) {}
+            , _recv_invoker(NEO_FWD(recv)) {}
 
-        struct finisher : finisher_base {
-            explicit finisher(R&& r) noexcept
+        struct recv_finisher : finisher_base {
+            explicit recv_finisher(R&& r) noexcept
                 : _recv(NEO_FWD(r)) {}
 
             R                    _recv;
@@ -467,18 +562,21 @@ private:
 
             stop_forwarder<R, in_place_stop_source> _stop_fwd{_recv, _stopper};
 
-            void                on_return(T&& x) noexcept override { NEO_FWD(_recv)(NEO_FWD(x)); }
+            std::coroutine_handle<> on_return(T&& x) noexcept override {
+                NEO_FWD(_recv)(NEO_FWD(x));
+                return std::noop_coroutine();
+            }
             in_place_stop_token stop_token() const noexcept override {
                 return _stopper.get_token();
             }
         };
 
         unique_co_handle<promise_type> _co;
-        finisher                       _launcher;
+        recv_finisher                  _recv_invoker;
 
         void start() noexcept {
             // Attach the receiver continuation to the coroutine's promise
-            _co.promise()._recv = &_launcher;
+            _co.promise()._finisher = &_recv_invoker;
             // Do the initial resume of the coroutine now.
             _co.resume();
         }
