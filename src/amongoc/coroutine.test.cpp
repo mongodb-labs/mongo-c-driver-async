@@ -1,4 +1,6 @@
 #include "./coroutine.hpp"
+#include "./nano/just.hpp"
+#include "./nano/tie.hpp"
 
 #include <amongoc/async.h>
 #include <amongoc/box.h>
@@ -9,6 +11,7 @@
 
 #include <catch2/catch.hpp>
 #include <chrono>
+#include <memory>
 
 using namespace amongoc;
 
@@ -60,4 +63,58 @@ TEST_CASE("Coroutine/Discard co_task operation") {
     }
     // Coroutine did not execute
     CHECK(got == 0);
+}
+
+co_task<std::unique_ptr<int>> returns_unique(cxx_allocator<>) {
+    co_return std::make_unique<int>(42);
+}
+
+co_task<std::unique_ptr<int>> nested_returns_unique(cxx_allocator<> a) {
+    auto co   = returns_unique(a);
+    auto iptr = co_await std::move(co);
+    *iptr += 81;
+    co_return iptr;
+}
+
+TEST_CASE("Coroutine/co_task nested awaiting") {
+    std::unique_ptr<int> iptr;
+    auto op = nested_returns_unique(cxx_allocator<>{amongoc_default_allocator}) | tie(iptr);
+    CHECK_FALSE(iptr);
+    op.start();
+    CHECK(*iptr == 123);
+}
+
+struct my_error {
+    int value;
+};
+
+co_task<int> throws_an_error(cxx_allocator<>) {
+    throw my_error{1729};
+    co_return 42;
+}
+
+co_task<int> catches_an_error(cxx_allocator<> a) {
+    try {
+        co_return co_await throws_an_error(a);
+    } catch (my_error e) {
+        co_return e.value;
+    }
+}
+
+TEST_CASE("Coroutine/Exception propagation") {
+    int  got = 0;
+    auto op  = catches_an_error(cxx_allocator<>{amongoc_default_allocator}) | tie(got);
+    CHECK(got == 0);
+    op.start();
+    CHECK(got == 1729);
+}
+
+co_task<int> immediate_awaits(cxx_allocator<>) { co_return co_await just(42); }
+
+TEST_CASE("Coroutine/immediate await") {
+    int  got = 0;
+    auto op  = immediate_awaits(cxx_allocator<>{amongoc_default_allocator}) | tie(got);
+    CHECK(got == 0);
+    op.start();
+    CHECK(got == 42);
 }

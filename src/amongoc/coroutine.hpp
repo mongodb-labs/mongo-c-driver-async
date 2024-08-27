@@ -173,9 +173,11 @@ struct nanosender_awaitable {
     std::optional<operation_type> _operation{};
     // Storage for the eventual nanosender's result, returned from the co_await
     std::optional<sends_t<S>> _sent_value{};
+    // Whether the attached nanosender is an immediate sender
+    bool _is_immediate = amongoc::is_immediate(_sender);
 
-    // The awaitable is never immediately ready
-    constexpr bool await_ready() const noexcept { return false; }
+    // If the sender is an immediate, do not suspend the coroutine at all.
+    constexpr bool await_ready() const noexcept { return _is_immediate; }
 
     // Handle suspension
     void await_suspend(std::coroutine_handle<Promise> co) noexcept {
@@ -189,7 +191,16 @@ struct nanosender_awaitable {
 
     // Upon resumption, return the value that was sent by the sender. This is filled in
     // receiver::operator()
-    sends_t<S> await_resume() noexcept { return static_cast<sends_t<S>&&>(*_sent_value); }
+    sends_t<S> await_resume() noexcept {
+        if (_is_immediate) {
+            // The nanosender would complete immediately, meaning await_suspend() was never called.
+            // We need to connect the emitter and run the operation inline.
+            amongoc::connect(std::forward<S>(_sender), [&](sends_t<S>&& value) {
+                _sent_value.emplace(NEO_FWD(value));
+            }).start();
+        }
+        return static_cast<sends_t<S>&&>(*_sent_value);
+    }
 };
 
 struct coroutine_promise_allocator_mixin {
