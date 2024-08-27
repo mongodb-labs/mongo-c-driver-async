@@ -26,6 +26,8 @@ using sends_t = nanosender_traits<std::remove_cvref_t<T>>::sends_type;
 
 /**
  * @brief Match a receiver that can receive the given type
+ *
+ * XXX: Should this require noexcept(true)?
  */
 template <typename Recv, typename Result>
 concept nanoreceiver_of = neo::invocable2<Recv, Result>;

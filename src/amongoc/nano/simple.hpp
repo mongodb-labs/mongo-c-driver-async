@@ -106,7 +106,7 @@ template <nanoreceiver_of<emitter_result> R>
 struct cxx_recv_handler_adaptor_base<R> {
     NEO_NO_UNIQUE_ADDRESS neo::object_t<R> _recv;
 
-    void invoke(status st, box&& res) {
+    void invoke(status st, box&& res) noexcept {
         static_cast<R&&>(_recv)(emitter_result(st, NEO_FWD(res).as_unique()));
     }
 };
