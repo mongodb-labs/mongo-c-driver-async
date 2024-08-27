@@ -131,12 +131,13 @@ struct default_loop {
         });
     }
 
-    void call_later(std::int64_t dur_us, box value_, amongoc_handler handler) {
+    void call_later(std::timespec dur_ts, box value_, amongoc_handler handler) {
         auto uh    = AM_FWD(handler).as_unique();
         auto value = AM_FWD(value_).as_unique();
         auto timer = _timers.checkout([this] { return asio::steady_timer{ioc}; });
+        auto dur   = std::chrono::seconds(dur_ts.tv_sec) + std::chrono::nanoseconds(dur_ts.tv_nsec);
         try {
-            timer->expires_after(std::chrono::microseconds(dur_us));
+            timer->expires_after(dur);
         } catch (const asio::system_error& exc) {
             call_soon(status::from(exc.code()), amongoc_nil, handler);
             return;

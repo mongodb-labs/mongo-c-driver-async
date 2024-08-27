@@ -48,9 +48,9 @@ TEST_CASE("Async/Timeout") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
     // One minute delay (too slow)
-    emitter big_delay = amongoc_schedule_later(&loop, 5 * 1000 * 1000);
+    emitter big_delay = amongoc_schedule_later(&loop, timespec{30});
     // Half second timeout:
-    auto   timed = amongoc_timeout_us(&loop, big_delay, 500 * 1000).as_unique();
+    auto   timed = amongoc_timeout(&loop, big_delay, timespec{0, 500'000'000}).as_unique();
     status got;
     auto   op
         = std::move(timed).connect(terminating_allocator, [&](status st, unique_box) { got = st; });
@@ -85,7 +85,7 @@ TEST_CASE("Async/then_just") {
 // Write an emitter type that forcibly allocates, to test that let() destroys the objects
 // at the appropriate time
 emitter waits(amongoc_loop& loop) {
-    co_await amongoc_schedule_later(&loop, 5000).as_unique();
+    co_await amongoc_schedule_later(&loop, timespec{0, 1000 * 5}).as_unique();
     co_return amongoc_nil.as_unique();
 }
 

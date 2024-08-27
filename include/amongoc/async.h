@@ -105,7 +105,7 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
  *
  * @param loop The event loop that will handle the timeout
  * @param em The operation to be executed
- * @param timeout_us The timeout duration (microseconds)
+ * @param d The timeout duration
  * @return amongoc_emitter An emitter that resolves with a result, depending on whether the timeout
  * occurred.
  *
@@ -115,7 +115,7 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
  * If the timeout occurs, then the associated operation will be cancelled.
  */
 amongoc_emitter
-amongoc_timeout_us(amongoc_loop* loop, amongoc_emitter em, int64_t timeout_us) AMONGOC_NOEXCEPT;
+amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) AMONGOC_NOEXCEPT;
 
 /**
  * @brief Create an emitter that resolves immediately with the given status and value
@@ -160,13 +160,13 @@ amongoc_emitter amongoc_schedule(amongoc_loop* loop);
  * @brief Schedule the completion of an operation after a duration has elapsed
  *
  * @param loop The event loop on which to schedule the wait
- * @param duration_us The duration to wait (microseconds)
+ * @param d The duration to wait
  * @return amongoc_emitter An emitter that will `amongoc_handler_complete` after the
  *      given duration has elapsed.
  *
  * @note The emitter may complete early with non-zero status in the case of an error or cancellation
  */
-amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us);
+amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, struct timespec d);
 
 /**
  * @brief Create a "detached" operation from an emitter. This returns a simple operation

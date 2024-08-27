@@ -12,11 +12,11 @@
 
 using namespace amongoc;
 
-emitter amongoc_timeout_us(amongoc_loop* loop, emitter em, int64_t timeout_us) noexcept {
+emitter amongoc_timeout(amongoc_loop* loop, emitter em, std::timespec tim) noexcept {
     // Create and start a race between the two operations
     std::variant<emitter_result, emitter_result> race
         = co_await first_completed(NEO_FWD(em).as_unique(),
-                                   amongoc_schedule_later(loop, timeout_us).as_unique());
+                                   amongoc_schedule_later(loop, tim).as_unique());
     // The winner of the race fulfills the variant
     if (race.index() == 0) {
         // The main task completed first.
@@ -91,7 +91,7 @@ emitter amongoc_just(status st, box value, amongoc_allocator alloc) noexcept {
         .release();
 }
 
-emitter amongoc_schedule_later(amongoc_loop* loop, int64_t duration_us) {
+emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
     return unique_emitter::from_connector(  //
                get_allocator(*loop),
                [=](unique_handler h) {

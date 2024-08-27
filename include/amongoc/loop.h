@@ -25,7 +25,7 @@ struct amongoc_loop_vtable {
     void (*call_soon)(amongoc_loop* self, amongoc_status st, amongoc_box arg, amongoc_handler recv);
 
     void (*call_later)(amongoc_loop*   self,
-                       int64_t         duration_us,
+                       struct timespec duration,
                        amongoc_box     arg,
                        amongoc_handler recv);
 

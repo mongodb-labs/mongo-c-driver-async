@@ -77,7 +77,7 @@ TEST_CASE("C Client/Timeout") {
     // Connecting to a host that will drop our TCP request. Timeout after 500ms
     auto conn = amongoc_client_connect(&loop, "example.com", "27017");
     // auto   s = amongoc_connect_client_ex(&loop, "example.com", "27017", 500);
-    auto   s = amongoc_timeout_us(&loop, conn, 500 * 1000).as_unique();
+    auto   s = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
     status got_ec;
     auto   op = std::move(s).connect(terminating_allocator,
                                    [&](status ec, unique_box b) { got_ec = ec; });
