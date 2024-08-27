@@ -3,6 +3,7 @@
 #include "./config.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 AMONGOC_EXTERN_C_BEGIN
 
@@ -122,6 +123,11 @@ public:
 
     // Allocate N objects
     pointer allocate(size_t n) const {
+        const size_t max_count = SIZE_MAX / sizeof(T);
+        if (n > max_count) {
+            // Multiplying would overflow
+            return nullptr;
+        }
         return static_cast<pointer>(amongoc_allocate(_alloc, n * sizeof(T)));
     }
 
