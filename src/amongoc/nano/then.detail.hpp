@@ -50,7 +50,7 @@ public:
 
     // This sender is immediate if the input sender is also immediate
     constexpr bool is_immediate() const noexcept {
-        return amongoc::is_immediate(_input_sender.get());
+        return amongoc::is_immediate(static_cast<const InputSender&>(_input_sender));
     }
 
     constexpr static bool is_immediate() noexcept
