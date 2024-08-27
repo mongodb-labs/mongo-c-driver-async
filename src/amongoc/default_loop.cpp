@@ -48,54 +48,6 @@ auto as_box = [](cxx_allocator<> alloc) {
     return [alloc](auto&& x) { return unique_box::from(alloc, AM_FWD(x)); };
 };
 
-/**
- * @brief Implement a pool of Asio cancellation signals, allowing the objects to
- * be reused between Asio operations, reducing the frequency of memory allocations
- */
-struct cancellation_pool {
-    // We spliec to/from a forward_list
-    std::forward_list<asio::cancellation_signal> _entries;
-    int                                          count = 0;
-
-    // A single cancellation signal object
-    struct entry {
-        cancellation_pool*                           owner;
-        std::forward_list<asio::cancellation_signal> _one;
-
-        entry(cancellation_pool& owner, std::forward_list<asio::cancellation_signal> il) noexcept
-            : owner(&owner)
-            , _one(NEO_MOVE(il)) {}
-
-        entry(entry&& o) noexcept
-            : owner(o.owner)
-            , _one(NEO_MOVE(o._one)) {
-            o.owner = nullptr;
-        }
-
-        ~entry() {
-            if (owner and owner->count < 50) {
-                owner->_entries.splice_after(owner->_entries.before_begin(),
-                                             _one,
-                                             _one.cbefore_begin());
-                ++owner->count;
-            }
-        }
-
-        asio::cancellation_signal* get() noexcept { return &_one.front(); }
-    };
-
-    entry checkout() {
-        std::forward_list<asio::cancellation_signal> ret;
-        if (_entries.empty()) {
-            ret.emplace_front();
-        } else {
-            ret.splice_after(ret.before_begin(), _entries, _entries.cbefore_begin());
-            count--;
-        }
-        return entry{*this, NEO_MOVE(ret)};
-    }
-};
-
 using cancellation_ticket = pool<asio::cancellation_signal>::ticket;
 
 /**
