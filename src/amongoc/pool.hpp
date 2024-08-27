@@ -57,21 +57,18 @@ public:
         ticket& operator=(ticket&&) = default;
 
         // Get the underlying object
-        T&       operator*() noexcept { return _one.front(); }
-        T*       operator->() noexcept { return &**this; }
-        const T& operator*() const noexcept { return _one.front(); }
-        const T* operator->() const noexcept { return &**this; }
+        T& operator*() const noexcept { return _one.front(); }
+        T* operator->() const noexcept { return &**this; }
 
         // Get a pointer to the object
-        T*       get() noexcept { return &_one.front(); }
-        const T* get() const noexcept { return &_one.front(); }
+        T* get() const noexcept { return &_one.front(); }
 
         // Destroy the object immediately without returning it to the pool
         void discard() && noexcept { _one.clear(); }
 
         ~ticket() {
             // The _one will be empty if we are moved-from or discarded
-            if (_one.empty()) {
+            if (not _one.empty()) {
                 // Give it back
                 _parent->return_(_one);
             }
@@ -84,8 +81,8 @@ public:
             : _parent(&p)
             , _one(std::move(l)) {}
 
-        object_pool* _parent;
-        fwd_list     _one;
+        object_pool*     _parent;
+        mutable fwd_list _one;
     };
 
     /**
