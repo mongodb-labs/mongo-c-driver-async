@@ -101,23 +101,6 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
                             amongoc_let_transformer  tr) AMONGOC_NOEXCEPT;
 
 /**
- * @brief Attach a timeout to an operation
- *
- * @param loop The event loop that will handle the timeout
- * @param em The operation to be executed
- * @param d The timeout duration
- * @return amongoc_emitter An emitter that resolves with a result, depending on whether the timeout
- * occurred.
- *
- * If the timeout is hit, then the result status will be ETIMEDOUT and the result value is nothing.
- * Otherwise, the result status and result value from the base operation will be forwarded.
- *
- * If the timeout occurs, then the associated operation will be cancelled.
- */
-amongoc_emitter
-amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) AMONGOC_NOEXCEPT;
-
-/**
  * @brief Create an emitter that resolves immediately with the given status and value
  *
  * @param st The resolve status
@@ -169,11 +152,21 @@ amongoc_emitter amongoc_schedule(amongoc_loop* loop);
 amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, struct timespec d);
 
 /**
- * @brief Create a "detached" operation from an emitter. This returns a simple operation
- * object that can be started. The final result from the emitter will simply be destroyed
- * when it resolves.
+ * @brief Attach a timeout to an operation
+ *
+ * @param loop The event loop that will handle the timeout
+ * @param em The operation to be executed
+ * @param d The timeout duration
+ * @return amongoc_emitter An emitter that resolves with a result, depending on whether the timeout
+ * occurred.
+ *
+ * If the timeout is hit, then the result status will be ETIMEDOUT and the result value is nothing.
+ * Otherwise, the result status and result value from the base operation will be forwarded.
+ *
+ * If the timeout occurs, then the associated operation will be cancelled.
  */
-amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
+amongoc_emitter
+amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) AMONGOC_NOEXCEPT;
 
 /**
  * @brief Create an operation from an emitter which will store the final result
@@ -182,7 +175,7 @@ amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
  * @param em The emitter to be connected
  * @param status Storage destination for the output status (optional)
  * @param value Storage destination for the output result (optional)
- * @return amongoc_operation An operation than, when complete, will update `*status`
+ * @return amongoc_operation An operation that, when complete, will update `*status`
  * and `*value` with the result of the emitter.
  *
  * If either parameter is a null pointer, then the associated object will be ignored.
@@ -191,5 +184,12 @@ amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
  */
 amongoc_operation
 amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT;
+
+/**
+ * @brief Create a "detached" operation from an emitter. This returns a simple operation
+ * object that can be started. The final result from the emitter will simply be destroyed
+ * when it resolves.
+ */
+amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
 
 AMONGOC_EXTERN_C_END
