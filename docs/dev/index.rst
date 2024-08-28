@@ -8,7 +8,7 @@
   :maxdepth: 2
 
   nanosenders
+  coroutines
   result
   queries
-  coroutines
   documenting

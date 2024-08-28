@@ -173,3 +173,91 @@ immediately throw without returning a `co_task` object. If allocation fails for
 an `amongoc_emitter` coroutine, then the returned emitter will be from
 `amongoc_alloc_failure`.
 
+
+Parameter Lifetimes
+###################
+
+An important thing to remember about coroutines is that the parameters are
+captured by their declared type. This means that reference parameters are
+captured by reference, including reference-like types (e.g. `std::string_view`
+and `bson_view`).
+
+Because of these capture semantics, care should be taken that reference-like
+parameters outlive the coroutine body for the duration that they are used. This
+can be done in one of three ways:
+
+1. Capture only using value types. This means that `std::string_view` and
+   :cpp:`const std::string&` should be passed as `std::string` instead.
+2. Document the lifetime requirements of reference-like parameters. This places
+   the onus on the user, and is often less than ideal.
+3. Create a shim function that copies arguments by-value before calling the
+   real coroutine::
+
+    emitter resolve_addr(const char* address) {
+      return _co_resolve(std::string(address));
+    }
+
+    static _co_resolve(std::string s) {
+      co_await do_stuff(s);
+    }
+
+Note that this is a non-issue for coroutines that are immediately
+:cpp:`co_await`'d in their caller's scope, since the lifetime of the arguments
+is guaranteed to be at least the lifetime of the coroutine itself::
+
+  co_task<int> use_string(std::string const& s) {
+    co_await do_suff(s);
+    co_return 0;
+  }
+
+  co_task<int> outer_co() {
+    co_await use_string("I am a string");
+  }
+
+In the above, a temporary `std::string` is passed to ``use_string`` and the
+reference parameter will be bound to that temporary. **This is safe here,** because
+the coroutine for ``use_string`` is immediately awaited and is guaranteed to
+complete before the temporary string is destroyed.
+
+
+Coroutines Versus Nanosenders
+#############################
+
+It is reasonable to ask when to use coroutines versus using `nanosender`\ s
+directly. It may be tempting to use coroutines *always*, since they are easier
+to write and read than a pipeline of `then <amongoc::then>` and
+`let <amongoc::let>` closures.
+
+The following drawbacks of coroutines over pure nanosenders might be considered:
+
+1. A coroutine often requires requires dynamic memory allocation, unless the
+   compiler can perform allocation elision, which is still a very fragile
+   optimization. A composed nanosender will often require no dynamic memory
+   allocation at all!
+
+   However, this allocation requirement is not usually a problem for
+   `amongoc_emitter` coroutines, since they would need to dynamically allocate
+   storage anyway if they would need to use nanosenders that wouldn't fit inside
+   of an `amongoc_box`.
+2. Reference parameter lifetime can be tricky to deal with. This is managable,
+   but requires care.
+3. A `amongoc_emitter` created from a coroutine will require slightly more
+   memory than an `amongoc_emitter` created from an equivalent `nanosender`.
+
+
+When to Use Coroutines
+**********************
+
+It should also be considered that coroutines will *astronomically* improve
+maintainability in the face of non-trivial control flow, such as looping,
+branching, recursion, and error propagation.
+
+In general, prefer coroutines for high-level constructs that require non-trivial
+control flow.
+
+
+When to Use Nanosenders
+***********************
+
+The pure `nanosender` APIs should be used for very small building-blocks and
+high-traffic APIs, since they are guaranteed to be non-allocating.
