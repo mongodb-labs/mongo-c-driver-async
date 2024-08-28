@@ -95,6 +95,8 @@ Header: :header-file:`amongoc/box.h`
     Construct a new `unique_box` by decay-copying from the given value. This
     should be the preferred way to create box objects within C++ code.
 
+    :throw std::bad_alloc: If memory allocation fails. This will never throw
+      if the box is :ref:`small <box.small>`.
     :postcondition: The returned box object is :ref:`active <box.active>` for
       the decayed type of `T`.
 
@@ -112,6 +114,8 @@ Header: :header-file:`amongoc/box.h`
     destroys the object. Using anything else (e.g. a function pointer) will
     not work.
 
+    :throw std::bad_alloc: If memory allocation fails. This will never throw
+      if the box is :ref:`small <box.small>`.
     :postcondition: The returned box object is :ref:`active <box.active>` for
       the type `T`.
 
@@ -255,17 +259,22 @@ Other
     amongoc_box_init(Box, T, ...)
     amongoc_box_init_noinline(Box, T, ...)
 
+  Initialize a box to contain a zero-initialized storage for an instance of ``T``.
+
+  :C++ API:
+    - `amongoc::unique_box::from`
   :param Box: An non-const lvalue expression of type `amongoc_box`. This is the
     box that will be initiatlized.
-  :param T: The type that should be stored within the box. This type must be
-    zero-initializable!
+  :param T: The type that should be stored within the box.
   :param Dtor: (Optional) A destructor function that should be executed when
     the box is destroyed with `amongoc_box_destroy`. The destructor function
     should be convertible to a function pointer: :cpp:any:`amongoc_box_destructor`
   :param Alloc: (Optional) An `amongoc_allocator` object to be used if the box
     requires dynamic allocation.
-  :C++ API:
-    - `amongoc::unique_box::from`
+  :return: This macro will result in a :cpp:`T*` pointer. If memory allocation
+    was required and fails, this returns :cpp:`nullptr`. Note that a
+    :ref:`small <box.small>` type will never fail to allocate, so the returned
+    pointer to a small object will never be null.
 
   The ``_noinline`` variant of this macro inhibits the small-object
   optimization, which is required if the object being stored is not relocatable
@@ -275,20 +284,6 @@ Other
 
     The given box must be either :ref:`dead <box.dead>` or
     :ref:`trivial <box.trivial>`, or the behavior is undefined.
-
-  This macro expands to a modifiable l-value expression of type ``T``, meaning
-  that it is valid to take the address of this expression or assign a value into
-  it to immediately modify the box::
-
-    struct my_data {
-      int value;
-      double d;
-    };
-
-    // ...
-
-    amongoc_box dat;
-    amongoc_box_init(data, my_data) = (my_data){.value = 42, .d = 3.14};
 
 
 .. c:macro:: amongoc_box_cast(T)

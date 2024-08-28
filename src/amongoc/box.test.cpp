@@ -35,7 +35,7 @@ static_assert(box_inlinable_type<explicitly_relocatable>);
 
 TEST_CASE("Box/Store an Object") {
     amongoc_box b;
-    amongoc_box_init(b, int) = 42;
+    *amongoc_box_init(b, int) = 42;
     CHECK(amongoc_box_cast(int)(b) == 42);
 }
 
@@ -53,8 +53,8 @@ void set_to_true(void* bptr) noexcept { **(bool**)bptr = true; }
 
 TEST_CASE("Box/Simple Destructor") {
     amongoc_box bx;
-    bool        did_destroy                  = false;
-    amongoc_box_init(bx, bool*, set_to_true) = &did_destroy;
+    bool        did_destroy                   = false;
+    *amongoc_box_init(bx, bool*, set_to_true) = &did_destroy;
     CHECK_FALSE(did_destroy);
     amongoc_box_destroy(bx);
     CHECK(did_destroy);

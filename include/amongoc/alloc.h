@@ -47,6 +47,8 @@ struct amongoc_allocator {
 
 /**
  * @brief Allocate a new region using an `amongoc_allocator`
+ *
+ * Returns NULL on allocation failure.
  */
 inline void* amongoc_allocate(amongoc_allocator alloc, size_t sz) AMONGOC_NOEXCEPT {
     return alloc.reallocate(alloc.userdata, NULL, sz, 0, &sz);
@@ -132,7 +134,11 @@ public:
             // Multiplying would overflow
             return nullptr;
         }
-        return static_cast<pointer>(amongoc_allocate(_alloc, n * sizeof(T)));
+        pointer p = static_cast<pointer>(amongoc_allocate(_alloc, n * sizeof(T)));
+        if (p == nullptr) {
+            throw std::bad_alloc();
+        }
+        return p;
     }
 
     // Deallocate N object
@@ -149,7 +155,6 @@ public:
     // Utility to dynamically allocate and construct a single object using this allocator
     template <typename... Args>
     pointer new_(Args&&... args) const {
-        // TODO: Handle alloc failure
         pointer p = this->allocate(1);
         return new (p) T(static_cast<Args&&>(args)...);
     }

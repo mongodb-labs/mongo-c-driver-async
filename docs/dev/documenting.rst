@@ -47,10 +47,11 @@ Consider the following when writing documentation for |amongoc|:
     a. ``:C API:`` / ``:C++ API:``
     b. ``:param:`` fields
     c. ``:return:`` fields
-    d. ``:precondition:``
-    e. ``:postcondition:``
-    f. ``:allocation:``
-    g. ``:header:``
+    d. ``:throw:`` fields
+    e. ``:precondition:``
+    f. ``:postcondition:``
+    g. ``:allocation:``
+    h. ``:header:``
 
 13. **Don't** duplicate information from the description in the documentation
     fields. **Don't** include ``:param:`` and ``:return:`` fields if the entire

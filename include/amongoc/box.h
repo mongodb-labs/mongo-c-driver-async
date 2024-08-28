@@ -9,6 +9,7 @@
 
 #ifdef __cplusplus
 #include <memory>
+#include <new>
 #include <type_traits>
 #endif
 
@@ -168,7 +169,7 @@ struct amongoc_box {
      * when allocating the storage
      */
     template <typename T>
-    T* prepare_storage(amongoc::cxx_allocator<>, amongoc_box_destructor dtor) noexcept;
+    T* prepare_storage(amongoc::cxx_allocator<>, amongoc_box_destructor dtor);
 
     /**
      * @brief Convert the C-style `amongoc_box` to a C++ `unique_box` for lifetime safety
@@ -185,7 +186,7 @@ AMONGOC_EXTERN_C_BEGIN
  * @param box The box to initialize
  * @param size The size of the object being stored.
  * @param dtor The destructor function to imbue upon the box
- * @return void* A pointer to the storage for the stored object.
+ * @return void* A pointer to the storage for the stored object, or NULL if memory allocation failed
  *
  * This function is intentionally static-inline, as any inliner, dead-code-eliminator, and constant
  * propagator worth its salt will replace these with trivial memset/calloc/memcpy calls.
@@ -217,6 +218,10 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
         size_t                       alloc_size = sizeof(struct _amongoc_dynamic_box) + size;
         struct _amongoc_dynamic_box* dyn        = box->_storage.u.dynamic
             = (struct _amongoc_dynamic_box*)amongoc_allocate(alloc, alloc_size);
+        if (dyn == NULL) {
+            // Allocation failed
+            return NULL;
+        }
         memset(dyn, 0, alloc_size);
         dyn->alloc   = alloc;
         dyn->size    = alloc_size;
@@ -321,13 +326,13 @@ AMONGOC_EXTERN_C_END
                                                                             __VA_ARGS__)
 
 #define _amongoc_box_init_impl_argc_3(Box, T, AllowInline)                                         \
-    *(T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), NULL, amongoc_default_allocator)
+    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), NULL, amongoc_default_allocator)
 
 #define _amongoc_box_init_impl_argc_4(Box, T, AllowInline, Dtor)                                   \
-    *(T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, amongoc_default_allocator)
+    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, amongoc_default_allocator)
 
 #define _amongoc_box_init_impl_argc_5(Box, T, AllowInline, Dtor, Alloc)                            \
-    *(T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, Alloc)
+    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, Alloc)
 
 /**
  * @brief Cast an amongoc_box expression to a contained type T
@@ -379,7 +384,7 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
 #define DECLARE_BOX_EZ(Name, Type)                                                                 \
     static inline amongoc_box amongoc_box_##Name(Type val) AMONGOC_NOEXCEPT {                      \
         amongoc_box b;                                                                             \
-        amongoc_box_init(b, Type) = val;                                                           \
+        *amongoc_box_init(b, Type) = val;                                                          \
         return b;                                                                                  \
     }
 
@@ -487,7 +492,7 @@ public:
      * @param obj The object to be copied into the box
      */
     template <typename T, typename D>
-    static unique_box from(cxx_allocator<> alloc, T obj, D) noexcept {
+    static unique_box from(cxx_allocator<> alloc, T obj, D) noexcept(box_inlinable_type<T>) {
         static_assert(std::is_trivially_destructible_v<T>,
                       "Creating a box with an explicit destructor requires that the object be "
                       "trivially destructible itself");
@@ -514,7 +519,8 @@ public:
      */
     template <typename T, typename... Args>
     static unique_box make(cxx_allocator<> alloc,
-                           Args&&... args) noexcept(noexcept(T(AM_FWD(args)...))) {
+                           Args&&... args) noexcept(noexcept(T(AM_FWD(args)...))
+                                                    and box_inlinable_type<T>) {
         amongoc_box ret;
         T*          ptr;
         // Conditionally add a destructor to the box based on whether the type
@@ -562,16 +568,20 @@ T& amongoc_view::as() const noexcept {
 }
 
 template <typename T>
-T* amongoc_box::prepare_storage(amongoc::cxx_allocator<> alloc,
-                                amongoc_box_destructor   dtor) noexcept {
+T* amongoc_box::prepare_storage(amongoc::cxx_allocator<> alloc, amongoc_box_destructor dtor) {
+    T* p;
     if constexpr (amongoc::enable_trivially_relocatable_v<T>) {
         // The box can be safely stored inline, since moving the box will relocate the corresponding
         // object
-        return &amongoc_box_init(*this, T, dtor, alloc.c_allocator());
+        p = amongoc_box_init(*this, T, dtor, alloc.c_allocator());
     } else {
         // Box type cannot be safely stored inline, so dynamically allocate it:
-        return &amongoc_box_init_noinline(*this, T, dtor, alloc.c_allocator());
+        p = amongoc_box_init_noinline(*this, T, dtor, alloc.c_allocator());
     }
+    if (p == nullptr) {
+        throw std::bad_alloc();
+    }
+    return p;
 }
 
 amongoc::unique_box amongoc_box::as_unique() && noexcept {
