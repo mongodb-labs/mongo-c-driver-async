@@ -28,9 +28,13 @@ emitter amongoc_client::command(const bson_view& doc) noexcept {
 emitter amongoc_client_connect(amongoc_loop* loop, const char* name, const char* svc) noexcept {
     auto addr   = *co_await async_resolve(*loop, name, svc);
     auto socket = *co_await async_connect(*loop, std::move(addr));
-    co_return unique_box::from(get_allocator(*loop),
-                               amongoc_client{new _amongoc_client_cxx{std::move(socket)}},
-                               [](amongoc_client& cl) -> void { amongoc_client_destroy(cl); });
+
+    auto alloc = loop->get_allocator().rebind<_amongoc_client_cxx>();
+
+    co_return unique_box::from(  //
+        alloc,
+        amongoc_client{alloc.new_(std::move(socket))},
+        [](amongoc_client& cl) -> void { amongoc_client_destroy(cl); });
 }
 
 emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
@@ -42,7 +46,9 @@ emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
     co_return resp.error();
 }
 
-void amongoc_client_destroy(amongoc_client cl) noexcept { delete cl._impl; }
+void amongoc_client_destroy(amongoc_client cl) noexcept {
+    cl.get_allocator().rebind<_amongoc_client_cxx>().delete_(cl._impl);
+}
 
 amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) noexcept {
     return cl._impl->_client.socket().loop;

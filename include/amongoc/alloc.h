@@ -5,6 +5,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+#include <memory>
+#endif
+
 AMONGOC_EXTERN_C_BEGIN
 
 /**
@@ -140,6 +144,28 @@ public:
     bool operator==(cxx_allocator other) const noexcept {
         return _alloc.userdata == other.c_allocator().userdata
             and _alloc.reallocate == other.c_allocator().reallocate;
+    }
+
+    // Utility to dynamically allocate and construct a single object using this allocator
+    template <typename... Args>
+    pointer new_(Args&&... args) const {
+        // TODO: Handle alloc failure
+        pointer p = this->allocate(1);
+        return new (p) T(static_cast<Args&&>(args)...);
+    }
+
+    // Utility to destroy and deallocate a single object that was allocated with this allocator
+    void delete_(pointer p) const noexcept {
+        if (p) {
+            p->~T();
+            this->deallocate(p, 1);
+        }
+    }
+
+    // Utility to rebind the value type of the allocator
+    template <typename U>
+    cxx_allocator<U> rebind() const noexcept {
+        return *this;
     }
 
 private:

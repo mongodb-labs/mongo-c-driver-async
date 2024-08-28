@@ -1,0 +1,14 @@
+.literal.project-name {
+  border: none;
+  background-color: unset;
+  font-weight: bold;
+  font-size: 105%;
+  padding: 0;
+  /* This color comes from pydata-sphinx-theme, which is also used by the Book theme */
+  color: var(--pst-color-muted);
+}
+
+dl[class].cpp {
+  /* Book theme adds a massive margin below most API items. Shrink it down a bit */
+  margin-bottom: 2rem;
+}
