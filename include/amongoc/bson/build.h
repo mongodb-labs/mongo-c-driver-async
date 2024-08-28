@@ -1262,6 +1262,11 @@ public:
         o    = bson_mut{};
     }
 
+    explicit bson_doc(bson_view v)
+        : _mut(bson_mut_new_ex(nullptr, bson_size(v))) {
+        memcpy(data(), bson_data(v), bson_size(v));
+    }
+
     bson_doc(bson_doc const& other) { _mut = bson_mut_copy(other._mut); }
     bson_doc(bson_doc&& other)
         : _mut(((bson_doc&&)other).release()) {}
