@@ -491,6 +491,7 @@ public:
         static_assert(std::is_trivially_destructible_v<T>,
                       "Creating a box with an explicit destructor requires that the object be "
                       "trivially destructible itself");
+        static_assert(std::is_empty_v<D>, "The box destructor must be a stateless object type");
         // The destructor function that will be imbued in the box
         auto dtor = [](void* p) noexcept -> void {
             D d{};

@@ -19,7 +19,7 @@ template <typename T>
 struct nanosender_traits {};
 
 /**
- * @brief Request the sends_type from teh nanosender_traits on the given type
+ * @brief Request the sends_type from the nanosender_traits on the given type
  */
 template <typename T>
 using sends_t = nanosender_traits<std::remove_cvref_t<T>>::sends_type;
