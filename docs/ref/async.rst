@@ -180,6 +180,17 @@ Functions
     specified.)
 
 
+.. function::
+  amongoc_emitter amongoc_alloc_failure()
+
+  Obtain an emitter that immediately resolves with a generic ``ENOMEM`` for its
+  completion status. This may be returned by any API returning an
+  `amongoc_emitter` that requires memory allocation.
+
+  :allocation: This function and the returned emitter do not allocate memory.
+  :header: |this-header|
+
+
 .. function:: amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value)
 
   Create an `amongoc_operation` object that captures the emitter's results in

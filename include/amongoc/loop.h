@@ -22,36 +22,39 @@ struct amongoc_loop_vtable {
     // The version of the event loop API implemented by this object.
     enum amongoc_event_loop_verison version;
 
-    void (*call_soon)(amongoc_loop* self, amongoc_status st, amongoc_box arg, amongoc_handler recv);
+    void (*call_soon)(amongoc_loop* self, amongoc_status st, amongoc_box arg, amongoc_handler recv)
+        AMONGOC_NOEXCEPT;
 
     void (*call_later)(amongoc_loop*   self,
                        struct timespec duration,
                        amongoc_box     arg,
-                       amongoc_handler recv);
+                       amongoc_handler recv) AMONGOC_NOEXCEPT;
 
     void (*getaddrinfo)(amongoc_loop*   self,
                         const char*     name,
                         const char*     svc,
-                        amongoc_handler on_finish);
+                        amongoc_handler on_finish) AMONGOC_NOEXCEPT;
 
-    void (*tcp_connect)(amongoc_loop* self, amongoc_view addrinfo, amongoc_handler on_connect);
+    void (*tcp_connect)(amongoc_loop*   self,
+                        amongoc_view    addrinfo,
+                        amongoc_handler on_connect) AMONGOC_NOEXCEPT;
 
     void (*tcp_write_some)(amongoc_loop*   self,
                            amongoc_view    tcp_conn,
                            const char*     data,
                            size_t          len,
-                           amongoc_handler on_write);
+                           amongoc_handler on_write) AMONGOC_NOEXCEPT;
 
     void (*tcp_read_some)(amongoc_loop*   self,
                           amongoc_view    tcp_conn,
                           char*           dest,
                           size_t          maxlen,
-                          amongoc_handler on_finish);
+                          amongoc_handler on_finish) AMONGOC_NOEXCEPT;
 
-    void* (*allocate)(amongoc_loop* self, size_t sz);
-    void (*deallocate)(amongoc_loop* self, void*);
+    void* (*allocate)(amongoc_loop* self, size_t sz)AMONGOC_NOEXCEPT;
+    void (*deallocate)(amongoc_loop* self, void*) AMONGOC_NOEXCEPT;
 
-    amongoc_allocator (*get_allocator)(const amongoc_loop* self);
+    amongoc_allocator (*get_allocator)(const amongoc_loop* self) AMONGOC_NOEXCEPT;
 };
 
 struct amongoc_loop {

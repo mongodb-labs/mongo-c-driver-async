@@ -13,23 +13,26 @@ Header: ``amongoc/operation.h``
 
   :header: :header-file:`amongoc/operation.h`
 
+  .. member:: amongoc_box userdata
+
+    Arbitrary data associated with the operation.
+
+  .. member:: amongoc_handler handler
+
+    Storage for the handler associated with the operation.
+
   .. member:: amongoc_start_callback start_callback
 
     The start callback for the operation. Do not call this directly. Prefer to
     use `amongoc_start` when launching an operation.
 
-  .. member:: amongoc_box userdata
-
-    Arbitrary data associated with the operation
-
   .. function:: as_unique() &&
 
     Move the operation into a new `amongoc::unique_operation` object.
 
-.. type:: amongoc_start_callback = void(*)(amongoc_view userdata)
+.. type:: amongoc_start_callback = void(*)(amongoc_operation* self)
 
-  The operation-launching callback for the operation. The ``userdata`` parameter
-  corresponds to the `amongoc_operation::userdata` value.
+  The operation-launching callback for the operation.
 
 .. function:: void amongoc_start(amongoc_operation* op)
 
@@ -59,11 +62,14 @@ Header: ``amongoc/operation.h``
 
     Calls `amongoc_operation_destroy` on the operation.
 
-  .. function:: template <typename F> unique_operation from_starter(F fn)
+  .. function:: template <typename F> unique_operation from_starter(cxx_allocator<> a, unique_handler&& h, F fn)
 
-    Create an operation object based on a starter function `fn`. The function
-    object must be invocable with no arguments, and will be called when the
-    `start`/`amongoc_start` function is called on the operation.
+    Create an operation object based on a starter function `fn` with an
+    associated handler `hnd`. The function object must be invocable with a
+    single :expr:`amongoc_operation&` argument, and will be called when the
+    `start`/`amongoc_start` function is called on the operation. The given
+    handler `hnd` will be attached to the returned operation in the
+    `amongoc_operation::handler` field.
 
   .. function:: void start()
 

@@ -169,6 +169,11 @@ amongoc_emitter
 amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) AMONGOC_NOEXCEPT;
 
 /**
+ * @brief Create an emitter that immediately resolves with ENOMEM
+ */
+amongoc_emitter amongoc_alloc_failure() AMONGOC_NOEXCEPT;
+
+/**
  * @brief Create an operation from an emitter which will store the final result
  * status and value of the emitter in the pointed-to locations
  *

@@ -40,6 +40,17 @@ struct amongoc_handler {
 #ifdef __cplusplus
     /// Transfer ownership of the handler into a unique_handler
     inline amongoc::unique_handler as_unique() && noexcept;
+
+    /**
+     * @brief Resolve the handler with the given status and value.
+     *
+     * @param st The result status
+     * @param result The result value
+     */
+    void complete(amongoc_status st, amongoc::unique_box&& result) & noexcept {
+        // The callback takes ownership of the handler and the result
+        this->vtable->complete(this->userdata.view, st, AM_FWD(result).release());
+    }
 #endif
 };
 
@@ -66,7 +77,7 @@ static inline void amongoc_handler_complete(amongoc_handler* recv,
  *
  * @note This function should not be used on a handler that was consumed by another operation.
  */
-static inline void amongoc_handler_discard(amongoc_handler hnd) AMONGOC_NOEXCEPT {
+static inline void amongoc_handler_destroy(amongoc_handler hnd) AMONGOC_NOEXCEPT {
     amongoc_box_destroy(hnd.userdata);
 }
 
@@ -176,7 +187,7 @@ public:
 
     // Move-assign
     unique_handler& operator=(unique_handler&& o) noexcept {
-        amongoc_handler_discard(_handler);
+        amongoc_handler_destroy(_handler);
         _handler = AM_FWD(o).release();
         return *this;
     }
@@ -184,7 +195,7 @@ public:
     // Discard the associated handler object
     ~unique_handler() {
         // This is a no-op if the handler has been released
-        amongoc_handler_discard(_handler);
+        amongoc_handler_destroy(_handler);
     }
 
     /**
@@ -201,12 +212,10 @@ public:
      *
      * @param st The result status
      * @param result The result value
-     *
-     * This method is &&-qualified to signify that it consumes the object
      */
     void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        amongoc_handler_complete(&_handler, st, AM_FWD(result).release());
+        _handler.complete(st, AM_FWD(result));
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
@@ -229,7 +238,7 @@ public:
      * object when it is completed
      */
     template <typename F>
-    static unique_handler from(cxx_allocator<> alloc, F&& fn) noexcept {
+    static unique_handler from(cxx_allocator<> alloc, F&& fn) noexcept(box_inlinable_type<F>) {
         static_assert(
             requires(amongoc_status st, amongoc::unique_box b) {
                 fn(st, (amongoc::unique_box&&)b);

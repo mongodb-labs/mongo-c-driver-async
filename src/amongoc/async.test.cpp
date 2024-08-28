@@ -9,6 +9,7 @@
 #include "./coroutine.hpp"
 #include <amongoc/default_loop.h>
 
+#include <asm-generic/errno-base.h>
 #include <catch2/catch.hpp>
 
 using namespace amongoc;
@@ -106,4 +107,12 @@ TEST_CASE("Async/let") {
     amongoc_default_loop_run(&loop);
     amongoc_operation_destroy(op);
     amongoc_default_loop_destroy(&loop);
+}
+
+TEST_CASE("Async/Alloc failure") {
+    auto           em = amongoc_alloc_failure();
+    amongoc_status st;
+    auto           op = amongoc_tie(em, &st, nullptr).as_unique();
+    op.start();
+    CHECK(st.code == ENOMEM);
 }

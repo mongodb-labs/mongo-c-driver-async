@@ -20,6 +20,7 @@
 
 // C library headers
 #include <amongoc/alloc.h>
+#include <amongoc/async.h>
 #include <amongoc/box.h>
 #include <amongoc/emitter.h>
 #include <amongoc/handler.h>
@@ -211,9 +212,14 @@ struct coroutine_promise_allocator_mixin {
 
     // Allocate the coroutine state using our amongoc_allocator
     template <typename T>
-    void* operator new(std::size_t n, cxx_allocator<T> const& alloc_, const auto&...) {
-        cxx_allocator<char> alloc   = alloc_;
-        auto                storage = alloc.allocate(n + sizeof(alloc_state));
+    void* operator new(std::size_t n, cxx_allocator<T> const& alloc_, const auto&...) noexcept {
+        cxx_allocator<char> alloc = alloc_;
+        char*               storage;
+        try {
+            storage = alloc.allocate(n + sizeof(alloc_state));
+        } catch (std::bad_alloc) {
+            return nullptr;
+        }
         // Pilfer a copy of the allocator within the allocated region
         auto p = new (storage) alloc_state{alloc};
         // Return the tail of the struct as the storage for the coroutine
@@ -221,19 +227,19 @@ struct coroutine_promise_allocator_mixin {
     }
 
     // Adapt the C allocator to the C++ interface
-    void* operator new(std::size_t n, const amongoc_allocator& alloc, const auto&...) {
+    void* operator new(std::size_t n, const amongoc_allocator& alloc, const auto&...) noexcept {
         return operator new(n, cxx_allocator<>(alloc));
     }
 
     // Allocate using the allocator from the event loop
-    void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) {
+    void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) noexcept {
         return operator new(n,
                             loop ? loop->get_allocator()
                                  : cxx_allocator<>{amongoc_default_allocator});
     }
 
     // Allocate where the first parameter provides an allocator
-    void* operator new(std::size_t n, has_allocator auto const& x, auto const&...) {
+    void* operator new(std::size_t n, has_allocator auto const& x, auto const&...) noexcept {
         return operator new(n, amongoc::get_allocator(x));
     }
 
@@ -306,7 +312,11 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
         unique_co_handle<emitter_promise> _co;
 
-        void operator()() const { _co.resume(); }
+        void operator()(amongoc_operation& op) const {
+            // Move the handler from the operation to the coroutine
+            _co.promise().fin_handler = std::move(op.handler).as_unique();
+            _co.resume();
+        }
     };
 
     // Connector function object for the amongoc_emitter
@@ -315,8 +325,9 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         unique_co_handle<emitter_promise> _co;
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
-            _co.promise().fin_handler = AM_FWD(hnd);
-            return unique_operation::from_starter(terminating_allocator, starter{NEO_MOVE(_co)});
+            return unique_operation::from_starter(terminating_allocator,
+                                                  AM_FWD(hnd),
+                                                  starter{NEO_MOVE(_co)});
         }
     };
 
@@ -329,6 +340,10 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
             .release();
     }
 
+    static amongoc_emitter get_return_object_on_allocation_failure() noexcept {
+        return amongoc_alloc_failure();
+    }
+
     void unhandled_exception() noexcept {
         try {
             throw;
@@ -336,6 +351,8 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
             return_value(err.code());
         } catch (amongoc::exception const& err) {
             return_value(err.status());
+        } catch (std::bad_alloc) {
+            return_value(emitter_result(amongoc_status(&amongoc_generic_category, ENOMEM)));
         }
     }
 
@@ -534,6 +551,7 @@ public:
         co_task<T> get_return_object() noexcept {
             return co_task<T>(co_handle::from_promise(*this));
         }
+        static co_task<T> get_return_object_on_allocation_failure() { throw std::bad_alloc(); }
 
         void unhandled_exception() noexcept { _exception = std::current_exception(); }
 

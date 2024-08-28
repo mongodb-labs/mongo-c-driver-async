@@ -78,33 +78,44 @@ emitter amongoc_let(emitter                 op,
 }
 
 emitter amongoc_just(status st, box value, amongoc_allocator alloc) noexcept {
-    return unique_emitter::from_connector(  //
-               cxx_allocator<>{alloc},      //
-               [value = AM_FWD(value).as_unique(), st, alloc](
-                   unique_handler&& hnd) mutable -> unique_operation {
-                   return unique_operation::from_starter(  //
-                       cxx_allocator<>{alloc},
-                       [hnd = AM_FWD(hnd), value = AM_FWD(value), st]() mutable {
-                           hnd.complete(st, AM_FWD(value));
-                       });
-               })
-        .release();
+    try {
+        return unique_emitter::from_connector(  //
+                   cxx_allocator<>{alloc},      //
+                   [value = AM_FWD(value).as_unique(), st, alloc](
+                       unique_handler&& hnd) mutable -> unique_operation {
+                       return unique_operation::from_starter(  //
+                           cxx_allocator<>{alloc},
+                           AM_FWD(hnd),
+                           [value = AM_FWD(value), st](amongoc_operation& op) mutable {
+                               op.handler.complete(st, AM_FWD(value));
+                           });
+                   })
+            .release();
+    } catch (std::bad_alloc) {
+        return amongoc_alloc_failure();
+    }
 }
 
 emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
-    return unique_emitter::from_connector(  //
-               get_allocator(*loop),
-               [=](unique_handler h) {
-                   return unique_operation::from_starter(  //
-                       get_allocator(*loop),
-                       [=, h = AM_FWD(h)] mutable {
-                           loop->vtable->call_later(loop,
-                                                    duration_us,
-                                                    amongoc_nil,
-                                                    AM_FWD(h).release());
-                       });
-               })
-        .release();
+    try {
+        return unique_emitter::from_connector(  //
+                   get_allocator(*loop),
+                   [=](unique_handler h) {
+                       return unique_operation::from_starter(  //
+                           get_allocator(*loop),
+                           AM_FWD(h),
+                           [loop, duration_us](amongoc_operation& op) mutable {
+                               loop->vtable
+                                   ->call_later(loop,
+                                                duration_us,
+                                                amongoc_nil,
+                                                std::move(op.handler).as_unique().release());
+                           });
+                   })
+            .release();
+    } catch (std::bad_alloc) {
+        return amongoc_alloc_failure();
+    }
 }
 
 emitter amongoc_schedule(amongoc_loop* loop) {
@@ -152,4 +163,20 @@ emitter amongoc_then_just(amongoc_emitter          in,
                               return emitter_result(st, AM_FWD(value));
                           }))
         .release();
+}
+
+emitter amongoc_alloc_failure() noexcept {
+    // We return an emitter with no state. We don't need to allocate memory (yet)
+    static amongoc_emitter_vtable vtab = {.connect = [](amongoc_box /* nil */, amongoc_handler h) {
+        static amongoc_status nomem{&amongoc_generic_category, ENOMEM};
+        amongoc_operation     ret = {};
+        ret.handler               = h;
+        ret.start_callback        = [](amongoc_operation* self) noexcept {
+            self->handler.complete(nomem, amongoc_nil.as_unique());
+        };
+        return ret;
+    }};
+    emitter                       ret  = {};
+    ret.vtable                         = &vtab;
+    return ret;
 }

@@ -3,14 +3,14 @@
 #include "./alloc.h"
 #include "./box.h"
 #include "./config.h"
+#include "./handler.h"
 
 AMONGOC_EXTERN_C_BEGIN
 
-typedef void (*amongoc_start_callback)(amongoc_view userdata);
+typedef struct amongoc_operation amongoc_operation;
+typedef void (*amongoc_start_callback)(amongoc_operation* self) AMONGOC_NOEXCEPT;
 
 AMONGOC_EXTERN_C_END
-
-typedef struct amongoc_operation amongoc_operation;
 
 #ifdef __cplusplus
 namespace amongoc {
@@ -24,10 +24,12 @@ class unique_operation;
  * @brief A pending asynchronous operation and continuation
  */
 struct amongoc_operation {
+    // Arbitrary userdata for the operation, managed by the operation
+    amongoc_box userdata;
+    // The handler that was attached to this operation
+    amongoc_handler handler;
     // Callback used to start the operation. Prefer `amongoc_start`
     amongoc_start_callback start_callback;
-    // Arbitrary userdata for the operation, amanged by the operation
-    amongoc_box userdata;
 
 #ifdef __cplusplus
     // Transfer the operation into a unique_operation object
@@ -40,9 +42,7 @@ struct amongoc_operation {
  *
  * @param op Pointer to the operation to be started
  */
-static inline void amongoc_start(amongoc_operation* op) AMONGOC_NOEXCEPT {
-    op->start_callback(op->userdata.view);
-}
+static inline void amongoc_start(amongoc_operation* op) AMONGOC_NOEXCEPT { op->start_callback(op); }
 
 /**
  * @brief Destroy an asynchronous operation object
@@ -50,6 +50,7 @@ static inline void amongoc_start(amongoc_operation* op) AMONGOC_NOEXCEPT {
  * @param op The operation to be destroyed
  */
 static inline void amongoc_operation_destroy(amongoc_operation op) AMONGOC_NOEXCEPT {
+    amongoc_handler_destroy(op.handler);
     amongoc_box_destroy(op.userdata);
 }
 
@@ -99,10 +100,18 @@ public:
      * @param fn A function that, when called, will initiate the operation
      */
     template <typename F>
-    static unique_operation from_starter(cxx_allocator<> a, F fn) noexcept {
+    static unique_operation
+    from_starter(cxx_allocator<> a, unique_handler&& hnd, F fn) noexcept(box_inlinable_type<F>) {
         amongoc_operation ret;
-        ret.userdata       = unique_box::from(a, (F&&)(fn)).release();
-        ret.start_callback = [](amongoc_view f) { f.as<std::remove_cvref_t<F>>()(); };
+        ret.handler  = AM_FWD(hnd).release();
+        ret.userdata = unique_box::from(a, (F&&)(fn)).release();
+        static_assert(requires { fn(ret); });
+        static_assert(
+            not requires(const amongoc_operation& cop) { fn(cop); },
+            "The starter must accept the operation by non-const lvalue reference");
+        ret.start_callback = [](amongoc_operation* self) noexcept {
+            self->userdata.view.as<std::remove_cvref_t<F>>()(*self);
+        };
         return AM_FWD(ret).as_unique();
     }
 

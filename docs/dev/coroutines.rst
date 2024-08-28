@@ -58,7 +58,9 @@ If an `amongoc_emitter` coroutine throws an exception, the following will happen
    result status of the emitter, with an `amongoc_nil` result value.
 2. Otherwise, if the exception type is derived from an `amongoc::exception`,
    then the `exception::status` will be the result status of the emitter.
-3. Otherwise, **the program will terminate**. *Don't let this happen!*
+3. Otherwise, if the exception type is `std::bad_alloc`, the emitter will resolve
+   with generic cateogry an ``ENOMEM``.
+4. Otherwise, **the program will terminate**. *Don't let this happen!*
 
 
 `amongoc::co_task` as a Coroutine
@@ -162,3 +164,12 @@ itself::
 In the above, event though the `cxx_allocator` parameter is unnamed and unused
 within the coroutine body, it will still be used by the coroutine's promise to
 allocate memory for the coroutine state.
+
+Allocation Failure
+******************
+
+If allocation fails for a `co_task` coroutine, then the coroutine function will
+immediately throw without returning a `co_task` object. If allocation fails for
+an `amongoc_emitter` coroutine, then the returned emitter will be from
+`amongoc_alloc_failure`.
+

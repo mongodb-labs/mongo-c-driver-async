@@ -114,7 +114,8 @@ public:
      * @return unique_emitter An emitter that owns the associated connector object
      */
     template <typename F>
-    static unique_emitter from_connector(cxx_allocator<> alloc, F&& fn) noexcept {
+    static unique_emitter from_connector(cxx_allocator<> alloc,
+                                         F&&             fn) noexcept(box_inlinable_type<F>) {
         // Wrap the connector in an object, preserving reference semantics
         struct wrapped {
             AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
@@ -141,11 +142,11 @@ public:
             AM_FWD(fn)
             (st, AM_FWD(ub));
         }
-    unique_operation connect(cxx_allocator<> a, F fn) && noexcept {
+    unique_operation connect(cxx_allocator<> a, F fn) && {
         return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, AM_FWD(fn)));
     }
 
-    unique_operation connect(amongoc::unique_handler&& hnd) && noexcept {
+    unique_operation connect(amongoc::unique_handler&& hnd) && {
         return amongoc_emitter_connect(((unique_emitter&&)*this).release(), AM_FWD(hnd).release())
             .as_unique();
     }
@@ -164,14 +165,14 @@ struct nanosender_traits<unique_emitter> {
     // XXX: This relys on delayed lookup for as_handler(), which is defined in a
     // private header. Move this whole specialization to a private header?
     template <typename R>
-    static unique_operation connect(unique_emitter&& em, R&& recv) noexcept {
+    static unique_operation connect(unique_emitter&& em, R&& recv) {
         // TODO: A custom allocator here for as_handler?
         return AM_FWD(em).connect(
             as_handler(cxx_allocator<>{amongoc_default_allocator}, AM_FWD(recv)));
     }
 
     // Special: We receive a handler directly, no need to convert it to a C handler
-    static unique_operation connect(unique_emitter&& em, unique_handler&& hnd) noexcept {
+    static unique_operation connect(unique_emitter&& em, unique_handler&& hnd) {
         return AM_FWD(em).connect(AM_FWD(hnd));
     }
 

@@ -25,6 +25,7 @@
 #include <forward_list>
 #include <list>
 #include <memory>
+#include <new>
 #include <ratio>
 #include <set>
 
@@ -125,6 +126,8 @@ struct default_loop {
     pool<tcp::resolver>             _resolvers{alloc};
     pool<asio::steady_timer>        _timers{alloc};
 
+    // TODO: Define behavior when the below operations fail to allocate memory.
+
     void call_soon(status st, box res, amongoc_handler h) {
         asio::post(ioc, [st, res = AM_FWD(res).as_unique(), h = AM_FWD(h).as_unique()] mutable {
             h.complete(st, AM_FWD(res));
@@ -223,22 +226,32 @@ static constexpr amongoc_loop_vtable default_loop_vtable = {
     .tcp_connect    = adapt_memfun<&default_loop::tcp_connect>,
     .tcp_write_some = adapt_memfun<&default_loop::tcp_write_some>,
     .tcp_read_some  = adapt_memfun<&default_loop::tcp_read_some>,
-    .get_allocator  = [](const amongoc_loop* l) -> amongoc_allocator {
+    .get_allocator  = [](const amongoc_loop* l) noexcept -> amongoc_allocator {
         return l->userdata.view.as<default_loop>().alloc.c_allocator();
     },
 };
 
-void amongoc_default_loop_init_with_allocator(amongoc_loop* loop, amongoc_allocator alloc) {
-    loop->userdata
-        = unique_box::make<default_loop>(cxx_allocator<>{alloc}, cxx_allocator<>{alloc}).release();
-    loop->vtable = &default_loop_vtable;
+amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*     loop,
+                                                        amongoc_allocator alloc) noexcept {
+    try {
+
+        loop->userdata
+            = unique_box::make<default_loop>(cxx_allocator<>{alloc}, cxx_allocator<>{alloc})
+                  .release();
+        loop->vtable = &default_loop_vtable;
+        return amongoc_okay;
+    } catch (std::bad_alloc) {
+        return amongoc_status(&amongoc_generic_category, ENOMEM);
+    }
 }
 
-void amongoc_default_loop_run(amongoc_loop* loop) {
+void amongoc_default_loop_run(amongoc_loop* loop) noexcept {
     auto& ioc = amongoc_box_cast(default_loop)(loop->userdata).ioc;
     // Restart the IO context, allowing us to call run() more than once
     ioc.restart();
     ioc.run();
 }
 
-void amongoc_default_loop_destroy(amongoc_loop* loop) { amongoc_box_destroy(loop->userdata); }
+void amongoc_default_loop_destroy(amongoc_loop* loop) noexcept {
+    amongoc_box_destroy(loop->userdata);
+}

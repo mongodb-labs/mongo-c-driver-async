@@ -5,6 +5,7 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <amongoc/async.h>
 #include <amongoc/box.h>
 #include <amongoc/emitter.h>
 #include <amongoc/handler.h>
@@ -13,6 +14,8 @@
 
 #include <neo/attrib.hpp>
 #include <neo/object_t.hpp>
+
+#include <new>
 
 namespace amongoc {
 
@@ -117,7 +120,7 @@ struct cxx_recv_handler_adaptor_base<R> {
 template <typename R>
 struct cxx_recv_as_c_handler : cxx_recv_handler_adaptor_base<R> {
     static void _complete(amongoc_view self, status st, box result) noexcept {
-        AM_FWD(self).as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
+        self.as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
     }
 
     static constexpr amongoc_handler_vtable handler_vtable = {
@@ -130,7 +133,7 @@ template <typename R>
     requires has_stop_token<R>
 struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
     static void _complete(amongoc_view self, status st, box result) noexcept {
-        AM_FWD(self).as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
+        self.as<cxx_recv_as_c_handler>().invoke(st, NEO_MOVE(result));
     }
 
     struct stopper {
@@ -170,6 +173,7 @@ template <typename R>
 unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
+    /// TODO: What to do if allocation fails here? Let it throw?
     ret.userdata = unique_box::from(alloc, adaptor_type{{AM_FWD(cxx_recv)}}).release();
     ret.vtable   = &adaptor_type::handler_vtable;
     return AM_FWD(ret).as_unique();
@@ -184,26 +188,32 @@ unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
  * @return A new emitter that adapts the nanosender to the C API
  */
 template <nanosender S>
-unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) {
+unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) noexcept {
     // The composed operation type with a unique_handler. This line will also
     // enforce that the nanosender sends a type that is compatible with the
     // unique_handler::operator()
     using operation_type = connect_t<std::remove_cvref_t<S>, unique_handler>;
-    return unique_emitter::from_connector(  //
-        alloc,
-        [s = NEO_FWD(sender), alloc](unique_handler hnd) mutable -> unique_operation {
-            // Create an amongoc_operation from the C++ operation
-            // state
-            amongoc_operation oper;
-            oper.userdata
-                = unique_box::make<operation_type>(alloc, defer_convert([&] {
-                                                       return connect(NEO_MOVE(s), NEO_MOVE(hnd));
-                                                   }))
-                      .release();
-            oper.start_callback
-                = [](amongoc_view userdata) { userdata.as<operation_type>().start(); };
-            return AM_FWD(oper).as_unique();
-        });
+    try {
+        return unique_emitter::from_connector(  //
+            alloc,
+            [s = NEO_FWD(sender), alloc](unique_handler hnd) mutable -> unique_operation {
+                // Create an amongoc_operation from the C++ operation state
+                amongoc_operation oper = {};
+                // XXX: It would be more efficient to store the handler on the
+                // amongoc_operation::handler. How can we make that work?
+                oper.userdata = unique_box::make<operation_type>(alloc, defer_convert([&] {
+                                                                     return connect(NEO_MOVE(s),
+                                                                                    NEO_MOVE(hnd));
+                                                                 }))
+                                    .release();
+                oper.start_callback = [](amongoc_operation* self) noexcept {
+                    self->userdata.view.as<operation_type>().start();
+                };
+                return AM_FWD(oper).as_unique();
+            });
+    } catch (std::bad_alloc) {
+        return amongoc_alloc_failure().as_unique();
+    }
 }
 
 // Emitters and handlers are valid senders/receiver, but we don't want to double-wrap them
