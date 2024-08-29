@@ -40,12 +40,12 @@ template <>
 constexpr bool amongoc::enable_trivially_relocatable_v<tcp_resolve_results> = true;
 
 template <typename T>
-using pool = object_pool<T, cxx_allocator<T>>;
+using pool = object_pool<T, allocator<T>>;
 
 namespace {
 
 // Takes an arbitrary value and wraps it in an amongoc_box
-auto as_box = [](cxx_allocator<> alloc) {
+auto as_box = [](allocator<> alloc) {
     return [alloc](auto&& x) { return unique_box::from(alloc, mlib_fwd(x)); };
 };
 
@@ -63,7 +63,7 @@ using cancellation_ticket = pool<asio::cancellation_signal>::ticket;
 template <typename Transform>
 class adapt_handler {
 public:
-    explicit adapt_handler(cxx_allocator<>       alloc,
+    explicit adapt_handler(allocator<>           alloc,
                            unique_handler&&      h,
                            Transform&&           tr,
                            cancellation_ticket&& sig)
@@ -94,11 +94,11 @@ public:
     asio::cancellation_slot get_cancellation_slot() const noexcept { return _slot; }
 
     // Expose the memory allocator of the loop to Asio
-    using allocator_type = cxx_allocator<>;
+    using allocator_type = allocator<>;
     allocator_type get_allocator() const noexcept { return _alloc; }
 
 private:
-    cxx_allocator<> _alloc;
+    allocator<> _alloc;
     // The adapted handler
     unique_handler _handler;
     // The transformer
@@ -118,7 +118,7 @@ explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_han
 
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
-    cxx_allocator<> alloc;
+    allocator<> alloc;
 
     asio::io_context ioc;
 
@@ -226,18 +226,17 @@ static constexpr amongoc_loop_vtable default_loop_vtable = {
     .tcp_connect    = adapt_memfun<&default_loop::tcp_connect>,
     .tcp_write_some = adapt_memfun<&default_loop::tcp_write_some>,
     .tcp_read_some  = adapt_memfun<&default_loop::tcp_read_some>,
-    .get_allocator  = [](const amongoc_loop* l) noexcept -> amongoc_allocator {
+    .get_allocator  = [](const amongoc_loop* l) noexcept -> mlib_allocator {
         return l->userdata.view.as<default_loop>().alloc.c_allocator();
     },
 };
 
-amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*     loop,
-                                                        amongoc_allocator alloc) noexcept {
+amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
+                                                        mlib_allocator alloc) noexcept {
     try {
 
         loop->userdata
-            = unique_box::make<default_loop>(cxx_allocator<>{alloc}, cxx_allocator<>{alloc})
-                  .release();
+            = unique_box::make<default_loop>(allocator<>{alloc}, allocator<>{alloc}).release();
         loop->vtable = &default_loop_vtable;
         return amongoc_okay;
     } catch (std::bad_alloc) {

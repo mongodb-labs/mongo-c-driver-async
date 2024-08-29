@@ -29,11 +29,11 @@ emitter amongoc_timeout(amongoc_loop* loop, emitter em, std::timespec tim) noexc
 
 emitter amongoc_then(emitter                  in,
                      amongoc_async_flags      flags,
-                     amongoc_allocator        alloc,
+                     mlib_allocator           alloc,
                      box                      userdata_,
                      amongoc_then_transformer tr) noexcept {
     return as_emitter(  //
-               cxx_allocator<>{alloc},
+               allocator<>{alloc},
                amongoc::then(  //
                    NEO_MOVE(in).as_unique(),
                    [userdata = mlib_fwd(userdata_).as_unique(), flags, tr](
@@ -54,7 +54,7 @@ emitter amongoc_then(emitter                  in,
 
 emitter amongoc_let(emitter                 op,
                     amongoc_async_flags     flags,
-                    amongoc_allocator       alloc,
+                    mlib_allocator          alloc,
                     box                     userdata_,
                     amongoc_let_transformer tr) noexcept {
     // Note: Do not try to rewrite this as an "intuitive" coroutine, because `amongoc_let` the
@@ -74,17 +74,17 @@ emitter amongoc_let(emitter                 op,
             return tr(mlib_fwd(userdata).release(), res.status, mlib_fwd(res).value.release())
                 .as_unique();
         });
-    return as_emitter(cxx_allocator<>{alloc}, mlib_fwd(l)).release();
+    return as_emitter(allocator<>{alloc}, mlib_fwd(l)).release();
 }
 
-emitter amongoc_just(status st, box value, amongoc_allocator alloc) noexcept {
+emitter amongoc_just(status st, box value, mlib_allocator alloc) noexcept {
     try {
         return unique_emitter::from_connector(  //
-                   cxx_allocator<>{alloc},      //
+                   allocator<>{alloc},          //
                    [value = mlib_fwd(value).as_unique(), st, alloc](
                        unique_handler&& hnd) mutable -> unique_operation {
                        return unique_operation::from_starter(  //
-                           cxx_allocator<>{alloc},
+                           allocator<>{alloc},
                            mlib_fwd(hnd),
                            [value = mlib_fwd(value), st](amongoc_operation& op) mutable {
                                op.handler.complete(st, mlib_fwd(value));
@@ -129,7 +129,7 @@ amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) mlib
     // Connect to a handler that stores the result values in the pointed-to locations
     return mlib_fwd(em)
         .as_unique()
-        .connect(terminating_allocator,
+        .connect(mlib::terminating_allocator,
                  [status, value](amongoc_status st, unique_box&& val) {
                      if (status) {
                          *status = st;
@@ -143,15 +143,18 @@ amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) mlib
 
 amongoc_operation amongoc_detach(amongoc_emitter em) mlib_noexcept {
     // Connect to a handler that simply discards the result values
-    return mlib_fwd(em).as_unique().connect(terminating_allocator, [](auto&&...) {}).release();
+    return mlib_fwd(em)
+        .as_unique()
+        .connect(mlib::terminating_allocator, [](auto&&...) {})
+        .release();
 }
 
 emitter amongoc_then_just(amongoc_emitter          in,
                           enum amongoc_async_flags flags,
                           amongoc_status           st,
                           amongoc_box              value,
-                          amongoc_allocator        alloc) noexcept {
-    return as_emitter(cxx_allocator<>{alloc},
+                          mlib_allocator           alloc) noexcept {
+    return as_emitter(allocator<>{alloc},
                       amongoc::then(  //
                           mlib_fwd(in).as_unique(),
                           [flags, st, value = mlib_fwd(value).as_unique()](

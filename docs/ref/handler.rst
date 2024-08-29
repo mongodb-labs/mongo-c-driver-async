@@ -36,7 +36,7 @@ Header: ``amongoc/handler.h``
 
     Move the handler into an `amongoc::unique_handler` to be managed automatically
 
-  .. function:: void complete(amongoc_status st, unique_box&& value)
+  .. function:: void complete(amongoc_status st, amongoc::unique_box&& value)
 
     :C API: `amongoc_handler_complete`
 

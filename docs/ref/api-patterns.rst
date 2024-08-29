@@ -59,6 +59,6 @@ C function parameters generally follow a standard ordering as follows:
 3. Flags and ancillary parameters
 4. Result status (`amongoc_status`)
 5. Result value (`amongoc_box`)
-6. An allocator (`amongoc_allocator`)
+6. An allocator (`mlib_allocator`)
 7. A userdata pointer or `amongoc_box` to bind with a callback parameter
 8. A callback function pointer (example: `amongoc_let`)

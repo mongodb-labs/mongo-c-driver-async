@@ -15,7 +15,7 @@
 using namespace amongoc;
 
 emitter returns_42() {
-    return amongoc_just(amongoc_okay, amongoc_box_int(42), amongoc_default_allocator);
+    return amongoc_just(amongoc_okay, amongoc_box_int(42), mlib_default_allocator);
 }
 
 TEST_CASE("Async/Just") {
@@ -30,7 +30,7 @@ TEST_CASE("Async/Transform with the C API") {
     auto em = returns_42().as_unique();
     em      = amongoc_then(mlib_fwd(em).release(),
                       amongoc_async_default,
-                      amongoc_default_allocator,
+                      mlib_default_allocator,
                       amongoc_nil,
                       [](box, status* st, box value) noexcept {
                           amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
@@ -39,7 +39,7 @@ TEST_CASE("Async/Transform with the C API") {
              .as_unique();
     unique_box       got{amongoc_nil};
     unique_operation op
-        = std::move(em).connect(terminating_allocator,
+        = std::move(em).connect(mlib::terminating_allocator,
                                 [&](status st, unique_box b) { got = std::move(b); });
     op.start();
     CHECK(got.as<int>() == 123);
@@ -53,8 +53,8 @@ TEST_CASE("Async/Timeout") {
     // Half second timeout:
     auto   timed = amongoc_timeout(&loop, big_delay, timespec{0, 500'000'000}).as_unique();
     status got;
-    auto   op
-        = std::move(timed).connect(terminating_allocator, [&](status st, unique_box) { got = st; });
+    auto   op = std::move(timed).connect(mlib::terminating_allocator,
+                                       [&](status st, unique_box) { got = st; });
     op.start();
     auto start = std::chrono::steady_clock::now();
     amongoc_default_loop_run(&loop);
@@ -66,13 +66,12 @@ TEST_CASE("Async/Timeout") {
 }
 
 TEST_CASE("Async/then_just") {
-    auto em
-        = amongoc_just(amongoc_okay, amongoc_box_int(42), amongoc_default_allocator).as_unique();
-    em = amongoc_then_just(mlib_fwd(em).release(),
+    auto em = amongoc_just(amongoc_okay, amongoc_box_int(42), mlib_default_allocator).as_unique();
+    em      = amongoc_then_just(mlib_fwd(em).release(),
                            amongoc_async_forward_errors,
                            amongoc_okay,
                            amongoc_box_int(1729),
-                           amongoc_default_allocator)
+                           mlib_default_allocator)
              .as_unique();
     status st;
     box    val;
@@ -95,7 +94,7 @@ TEST_CASE("Async/let") {
     amongoc_default_loop_init(&loop);
     auto em = amongoc_let(waits(loop),
                           amongoc_async_forward_errors,
-                          amongoc_default_allocator,
+                          mlib_default_allocator,
                           amongoc_box_pointer(&loop),
                           [](amongoc_box loop_ptr, amongoc_status, amongoc_box) noexcept {
                               return waits(*loop_ptr.view.as<amongoc_loop*>());

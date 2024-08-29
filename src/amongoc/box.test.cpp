@@ -61,7 +61,7 @@ TEST_CASE("Box/Simple Destructor") {
 }
 
 TEST_CASE("Box/With C++ Object") {
-    auto b = unique_box::from(cxx_allocator<>{amongoc_default_allocator},
+    auto b = unique_box::from(allocator<>{mlib_default_allocator},
                               std::string("Hello, box world! I am a very long string that needs to "
                                           "be dynamically allocated."))
                  .release();

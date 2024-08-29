@@ -28,9 +28,9 @@ Type: `amongoc_loop`
     The virtual method table for the event loop
 
 
-.. function:: amongoc_allocator amongoc_loop_get_allocator(const amongoc_loop* loop)
+.. function:: mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop)
 
-  Get the `amongoc_allocator` associate with an event loop.
+  Get the `mlib_allocator` associate with an event loop.
 
   :param loop: An initialized event loop
   :header: :header-file:`amongoc/loop.h`
@@ -134,9 +134,9 @@ Type: `amongoc_loop`
     be a `std::size_t` value equal to the number of bytes that were read from
     the socket.
 
-  .. function:: amongoc_allocator get_allocator(const amongoc_loop* self) [[optional]]
+  .. function:: mlib_allocator get_allocator(const amongoc_loop* self) [[optional]]
 
-    Obtain the `amongoc_allocator` associated with the event loop. Various
+    Obtain the `mlib_allocator` associated with the event loop. Various
     library components will call this function to perform dynamic memory
     management for objects associated with the event loop.
 

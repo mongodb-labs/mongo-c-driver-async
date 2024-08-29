@@ -55,7 +55,7 @@ struct amongoc_loop_vtable {
     void* (*allocate)(amongoc_loop* self, size_t sz)mlib_noexcept;
     void (*deallocate)(amongoc_loop* self, void*) mlib_noexcept;
 
-    amongoc_allocator (*get_allocator)(const amongoc_loop* self) mlib_noexcept;
+    mlib_allocator (*get_allocator)(const amongoc_loop* self) mlib_noexcept;
 };
 
 struct amongoc_loop {
@@ -79,7 +79,7 @@ struct amongoc_loop {
                     loop,
                     amongoc_okay,
                     amongoc_nil,
-                    amongoc::unique_handler::from(amongoc::terminating_allocator,
+                    amongoc::unique_handler::from(mlib::terminating_allocator,
                                                   [this](amongoc_status,
                                                          amongoc::unique_box) mutable {
                                                       static_cast<R&&>(_recv)(nullptr);
@@ -96,11 +96,11 @@ struct amongoc_loop {
 
     sched_snd schedule() noexcept { return {this}; }
 
-    amongoc::cxx_allocator<> get_allocator() const noexcept {
+    mlib::allocator<> get_allocator() const noexcept {
         if (vtable->get_allocator) {
-            return amongoc::cxx_allocator<>(vtable->get_allocator(this));
+            return mlib::allocator<>(vtable->get_allocator(this));
         }
-        return amongoc::cxx_allocator<>(amongoc_default_allocator);
+        return mlib::allocator<>(mlib_default_allocator);
     }
 #endif
 };
@@ -110,13 +110,13 @@ mlib_extern_c_begin();
  * @brief Obtain the allocator associated with an event loop, if present
  *
  * @param loop The event loop to be queried
- * @return amongoc_allocator The allocator associated with the loop if the loop provides
- * one. Otherwise, returns `amongoc_default_allocator`.
+ * @return mlib_allocator The allocator associated with the loop if the loop provides
+ * one. Otherwise, returns `mlib_default_allocator`.
  */
-static inline amongoc_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
+static inline mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
     if (loop->vtable->get_allocator) {
         return loop->vtable->get_allocator(loop);
     }
-    return amongoc_default_allocator;
+    return mlib_default_allocator;
 }
 mlib_extern_c_end();

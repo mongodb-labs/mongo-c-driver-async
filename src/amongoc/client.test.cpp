@@ -46,7 +46,7 @@ TEST_CASE("C Client/Good") {
     auto   s = amongoc_client_connect(&loop, "localhost", "27017").as_unique();
     status got_ec;
     bool   did_run = false;
-    auto   op      = std::move(s).connect(terminating_allocator, [&](status ec, unique_box b) {
+    auto   op = std::move(s).connect(mlib::terminating_allocator, [&](status ec, unique_box b) {
         got_ec  = ec;
         did_run = true;
     });
@@ -63,7 +63,7 @@ TEST_CASE("C Client/Invalid hostname") {
     // Connecting to an invalid TLD will fail
     auto   s = amongoc_client_connect(&loop, "asdfasdfaczxv.invalidtld", "27017").as_unique();
     status got_ec;
-    auto   op = std::move(s).connect(terminating_allocator,
+    auto   op = std::move(s).connect(mlib::terminating_allocator,
                                    [&](status ec, unique_box b) { got_ec = ec; });
     op.start();
     amongoc_default_loop_run(&loop);
@@ -79,7 +79,7 @@ TEST_CASE("C Client/Timeout") {
     // auto   s = amongoc_connect_client_ex(&loop, "example.com", "27017", 500);
     auto   s = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
     status got_ec;
-    auto   op = std::move(s).connect(terminating_allocator,
+    auto   op = std::move(s).connect(mlib::terminating_allocator,
                                    [&](status ec, unique_box b) { got_ec = ec; });
     op.start();
     amongoc_default_loop_run(&loop);
@@ -97,29 +97,28 @@ TEST_CASE("C Client/Simple request") {
     unique_operation          req_op;
     bool                      did_run = false;
     auto                      op
-        = std::move(s)
-              .connect(cxx_allocator<>{amongoc_default_allocator}, [&](status ec, unique_box cl) {
-                  if (!ec.code) {
-                      client_box = std::move(cl);
-                      bson_doc doc;
-                      doc.push_back("hello", 1.0);
-                      doc.push_back("$db", "test");
-                      auto s1 = client_box->as<amongoc_client>().command(doc).as_unique();
-                      req_op  = std::move(s1).connect(  //
-                          terminating_allocator,
-                          [&](status ec, unique_box b) {
-                              CHECK_FALSE(ec.is_error());
-                              if (not ec.code) {
-                                  req_ec         = ec;
-                                  bson_view resp = b.as<bson_doc>();
-                                  auto      ok   = resp.find("ok");
-                                  CHECK(ok->as_boolean());
-                                  did_run = true;
-                              }
-                          });
-                      req_op.start();
-                  }
-              });
+        = std::move(s).connect(allocator<>{mlib_default_allocator}, [&](status ec, unique_box cl) {
+              if (!ec.code) {
+                  client_box = std::move(cl);
+                  bson_doc doc;
+                  doc.push_back("hello", 1.0);
+                  doc.push_back("$db", "test");
+                  auto s1 = client_box->as<amongoc_client>().command(doc).as_unique();
+                  req_op  = std::move(s1).connect(  //
+                      mlib::terminating_allocator,
+                      [&](status ec, unique_box b) {
+                          CHECK_FALSE(ec.is_error());
+                          if (not ec.code) {
+                              req_ec         = ec;
+                              bson_view resp = b.as<bson_doc>();
+                              auto      ok   = resp.find("ok");
+                              CHECK(ok->as_boolean());
+                              did_run = true;
+                          }
+                      });
+                  req_op.start();
+              }
+          });
     op.start();
     amongoc_default_loop_run(&loop);
     CHECK(did_run);

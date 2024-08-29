@@ -239,7 +239,7 @@ public:
      * object when it is completed
      */
     template <typename F>
-    static unique_handler from(cxx_allocator<> alloc, F&& fn) noexcept(box_inlinable_type<F>) {
+    static unique_handler from(allocator<> alloc, F&& fn) noexcept(box_inlinable_type<F>) {
         static_assert(
             requires(amongoc_status st, amongoc::unique_box b) {
                 fn(st, (amongoc::unique_box&&)b);

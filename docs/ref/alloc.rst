@@ -2,21 +2,21 @@
 Header: |this-header|
 #####################
 
-.. |this-header| replace:: :header-file:`amongoc/alloc.h`
-.. header-file:: amongoc/alloc.h
+.. |this-header| replace:: :header-file:`mlib/alloc.h`
+.. header-file:: mlib/alloc.h
 
   Contains types, functions, and constants related to dynamic memory management.
 
-.. struct:: amongoc_allocator
+.. struct:: mlib_allocator
 
   Provides support for customizing dynamic memory allocation.
 
   :header: |this-header|
 
-  Many |amongoc| APIs accept an `amongoc_allocator` parameter, or otherwise
-  consult other objects that carry an `amongoc_allocator` (e.g. `amongoc_loop`
-  has an associated allocator, and therefore any object associated with an event
-  loop will also use that same allocator).
+  Many |amongoc| APIs accept an `mlib_allocator` parameter, or otherwise consult
+  other objects that carry an `mlib_allocator` (e.g. `amongoc_loop` has an
+  associated allocator, and therefore any object associated with an event loop
+  will also use that same allocator).
 
   .. member:: void* userdata
 
@@ -26,12 +26,12 @@ Header: |this-header|
 
     **(Function pointer member)**
 
-    .. note:: Don't call this directly. Use `amongoc_allocate` and `amongoc_deallocate`
+    .. note:: Don't call this directly. Use `mlib_allocate` and `mlib_deallocate`
 
     Implements custom allocation for the allocator. The user must provide a
     non-null pointer to a function for the allocator.
 
-    :param userdata: The `amongoc_allocator::userdata` pointer.
+    :param userdata: The `mlib_allocator::userdata` pointer.
     :param prev_ptr: Pointer that was previously returned by `reallocate`
     :param requested_size: The requested amount of memory for the new region, **or**
       zero to request deallocation of `prev_ptr`.
@@ -120,22 +120,22 @@ Header: |this-header|
 
 
 .. function::
-  void* amongoc_allocate(amongoc_allocator alloc, std::size_t sz)
-  void amongoc_deallocate(amongoc_allocator alloc, void* p, std::size_t sz)
+  void* mlib_allocate(mlib_allocator alloc, std::size_t sz)
+  void mlib_deallocate(mlib_allocator alloc, void* p, std::size_t sz)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
   :param alloc: The allocator to be used.
-  :param p: (For deallocation) A pointer that was previously returned by `amongoc_allocate`
+  :param p: (For deallocation) A pointer that was previously returned by `mlib_allocate`
     using the same `alloc` parameter.
   :param sz: For allocation, the requested size. For deallocation, this must be
-    the original `sz` value that was used with `amongoc_allocate`.
+    the original `sz` value that was used with `mlib_allocate`.
   :header: |this-header|
 
 
-.. cpp:var:: const amongoc_allocator amongoc_default_allocator
+.. cpp:var:: const mlib_allocator amongoc_default_allocator
 
-  A reasonable default `amongoc_allocator`.
+  A reasonable default `mlib_allocator`.
 
   :header: |this-header|
 
@@ -143,9 +143,9 @@ Header: |this-header|
   :cpp:`realloc()` and :cpp:`free()` functions.
 
 
-.. cpp:var:: const amongoc_allocator amongoc_terminating_allocator
+.. cpp:var:: const mlib_allocator amongoc_terminating_allocator
 
-  A special `amongoc_allocator` that terminates the program if there is any
+  A special `mlib_allocator` that terminates the program if there is any
   attempt to allocate memory through it.
 
   :header: |this-header|
@@ -156,16 +156,16 @@ Header: |this-header|
   standard error and :cpp:`abort()` will be called.
 
 
-.. namespace:: amongoc
+.. namespace:: mlib
 
-.. class:: template <typename T = void> cxx_allocator
+.. class:: template <typename T = void> allocator
 
-  Provides a C++ allocator interface for an `amongoc_allocator`
+  Provides a C++ allocator interface for an `mlib_allocator`
 
   :header: |this-header|
 
   This allocator type is *not* default-constructible: It must be constructed
-  explicitly from an `amongoc_allocator`.
+  explicitly from an `mlib_allocator`.
 
   .. type::
       value_type = T
@@ -177,25 +177,25 @@ Header: |this-header|
           must be converted to a typed allocator before it may be used.
 
   .. function::
-    cxx_allocator(amongoc_allocator a)
+    allocator(mlib_allocator a)
 
-    Construct from an `amongoc_allocator` `a`.
+    Construct from an `mlib_allocator` `a`.
 
   .. function::
-    template <typename U> cxx_allocator(cxx_allocator<U>)
+    template <typename U> allocator(allocator<U>)
 
     Convert-construct from another allocator instance, rebinding the allocated
     type.
 
-  .. function:: bool operator==(cxx_allocator) const
+  .. function:: bool operator==(allocator) const
 
-    Compare two allocators. Two `cxx_allocator`\ s are equal if the
-    `amongoc_allocator::userdata` and `amongoc_allocator::reallocate` pointers
+    Compare two allocators. Two `allocator`\ s are equal if the
+    `mlib_allocator::userdata` and `mlib_allocator::reallocate` pointers
     are equal.
 
-  .. function:: amongoc_allocator c_allocator() const
+  .. function:: mlib_allocator c_allocator() const
 
-    Obtain the `amongoc_allocator` that is used by this `cxx_allocator`
+    Obtain the `mlib_allocator` that is used by this `allocator`
 
   .. function::
     pointer allocate(std::size_t n) const
@@ -204,13 +204,14 @@ Header: |this-header|
     The allocation/deallocation functions for the C++ allocator interface.
 
     :param n: The number of objects to be allocated/deallocated
-    :param p: Pointer to a previous region obtained from an equivalent `cxx_allocator`
+    :param p: Pointer to a previous region obtained from an equivalent `allocator`
 
-    Calls `amongoc_allocate`/`amongoc_deallocate` to perform the allocation.
+    Calls `mlib_allocate`/`mlib_deallocate` to perform the allocation.
 
 
-.. var:: const cxx_allocator<> terminating_allocator{::amongoc_terminating_allocator}
+.. var:: const allocator<> terminating_allocator{::amongoc_terminating_allocator}
 
   A C++ version of the `amongoc_terminating_allocator`
 
   :header: |this-header|
+

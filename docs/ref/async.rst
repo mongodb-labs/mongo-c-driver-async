@@ -18,7 +18,7 @@ Functions
   amongoc_emitter [[type(U)]] amongoc_then(\
       amongoc_emitter [[transfer, type(T)]] em, \
       amongoc_async_flags flags, \
-      amongoc_allocator alloc, \
+      mlib_allocator alloc, \
       amongoc_box [[transfer, type(UserData)]] userdata, \
       amongoc_then_transformer [[type(User=UserData, In=T, Out=U)]] tr)
 
@@ -48,7 +48,7 @@ Functions
   amongoc_emitter [[type(U)]] amongoc_let(\
       amongoc_emitter [[transfer, type(T)]] em, \
       amongoc_async_flags flags, \
-      amongoc_allocator alloc, \
+      mlib_allocator alloc, \
       amongoc_box [[transfer, type(UserData)]] userdata, \
       amongoc_let_transformer [[type(User=UserData, In=T, Out=U)]] tr)
 
@@ -72,7 +72,7 @@ Functions
   the result of another asynchronous operation.
 
 
-.. function:: amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, amongoc_allocator alloc)
+.. function:: amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
 
   Create an emitter that will resolve immediately with the given status and
   result value.
@@ -103,7 +103,7 @@ Functions
       amongoc_async_flags flags, \
       amongoc_status st, \
       amongoc_box [[transfer, type(T)]] value, \
-      amongoc_allocator alloc)
+      mlib_allocator alloc)
 
   Create a continuation that replaces an emitter's result value with the given
   status `st` and result `value`.

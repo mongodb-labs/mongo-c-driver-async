@@ -62,13 +62,13 @@ Header: ``amongoc/operation.h``
 
     Calls `amongoc_operation_destroy` on the operation.
 
-  .. function:: template <typename F> unique_operation from_starter(cxx_allocator<> a, unique_handler&& h, F fn)
+  .. function:: template <typename F> unique_operation from_starter(mlib::allocator<> a, unique_handler&& h, F fn)
 
     Create an operation object based on a starter function `fn` with an
-    associated handler `hnd`. The function object must be invocable with a
-    single :expr:`amongoc_operation&` argument, and will be called when the
+    associated handler `h`. The function object must be invocable with a single
+    :expr:`amongoc_operation&` argument, and will be called when the
     `start`/`amongoc_start` function is called on the operation. The given
-    handler `hnd` will be attached to the returned operation in the
+    handler `h` will be attached to the returned operation in the
     `amongoc_operation::handler` field.
 
   .. function:: void start()

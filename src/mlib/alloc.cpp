@@ -1,11 +1,12 @@
-#include <amongoc/alloc.h>
+#include <mlib/alloc.h>
 
-#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 
-extern inline void* amongoc_allocate(amongoc_allocator, size_t) noexcept(true);
-extern inline void  amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) noexcept(true);
+using namespace mlib;
+
+extern inline void* mlib_allocate(mlib_allocator, size_t) noexcept(true);
+extern inline void  mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) noexcept(true);
 
 // Implementation of reallocate() for the default allocator
 static inline void* default_reallocate(void*,
@@ -26,10 +27,10 @@ static inline void* default_reallocate(void*,
     }
 }
 
-constexpr amongoc_allocator amongoc_default_allocator = {nullptr, default_reallocate};
+constexpr mlib_allocator mlib_default_allocator = {nullptr, default_reallocate};
 
 // Definition of the terminating allocator
-constexpr amongoc_allocator amongoc_terminating_allocator = {
+constexpr mlib_allocator mlib_terminating_allocator = {
     nullptr,
     [](void*, void* prev_ptr, size_t req_size, size_t, size_t*) noexcept -> void* {
         if (req_size == 0 and prev_ptr == nullptr) {

@@ -251,7 +251,7 @@ its `unique_handler::operator()`.
 Adaptors
 ********
 
-.. function:: unique_handler as_handler(cxx_allocator<> a, auto&& recv)
+.. function:: unique_handler as_handler(mlib::allocator<> a, auto&& recv)
 
   Creates a `unique_handler` |H| from a C++ nanoreceiver.
 
@@ -267,7 +267,7 @@ Adaptors
 
 
 .. function::
-  unique_emitter as_emitter(cxx_allocator<> a, nanosender auto&& snd)
+  unique_emitter as_emitter(mlib::allocator<> a, nanosender auto&& snd)
 
   Create a `unique_emitter` |E| from a C++ nanosender.
 
@@ -279,4 +279,3 @@ Adaptors
   When the sender `snd` completes with an `emitter_result` |R|, the
   `status <emitter_result::status>` and `value <emitter_result::value>` from |R|
   will be passed to `amongoc_handler_complete`.
-

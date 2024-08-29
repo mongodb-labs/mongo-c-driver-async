@@ -76,7 +76,7 @@ struct _amongoc_nontrivial_inline {
 };
 
 struct _amongoc_dynamic_box {
-    amongoc_allocator      alloc;
+    mlib_allocator         alloc;
     amongoc_box_destructor destroy;
     size_t                 size;
     mlib_alignas(max_align_t) char object[1];
@@ -170,7 +170,7 @@ struct amongoc_box {
      * when allocating the storage
      */
     template <typename T>
-    T* prepare_storage(amongoc::cxx_allocator<>, amongoc_box_destructor dtor);
+    T* prepare_storage(mlib::allocator<>, amongoc_box_destructor dtor);
 
     /**
      * @brief Convert the C-style `amongoc_box` to a C++ `unique_box` for lifetime safety
@@ -197,7 +197,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
                                            bool                   allow_inline,
                                            size_t                 size,
                                            amongoc_box_destructor dtor,
-                                           amongoc_allocator      alloc) mlib_noexcept {
+                                           mlib_allocator         alloc) mlib_noexcept {
     if (allow_inline && !dtor && size <= AMONGOC_BOX_SMALL_SIZE) {
         // Store as a trivial object with no destructor
         box->_storage.is_dynamic = 0;
@@ -219,7 +219,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
         box->_storage.has_dtor                  = dtor != NULL;
         size_t                       alloc_size = sizeof(struct _amongoc_dynamic_box) + size;
         struct _amongoc_dynamic_box* dyn        = box->_storage.u.dynamic
-            = (struct _amongoc_dynamic_box*)amongoc_allocate(alloc, alloc_size);
+            = (struct _amongoc_dynamic_box*)mlib_allocate(alloc, alloc_size);
         if (dyn == NULL) {
             // Allocation failed
             return NULL;
@@ -244,9 +244,9 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
  */
 static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
     if (box._storage.is_dynamic) {
-        amongoc_deallocate(box._storage.u.dynamic->alloc,
-                           box._storage.u.dynamic,
-                           box._storage.u.dynamic->size);
+        mlib_deallocate(box._storage.u.dynamic->alloc,
+                        box._storage.u.dynamic,
+                        box._storage.u.dynamic->size);
     }
 }
 
@@ -325,10 +325,10 @@ mlib_extern_c_end();
     (Box, T, AllowInline __VA_OPT__(, ) __VA_ARGS__)
 
 #define _amongoc_box_init_impl_argc_3(Box, T, AllowInline)                                         \
-    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), NULL, amongoc_default_allocator)
+    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), NULL, mlib_default_allocator)
 
 #define _amongoc_box_init_impl_argc_4(Box, T, AllowInline, Dtor)                                   \
-    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, amongoc_default_allocator)
+    (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, mlib_default_allocator)
 
 #define _amongoc_box_init_impl_argc_5(Box, T, AllowInline, Dtor, Alloc)                            \
     (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, Alloc)
@@ -469,19 +469,19 @@ public:
      * @return amongoc_box The newly constructed box that contains the value
      */
     template <typename T>
-    static unique_box from(cxx_allocator<> alloc, T&& value) {
+    static unique_box from(allocator<> alloc, T&& value) {
         return make<std::decay_t<T>>(alloc, mlib_fwd(value));
     }
 
     // Prevent users from accidentally box-ing a box
-    static void from(cxx_allocator<>, box&)               = delete;
-    static void from(cxx_allocator<>, box&&)              = delete;
-    static void from(cxx_allocator<>, box const&)         = delete;
-    static void from(cxx_allocator<>, box const&&)        = delete;
-    static void from(cxx_allocator<>, unique_box&)        = delete;
-    static void from(cxx_allocator<>, unique_box&&)       = delete;
-    static void from(cxx_allocator<>, unique_box const&)  = delete;
-    static void from(cxx_allocator<>, unique_box const&&) = delete;
+    static void from(allocator<>, box&)               = delete;
+    static void from(allocator<>, box&&)              = delete;
+    static void from(allocator<>, box const&)         = delete;
+    static void from(allocator<>, box const&&)        = delete;
+    static void from(allocator<>, unique_box&)        = delete;
+    static void from(allocator<>, unique_box&&)       = delete;
+    static void from(allocator<>, unique_box const&)  = delete;
+    static void from(allocator<>, unique_box const&&) = delete;
 
     /**
      * @brief Create a box that contains a `T` with an explicit destructor object type
@@ -491,7 +491,7 @@ public:
      * @param obj The object to be copied into the box
      */
     template <typename T, typename D>
-    static unique_box from(cxx_allocator<> alloc, T obj, D) noexcept(box_inlinable_type<T>) {
+    static unique_box from(allocator<> alloc, T obj, D) noexcept(box_inlinable_type<T>) {
         static_assert(std::is_trivially_destructible_v<T>,
                       "Creating a box with an explicit destructor requires that the object be "
                       "trivially destructible itself");
@@ -517,7 +517,7 @@ public:
      * @param args The constructor arguments
      */
     template <typename T, typename... Args>
-    static unique_box make(cxx_allocator<> alloc,
+    static unique_box make(allocator<> alloc,
                            Args&&... args) noexcept(noexcept(T(mlib_fwd(args)...))
                                                     and box_inlinable_type<T>) {
         amongoc_box ret;
@@ -567,7 +567,7 @@ T& amongoc_view::as() const noexcept {
 }
 
 template <typename T>
-T* amongoc_box::prepare_storage(amongoc::cxx_allocator<> alloc, amongoc_box_destructor dtor) {
+T* amongoc_box::prepare_storage(mlib::allocator<> alloc, amongoc_box_destructor dtor) {
     T* p;
     if constexpr (amongoc::enable_trivially_relocatable_v<T>) {
         // The box can be safely stored inline, since moving the box will relocate the corresponding

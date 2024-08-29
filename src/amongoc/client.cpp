@@ -18,7 +18,7 @@ struct _amongoc_client_cxx {
     explicit _amongoc_client_cxx(tcp_connection_rw_stream&& conn)
         : _client(get_allocator(*conn.loop), std::move(conn)) {}
 
-    client<tcp_connection_rw_stream, cxx_allocator<>> _client;
+    client<tcp_connection_rw_stream, allocator<>> _client;
 };
 
 emitter amongoc_client::command(const bson_view& doc) noexcept {

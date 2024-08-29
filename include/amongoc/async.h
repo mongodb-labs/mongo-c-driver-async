@@ -78,7 +78,7 @@ enum amongoc_async_flags {
  */
 amongoc_emitter amongoc_then(amongoc_emitter em,
                              enum amongoc_async_flags,
-                             amongoc_allocator        alloc,
+                             mlib_allocator           alloc,
                              amongoc_box              userdata,
                              amongoc_then_transformer tr) mlib_noexcept;
 
@@ -97,7 +97,7 @@ amongoc_emitter amongoc_then(amongoc_emitter em,
  */
 amongoc_emitter amongoc_let(amongoc_emitter          em,
                             enum amongoc_async_flags flags,
-                            amongoc_allocator        alloc,
+                            mlib_allocator           alloc,
                             amongoc_box              userdata,
                             amongoc_let_transformer  tr) mlib_noexcept;
 
@@ -110,7 +110,7 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
  * when its associated operation is started.
  */
 amongoc_emitter
-amongoc_just(amongoc_status st, amongoc_box value, amongoc_allocator alloc) mlib_noexcept;
+amongoc_just(amongoc_status st, amongoc_box value, mlib_allocator alloc) mlib_noexcept;
 
 /**
  * @brief Create a continuation that replaces an emitter's result with the given
@@ -128,7 +128,7 @@ amongoc_emitter amongoc_then_just(amongoc_emitter          in,
                                   enum amongoc_async_flags flags,
                                   amongoc_status           st,
                                   amongoc_box              value,
-                                  amongoc_allocator        alloc) mlib_noexcept;
+                                  mlib_allocator           alloc) mlib_noexcept;
 
 /**
  * @brief Schedule a completion on the given event loop.

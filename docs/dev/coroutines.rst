@@ -135,18 +135,18 @@ Memory Allocation
 
 C++ coroutines support customizing the allocation of the coroutine's state.
 Coroutines based on `amongoc_emitter` and `co_task` will *refuse* to use the
-default :cpp:`operator new`, and *require* that a `cxx_allocator` is provided to
-the coroutine.
+default :cpp:`operator new`, and *require* that a `mlib::allocator` is
+provided to the coroutine.
 
 For this reason, a `co_task` or `amongoc_emitter` coroutine *must* accept as its
 first parameter one of:
 
 1. A pointer to `amongoc_loop` (which is assumed to never be :cpp:`nullptr`!) --
-   The `cxx_allocator` will be obtained from the event loop.
-2. A `cxx_allocator` directly.
-3. An `amongoc_allocator`, which will be converted to a `cxx_allocator`.
+   The `mlib::allocator` will be obtained from the event loop.
+2. A `mlib::allocator` directly.
+3. An `mlib_allocator`, which will be converted to a `mlib::allocator`.
 4. Any type which supports `get_allocator` with an allocator that is convertible
-   to a `cxx_allocator`.
+   to a `mlib::allocator`.
 
 If this requirement is not met, then the coroutine will fail to compile when
 attempting to resolve the :cpp:`operator new` for the coroutine.
@@ -157,13 +157,13 @@ Note that the C++ coroutine machinery handles this transparently, so the
 parameter need only be present, not necessarily used within the coroutine
 itself::
 
-  co_task<int> add_numbers(cxx_allocator<> /* unnamed */, int a, int b) {
+  co_task<int> add_numbers(allocator<> /* unnamed */, int a, int b) {
     co_return a + b;
   }
 
-In the above, event though the `cxx_allocator` parameter is unnamed and unused
-within the coroutine body, it will still be used by the coroutine's promise to
-allocate memory for the coroutine state.
+In the above, event though the `mlib::allocator` parameter is unnamed and
+unused within the coroutine body, it will still be used by the coroutine's
+promise to allocate memory for the coroutine state.
 
 Allocation Failure
 ******************

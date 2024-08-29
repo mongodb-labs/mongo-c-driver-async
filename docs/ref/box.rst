@@ -90,7 +90,7 @@ Header: :header-file:`amongoc/box.h`
 
   .. function::
     template <typename T> \
-    static unique_box from(cxx_allocator<>, T&& value)
+    static unique_box from(mlib::allocator<>, T&& value)
 
     Construct a new `unique_box` by decay-copying from the given value. This
     should be the preferred way to create box objects within C++ code.
@@ -102,7 +102,7 @@ Header: :header-file:`amongoc/box.h`
 
   .. function::
     template <typename T, typename D> \
-    static unique_box from(cxx_allocator<>, T value, D) \
+    static unique_box from(mlib::allocator<>, T value, D) \
     requires std::is_trivially_destructible_v<T>
 
     Create a new box object by copying the given value and imbuing it with a
@@ -121,7 +121,7 @@ Header: :header-file:`amongoc/box.h`
 
   .. function::
     template <typename T, typename... Args> \
-    static unique_box make(cxx_allocator<> a, Args&&... args)
+    static unique_box make(mlib::allocator<> a, Args&&... args)
 
     In-place construct a new instance of `T` into a new box.
 
@@ -269,7 +269,7 @@ Other
   :param Dtor: (Optional) A destructor function that should be executed when
     the box is destroyed with `amongoc_box_destroy`. The destructor function
     should be convertible to a function pointer: :cpp:any:`amongoc_box_destructor`
-  :param Alloc: (Optional) An `amongoc_allocator` object to be used if the box
+  :param Alloc: (Optional) An `mlib_allocator` object to be used if the box
     requires dynamic allocation.
   :return: This macro will result in a :cpp:`T*` pointer. If memory allocation
     was required and fails, this returns :cpp:`nullptr`. Note that a

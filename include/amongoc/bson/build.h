@@ -2,6 +2,7 @@
 
 #include "./view.h"
 
+#include <mlib/alloc.h>
 #include <mlib/config.h>
 
 #include <inttypes.h>
@@ -75,48 +76,6 @@ inline bson_byte* _bson_memcpy(bson_byte* out, const void* src, uint32_t len) ml
     }
     return out + len;
 }
-
-/**
- * @brief Type of the function used to manage memory
- *
- * @param ptr Pointer to the memory that was previously allocated, or NULL if
- * no data has been allocated previously.
- * @param requested_size The requested allocation size, or zero to free the
- * memory.
- * @param previous_size The previous size of the allocated region, or zero.
- * @param out_new_size Upon success, the allocator MUST write the actual size
- * of memory that was allocated to this address.
- * @param userdata Arbitrary pointer that was given when the allocator was
- * created.
- *
- * @returns A pointer to the allocated memory, or NULL on allocation failure.
- *
- * @note The allocation function is responsible for copying data from the
- * prior memory region into the new memory region.
- * @note If this function returns NULL, it is assumed that `ptr` is still vaild
- */
-typedef bson_byte* (*bson_mut_allocator_fn)(bson_byte* ptr,
-                                            uint32_t   requested_size,
-                                            uint32_t   previous_size,
-                                            uint32_t*  out_new_size,
-                                            void*      userdata);
-
-/**
- * @brief Type used to control memory allocation in a @ref bson_mut, given to
- * @ref bson_mut_new_ex
- */
-typedef struct bson_mut_allocator {
-    /**
-     * @brief The function used to allocate memory for a bson_mut. Refer to
-     * @ref bson_mut_allocator_fn for signature information
-     */
-    bson_mut_allocator_fn reallocate;
-    /**
-     * @brief An arbitrary pointer. Will be passed to `reallocate()` when it is
-     * called.
-     */
-    void* userdata;
-} bson_mut_allocator;
 
 /**
  * @brief A mutable BSON document.
@@ -265,15 +224,16 @@ inline bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) {
         return false;
     }
     // Get the allocator:
-    bson_mut_allocator* alloc = (bson_mut_allocator*)m->_parent_mut_or_allocator_context;
+    mlib_allocator* alloc = (mlib_allocator*)m->_parent_mut_or_allocator_context;
     // Perform the reallocation:
-    uint32_t   got_size = 0;
+    size_t     got_size = 0;
     bson_byte* newptr
-        = alloc->reallocate(m->_bson_document_data,
-                            new_size,
-                            (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
-                            &got_size,
-                            alloc->userdata);
+        = (bson_byte*)
+              alloc->reallocate(alloc->userdata,
+                                m->_bson_document_data,
+                                new_size,
+                                (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
+                                &got_size);
     if (!newptr) {
         // The allocatore reports failure
         return false;
@@ -321,14 +281,11 @@ inline int32_t bson_reserve(bson_mut* d, uint32_t size) {
  * @param reserve The size to reserve within the new document
  * @return bson_mut A new mutator. Must be deleted with bson_mut_delete()
  */
-inline bson_mut bson_mut_new_ex(const bson_mut_allocator* allocator, uint32_t reserve) {
+inline bson_mut bson_mut_new_ex(const mlib_allocator* allocator, uint32_t reserve) {
     // The default allocator, stored as a static object:
-    static const bson_mut_allocator default_vtab = {
-        .reallocate = bson_mut_default_reallocate,
-    };
     if (allocator == NULL) {
         // They didn't provide an allocator: Use the default one
-        allocator = &default_vtab;
+        allocator = &mlib_default_allocator;
     }
     // Create the object:
     bson_mut r                                        = {0};
@@ -356,12 +313,12 @@ inline bson_mut bson_mut_new_ex(const bson_mut_allocator* allocator, uint32_t re
  */
 inline bson_mut bson_mut_new(void) { return bson_mut_new_ex(NULL, 512); }
 
-inline bson_mut_allocator* bson_mut_get_allocator(bson_mut m) {
+inline mlib_allocator* bson_mut_get_allocator(bson_mut m) {
     if (m._capacity_or_negative_offset_within_parent_data < 0) {
         // We are a child document
         return bson_mut_get_allocator(*(bson_mut*)m._parent_mut_or_allocator_context);
     }
-    return (bson_mut_allocator*)m._parent_mut_or_allocator_context;
+    return (mlib_allocator*)m._parent_mut_or_allocator_context;
 }
 
 inline bson_mut bson_mut_copy(bson_mut other) {

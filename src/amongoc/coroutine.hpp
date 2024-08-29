@@ -17,6 +17,7 @@
 #include "./nano/simple.hpp"
 #include "./nano/stop.hpp"
 #include "./nano/util.hpp"
+#include "mlib/alloc.h"
 
 // C library headers
 #include <amongoc/alloc.h>
@@ -206,15 +207,15 @@ struct nanosender_awaitable {
 
 struct coroutine_promise_allocator_mixin {
     struct alloc_state {
-        cxx_allocator<char> alloc;
+        allocator<char> alloc;
         alignas(std::max_align_t) char tail[1];
     };
 
-    // Allocate the coroutine state using our amongoc_allocator
+    // Allocate the coroutine state using our mlib_allocator
     template <typename T>
-    void* operator new(std::size_t n, cxx_allocator<T> const& alloc_, const auto&...) noexcept {
-        cxx_allocator<char> alloc = alloc_;
-        char*               storage;
+    void* operator new(std::size_t n, allocator<T> const& alloc_, const auto&...) noexcept {
+        allocator<char> alloc = alloc_;
+        char*           storage;
         try {
             storage = alloc.allocate(n + sizeof(alloc_state));
         } catch (std::bad_alloc) {
@@ -227,15 +228,13 @@ struct coroutine_promise_allocator_mixin {
     }
 
     // Adapt the C allocator to the C++ interface
-    void* operator new(std::size_t n, const amongoc_allocator& alloc, const auto&...) noexcept {
-        return operator new(n, cxx_allocator<>(alloc));
+    void* operator new(std::size_t n, const mlib_allocator& alloc, const auto&...) noexcept {
+        return operator new(n, allocator<>(alloc));
     }
 
     // Allocate using the allocator from the event loop
     void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) noexcept {
-        return operator new(n,
-                            loop ? loop->get_allocator()
-                                 : cxx_allocator<>{amongoc_default_allocator});
+        return operator new(n, loop ? loop->get_allocator() : allocator<>{mlib_default_allocator});
     }
 
     // Allocate where the first parameter provides an allocator
@@ -251,22 +250,22 @@ struct coroutine_promise_allocator_mixin {
     }
 
     template <typename T>
-    coroutine_promise_allocator_mixin(const cxx_allocator<T>& a, auto&&...)
+    coroutine_promise_allocator_mixin(const allocator<T>& a, auto&&...)
         : alloc(a) {}
 
-    coroutine_promise_allocator_mixin(const amongoc_allocator& a, auto&&...)
+    coroutine_promise_allocator_mixin(const mlib_allocator& a, auto&&...)
         : alloc(a) {}
 
     coroutine_promise_allocator_mixin(amongoc_loop* loop, auto&&...)
-        : alloc(loop ? loop->get_allocator() : cxx_allocator<>{amongoc_default_allocator}) {}
+        : alloc(loop ? loop->get_allocator() : allocator<>{mlib_default_allocator}) {}
 
     template <has_allocator X>
     coroutine_promise_allocator_mixin(const X& x, auto&&...)
         : alloc(amongoc::get_allocator(x)) {}
 
-    cxx_allocator<> alloc;
+    allocator<> alloc;
 
-    cxx_allocator<> get_allocator() const noexcept { return alloc; }
+    allocator<> get_allocator() const noexcept { return alloc; }
 };
 
 /**
@@ -325,7 +324,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         unique_co_handle<emitter_promise> _co;
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
-            return unique_operation::from_starter(terminating_allocator,
+            return unique_operation::from_starter(mlib::terminating_allocator,
                                                   mlib_fwd(hnd),
                                                   starter{NEO_MOVE(_co)});
         }
@@ -335,7 +334,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     amongoc_emitter get_return_object() noexcept {
         auto co = co_handle::from_promise(*this);
         static_assert(box_inlinable_type<connector>);
-        return unique_emitter::from_connector(terminating_allocator,
+        return unique_emitter::from_connector(mlib::terminating_allocator,
                                               connector{unique_co_handle(NEO_MOVE(co))})
             .release();
     }

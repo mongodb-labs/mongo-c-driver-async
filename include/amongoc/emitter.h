@@ -115,8 +115,8 @@ public:
      * @return unique_emitter An emitter that owns the associated connector object
      */
     template <typename F>
-    static unique_emitter from_connector(cxx_allocator<> alloc,
-                                         F&&             fn) noexcept(box_inlinable_type<F>) {
+    static unique_emitter from_connector(allocator<> alloc,
+                                         F&&         fn) noexcept(box_inlinable_type<F>) {
         // Wrap the connector in an object, preserving reference semantics
         struct wrapped {
             AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
@@ -142,7 +142,7 @@ public:
         requires requires(F fn, status st, unique_box ub) {  //
             mlib_fwd(fn)(st, mlib_fwd(ub));
         }
-    unique_operation connect(cxx_allocator<> a, F fn) && {
+    unique_operation connect(allocator<> a, F fn) && {
         return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, mlib_fwd(fn)));
     }
 
@@ -168,7 +168,7 @@ struct nanosender_traits<unique_emitter> {
     static unique_operation connect(unique_emitter&& em, R&& recv) {
         // TODO: A custom allocator here for as_handler?
         return mlib_fwd(em).connect(
-            as_handler(cxx_allocator<>{amongoc_default_allocator}, mlib_fwd(recv)));
+            as_handler(allocator<>{mlib_default_allocator}, mlib_fwd(recv)));
     }
 
     // Special: We receive a handler directly, no need to convert it to a C handler

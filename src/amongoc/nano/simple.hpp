@@ -149,7 +149,7 @@ struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
         auto&                self = self_.as<cxx_recv_as_c_handler>();
         stoppable_token auto tk   = get_stop_token(static_cast<R const&>(self._recv));
         /// TODO: Pass an allocator here
-        return unique_box::make<stop_callback>(cxx_allocator<>{amongoc_default_allocator},
+        return unique_box::make<stop_callback>(allocator<>{mlib_default_allocator},
                                                tk,
                                                stopper{userdata, callback})
             .release();
@@ -170,7 +170,7 @@ struct cxx_recv_as_c_handler<R> : cxx_recv_handler_adaptor_base<R> {
  * is epxected by the nanoreceiver (see `cxx_recv_handler_adaptor_base::invoke`)
  */
 template <typename R>
-unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
+unique_handler as_handler(allocator<> alloc, R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
     /// TODO: What to do if allocation fails here? Let it throw?
@@ -188,7 +188,7 @@ unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
  * @return A new emitter that adapts the nanosender to the C API
  */
 template <nanosender S>
-unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) noexcept {
+unique_emitter as_emitter(allocator<> alloc, S&& sender) noexcept {
     // The composed operation type with a unique_handler. This line will also
     // enforce that the nanosender sends a type that is compatible with the
     // unique_handler::operator()
@@ -217,7 +217,7 @@ unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) noexcept {
 }
 
 // Emitters and handlers are valid senders/receiver, but we don't want to double-wrap them
-unique_handler as_handler(cxx_allocator<>, unique_handler&&) = delete;
-unique_emitter as_emitter(cxx_allocator<>, unique_emitter&&) = delete;
+unique_handler as_handler(allocator<>, unique_handler&&) = delete;
+unique_emitter as_emitter(allocator<>, unique_emitter&&) = delete;
 
 }  // namespace amongoc

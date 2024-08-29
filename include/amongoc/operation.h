@@ -102,10 +102,10 @@ public:
      */
     template <typename F>
     static unique_operation
-    from_starter(cxx_allocator<> a, unique_handler&& hnd, F fn) noexcept(box_inlinable_type<F>) {
+    from_starter(allocator<> a, unique_handler&& hnd, F&& fn) noexcept(box_inlinable_type<F>) {
         amongoc_operation ret;
         ret.handler  = mlib_fwd(hnd).release();
-        ret.userdata = unique_box::from(a, (F&&)(fn)).release();
+        ret.userdata = unique_box::from(a, mlib_fwd(fn)).release();
         static_assert(requires { fn(ret); });
         static_assert(
             not requires(const amongoc_operation& cop) { fn(cop); },

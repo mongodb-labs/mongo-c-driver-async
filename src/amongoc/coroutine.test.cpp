@@ -15,12 +15,12 @@
 
 using namespace amongoc;
 
-emitter basic_coro(amongoc_allocator = amongoc_default_allocator) { co_return 0; }
+emitter basic_coro(mlib_allocator = mlib_default_allocator) { co_return 0; }
 
 TEST_CASE("Coroutine/Basic") {
     auto em      = basic_coro().as_unique();
     bool did_run = false;
-    auto op      = std::move(em).connect(terminating_allocator,
+    auto op      = std::move(em).connect(mlib::terminating_allocator,
                                     [&](status st, unique_box) { did_run = true; });
     op.start();
     CHECK(did_run);
@@ -32,13 +32,11 @@ TEST_CASE("Coroutine/Discard") {
 }
 
 TEST_CASE("Coroutine/Discard After Connect") {
-    auto op = basic_coro().as_unique().connect(terminating_allocator, [](auto...) {});
+    auto op = basic_coro().as_unique().connect(mlib::terminating_allocator, [](auto...) {});
     // Discard the connected operation. Should not leak memory
 }
 
-co_task<int> cxx_coro(cxx_allocator<> = cxx_allocator<>{amongoc_default_allocator}) {
-    co_return 42;
-}
+co_task<int> cxx_coro(allocator<> = allocator<>{mlib_default_allocator}) { co_return 42; }
 
 TEST_CASE("Coroutine/co_task") {
     auto co  = cxx_coro();
@@ -65,11 +63,9 @@ TEST_CASE("Coroutine/Discard co_task operation") {
     CHECK(got == 0);
 }
 
-co_task<std::unique_ptr<int>> returns_unique(cxx_allocator<>) {
-    co_return std::make_unique<int>(42);
-}
+co_task<std::unique_ptr<int>> returns_unique(allocator<>) { co_return std::make_unique<int>(42); }
 
-co_task<std::unique_ptr<int>> nested_returns_unique(cxx_allocator<> a) {
+co_task<std::unique_ptr<int>> nested_returns_unique(allocator<> a) {
     auto co   = returns_unique(a);
     auto iptr = co_await std::move(co);
     *iptr += 81;
@@ -78,7 +74,7 @@ co_task<std::unique_ptr<int>> nested_returns_unique(cxx_allocator<> a) {
 
 TEST_CASE("Coroutine/co_task nested awaiting") {
     std::unique_ptr<int> iptr;
-    auto op = nested_returns_unique(cxx_allocator<>{amongoc_default_allocator}) | tie(iptr);
+    auto op = nested_returns_unique(allocator<>{mlib_default_allocator}) | tie(iptr);
     CHECK_FALSE(iptr);
     op.start();
     CHECK(*iptr == 123);
@@ -88,12 +84,12 @@ struct my_error {
     int value;
 };
 
-co_task<int> throws_an_error(cxx_allocator<>) {
+co_task<int> throws_an_error(allocator<>) {
     throw my_error{1729};
     co_return 42;
 }
 
-co_task<int> catches_an_error(cxx_allocator<> a) {
+co_task<int> catches_an_error(allocator<> a) {
     try {
         co_return co_await throws_an_error(a);
     } catch (my_error e) {
@@ -103,17 +99,17 @@ co_task<int> catches_an_error(cxx_allocator<> a) {
 
 TEST_CASE("Coroutine/Exception propagation") {
     int  got = 0;
-    auto op  = catches_an_error(cxx_allocator<>{amongoc_default_allocator}) | tie(got);
+    auto op  = catches_an_error(allocator<>{mlib_default_allocator}) | tie(got);
     CHECK(got == 0);
     op.start();
     CHECK(got == 1729);
 }
 
-co_task<int> immediate_awaits(cxx_allocator<>) { co_return co_await just(42); }
+co_task<int> immediate_awaits(allocator<>) { co_return co_await just(42); }
 
 TEST_CASE("Coroutine/immediate await") {
     int  got = 0;
-    auto op  = immediate_awaits(cxx_allocator<>{amongoc_default_allocator}) | tie(got);
+    auto op  = immediate_awaits(allocator<>{mlib_default_allocator}) | tie(got);
     CHECK(got == 0);
     op.start();
     CHECK(got == 42);
