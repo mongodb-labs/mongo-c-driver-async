@@ -630,7 +630,10 @@ bson_insert_doc(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_view 
         // doc:
         bson_byte empty_doc[5] = {0};
         empty_doc[0].v         = 5;
-        return bson_insert_doc(doc, pos, key, bson_view_from_data(empty_doc, sizeof doc, NULL));
+        return bson_insert_doc(doc,
+                               pos,
+                               key,
+                               bson_view_from_data(empty_doc, sizeof empty_doc, NULL));
     }
     // We have a document to insert:
     const uint32_t insert_size = bson_size(insert_doc);
