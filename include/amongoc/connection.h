@@ -38,6 +38,8 @@ void amongoc_conn_destroy(amongoc_connection cl) mlib_noexcept;
  * @return amongoc_emitter An emitter that resolves with a bson_mut
  */
 amongoc_emitter amongoc_conn_command(amongoc_connection cl, struct bson_view doc) mlib_noexcept;
+amongoc_emitter amongoc_conn_command_nocopy(amongoc_connection conn,
+                                            struct bson_view   doc) mlib_noexcept;
 
 /**
  * @brief Get the event loop associated with a connection

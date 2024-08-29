@@ -18,7 +18,7 @@ struct _amongoc_connection_cxx {
     explicit _amongoc_connection_cxx(tcp_connection_rw_stream&& conn)
         : _conn(get_allocator(*conn.loop), std::move(conn)) {}
 
-    client<tcp_connection_rw_stream, allocator<>> _conn;
+    raw_connection<tcp_connection_rw_stream, allocator<>> _conn;
 };
 
 emitter amongoc_connection::command(const bson_view& doc) noexcept {
@@ -42,22 +42,28 @@ emitter amongoc_conn_connect(amongoc_loop* loop, const char* name, const char* s
     return _connect(loop, std::string(name), std::string(svc));
 }
 
-emitter amongoc_conn_command(amongoc_connection cl, bson_view doc) noexcept {
-    nanosender_of<emitter_result> auto s
-        = cl._impl->_conn.send_op_msg(doc)
+static nanosender_of<emitter_result> auto _command(amongoc_connection cl, auto doc) noexcept {
+    return cl._impl->_conn.send_op_msg(doc)
         | amongoc::then([cl](result<bson_doc>&& r) -> emitter_result {
-              if (r.has_value()) {
-                  bson_mut m = std::move(r).value().release();
-                  return emitter_result(  //
-                      0,
-                      unique_box::from(get_allocator(cl), m, [](bson_mut& m) {
-                          bson_mut_delete(m);
-                      }));
-              } else {
-                  return emitter_result(r.error());
-              }
-          });
-    return as_emitter(get_allocator(cl), std::move(s)).release();
+               if (r.has_value()) {
+                   bson_mut m = std::move(r).value().release();
+                   return emitter_result(  //
+                       0,
+                       unique_box::from(get_allocator(cl), m, [](bson_mut& m) {
+                           bson_mut_delete(m);
+                       }));
+               } else {
+                   return emitter_result(r.error());
+               }
+           });
+}
+
+emitter amongoc_conn_command(amongoc_connection cl, bson_view doc) noexcept {
+    return as_emitter(cl.get_allocator(), _command(cl, bson_doc(doc))).release();
+}
+
+emitter amongoc_conn_command_nocopy(amongoc_connection cl, bson_view doc) noexcept {
+    return as_emitter(cl.get_allocator(), _command(cl, doc)).release();
 }
 
 void amongoc_conn_destroy(amongoc_connection cl) noexcept {

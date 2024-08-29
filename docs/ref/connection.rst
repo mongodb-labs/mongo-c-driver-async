@@ -45,14 +45,16 @@ Type: `amongoc_connection`
 
 
 .. function::
-  amongoc_emitter [[type(bson_mut)]] amongoc_conn_command(amongoc_connection cl, bson_view doc)
+  amongoc_emitter [[type(bson_mut)]] amongoc_conn_command(amongoc_connection conn, bson_view doc)
+  amongoc_emitter [[type(bson_mut)]] amongoc_conn_command_nocopy(amongoc_connection conn, bson_view doc)
 
-  Issue a connection command against the MongoDB server connected with `cl`
+  Issue a command against the MongoDB server connected with `conn`
 
-  :param cl: An `amongoc_connection` that was connected with `amongoc_conn_connect`.
-  :param doc: View of a BSON document that defines the command. The document
-    data is copied into the emitter so it does not need to be persisted beyond
-    this call.
+  :param conn: An `amongoc_connection` that was connected with `amongoc_conn_connect`.
+  :param doc: View of a BSON document that defines the command. The ``_nocopy``
+    version of this call will not copy the data into the emitter, requiring that
+    the caller ensure the data viewd by `doc` remains valid until the operation
+    completes.
   :return: An `amongoc_emitter` that resolves with a `bson_mut` containing the
     server's response message.
   :allocation: Memory allocation is performed by the event loop of the connection.

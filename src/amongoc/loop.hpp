@@ -70,8 +70,8 @@ struct tcp_connection_rw_stream {
      * @param cb The completion callback
      *
      * NOTE: This doesn't fully conform to the AsyncReadStream, which requires genericity
-     * around the accepted buffer and the completion callback. Here, we only accept a single
-     * buffer and expect a regular completion handler (no CompletionToken support here).
+     * around the completion token. Here, we only accept a regular completion handler (no
+     * CompletionToken support here).
      *
      * This works with the current Asio behavior and how we use the Asio APIs, but could potentially
      * break if Asio changes significantly or we use an API that sends us a CompletionToken. The
@@ -101,18 +101,38 @@ struct tcp_connection_rw_stream {
      *
      * NOTE: See the NOTE above on async_read_some for caveats
      */
-    void async_write_some(asio::const_buffer buf, auto cb) {
-        loop->vtable->tcp_write_some(loop,
-                                     conn,
-                                     static_cast<const char*>(buf.data()),
-                                     buf.size(),
-                                     unique_handler::from(get_allocator(*loop),
-                                                          [cb](status     st,
-                                                               unique_box nwritten) mutable {
-                                                              cb(st.as_error_code(),
-                                                                 nwritten.as<std::size_t>());
-                                                          })
-                                         .release());
+    void async_write_some(asio::const_buffer buf, auto&& cb) {
+        loop->vtable
+            ->tcp_write_some(loop,
+                             conn,
+                             static_cast<const char*>(buf.data()),
+                             buf.size(),
+                             unique_handler::from(get_allocator(*loop),
+                                                  [cb = mlib_fwd(cb)](status     st,
+                                                                      unique_box nwritten) mutable {
+                                                      std::move(cb)(st.as_error_code(),
+                                                                    nwritten.as<std::size_t>());
+                                                  })
+                                 .release());
+    }
+
+    /**
+     * @brief Handle writing a range of buffers.
+     *
+     * This template simply finds the first non-empty buffer in the range and
+     * sends that as a single buffer. A fancier version could potentially use
+     * a vector write.
+     */
+    template <std::ranges::input_range Bufs>
+        requires std::convertible_to<std::ranges::range_reference_t<Bufs>, asio::const_buffer>
+    void async_write_some(Bufs&& bufs, auto&& cb) {
+        for (asio::const_buffer buf : bufs) {
+            // Find the first non-empty buffer, and send that one buffer
+            if (buf.size() != 0) {
+                return async_write_some(buf, mlib_fwd(cb));
+            }
+        }
+        return async_write_some(asio::const_buffer(), cb);
     }
 };
 

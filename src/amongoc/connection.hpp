@@ -2,6 +2,7 @@
 
 #include "./asio/as_sender.hpp"
 #include "./asio/read_write.hpp"
+#include "./buffer.hpp"
 #include "./nano/concepts.hpp"
 #include "./nano/just.hpp"
 #include "./nano/let.hpp"
@@ -34,9 +35,9 @@ namespace amongoc {
 
 template <typename T, typename Alloc = std::allocator<void>>
     requires readable_stream<T> and writable_stream<T>
-class client {
+class raw_connection {
 public:
-    explicit client(Alloc alloc, T&& sock)
+    explicit raw_connection(Alloc alloc, T&& sock)
         : _alloc(alloc)
         , _socket(NEO_FWD(sock)) {}
 
@@ -45,21 +46,32 @@ public:
                             std::char_traits<char>,
                             typename std::allocator_traits<Alloc>::template rebind_alloc<char>>;
 
-    constexpr nanosender_of<result<bson_doc>> auto send_op_msg(bson_view doc) {
-        // Building the message in this string:
-        string_type snd_buf{_alloc};
-        auto        dbuf   = asio::dynamic_buffer(snd_buf);
-        const auto  req_id = _req_id.fetch_add(1);
+    template <typename BSON>
+    constexpr nanosender_of<result<bson_doc>> auto send_op_msg(BSON doc)
+        requires requires {
+            doc.byte_size();
+            doc.data();
+        }
+    {
+        const auto req_id = _req_id.fetch_add(1);
         // Build the operation:
-        _build_op_msg(dbuf, req_id, doc);
+        std::array<char, _op_msg_prefix_size> op_msg_prefix;
+        generic_dynamic_buffer_v1             dbuf{op_msg_prefix};
+        _build_msg_header(dbuf, req_id, doc);
+        assert(dbuf.size() == _op_msg_prefix_size);
         // Use a just() to barrier the initiation of the write operation
         return amongoc::just(std::monostate{})
             // Write the send-buffer
-            | amongoc::let([this, s = NEO_MOVE(snd_buf)](auto) {
-                   return asio::async_write(socket(), asio::buffer(s), asio_as_nanosender);
+            | amongoc::let([this, h = op_msg_prefix, doc = mlib_fwd(doc)](auto) {
+                   // Send two buffers: The message prefix and the BSON body
+                   std::array bufs{asio::buffer(h), asio::buffer(doc.data(), doc.byte_size())};
+                   return asio::async_write(socket(),
+                                            bufs,
+                                            asio::transfer_all(),
+                                            asio_as_nanosender);
                })
             // Read back a message header's worth of data
-            | amongoc::let(result_fmap{std::move([this](std::size_t) {
+            | amongoc::let(result_fmap{std::move([this](std::size_t n) {
                    return asio::async_read(socket(),
                                            asio::dynamic_buffer(_recv_buf),
                                            asio::transfer_exactly(_msg_header_size),
@@ -96,6 +108,9 @@ public:
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
                    });
+                   // Discard data from the receiver buffer
+                   asio::dynamic_buffer(_recv_buf).consume(_msg_header_size + sizeof(std::uint32_t)
+                                                           + 1 + body.byte_size());
                    return NEO_MOVE(body);
                }})  //
             | amongoc::then([](result<bson_doc, asio::error_code>&& r) -> result<bson_doc> {
@@ -112,26 +127,31 @@ public:
 
 public:
     // Size of the MsgHeader (four 32-bit integers)
-    static constexpr std::size_t _msg_header_size = sizeof(std::uint32_t) * 4;
+    static constexpr std::size_t _msg_header_size    = sizeof(std::int32_t) * 4;
+    static constexpr std::size_t _op_msg_prefix_size =  //
+        _msg_header_size                                // Message header
+        + sizeof(std::uint32_t)                         // flag bits
+        + 1                                             // Section kind byte
+        ;
 
     // opcode types for messages
     enum opcode_t { OP_MSG = 2013 };
 
     // Build an OP_MSG into `dbuf`
-    void _build_op_msg(auto& dbuf, std::int32_t req_id, bson_view doc) {
+    void _build_msg_header(auto& dbuf, std::int32_t req_id, bson_view doc) {
         // Compute the total message size (no checksum)
         const auto message_total_size  //
-            = _msg_header_size         // Message header
-            + sizeof(uint32_t)         // flag bits
-            + 1u                       // Section kind byte
+            = _op_msg_prefix_size      // Message header, flags, and section byte
             + doc.byte_size();         // Size of section body
         // Add a message header with a new request ID
         _append_msg_header(dbuf, message_total_size, req_id, 0, OP_MSG);
         // Add flag bits. (none set yet)
         std::uint32_t flag_bits = 0;
         _append_int_le(dbuf, flag_bits);
-        // Add the body section
-        _append_body_section(dbuf, doc);
+        // Add a single zero byte to be the section header
+        auto one                    = dbuf.prepare(1);
+        asio::buffers_begin(one)[0] = 0;
+        dbuf.commit(1);
     }
 
     // Append a message header to `dbuf`
@@ -140,23 +160,10 @@ public:
                                    std::uint32_t request_id,
                                    std::uint32_t response_id,
                                    opcode_t      op) {
-        auto mbuf = dbuf.prepare(_msg_header_size);
         _append_int_le(dbuf, message_size);       // Message size
         _append_int_le(dbuf, request_id);         // Request ID counter
         _append_int_le(dbuf, response_id);        // Response ID (unused for requests)
         _append_int_le(dbuf, std::uint32_t(op));  // Opcode
-    }
-
-    // Append a message "Body" section to `dbuf`
-    void _append_body_section(auto& dbuf, bson_view doc) {
-        const auto section_size = doc.byte_size() + 1u;
-        const auto mbuf         = dbuf.prepare(section_size);
-        // Set the first kind byte
-        asio::buffers_begin(mbuf)[0] = char{0};  // kind 0 → "Body" (bson doc)
-        // Append document
-        asio::buffer_copy(mbuf + 1, asio::const_buffer(doc.data(), doc.byte_size()));
-        // Finish this section:
-        dbuf.commit(section_size);
     }
 
     Alloc _alloc;
@@ -210,6 +217,6 @@ public:
 };
 
 template <typename A, typename T>
-explicit client(A, T&&) -> client<T, A>;
+explicit raw_connection(A, T&&) -> raw_connection<T, A>;
 
 }  // namespace amongoc
