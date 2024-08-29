@@ -95,11 +95,11 @@ struct cxx_recv_handler_adaptor_base<R> {
     NEO_NO_UNIQUE_ADDRESS neo::object_t<R> _recv;
 
     void invoke(status st, box&& res) {
-        auto val = AM_FWD(res).as_unique();
+        auto val = mlib_fwd(res).as_unique();
         if (st.is_error()) {
             static_cast<R&&>(_recv)(result<unique_box>(error(st)));
         } else {
-            static_cast<R&&>(_recv)(result<unique_box>(success(AM_FWD(val))));
+            static_cast<R&&>(_recv)(result<unique_box>(success(mlib_fwd(val))));
         }
     }
 };
@@ -174,9 +174,9 @@ unique_handler as_handler(cxx_allocator<> alloc, R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
     /// TODO: What to do if allocation fails here? Let it throw?
-    ret.userdata = unique_box::from(alloc, adaptor_type{{AM_FWD(cxx_recv)}}).release();
+    ret.userdata = unique_box::from(alloc, adaptor_type{{mlib_fwd(cxx_recv)}}).release();
     ret.vtable   = &adaptor_type::handler_vtable;
-    return AM_FWD(ret).as_unique();
+    return mlib_fwd(ret).as_unique();
 };
 
 /**
@@ -209,7 +209,7 @@ unique_emitter as_emitter(cxx_allocator<> alloc, S&& sender) noexcept {
                 oper.start_callback = [](amongoc_operation* self) noexcept {
                     self->userdata.view.as<operation_type>().start();
                 };
-                return AM_FWD(oper).as_unique();
+                return mlib_fwd(oper).as_unique();
             });
     } catch (std::bad_alloc) {
         return amongoc_alloc_failure().as_unique();

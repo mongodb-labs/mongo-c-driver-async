@@ -1,15 +1,15 @@
 #pragma once
 
-#include "./config.h"
+#include <mlib/config.h>
 
 #include <stddef.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 #include <memory>
 #endif
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief An object that provides memory allocation functionality, can be used
@@ -42,7 +42,7 @@ struct amongoc_allocator {
                         void*   prev_ptr,
                         size_t  requested_size,
                         size_t  previous_size,
-                        size_t* out_new_size)AMONGOC_NOEXCEPT;
+                        size_t* out_new_size)mlib_noexcept;
 };
 
 /**
@@ -50,14 +50,14 @@ struct amongoc_allocator {
  *
  * Returns NULL on allocation failure.
  */
-inline void* amongoc_allocate(amongoc_allocator alloc, size_t sz) AMONGOC_NOEXCEPT {
+inline void* amongoc_allocate(amongoc_allocator alloc, size_t sz) mlib_noexcept {
     return alloc.reallocate(alloc.userdata, NULL, sz, 0, &sz);
 }
 
 /**
  * @brief Deallocate a region that was obtained from the given `amongoc_allocator`
  */
-inline void amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) AMONGOC_NOEXCEPT {
+inline void amongoc_deallocate(amongoc_allocator alloc, void* p, size_t sz) mlib_noexcept {
     alloc.reallocate(alloc.userdata, p, 0, sz, &sz);
 }
 
@@ -74,9 +74,9 @@ extern const amongoc_allocator amongoc_default_allocator;
  */
 extern const amongoc_allocator amongoc_terminating_allocator;
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 namespace amongoc {
 
 struct get_allocator_fn {

@@ -46,7 +46,7 @@ namespace {
 
 // Takes an arbitrary value and wraps it in an amongoc_box
 auto as_box = [](cxx_allocator<> alloc) {
-    return [alloc](auto&& x) { return unique_box::from(alloc, AM_FWD(x)); };
+    return [alloc](auto&& x) { return unique_box::from(alloc, mlib_fwd(x)); };
 };
 
 using cancellation_ticket = pool<asio::cancellation_signal>::ticket;
@@ -86,7 +86,7 @@ public:
 
     // Handler for Asio operations that complete with a value and an error code (most operations)
     void operator()(asio::error_code ec, auto&& res) {
-        _handler.complete(status::from(ec), std::move(_transform)(AM_FWD(res)));
+        _handler.complete(status::from(ec), std::move(_transform)(mlib_fwd(res)));
     }
 
     // Expose the cancellation slot to asio::associated_cancellation_slot
@@ -129,14 +129,14 @@ struct default_loop {
     // TODO: Define behavior when the below operations fail to allocate memory.
 
     void call_soon(status st, box res, amongoc_handler h) {
-        asio::post(ioc, [st, res = AM_FWD(res).as_unique(), h = AM_FWD(h).as_unique()] mutable {
-            h.complete(st, AM_FWD(res));
+        asio::post(ioc, [st, res = mlib_fwd(res).as_unique(), h = mlib_fwd(h).as_unique()] mutable {
+            h.complete(st, mlib_fwd(res));
         });
     }
 
     void call_later(std::timespec dur_ts, box value_, amongoc_handler handler) {
-        auto uh    = AM_FWD(handler).as_unique();
-        auto value = AM_FWD(value_).as_unique();
+        auto uh    = mlib_fwd(handler).as_unique();
+        auto value = mlib_fwd(value_).as_unique();
         auto timer = _timers.checkout([this] { return asio::steady_timer{ioc}; });
         auto dur   = std::chrono::seconds(dur_ts.tv_sec) + std::chrono::nanoseconds(dur_ts.tv_nsec);
         try {
@@ -147,30 +147,30 @@ struct default_loop {
         }
         auto go = timer->async_wait(asio::deferred);
         std::move(go)(asio::consign(adapt_handler(alloc,
-                                                  AM_FWD(uh),
-                                                  konst(AM_FWD(value)),
+                                                  mlib_fwd(uh),
+                                                  konst(mlib_fwd(value)),
                                                   _cancel_signals.checkout()),
                                     NEO_MOVE(timer)));
     }
 
     void getaddrinfo(const char* name, const char* svc, amongoc_handler hnd) {
-        auto uh  = AM_FWD(hnd).as_unique();
+        auto uh  = mlib_fwd(hnd).as_unique();
         auto res = _resolvers.checkout([&] { return tcp::resolver{ioc}; });
         auto go  = res->async_resolve(name, svc, asio::deferred);
         std::move(go)(asio::consign(adapt_handler(alloc,
-                                                  AM_FWD(uh),
+                                                  mlib_fwd(uh),
                                                   as_box(alloc),
                                                   _cancel_signals.checkout()),
                                     NEO_MOVE(res)));
     }
 
     void tcp_connect(amongoc_view ai, amongoc_handler on_connect) {
-        auto uh   = AM_FWD(on_connect).as_unique();
+        auto uh   = mlib_fwd(on_connect).as_unique();
         auto sock = std::make_unique<tcp::socket>(ioc);
         auto go   = asio::async_connect(*sock, ai.as<tcp_resolve_results>(), asio::deferred);
         std::move(go)(adapt_handler(
             alloc,
-            AM_FWD(uh),
+            mlib_fwd(uh),
             [sock = NEO_MOVE(sock), this](asio::ip::tcp::endpoint) {
                 // Discard the endpoint and return the connected socket
                 return unique_box::from(alloc, NEO_MOVE(*sock));
@@ -182,19 +182,19 @@ struct default_loop {
                         const char*     data,
                         std::size_t     maxlen,
                         amongoc_handler on_write) {
-        auto uh = AM_FWD(on_write).as_unique();
+        auto uh = mlib_fwd(on_write).as_unique();
         sock.as<tcp::socket>().async_write_some(asio::buffer(data, maxlen),
                                                 adapt_handler(alloc,
-                                                              AM_FWD(uh),
+                                                              mlib_fwd(uh),
                                                               as_box(alloc),
                                                               _cancel_signals.checkout()));
     }
 
     void tcp_read_some(amongoc_view sock, char* data, std::size_t maxlen, amongoc_handler on_read) {
-        auto uh = AM_FWD(on_read).as_unique();
+        auto uh = mlib_fwd(on_read).as_unique();
         sock.as<tcp::socket>().async_read_some(asio::buffer(data, maxlen),
                                                adapt_handler(alloc,
-                                                             AM_FWD(uh),
+                                                             mlib_fwd(uh),
                                                              as_box(alloc),
                                                              _cancel_signals.checkout()));
     }
@@ -210,7 +210,7 @@ struct adapt_memfun_x<F, void (default_loop::*)(Args...)> {
     // A free function that takes a type-erased default_loop and invokes the bound member function.
     // Presents a signature based on the signature of the target member function
     static void ap(amongoc_loop* self, Args... args) noexcept {
-        return (amongoc_box_cast(default_loop)(self->userdata).*F)(AM_FWD(args)...);
+        return (amongoc_box_cast(default_loop)(self->userdata).*F)(mlib_fwd(args)...);
     }
 };
 

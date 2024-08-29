@@ -21,14 +21,14 @@ emitter returns_42() {
 TEST_CASE("Async/Just") {
     auto        em = returns_42().as_unique();
     amongoc_box got;
-    auto        op = amongoc_tie(AM_FWD(em).release(), nullptr, &got).as_unique();
+    auto        op = amongoc_tie(mlib_fwd(em).release(), nullptr, &got).as_unique();
     op.start();
     CHECK(got.view.as<int>() == 42);
 }
 
 TEST_CASE("Async/Transform with the C API") {
     auto em = returns_42().as_unique();
-    em      = amongoc_then(AM_FWD(em).release(),
+    em      = amongoc_then(mlib_fwd(em).release(),
                       amongoc_async_default,
                       amongoc_default_allocator,
                       amongoc_nil,
@@ -68,7 +68,7 @@ TEST_CASE("Async/Timeout") {
 TEST_CASE("Async/then_just") {
     auto em
         = amongoc_just(amongoc_okay, amongoc_box_int(42), amongoc_default_allocator).as_unique();
-    em = amongoc_then_just(AM_FWD(em).release(),
+    em = amongoc_then_just(mlib_fwd(em).release(),
                            amongoc_async_forward_errors,
                            amongoc_okay,
                            amongoc_box_int(1729),
@@ -76,7 +76,7 @@ TEST_CASE("Async/then_just") {
              .as_unique();
     status st;
     box    val;
-    auto   op = amongoc_tie(AM_FWD(em).release(), &st, &val).as_unique();
+    auto   op = amongoc_tie(mlib_fwd(em).release(), &st, &val).as_unique();
     op.start();
     CHECK(st.code == 0);
     CHECK(st.category == &amongoc_generic_category);
@@ -102,7 +102,7 @@ TEST_CASE("Async/let") {
                           })
                   .as_unique();
     amongoc_box fin = amongoc_nil;
-    auto        op  = amongoc_tie(AM_FWD(em).release(), nullptr, &fin);
+    auto        op  = amongoc_tie(mlib_fwd(em).release(), nullptr, &fin);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
     amongoc_operation_destroy(op);

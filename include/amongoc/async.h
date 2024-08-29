@@ -10,12 +10,13 @@
 
 #include "./alloc.h"
 #include "./box.h"
-#include "./config.h"
 #include "./emitter.h"
 #include "./loop.h"
 #include "./status.h"
 
-AMONGOC_EXTERN_C_BEGIN
+#include <mlib/config.h>
+
+mlib_extern_c_begin();
 
 /**
  * @brief Function type for the `amongoc_then` transformation callback
@@ -30,7 +31,7 @@ AMONGOC_EXTERN_C_BEGIN
  */
 typedef amongoc_box (*amongoc_then_transformer)(amongoc_box     userdata,
                                                 amongoc_status* status,
-                                                amongoc_box     value) AMONGOC_NOEXCEPT;
+                                                amongoc_box     value) mlib_noexcept;
 
 /**
  * @brief Function type for the `amongoc_let` transformation callback
@@ -44,7 +45,7 @@ typedef amongoc_box (*amongoc_then_transformer)(amongoc_box     userdata,
  */
 typedef amongoc_emitter (*amongoc_let_transformer)(amongoc_box    userdata,
                                                    amongoc_status status,
-                                                   amongoc_box    value) AMONGOC_NOEXCEPT;
+                                                   amongoc_box    value) mlib_noexcept;
 
 /// Flags to control the behavior of asynchronous utilities
 enum amongoc_async_flags {
@@ -79,7 +80,7 @@ amongoc_emitter amongoc_then(amongoc_emitter em,
                              enum amongoc_async_flags,
                              amongoc_allocator        alloc,
                              amongoc_box              userdata,
-                             amongoc_then_transformer tr) AMONGOC_NOEXCEPT;
+                             amongoc_then_transformer tr) mlib_noexcept;
 
 /**
  * @brief Transform the result of an asynchronous operation and continue to a
@@ -98,7 +99,7 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
                             enum amongoc_async_flags flags,
                             amongoc_allocator        alloc,
                             amongoc_box              userdata,
-                            amongoc_let_transformer  tr) AMONGOC_NOEXCEPT;
+                            amongoc_let_transformer  tr) mlib_noexcept;
 
 /**
  * @brief Create an emitter that resolves immediately with the given status and value
@@ -109,7 +110,7 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
  * when its associated operation is started.
  */
 amongoc_emitter
-amongoc_just(amongoc_status st, amongoc_box value, amongoc_allocator alloc) AMONGOC_NOEXCEPT;
+amongoc_just(amongoc_status st, amongoc_box value, amongoc_allocator alloc) mlib_noexcept;
 
 /**
  * @brief Create a continuation that replaces an emitter's result with the given
@@ -127,7 +128,7 @@ amongoc_emitter amongoc_then_just(amongoc_emitter          in,
                                   enum amongoc_async_flags flags,
                                   amongoc_status           st,
                                   amongoc_box              value,
-                                  amongoc_allocator        alloc) AMONGOC_NOEXCEPT;
+                                  amongoc_allocator        alloc) mlib_noexcept;
 
 /**
  * @brief Schedule a completion on the given event loop.
@@ -166,12 +167,12 @@ amongoc_emitter amongoc_schedule_later(amongoc_loop* loop, struct timespec d);
  * If the timeout occurs, then the associated operation will be cancelled.
  */
 amongoc_emitter
-amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) AMONGOC_NOEXCEPT;
+amongoc_timeout(amongoc_loop* loop, amongoc_emitter em, struct timespec d) mlib_noexcept;
 
 /**
  * @brief Create an emitter that immediately resolves with ENOMEM
  */
-amongoc_emitter amongoc_alloc_failure() AMONGOC_NOEXCEPT;
+amongoc_emitter amongoc_alloc_failure() mlib_noexcept;
 
 /**
  * @brief Create an operation from an emitter which will store the final result
@@ -188,13 +189,13 @@ amongoc_emitter amongoc_alloc_failure() AMONGOC_NOEXCEPT;
  * @note The pointed-to locations must remain valid until the operation is complete or is destroyed
  */
 amongoc_operation
-amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT;
+amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) mlib_noexcept;
 
 /**
  * @brief Create a "detached" operation from an emitter. This returns a simple operation
  * object that can be started. The final result from the emitter will simply be destroyed
  * when it resolves.
  */
-amongoc_operation amongoc_detach(amongoc_emitter emit) AMONGOC_NOEXCEPT;
+amongoc_operation amongoc_detach(amongoc_emitter emit) mlib_noexcept;
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();

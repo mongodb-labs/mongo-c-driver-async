@@ -1,15 +1,15 @@
 #pragma once
 
-#include "./config.h"
+#include <mlib/config.h>
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 #include <string>
 #include <system_error>
 #endif
 
 typedef struct amongoc_status amongoc_status;
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief Virtual table for customizing the behavior of `amongoc_status`
@@ -28,7 +28,7 @@ struct amongoc_status_category_vtable {
     bool (*is_timeout)(int code);
 };
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
 /**
  * @brief Status categories for amongoc_status
@@ -59,7 +59,7 @@ struct amongoc_status {
     // The error code integer value
     int code;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     amongoc_status() noexcept
         : category(&amongoc_generic_category)
         , code(0) {}
@@ -95,7 +95,7 @@ struct amongoc_status {
 /**
  * @brief Test whether the given status code represents an error condition.
  */
-static inline bool amongoc_is_error(amongoc_status st) AMONGOC_NOEXCEPT {
+static inline bool amongoc_is_error(amongoc_status st) mlib_noexcept {
     // If the category defines a way to check for errors, ask the category
     if (st.category->is_error) {
         return st.category->is_error(st.code);
@@ -108,14 +108,14 @@ static inline bool amongoc_is_error(amongoc_status st) AMONGOC_NOEXCEPT {
 /**
  * @brief Return `true` if the given status represents a cancellation
  */
-static inline bool amongoc_is_cancellation(amongoc_status st) AMONGOC_NOEXCEPT {
+static inline bool amongoc_is_cancellation(amongoc_status st) mlib_noexcept {
     return st.category->is_cancellation && st.category->is_cancellation(st.code);
 }
 
 /**
  * @brief Return `true` if the given status represents an operational time-out
  */
-static inline bool amongoc_is_timeout(amongoc_status st) AMONGOC_NOEXCEPT {
+static inline bool amongoc_is_timeout(amongoc_status st) mlib_noexcept {
     return st.category->is_timeout && st.category->is_timeout(st.code);
 }
 
@@ -129,9 +129,9 @@ static inline char* amongoc_status_strdup_message(amongoc_status s) {
     return s.category->strdup_message(s.code);
 }
 
-#define amongoc_okay (AMONGOC_INIT(amongoc_status){&amongoc_generic_category, 0})
+#define amongoc_okay (mlib_init(amongoc_status){&amongoc_generic_category, 0})
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 namespace amongoc {
 
 using status = ::amongoc_status;

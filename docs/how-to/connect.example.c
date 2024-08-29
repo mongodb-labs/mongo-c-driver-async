@@ -24,8 +24,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent);
  * @param resp_data A `bson_mut` object that contains the response message
  * @return amongoc_box Returns `amongoc_nil`
  */
-amongoc_box
-after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) AMONGOC_NOEXCEPT {
+amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
     bson_view resp = bson_view_of(amongoc_box_cast(bson_mut)(resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
@@ -43,9 +42,8 @@ after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) AMONG
  * @param client_box An `amongoc_client`
  * @return amongoc_emitter
  */
-amongoc_emitter after_connect_say_hello(amongoc_box state_ptr,
-                                        amongoc_status,
-                                        amongoc_box client_box) AMONGOC_NOEXCEPT {
+amongoc_emitter
+after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box client_box) {
     printf("Connected to server\n");
     // Store the client in our app state
     amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->client, client_box);

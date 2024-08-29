@@ -36,18 +36,18 @@ emitter amongoc_then(emitter                  in,
                cxx_allocator<>{alloc},
                amongoc::then(  //
                    NEO_MOVE(in).as_unique(),
-                   [userdata = AM_FWD(userdata_).as_unique(), flags, tr](
+                   [userdata = mlib_fwd(userdata_).as_unique(), flags, tr](
                        emitter_result&& res) mutable noexcept -> emitter_result {
                        if ((flags & amongoc_async_forward_errors) and res.status.is_error()) {
                            // The result is errant and the caller wants to forward errors without
                            // transforming them. Return it now.
-                           return AM_FWD(res);
+                           return mlib_fwd(res);
                        }
-                       res.value = tr(AM_FWD(userdata).release(),
+                       res.value = tr(mlib_fwd(userdata).release(),
                                       &res.status,
-                                      AM_FWD(res).value.release())
+                                      mlib_fwd(res).value.release())
                                        .as_unique();
-                       return AM_FWD(res);
+                       return mlib_fwd(res);
                    }))
         .release();
 }
@@ -61,33 +61,33 @@ emitter amongoc_let(emitter                 op,
     // transformer may return another `amongoc_let` emitter, which would lead to unbounded recursive
     // awaiting.
     nanosender_of<emitter_result> auto l = amongoc::let(  //
-        AM_FWD(op).as_unique(),
-        [flags, userdata = AM_FWD(userdata_).as_unique(), tr, alloc](
+        mlib_fwd(op).as_unique(),
+        [flags, userdata = mlib_fwd(userdata_).as_unique(), tr, alloc](
             emitter_result&& res) mutable -> unique_emitter {
             if ((flags & amongoc_async_forward_errors) and res.status.is_error()) {
                 // The caller wants us to forward errors directly, so just return the
                 // error immediately
-                return amongoc_just(res.status, AM_FWD(res).value.release(), alloc).as_unique();
+                return amongoc_just(res.status, mlib_fwd(res).value.release(), alloc).as_unique();
             }
             // Call the transformer to obtain the next emitter. amongoc::let will handle
             // connecting and starting it.
-            return tr(AM_FWD(userdata).release(), res.status, AM_FWD(res).value.release())
+            return tr(mlib_fwd(userdata).release(), res.status, mlib_fwd(res).value.release())
                 .as_unique();
         });
-    return as_emitter(cxx_allocator<>{alloc}, AM_FWD(l)).release();
+    return as_emitter(cxx_allocator<>{alloc}, mlib_fwd(l)).release();
 }
 
 emitter amongoc_just(status st, box value, amongoc_allocator alloc) noexcept {
     try {
         return unique_emitter::from_connector(  //
                    cxx_allocator<>{alloc},      //
-                   [value = AM_FWD(value).as_unique(), st, alloc](
+                   [value = mlib_fwd(value).as_unique(), st, alloc](
                        unique_handler&& hnd) mutable -> unique_operation {
                        return unique_operation::from_starter(  //
                            cxx_allocator<>{alloc},
-                           AM_FWD(hnd),
-                           [value = AM_FWD(value), st](amongoc_operation& op) mutable {
-                               op.handler.complete(st, AM_FWD(value));
+                           mlib_fwd(hnd),
+                           [value = mlib_fwd(value), st](amongoc_operation& op) mutable {
+                               op.handler.complete(st, mlib_fwd(value));
                            });
                    })
             .release();
@@ -103,7 +103,7 @@ emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
                    [=](unique_handler h) {
                        return unique_operation::from_starter(  //
                            get_allocator(*loop),
-                           AM_FWD(h),
+                           mlib_fwd(h),
                            [loop, duration_us](amongoc_operation& op) mutable {
                                loop->vtable
                                    ->call_later(loop,
@@ -125,9 +125,9 @@ emitter amongoc_schedule(amongoc_loop* loop) {
 }
 
 amongoc_operation
-amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMONGOC_NOEXCEPT {
+amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) mlib_noexcept {
     // Connect to a handler that stores the result values in the pointed-to locations
-    return AM_FWD(em)
+    return mlib_fwd(em)
         .as_unique()
         .connect(terminating_allocator,
                  [status, value](amongoc_status st, unique_box&& val) {
@@ -135,15 +135,15 @@ amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) AMON
                          *status = st;
                      }
                      if (value) {
-                         *value = AM_FWD(val).release();
+                         *value = mlib_fwd(val).release();
                      }
                  })
         .release();
 }
 
-amongoc_operation amongoc_detach(amongoc_emitter em) AMONGOC_NOEXCEPT {
+amongoc_operation amongoc_detach(amongoc_emitter em) mlib_noexcept {
     // Connect to a handler that simply discards the result values
-    return AM_FWD(em).as_unique().connect(terminating_allocator, [](auto&&...) {}).release();
+    return mlib_fwd(em).as_unique().connect(terminating_allocator, [](auto&&...) {}).release();
 }
 
 emitter amongoc_then_just(amongoc_emitter          in,
@@ -153,14 +153,14 @@ emitter amongoc_then_just(amongoc_emitter          in,
                           amongoc_allocator        alloc) noexcept {
     return as_emitter(cxx_allocator<>{alloc},
                       amongoc::then(  //
-                          AM_FWD(in).as_unique(),
-                          [flags, st, value = AM_FWD(value).as_unique()](
+                          mlib_fwd(in).as_unique(),
+                          [flags, st, value = mlib_fwd(value).as_unique()](
                               emitter_result&& res) mutable {
                               if ((flags & amongoc_async_forward_errors)
                                   and res.status.is_error()) {
-                                  return AM_FWD(res);
+                                  return mlib_fwd(res);
                               }
-                              return emitter_result(st, AM_FWD(value));
+                              return emitter_result(st, mlib_fwd(value));
                           }))
         .release();
 }

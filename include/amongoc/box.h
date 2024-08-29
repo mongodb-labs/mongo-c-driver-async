@@ -1,5 +1,9 @@
 #pragma once
 
+#include "./alloc.h"
+
+#include <mlib/config.h>
+
 #include <stdalign.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -7,14 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 #include <memory>
 #include <new>
 #include <type_traits>
 #endif
-
-#include "./alloc.h"
-#include "./config.h"
 
 /**
  * @brief A generic type-erased relocatable value container.
@@ -55,7 +56,7 @@
  */
 typedef struct amongoc_box amongoc_box;
 
-typedef void (*amongoc_box_destructor)(void*) AMONGOC_NOEXCEPT;
+typedef void (*amongoc_box_destructor)(void*) mlib_noexcept;
 
 /// The total size of an amongoc_box object
 enum {
@@ -78,7 +79,7 @@ struct _amongoc_dynamic_box {
     amongoc_allocator      alloc;
     amongoc_box_destructor destroy;
     size_t                 size;
-    AMONGOC_ALIGNAS(max_align_t) char object[1];
+    mlib_alignas(max_align_t) char object[1];
 };
 
 union _amongoc_box_union {
@@ -95,7 +96,7 @@ struct _amongoc_box_storage {
     unsigned char has_dtor : 1;
 };
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 namespace amongoc {
 
 class unique_box;
@@ -141,7 +142,7 @@ typedef struct amongoc_view amongoc_view;
 struct amongoc_view {
     struct _amongoc_box_storage _storage;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     template <typename T>
     T& as() const noexcept;
 #endif
@@ -153,7 +154,7 @@ struct amongoc_box {
         struct _amongoc_box_storage _storage;
     };
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     /**
      * @brief Low-level: Prepare storage for an object of type `T` with the given
      * destructor function
@@ -178,7 +179,8 @@ struct amongoc_box {
 #endif
 };
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
+
 /**
  * @internal
  * @brief Initialize the given amongoc_box for storage of a type with the given size and destructor
@@ -195,7 +197,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
                                            bool                   allow_inline,
                                            size_t                 size,
                                            amongoc_box_destructor dtor,
-                                           amongoc_allocator      alloc) AMONGOC_NOEXCEPT {
+                                           amongoc_allocator      alloc) mlib_noexcept {
     if (allow_inline && !dtor && size <= AMONGOC_BOX_SMALL_SIZE) {
         // Store as a trivial object with no destructor
         box->_storage.is_dynamic = 0;
@@ -240,7 +242,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
  *
  * @param box The box to be freed
  */
-static inline void amongoc_box_free_storage(amongoc_box box) AMONGOC_NOEXCEPT {
+static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
     if (box._storage.is_dynamic) {
         amongoc_deallocate(box._storage.u.dynamic->alloc,
                            box._storage.u.dynamic,
@@ -252,7 +254,7 @@ static inline void amongoc_box_free_storage(amongoc_box box) AMONGOC_NOEXCEPT {
  * @internal
  * @brief Obtain a pointer to the value stored within a box
  */
-static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) AMONGOC_NOEXCEPT {
+static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_noexcept {
     if (stor->is_dynamic) {
         return stor->u.dynamic->object;
     } else {
@@ -271,7 +273,7 @@ static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) AMONGO
  *
  * @param box The box to destroy
  */
-static inline void amongoc_box_destroy(amongoc_box box) AMONGOC_NOEXCEPT {
+static inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
     if (box._storage.has_dtor) {
         // Box has a destructor function
         if (box._storage.is_dynamic) {
@@ -288,7 +290,7 @@ static inline void amongoc_box_destroy(amongoc_box box) AMONGOC_NOEXCEPT {
     amongoc_box_free_storage(box);
 }
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
 /**
  * @brief Initialize an amongoc_box to contain storage for a new T.
@@ -319,11 +321,8 @@ AMONGOC_EXTERN_C_END
 #define amongoc_box_init_noinline(Box, T, ...) _amongoc_box_init_impl(Box, T, false, __VA_ARGS__)
 
 #define _amongoc_box_init_impl(Box, T, AllowInline, ...)                                           \
-    _amongoc_paste(_amongoc_box_init_impl_argc_,                                                   \
-                   _amongocArgCount(~, ~, ~__VA_OPT__(, ) __VA_ARGS__))(Box,                       \
-                                                                        T,                         \
-                                                                        AllowInline __VA_OPT__(, ) \
-                                                                            __VA_ARGS__)
+    MLIB_PASTE(_amongoc_box_init_impl_argc_, MLIB_ARG_COUNT(~, ~, ~__VA_OPT__(, ) __VA_ARGS__))    \
+    (Box, T, AllowInline __VA_OPT__(, ) __VA_ARGS__)
 
 #define _amongoc_box_init_impl_argc_3(Box, T, AllowInline)                                         \
     (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), NULL, amongoc_default_allocator)
@@ -352,9 +351,9 @@ AMONGOC_EXTERN_C_END
  * @brief A special amongoc_box value that represents no value. It is safe to
  * discard this value.
  */
-#define amongoc_nil (AMONGOC_INIT(amongoc_box){})
+#define amongoc_nil (mlib_init(amongoc_box){})
 
-static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) AMONGOC_NOEXCEPT {
+static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
     memcpy(dst, _amongocBoxDataPtr(&box->_storage), sz);
     amongoc_box_free_storage(*box);
     *box = amongoc_nil;
@@ -382,7 +381,7 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
     static_assert(1, "");
 
 #define DECLARE_BOX_EZ(Name, Type)                                                                 \
-    static inline amongoc_box amongoc_box_##Name(Type val) AMONGOC_NOEXCEPT {                      \
+    static inline amongoc_box amongoc_box_##Name(Type val) mlib_noexcept {                         \
         amongoc_box b;                                                                             \
         *amongoc_box_init(b, Type) = val;                                                          \
         return b;                                                                                  \
@@ -411,7 +410,7 @@ DECLARE_BOX_EZ(int64, int64_t)
 DECLARE_BOX_EZ(uint64, uint64_t)
 #undef DECLARE_BOX_EZ
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 
 namespace amongoc {
 
@@ -471,7 +470,7 @@ public:
      */
     template <typename T>
     static unique_box from(cxx_allocator<> alloc, T&& value) {
-        return make<std::decay_t<T>>(alloc, AM_FWD(value));
+        return make<std::decay_t<T>>(alloc, mlib_fwd(value));
     }
 
     // Prevent users from accidentally box-ing a box
@@ -506,8 +505,8 @@ public:
         // Make storage
         T* ptr = ret.prepare_storage<T>(alloc, dtor);
         // Placement-new the object
-        new (ptr) T(AM_FWD(obj));
-        return AM_FWD(ret).as_unique();
+        new (ptr) T(mlib_fwd(obj));
+        return mlib_fwd(ret).as_unique();
     }
 
     /**
@@ -519,7 +518,7 @@ public:
      */
     template <typename T, typename... Args>
     static unique_box make(cxx_allocator<> alloc,
-                           Args&&... args) noexcept(noexcept(T(AM_FWD(args)...))
+                           Args&&... args) noexcept(noexcept(T(mlib_fwd(args)...))
                                                     and box_inlinable_type<T>) {
         amongoc_box ret;
         T*          ptr;
@@ -534,10 +533,10 @@ public:
             ptr = ret.prepare_storage<T>(alloc, indirect_destroy<T>);
         }
         // Placement-new the object into storage
-        if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(AM_FWD(args)...))) {
+        if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(mlib_fwd(args)...))) {
             // No exception handling required: The constructor cannot throw OR we didn't allocate
             // any dynamic storage and there is nothing that would need to be freed
-            new (ptr)(T)(AM_FWD(args)...);
+            new (ptr)(T)(mlib_fwd(args)...);
         } else {
             // We will need to free the storage if the constructor throws
             try {
@@ -547,7 +546,7 @@ public:
                 throw;
             }
         }
-        return AM_FWD(ret).as_unique();
+        return mlib_fwd(ret).as_unique();
     }
 
 private:

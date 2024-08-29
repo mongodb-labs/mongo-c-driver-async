@@ -1,14 +1,15 @@
-#ifndef BSON_BUILD_H_INCLUDED
-#define BSON_BUILD_H_INCLUDED
+#pragma once
 
 #include "./view.h"
+
+#include <mlib/config.h>
 
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 #include <string_view>
 #endif
 
@@ -25,7 +26,7 @@
     } else                                                                                         \
         ((void)0)
 
-BSON2_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @internal
@@ -35,7 +36,7 @@ BSON2_EXTERN_C_BEGIN
  * @param bytes The destination to write into
  * @param v The value to write
  */
-inline bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) BSON2_NOEXCEPT {
+inline bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mlib_noexcept {
     uint32_t v = (uint32_t)i32;
     bytes[0].v = (v >> 0) & 0xff;
     bytes[1].v = (v >> 8) & 0xff;
@@ -52,7 +53,7 @@ inline bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) BSON2_NOEXC
  * @param bytes The destination of the write
  * @param v  The value to write
  */
-inline bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) BSON2_NOEXCEPT {
+inline bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) mlib_noexcept {
     const uint64_t u64 = (uint64_t)i64;
     out                = _bson_write_int32le(out, (int32_t)u64);
     out                = _bson_write_int32le(out, (int32_t)(u64 >> 32));
@@ -68,7 +69,7 @@ inline bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) BSON2_NOEXCEP
  * @param len The number of bytes to copy
  * @return bson_byte* The value of (out + len)
  */
-inline bson_byte* _bson_memcpy(bson_byte* out, const void* src, uint32_t len) BSON2_NOEXCEPT {
+inline bson_byte* _bson_memcpy(bson_byte* out, const void* src, uint32_t len) mlib_noexcept {
     if (src && len) {
         memcpy(out, src, len);
     }
@@ -1062,7 +1063,7 @@ inline bson_iterator bson_insert_minkey(bson_mut* doc, bson_iterator pos, bson_u
  * updated.
  */
 inline bson_iterator
-bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) BSON2_NOEXCEPT {
+bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
     mcMathOnFail(_) { return bson_end(*doc); }
     BV_ASSERT(!bson_iterator_done(pos));
     // Truncate the key to not contain an null bytes:
@@ -1091,7 +1092,7 @@ bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) BSON2_NOEX
     return pos;
 }
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 thread_local
 #else
 _Thread_local
@@ -1125,14 +1126,14 @@ inline char* _bson_write_uint(uint32_t v, char* at) {
  * remain valid only until a subsequent call to bson_tmp_uint_string within the
  * same thread.
  */
-inline bson_utf8_view bson_tmp_uint_string(uint32_t val) BSON2_NOEXCEPT {
+inline bson_utf8_view bson_tmp_uint_string(uint32_t val) mlib_noexcept {
     const char* const end = _bson_write_uint(val, _bson_tmp_integer_key_tl_storage);
     return bson_utf8_view_from_data(_bson_tmp_integer_key_tl_storage,
                                     (size_t)(end - _bson_tmp_integer_key_tl_storage));
 }
 
 inline void
-bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) BSON2_NOEXCEPT {
+bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
     for (; !bson_iterator_done(pos); pos = bson_next(pos)) {
         pos = bson_set_key(doc, pos, bson_tmp_uint_string(idx));
     }
@@ -1144,7 +1145,7 @@ bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) B
  *
  * @param doc The document that will be modified.
  */
-inline void bson_relabel_array_elements(bson_mut* doc) BSON2_NOEXCEPT {
+inline void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
     bson_relabel_array_elements_at(doc, bson_begin(*doc), 0);
 }
 
@@ -1170,7 +1171,7 @@ inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
                                                  bson_iterator pos,
                                                  bson_iterator delete_end,
                                                  bson_iterator from_begin,
-                                                 bson_iterator from_end) BSON2_NOEXCEPT {
+                                                 bson_iterator from_end) mlib_noexcept {
     mcMathOnFail(_) { return bson_end(*doc); }
     // We don't copy individually, since we can just memcpy the entire range:
     const bson_byte* const copy_begin = bson_iterator_data(from_begin);
@@ -1213,7 +1214,7 @@ inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
 inline bson_iterator bson_insert_disjoint_range(bson_mut*     doc,
                                                 bson_iterator pos,
                                                 bson_iterator from_begin,
-                                                bson_iterator from_end) BSON2_NOEXCEPT {
+                                                bson_iterator from_end) mlib_noexcept {
     return bson_splice_disjoint_ranges(doc, pos, pos, from_begin, from_end);
 }
 
@@ -1249,9 +1250,9 @@ static inline bson_iterator bson_erase(bson_mut* doc, bson_iterator pos) {
     return bson_erase_range(doc, pos, bson_next(pos));
 }
 
-BSON2_EXTERN_C_END
+mlib_extern_c_end();
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 class bson_doc {
 public:
     bson_doc() { _mut = bson_mut_new(); }
@@ -1354,8 +1355,6 @@ private:
     }
     bson_mut _mut;
 };
-#endif  // __cplusplus
+#endif  // C++
 
 #undef BV_ASSERT
-
-#endif  // BSON_BUILD_H_INCLUDED

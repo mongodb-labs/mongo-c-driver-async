@@ -2,11 +2,12 @@
 
 #include "./alloc.h"
 #include "./box.h"
-#include "./config.h"
 #include "./emitter_result.h"
 #include "./status.h"
 
-#ifdef __cplusplus
+#include <mlib/config.h>
+
+#if mlib_is_cxx()
 namespace amongoc {
 
 class unique_handler;
@@ -21,10 +22,10 @@ typedef struct amongoc_handler amongoc_handler;
  *
  */
 struct amongoc_handler_vtable {
-    void (*complete)(amongoc_view userdata, amongoc_status st, amongoc_box value) AMONGOC_NOEXCEPT;
+    void (*complete)(amongoc_view userdata, amongoc_status st, amongoc_box value) mlib_noexcept;
     amongoc_box (*register_stop)(amongoc_view hnd_userdata,
                                  void*        userdata,
-                                 void (*callback)(void*)) AMONGOC_NOEXCEPT;
+                                 void (*callback)(void*)) mlib_noexcept;
 };
 
 /**
@@ -37,7 +38,7 @@ struct amongoc_handler {
     // Virtual method table
     const struct amongoc_handler_vtable* vtable;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     /// Transfer ownership of the handler into a unique_handler
     inline amongoc::unique_handler as_unique() && noexcept;
 
@@ -49,12 +50,12 @@ struct amongoc_handler {
      */
     void complete(amongoc_status st, amongoc::unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        this->vtable->complete(this->userdata.view, st, AM_FWD(result).release());
+        this->vtable->complete(this->userdata.view, st, mlib_fwd(result).release());
     }
 #endif
 };
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief Resolve a handler with the given result
@@ -65,7 +66,7 @@ AMONGOC_EXTERN_C_BEGIN
  */
 static inline void amongoc_handler_complete(amongoc_handler* recv,
                                             amongoc_status   st,
-                                            amongoc_box      result) AMONGOC_NOEXCEPT {
+                                            amongoc_box      result) mlib_noexcept {
     // Invoke the callback. The callback takes ownership of the userdata and the result value
     recv->vtable->complete(recv->userdata.view, st, result);
 }
@@ -77,7 +78,7 @@ static inline void amongoc_handler_complete(amongoc_handler* recv,
  *
  * @note This function should not be used on a handler that was consumed by another operation.
  */
-static inline void amongoc_handler_destroy(amongoc_handler hnd) AMONGOC_NOEXCEPT {
+static inline void amongoc_handler_destroy(amongoc_handler hnd) mlib_noexcept {
     amongoc_box_destroy(hnd.userdata);
 }
 
@@ -93,16 +94,16 @@ static inline void amongoc_handler_destroy(amongoc_handler hnd) AMONGOC_NOEXCEPT
  */
 static inline amongoc_box amongoc_handler_register_stop(const amongoc_handler* hnd,
                                                         void*                  userdata,
-                                                        void (*callback)(void*)) AMONGOC_NOEXCEPT {
+                                                        void (*callback)(void*)) mlib_noexcept {
     if (hnd->vtable->register_stop) {
         return hnd->vtable->register_stop(hnd->userdata.view, userdata, callback);
     }
     return amongoc_nil;
 }
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 namespace amongoc {
 
 // forward-decl from nano/result.hpp
@@ -143,7 +144,7 @@ public:
     class callback_type {
     public:
         explicit callback_type(handler_stop_token self, F&& fn) noexcept
-            : _fn(AM_FWD(fn))
+            : _fn(mlib_fwd(fn))
             , _reg_cookie(amongoc_handler_register_stop(self._handler, this, _do_stop)) {}
 
         // The address of this object is part of its identity. Prevent it from moving
@@ -183,12 +184,12 @@ public:
 
     // Move-construct
     unique_handler(unique_handler&& o) noexcept
-        : _handler(AM_FWD(o).release()) {}
+        : _handler(mlib_fwd(o).release()) {}
 
     // Move-assign
     unique_handler& operator=(unique_handler&& o) noexcept {
         amongoc_handler_destroy(_handler);
-        _handler = AM_FWD(o).release();
+        _handler = mlib_fwd(o).release();
         return *this;
     }
 
@@ -215,11 +216,11 @@ public:
      */
     void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        _handler.complete(st, AM_FWD(result));
+        _handler.complete(st, mlib_fwd(result));
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
-    void operator()(emitter_result&& r) noexcept { complete(r.status, AM_FWD(r).value); }
+    void operator()(emitter_result&& r) noexcept { complete(r.status, mlib_fwd(r).value); }
 
     /**
      * @brief Register a stop callback with the handler. @see `amongoc_register_stop`
@@ -249,19 +250,21 @@ public:
             // Wrapped function
             F func;
             // Call the underlying function
-            void call(status st, unique_box&& value) { static_cast<F&&>(func)(st, AM_FWD(value)); }
+            void call(status st, unique_box&& value) {
+                static_cast<F&&>(func)(st, mlib_fwd(value));
+            }
 
             // Completion callback
             static void complete(amongoc_view self, status st, box value) noexcept {
-                AM_FWD(self)  //
+                mlib_fwd(self)  //
                     .as<wrapped>()
-                    .call(st, AM_FWD(value).as_unique());
+                    .call(st, mlib_fwd(value).as_unique());
             }
         };
         static amongoc_handler_vtable vt = {.complete = &wrapped::complete};
 
         amongoc_handler ret;
-        ret.userdata = unique_box::from(alloc, wrapped{AM_FWD(fn)}).release();
+        ret.userdata = unique_box::from(alloc, wrapped{mlib_fwd(fn)}).release();
         ret.vtable   = &vt;
         return unique_handler(std::move(ret));
     }

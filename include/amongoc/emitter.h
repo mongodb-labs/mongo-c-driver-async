@@ -1,14 +1,15 @@
 #pragma once
 
 #include "./box.h"
-#include "./config.h"
 #include "./emitter_result.h"
 #include "./handler.h"
 #include "./operation.h"
 #include "./status.h"
 #include "amongoc/alloc.h"
 
-#ifdef __cplusplus
+#include <mlib/config.h>
+
+#if mlib_is_cxx()
 namespace amongoc {
 
 class unique_emitter;
@@ -34,12 +35,12 @@ struct amongoc_emitter {
     // The userdata associated with the object
     amongoc_box userdata;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     inline amongoc::unique_emitter as_unique() && noexcept;
 #endif
 };
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief Connect an emitter to a handler to produce a new operation state
@@ -50,7 +51,7 @@ AMONGOC_EXTERN_C_BEGIN
  * @param hnd The handler for the operation
  */
 static inline amongoc_operation amongoc_emitter_connect(amongoc_emitter emit,
-                                                        amongoc_handler hnd) AMONGOC_NOEXCEPT {
+                                                        amongoc_handler hnd) mlib_noexcept {
     return emit.vtable->connect(emit.userdata, hnd);
 }
 
@@ -62,13 +63,13 @@ static inline amongoc_operation amongoc_emitter_connect(amongoc_emitter emit,
  * @note This function should not be used on an emitter object that was consumed by another
  * operation.
  */
-static inline void amongoc_emitter_discard(amongoc_emitter emit) AMONGOC_NOEXCEPT {
+static inline void amongoc_emitter_discard(amongoc_emitter emit) mlib_noexcept {
     amongoc_box_destroy(emit.userdata);
 }
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 namespace amongoc {
 
 using emitter = ::amongoc_emitter;
@@ -87,13 +88,13 @@ public:
     }
 
     unique_emitter(unique_emitter&& other) noexcept
-        : _emitter(AM_FWD(other).release()) {}
+        : _emitter(mlib_fwd(other).release()) {}
 
     ~unique_emitter() { amongoc_emitter_discard(((unique_emitter&&)*this).release()); }
 
     unique_emitter& operator=(unique_emitter&& other) noexcept {
         amongoc_emitter_discard(((unique_emitter&&)*this).release());
-        _emitter = AM_FWD(other).release();
+        _emitter = mlib_fwd(other).release();
         return *this;
     }
 
@@ -127,27 +128,26 @@ public:
             .connect = [](amongoc_box userdata, amongoc_handler recv) -> amongoc_operation {
                 // Invoke the wrapped function object. Wrap the handler in a unique_handler
                 unique_operation op = static_cast<F&&>(
-                    AM_FWD(userdata).as_unique().as<wrapped>()._fn)(AM_FWD(recv).as_unique());
-                return AM_FWD(op).release();
+                    mlib_fwd(userdata).as_unique().as<wrapped>()._fn)(mlib_fwd(recv).as_unique());
+                return mlib_fwd(op).release();
             },
         };
         amongoc_emitter ret;
-        ret.userdata = unique_box::from(alloc, wrapped{AM_FWD(fn)}).release();
+        ret.userdata = unique_box::from(alloc, wrapped{mlib_fwd(fn)}).release();
         ret.vtable   = &vtable;
-        return unique_emitter(AM_FWD(ret));
+        return unique_emitter(mlib_fwd(ret));
     }
 
     template <typename F>
         requires requires(F fn, status st, unique_box ub) {  //
-            AM_FWD(fn)
-            (st, AM_FWD(ub));
+            mlib_fwd(fn)(st, mlib_fwd(ub));
         }
     unique_operation connect(cxx_allocator<> a, F fn) && {
-        return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, AM_FWD(fn)));
+        return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, mlib_fwd(fn)));
     }
 
     unique_operation connect(amongoc::unique_handler&& hnd) && {
-        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), AM_FWD(hnd).release())
+        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), mlib_fwd(hnd).release())
             .as_unique();
     }
 
@@ -167,13 +167,13 @@ struct nanosender_traits<unique_emitter> {
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) {
         // TODO: A custom allocator here for as_handler?
-        return AM_FWD(em).connect(
-            as_handler(cxx_allocator<>{amongoc_default_allocator}, AM_FWD(recv)));
+        return mlib_fwd(em).connect(
+            as_handler(cxx_allocator<>{amongoc_default_allocator}, mlib_fwd(recv)));
     }
 
     // Special: We receive a handler directly, no need to convert it to a C handler
     static unique_operation connect(unique_emitter&& em, unique_handler&& hnd) {
-        return AM_FWD(em).connect(AM_FWD(hnd));
+        return mlib_fwd(em).connect(mlib_fwd(hnd));
     }
 
     static constexpr bool is_immediate(unique_emitter const&) noexcept { return false; }

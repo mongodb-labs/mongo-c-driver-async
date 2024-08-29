@@ -3,7 +3,7 @@
 #include "./box.h"
 #include "./status.h"
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
 
 namespace amongoc {
 
@@ -25,7 +25,7 @@ public:
     // Construct with the given status and an existing box
     explicit emitter_result(amongoc_status st, unique_box&& b) noexcept
         : status(st)
-        , value(AM_FWD(b)) {}
+        , value(mlib_fwd(b)) {}
 
     amongoc_status status{0};
     unique_box     value;

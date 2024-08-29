@@ -2,14 +2,15 @@
 
 #include "./alloc.h"
 #include "./box.h"
-#include "./config.h"
 #include "./emitter.h"
 #include "./emitter_result.h"
 #include "./handler.h"
 #include "./operation.h"
 #include "./status.h"
 
-#ifdef __cplusplus
+#include <mlib/config.h>
+
+#if mlib_is_cxx()
 #include <concepts>
 #endif
 
@@ -23,45 +24,45 @@ struct amongoc_loop_vtable {
     enum amongoc_event_loop_verison version;
 
     void (*call_soon)(amongoc_loop* self, amongoc_status st, amongoc_box arg, amongoc_handler recv)
-        AMONGOC_NOEXCEPT;
+        mlib_noexcept;
 
     void (*call_later)(amongoc_loop*   self,
                        struct timespec duration,
                        amongoc_box     arg,
-                       amongoc_handler recv) AMONGOC_NOEXCEPT;
+                       amongoc_handler recv) mlib_noexcept;
 
     void (*getaddrinfo)(amongoc_loop*   self,
                         const char*     name,
                         const char*     svc,
-                        amongoc_handler on_finish) AMONGOC_NOEXCEPT;
+                        amongoc_handler on_finish) mlib_noexcept;
 
     void (*tcp_connect)(amongoc_loop*   self,
                         amongoc_view    addrinfo,
-                        amongoc_handler on_connect) AMONGOC_NOEXCEPT;
+                        amongoc_handler on_connect) mlib_noexcept;
 
     void (*tcp_write_some)(amongoc_loop*   self,
                            amongoc_view    tcp_conn,
                            const char*     data,
                            size_t          len,
-                           amongoc_handler on_write) AMONGOC_NOEXCEPT;
+                           amongoc_handler on_write) mlib_noexcept;
 
     void (*tcp_read_some)(amongoc_loop*   self,
                           amongoc_view    tcp_conn,
                           char*           dest,
                           size_t          maxlen,
-                          amongoc_handler on_finish) AMONGOC_NOEXCEPT;
+                          amongoc_handler on_finish) mlib_noexcept;
 
-    void* (*allocate)(amongoc_loop* self, size_t sz)AMONGOC_NOEXCEPT;
-    void (*deallocate)(amongoc_loop* self, void*) AMONGOC_NOEXCEPT;
+    void* (*allocate)(amongoc_loop* self, size_t sz)mlib_noexcept;
+    void (*deallocate)(amongoc_loop* self, void*) mlib_noexcept;
 
-    amongoc_allocator (*get_allocator)(const amongoc_loop* self) AMONGOC_NOEXCEPT;
+    amongoc_allocator (*get_allocator)(const amongoc_loop* self) mlib_noexcept;
 };
 
 struct amongoc_loop {
     amongoc_box                userdata;
     amongoc_loop_vtable const* vtable;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     // Nanosender for schedule()
     struct sched_snd {
         amongoc_loop* loop;
@@ -89,7 +90,7 @@ struct amongoc_loop {
 
         template <typename R>
         op<R> connect(R&& r) const noexcept {
-            return op<R>{loop, AM_FWD(r)};
+            return op<R>{loop, mlib_fwd(r)};
         }
     };
 
@@ -104,7 +105,7 @@ struct amongoc_loop {
 #endif
 };
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 /**
  * @brief Obtain the allocator associated with an event loop, if present
  *
@@ -112,11 +113,10 @@ AMONGOC_EXTERN_C_BEGIN
  * @return amongoc_allocator The allocator associated with the loop if the loop provides
  * one. Otherwise, returns `amongoc_default_allocator`.
  */
-static inline amongoc_allocator
-amongoc_loop_get_allocator(const amongoc_loop* loop) AMONGOC_NOEXCEPT {
+static inline amongoc_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
     if (loop->vtable->get_allocator) {
         return loop->vtable->get_allocator(loop);
     }
     return amongoc_default_allocator;
 }
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();

@@ -161,7 +161,7 @@ struct nanosender_awaitable {
         // Emplace the result and resume the associated coroutine
         void operator()(sends_t<S>&& result) {
             // Put the sent value into the awaitable's storage to be returned at await_resume
-            self->_sent_value.emplace(AM_FWD(result));
+            self->_sent_value.emplace(mlib_fwd(result));
             // Resume the coroutine immediately
             co.resume();
         }
@@ -326,7 +326,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
             return unique_operation::from_starter(terminating_allocator,
-                                                  AM_FWD(hnd),
+                                                  mlib_fwd(hnd),
                                                   starter{NEO_MOVE(_co)});
         }
     };

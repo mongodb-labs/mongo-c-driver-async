@@ -23,9 +23,7 @@ typedef struct {
  *
  * @param state_ptr Pointer to the `state` for the program
  */
-amongoc_emitter loop_step(amongoc_box    state_ptr,
-                          amongoc_status prev_status,
-                          amongoc_box    prev_res) AMONGOC_NOEXCEPT {
+amongoc_emitter loop_step(amongoc_box state_ptr, amongoc_status prev_status, amongoc_box prev_res) {
     (void)prev_res;
     (void)prev_status;
     // Print our status

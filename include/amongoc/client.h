@@ -1,16 +1,17 @@
 #pragma once
 
 #include "./alloc.h"
-#include "./config.h"
 #include "./emitter.h"
 #include "./loop.h"
+
+#include <mlib/config.h>
 
 struct _amongoc_client_cxx;
 struct bson_view;
 
 typedef struct amongoc_client amongoc_client;
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief Asynchronously connect a new client to a remote server.
@@ -23,10 +24,10 @@ AMONGOC_EXTERN_C_BEGIN
  * @return amongoc_emitter
  */
 amongoc_emitter
-amongoc_client_connect(amongoc_loop* loop, const char* name, const char* svc) AMONGOC_NOEXCEPT;
+amongoc_client_connect(amongoc_loop* loop, const char* name, const char* svc) mlib_noexcept;
 
 /// Destroy an amongoc_client created with amongoc_client_connect
-void amongoc_client_destroy(amongoc_client cl) AMONGOC_NOEXCEPT;
+void amongoc_client_destroy(amongoc_client cl) mlib_noexcept;
 
 /**
  * @brief Issue a command on an amongoc_client. Upon success, resolves
@@ -36,16 +37,16 @@ void amongoc_client_destroy(amongoc_client cl) AMONGOC_NOEXCEPT;
  * @param doc The document to be sent to the server
  * @return amongoc_emitter An emitter that resolves with a bson_mut
  */
-amongoc_emitter amongoc_client_command(amongoc_client cl, struct bson_view doc) AMONGOC_NOEXCEPT;
+amongoc_emitter amongoc_client_command(amongoc_client cl, struct bson_view doc) mlib_noexcept;
 
 /**
  * @brief Get the event loop associated with a client
  *
  * @return A non-null pointer to the event loop used by the client
  */
-amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) AMONGOC_NOEXCEPT;
+amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) mlib_noexcept;
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
 
 /**
  * @brief An encapsulated amongoc_client object. This object is pointer-like
@@ -53,7 +54,7 @@ AMONGOC_EXTERN_C_END
 struct amongoc_client {
     struct _amongoc_client_cxx* _impl;
 
-#ifdef __cplusplus
+#if mlib_is_cxx()
     /// Issue a command
     amongoc_emitter command(bson_view const& doc) noexcept;
 
@@ -67,7 +68,7 @@ struct amongoc_client {
 #endif
 };
 
-AMONGOC_EXTERN_C_BEGIN
+mlib_extern_c_begin();
 
 /**
  * @brief Obtain the memory allocator associated with a client object
@@ -75,8 +76,8 @@ AMONGOC_EXTERN_C_BEGIN
  * @param cl The client to be queried
  * @return amongoc_allocator The allocator for the client (originates from the event loop)
  */
-static inline amongoc_allocator amongoc_client_get_allocator(amongoc_client cl) AMONGOC_NOEXCEPT {
+static inline amongoc_allocator amongoc_client_get_allocator(amongoc_client cl) mlib_noexcept {
     return amongoc_loop_get_allocator(amongoc_client_get_event_loop(cl));
 }
 
-AMONGOC_EXTERN_C_END
+mlib_extern_c_end();
