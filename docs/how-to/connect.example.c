@@ -8,8 +8,8 @@
  * in a box
  */
 typedef struct app_state {
-    // The client that we connected.
-    amongoc_client client;
+    // The connection to a server
+    amongoc_connection conn;
 } app_state;
 
 /**
@@ -39,14 +39,14 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
  * @brief Handle the connection to a server. Sends a "hello" message
  *
  * @param state_ptr Pointer to the `app_state`
- * @param client_box An `amongoc_client`
+ * @param conn_box An `amongoc_connection`
  * @return amongoc_emitter
  */
 amongoc_emitter
-after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box client_box) {
+after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box conn_box) {
     printf("Connected to server\n");
-    // Store the client in our app state
-    amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->client, client_box);
+    // Store the connection in our app state
+    amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->conn, conn_box);
 
     // Create a "hello" command
     bson_mut doc = bson_mut_new();
@@ -58,8 +58,8 @@ after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box clien
                      bson_end(doc),
                      bson_utf8_view_from_cstring("$db"),
                      bson_utf8_view_from_cstring("test"));
-    amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*)(state_ptr)->client,
-                                                bson_view_of(doc));
+    amongoc_emitter em
+        = amongoc_conn_command(amongoc_box_cast(app_state*)(state_ptr)->conn, bson_view_of(doc));
     bson_mut_delete(doc);
 
     em = amongoc_then(em,
@@ -84,7 +84,7 @@ int main(int argc, char const* const* argv) {
 
     struct app_state state = {0};
 
-    amongoc_emitter em = amongoc_client_connect(&loop, argv[1], argv[2]);
+    amongoc_emitter em = amongoc_conn_connect(&loop, argv[1], argv[2]);
     em                 = amongoc_timeout(&loop, em, (struct timespec){5});
 
     em = amongoc_let(em,
@@ -99,8 +99,8 @@ int main(int argc, char const* const* argv) {
     amongoc_default_loop_run(&loop);
     amongoc_operation_destroy(op);
 
-    // Destroy the client since we are done with it (this is a no-op for a null client)
-    amongoc_client_destroy(state.client);
+    // Destroy the connection since we are done with it (this is a no-op for a null connection)
+    amongoc_conn_destroy(state.conn);
     amongoc_default_loop_destroy(&loop);
 
     if (amongoc_is_error(fin_status)) {

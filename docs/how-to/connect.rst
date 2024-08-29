@@ -77,8 +77,9 @@ sub-operation in the program. For this reason, we declare the instance in
   :end-at: struct app_state state =
 
 This will zero-initialize the contents of the struct. This is important so that
-the declared `amongoc_client` object is also null, ensuring that the later call
-to `amongoc_client_destroy` will be a no-op if that field is never initialized.
+the declared `amongoc_connection` object is also null, ensuring that the later
+call to `amongoc_conn_destroy` will be a no-op if that field is never
+initialized.
 
 We will pass the state around by-reference in a box using `amongoc_box_pointer`.
 
@@ -86,12 +87,12 @@ We will pass the state around by-reference in a box using `amongoc_box_pointer`.
 Create a Connect with a Timeout
 ###############################
 
-We create a connect operation using `amongoc_client_connect`, and then attach a
+We create a connect operation using `amongoc_conn_connect`, and then attach a
 timeout using `amongoc_timeout`
 
 .. literalinclude:: connect.example.c
   :lineno-match:
-  :start-at: client_connect
+  :start-at: conn_connect
   :end-at: amongoc_timeout
 
 We pass the emitter ``em`` to `amongoc_timeout` on the same line as as
@@ -111,7 +112,7 @@ The `amongoc_let` function will attach a continuation to an operation in a way
 that lets us initiate a subsequent operation. We use
 `amongoc_async_forward_errors` to tell `amongoc_let` that it should call our
 continuation *only* if the input operation resolves with a non-error status. If
-`amongoc_client_connect` fails with an error (including a timeout), then
+`amongoc_conn_connect` fails with an error (including a timeout), then
 ``after_connect_say_hello`` will not be called, and the errant result will
 simply be passed to the next step in the chain.
 
@@ -119,7 +120,7 @@ simply be passed to the next step in the chain.
 The First Continuation
 ######################
 
-The first step, after connecting a client, is ``after_connect_say_hello``, a
+The first step, after connecting to a server, is ``after_connect_say_hello``, a
 continuation function given to `amongoc_let`:
 
 .. literalinclude:: connect.example.c
@@ -134,9 +135,9 @@ called if the `amongoc_status` would be zero, so there is no need to check it.
 
 .. rubric:: Capture the Client
 
-Upon success, the operation from `amongoc_client_connect` will resolve with an
-`amongoc_client` in its boxed result value. We copy the client by-value from the
-box and store it in our application state:
+Upon success, the operation from `amongoc_conn_connect` will resolve with an
+`amongoc_connection` in its boxed result value. We move the connection by-value
+from the box and store it in our application state:
 
 .. literalinclude:: connect.example.c
   :lineno-match:
@@ -156,9 +157,9 @@ object that was owned by the box is now owned by the storage destination.
   :end-at: bson_mut_delete
 
 We build a MongoDB command ``{ hello: "1", $db: "test" }`` and prepare to send
-it as a client command with `amongoc_client_command`. We can delete the prepared
-BSON document here as a copy of the data is now stored within the prepared
-operation in ``em``.
+it as a command with `amongoc_conn_command`. We can delete the prepared BSON
+document here as a copy of the data is now stored within the prepared operation
+in ``em``.
 
 
 .. rubric:: Attach the Second Continuation
@@ -190,7 +191,7 @@ simple:
   :end-before: end.
 
 We simply extract a `bson_view` of the response data from the ``resp_data`` box
-that was provided by `amongoc_client_command` and print it to standard output.
+that was provided by `amongoc_conn_command` and print it to standard output.
 After we finish printing it, we destroy the data and return `amongoc_nil`. This
 is the final value for the program.
 
@@ -229,10 +230,10 @@ work has completed, and we destroy the operation with
 `amongoc_operation_destroy`. This will free resources associated with the
 operation.
 
-We also now have a copy of the client that was created with
-`amongoc_client_connect`. We destroy that with `amongoc_client_destroy`. If the
-connect operation failed, the client object will have remained zero-initialized
-and the call will be a no-op.
+We also now have a copy of the connection that was created with
+`amongoc_conn_connect`. We destroy that with `amongoc_conn_destroy`. If the
+connect operation failed, the connection object will have remained
+zero-initialized and the call will be a no-op.
 
 Finally, we are done with the event loop, and we can destroy it with
 `amongoc_default_loop_destroy`.

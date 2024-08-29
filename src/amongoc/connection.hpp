@@ -11,7 +11,7 @@
 #include <amongoc/alloc.h>
 #include <amongoc/bson/build.h>
 #include <amongoc/bson/view.h>
-#include <amongoc/client.h>
+#include <amongoc/connection.h>
 
 #include <asio/buffer.hpp>
 #include <asio/buffered_write_stream.hpp>

@@ -1,10 +1,10 @@
-#include "./client.hpp"
+#include "./connection.hpp"
 #include "amongoc/alloc.h"
 #include "amongoc/async.h"
 #include "amongoc/box.h"
 #include "amongoc/bson/build.h"
 #include "amongoc/bson/view.h"
-#include "amongoc/client.h"
+#include "amongoc/connection.h"
 #include "amongoc/default_loop.h"
 #include "amongoc/loop.h"
 #include "amongoc/nano/concepts.hpp"
@@ -19,7 +19,7 @@
 
 using namespace amongoc;
 
-TEST_CASE("C++ Client/Simple") {
+TEST_CASE("C++ Connection/Simple") {
     asio::io_context      ioc;
     asio::ip::tcp::socket sock{ioc};
 
@@ -40,10 +40,10 @@ TEST_CASE("C++ Client/Simple") {
     CHECK(it->as_double() == 1);
 }
 
-TEST_CASE("C Client/Good") {
+TEST_CASE("C Connection/Good") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
-    auto   s = amongoc_client_connect(&loop, "localhost", "27017").as_unique();
+    auto   s = amongoc_conn_connect(&loop, "localhost", "27017").as_unique();
     status got_ec;
     bool   did_run = false;
     auto   op = std::move(s).connect(mlib::terminating_allocator, [&](status ec, unique_box b) {
@@ -57,11 +57,11 @@ TEST_CASE("C Client/Good") {
     amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("C Client/Invalid hostname") {
+TEST_CASE("C Connection/Invalid hostname") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
     // Connecting to an invalid TLD will fail
-    auto   s = amongoc_client_connect(&loop, "asdfasdfaczxv.invalidtld", "27017").as_unique();
+    auto   s = amongoc_conn_connect(&loop, "asdfasdfaczxv.invalidtld", "27017").as_unique();
     status got_ec;
     auto   op = std::move(s).connect(mlib::terminating_allocator,
                                    [&](status ec, unique_box b) { got_ec = ec; });
@@ -71,13 +71,12 @@ TEST_CASE("C Client/Invalid hostname") {
     amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("C Client/Timeout") {
+TEST_CASE("C Connection/Timeout") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
     // Connecting to a host that will drop our TCP request. Timeout after 500ms
-    auto conn = amongoc_client_connect(&loop, "example.com", "27017");
-    // auto   s = amongoc_connect_client_ex(&loop, "example.com", "27017", 500);
-    auto   s = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
+    auto   conn = amongoc_conn_connect(&loop, "example.com", "27017");
+    auto   s    = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
     status got_ec;
     auto   op = std::move(s).connect(mlib::terminating_allocator,
                                    [&](status ec, unique_box b) { got_ec = ec; });
@@ -88,10 +87,10 @@ TEST_CASE("C Client/Timeout") {
     amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("C Client/Simple request") {
+TEST_CASE("C Connection/Simple request") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
-    auto                      s = amongoc_client_connect(&loop, "localhost", "27017").as_unique();
+    auto                      s = amongoc_conn_connect(&loop, "localhost", "27017").as_unique();
     std::optional<unique_box> client_box;
     status                    req_ec;
     unique_operation          req_op;
@@ -103,7 +102,7 @@ TEST_CASE("C Client/Simple request") {
                   bson_doc doc;
                   doc.push_back("hello", 1.0);
                   doc.push_back("$db", "test");
-                  auto s1 = client_box->as<amongoc_client>().command(doc).as_unique();
+                  auto s1 = client_box->as<amongoc_connection>().command(doc).as_unique();
                   req_op  = std::move(s1).connect(  //
                       mlib::terminating_allocator,
                       [&](status ec, unique_box b) {

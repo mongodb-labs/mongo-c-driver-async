@@ -3,7 +3,7 @@
 #include "./alloc.h"
 #include "./async.h"
 #include "./box.h"
-#include "./client.h"
+#include "./connection.h"
 #include "./default_loop.h"
 #include "./emitter.h"
 #include "./handler.h"
