@@ -36,7 +36,9 @@ toc_object_entries_show_parents = "hide"
 highlight_language = "c++"
 primary_domain = "cpp"
 default_role = "any"
-nitpicky = True
+
+# XXX: Disabled until https://github.com/sphinx-doc/sphinx/issues/12845 is fixed
+# nitpicky = True
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
