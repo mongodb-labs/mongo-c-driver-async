@@ -103,6 +103,7 @@ typedef struct bson_mut {
      * In ROOT MODE, this is an owning pointer and can be freed or reallocated.
      */
     bson_byte* _bson_document_data;
+    /// TODO: We should take an allocator by copy, not just a pointer to one that lives elsewhere
     /**
      * @brief The parent mutator, or the allocator context
      *
