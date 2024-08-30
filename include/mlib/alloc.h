@@ -46,19 +46,37 @@ struct mlib_allocator {
 };
 
 /**
+ * @brief Reallocate an existing region using an allocator
+ *
+ * @param alloc The allocator to be used
+ * @param prev_ptr Pointer to the previously allocated region
+ * @param new_size The new requested size of the region
+ * @param prev_size The previously requested size of the region
+ * @param out_new_size Output pointer that receives the new region size
+ * @return mlib_constexpr*
+ */
+mlib_constexpr void* mlib_reallocate(mlib_allocator alloc,
+                                     void*          prev_ptr,
+                                     size_t         new_size,
+                                     size_t         prev_size,
+                                     size_t*        out_new_size) mlib_noexcept {
+    return alloc.reallocate(alloc.userdata, prev_ptr, new_size, prev_size, out_new_size);
+}
+
+/**
  * @brief Allocate a new region using an `mlib_allocator`
  *
  * Returns NULL on allocation failure.
  */
-inline void* mlib_allocate(mlib_allocator alloc, size_t sz) mlib_noexcept {
-    return alloc.reallocate(alloc.userdata, NULL, sz, 0, &sz);
+mlib_constexpr void* mlib_allocate(mlib_allocator alloc, size_t sz) mlib_noexcept {
+    return mlib_reallocate(alloc, NULL, sz, 0, &sz);
 }
 
 /**
  * @brief Deallocate a region that was obtained from the given `mlib_allocator`
  */
-inline void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) mlib_noexcept {
-    alloc.reallocate(alloc.userdata, p, 0, sz, &sz);
+mlib_constexpr void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) mlib_noexcept {
+    mlib_reallocate(alloc, p, 0, sz, &sz);
 }
 
 /**
@@ -92,19 +110,19 @@ public:
     using pointer    = value_type*;
 
     // Construct around an existing mlib_allocator object
-    explicit allocator(mlib_allocator a) noexcept
+    constexpr explicit allocator(mlib_allocator a) noexcept
         : _alloc(a) {}
 
     // Convert-construct from an allocator of another type
     template <typename U>
-    allocator(allocator<U> o) noexcept
+    constexpr allocator(allocator<U> o) noexcept
         : _alloc(o.c_allocator()) {}
 
     // Obtain the C-style allocator managed by this object
-    mlib_allocator c_allocator() const noexcept { return _alloc; }
+    constexpr mlib_allocator c_allocator() const noexcept { return _alloc; }
 
     // Allocate N objects
-    pointer allocate(size_t n) const {
+    constexpr pointer allocate(size_t n) const {
         const size_t max_count = SIZE_MAX / sizeof(T);
         if (n > max_count) {
             // Multiplying would overflow
@@ -118,25 +136,25 @@ public:
     }
 
     // Deallocate N object
-    void deallocate(pointer p, size_t n) const {
+    constexpr void deallocate(pointer p, size_t n) const {
         return ::mlib_deallocate(_alloc, p, n * sizeof(T));
     }
 
     // Compare two allocators. They are equivalent if the underlying C allocators are equal
-    bool operator==(allocator other) const noexcept {
+    constexpr bool operator==(allocator other) const noexcept {
         return _alloc.userdata == other.c_allocator().userdata
             and _alloc.reallocate == other.c_allocator().reallocate;
     }
 
     // Utility to dynamically allocate and construct a single object using this allocator
     template <typename... Args>
-    pointer new_(Args&&... args) const {
+    constexpr pointer new_(Args&&... args) const {
         pointer p = this->allocate(1);
         return new (p) T(static_cast<Args&&>(args)...);
     }
 
     // Utility to destroy and deallocate a single object that was allocated with this allocator
-    void delete_(pointer p) const noexcept {
+    constexpr void delete_(pointer p) const noexcept {
         if (p) {
             p->~T();
             this->deallocate(p, 1);
@@ -145,7 +163,7 @@ public:
 
     // Utility to rebind the value type of the allocator
     template <typename U>
-    allocator<U> rebind() const noexcept {
+    constexpr allocator<U> rebind() const noexcept {
         return *this;
     }
 

@@ -5,8 +5,9 @@
 
 using namespace mlib;
 
-extern inline void* mlib_allocate(mlib_allocator, size_t) noexcept(true);
-extern inline void  mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) noexcept(true);
+extern constexpr void* mlib_reallocate(mlib_allocator, void*, size_t, size_t, size_t*) noexcept;
+extern constexpr void* mlib_allocate(mlib_allocator, size_t) noexcept(true);
+extern constexpr void  mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) noexcept(true);
 
 // Implementation of reallocate() for the default allocator
 static inline void* default_reallocate(void*,

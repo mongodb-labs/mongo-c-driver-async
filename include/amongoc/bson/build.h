@@ -103,19 +103,19 @@ typedef struct bson_mut {
      * In ROOT MODE, this is an owning pointer and can be freed or reallocated.
      */
     bson_byte* _bson_document_data;
-    /// TODO: We should take an allocator by copy, not just a pointer to one that lives elsewhere
-    /**
-     * @brief The parent mutator, or the allocator context
-     *
-     * @internal
-     *
-     * In CHILD MODE, this points to a `bson_mut` that manages the document that
-     * contains this document.
-     *
-     * In ROOT_MODE, this is a pointer to a `bson_mut_allocator`, to be used to
-     * manage the `_bson_document_data` pointer.
-     */
-    void* _parent_mut_or_allocator_context;
+    union {
+        /**
+         * @internal
+         * @brief In CHILD MODE, this points to the bson_mut that manages the parent document
+         */
+        struct bson_mut* _parent_mut;
+        /**
+         * @internal
+         * @brief In ROOT MODE, this is the allocator for the document data.
+         */
+        struct mlib_allocator _allocator;
+    };
+    // void* _parent_mut_or_allocator_context;
     /**
      * @brief The capacity of the data buffer, or the offset of the element
      * within its parent.
@@ -154,7 +154,7 @@ inline uint32_t bson_capacity(bson_mut d) {
     if (d._capacity_or_negative_offset_within_parent_data < 0) {
         // We are a subdocument, so we need to calculate the capacity of our
         // document in the context of the parent's capacity.
-        bson_mut parent = *(bson_mut*)d._parent_mut_or_allocator_context;
+        bson_mut parent = *d._parent_mut;
         // Number of bytes between the parent start and this element start:
         const mcd_integer bytes_before
             = mcMath(neg(I(d._capacity_or_negative_offset_within_parent_data)));
@@ -225,16 +225,15 @@ inline bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) {
         return false;
     }
     // Get the allocator:
-    mlib_allocator* alloc = (mlib_allocator*)m->_parent_mut_or_allocator_context;
+    mlib_allocator alloc = m->_allocator;
     // Perform the reallocation:
     size_t     got_size = 0;
     bson_byte* newptr
-        = (bson_byte*)
-              alloc->reallocate(alloc->userdata,
-                                m->_bson_document_data,
-                                new_size,
-                                (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
-                                &got_size);
+        = (bson_byte*)alloc.reallocate(alloc.userdata,
+                                       m->_bson_document_data,
+                                       new_size,
+                                       (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
+                                       &got_size);
     if (!newptr) {
         // The allocatore reports failure
         return false;
@@ -282,16 +281,11 @@ inline int32_t bson_reserve(bson_mut* d, uint32_t size) {
  * @param reserve The size to reserve within the new document
  * @return bson_mut A new mutator. Must be deleted with bson_mut_delete()
  */
-inline bson_mut bson_mut_new_ex(const mlib_allocator* allocator, uint32_t reserve) {
-    // The default allocator, stored as a static object:
-    if (allocator == NULL) {
-        // They didn't provide an allocator: Use the default one
-        allocator = &mlib_default_allocator;
-    }
+inline bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve) {
     // Create the object:
     bson_mut r                                        = {0};
     r._capacity_or_negative_offset_within_parent_data = 0;
-    r._parent_mut_or_allocator_context                = (void*)allocator;
+    r._allocator                                      = allocator;
     if (reserve < 5) {
         // An empty document requires *at least* five bytes:
         reserve = 5;
@@ -312,14 +306,17 @@ inline bson_mut bson_mut_new_ex(const mlib_allocator* allocator, uint32_t reserv
  *
  * @note The return value must later be deleted using bson_mut_delete
  */
-inline bson_mut bson_mut_new(void) { return bson_mut_new_ex(NULL, 512); }
+inline bson_mut bson_mut_new(void) { return bson_mut_new_ex(mlib_default_allocator, 512); }
 
-inline mlib_allocator* bson_mut_get_allocator(bson_mut m) {
+/**
+ * @brief Obtain the `mlib_allocator` used with the given BSON mutator object
+ */
+inline mlib_allocator bson_mut_get_allocator(bson_mut m) {
     if (m._capacity_or_negative_offset_within_parent_data < 0) {
         // We are a child document
-        return bson_mut_get_allocator(*(bson_mut*)m._parent_mut_or_allocator_context);
+        return bson_mut_get_allocator(*m._parent_mut);
     }
-    return (mlib_allocator*)m._parent_mut_or_allocator_context;
+    return m._allocator;
 }
 
 inline bson_mut bson_mut_copy(bson_mut other) {
@@ -388,7 +385,7 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
 
     if (doc->_capacity_or_negative_offset_within_parent_data < 0) {
         // We are in CHILD MODE, so we need to tell the parent to do the work:
-        bson_mut* parent = (bson_mut*)doc->_parent_mut_or_allocator_context;
+        bson_mut* parent = doc->_parent_mut;
         // Our document offset within the parent, to adjust after reallocation:
         const ptrdiff_t my_doc_offset = bson_data(*doc) - bson_data(*parent);
         // Resize, and get the new position:
@@ -650,7 +647,7 @@ inline bson_mut bson_mut_subdocument(bson_mut* parent, bson_iterator subdoc_iter
         return ret;
     }
     // Remember the parent:
-    ret._parent_mut_or_allocator_context = parent;
+    ret._parent_mut = parent;
     // The offset of the element referred-to by the iterator
     const ptrdiff_t elem_offset = bson_iterator_data(subdoc_iter) - bson_data(*parent);
     // Point to the value data:
@@ -670,7 +667,7 @@ inline bson_mut bson_mut_subdocument(bson_mut* parent, bson_iterator subdoc_iter
  */
 inline bson_iterator bson_parent_iterator(bson_mut doc) {
     BV_ASSERT(doc._capacity_or_negative_offset_within_parent_data < 0);
-    bson_mut      par = *(bson_mut*)doc._parent_mut_or_allocator_context;
+    bson_mut      par = *doc._parent_mut;
     bson_iterator ret = {0};
     // Recover the address of the element:
     ret._ptr         = bson_mut_data(par) + -doc._capacity_or_negative_offset_within_parent_data;
@@ -1053,12 +1050,7 @@ bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexc
     return pos;
 }
 
-#if mlib_is_cxx()
-thread_local
-#else
-_Thread_local
-#endif
-    extern char _bson_tmp_integer_key_tl_storage[12];
+mlib_thread_local extern char _bson_tmp_integer_key_tl_storage[12];
 
 /// Write the decimal representation of a uint32_t into the given string.
 inline char* _bson_write_uint(uint32_t v, char* at) {
@@ -1216,6 +1208,8 @@ mlib_extern_c_end();
 #if mlib_is_cxx()
 class bson_doc {
 public:
+    using allocator_type = mlib::allocator<bson_byte>;
+
     bson_doc() { _mut = bson_mut_new(); }
     ~bson_doc() { _del(); }
 
@@ -1224,9 +1218,9 @@ public:
         o    = bson_mut{};
     }
 
-    explicit bson_doc(bson_view v)
-        : _mut(bson_mut_new_ex(nullptr, bson_size(v))) {
-        memcpy(data(), bson_data(v), bson_size(v));
+    explicit bson_doc(bson_view v, allocator_type alloc = allocator_type(mlib_default_allocator))
+        : _mut(bson_mut_new_ex(alloc.c_allocator(), bson_size(v))) {
+        memcpy(data(), v.data(), v.byte_size());
     }
 
     bson_doc(bson_doc const& other) { _mut = bson_mut_copy(other._mut); }
@@ -1303,6 +1297,10 @@ public:
         auto m                   = _mut;
         _mut._bson_document_data = nullptr;
         return m;
+    }
+
+    allocator_type get_allocator() const noexcept {
+        return allocator_type(bson_mut_get_allocator(_mut));
     }
 
 private:

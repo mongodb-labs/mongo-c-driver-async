@@ -27,7 +27,21 @@
  */
 #define mlib_noexcept MLIB_IF_CXX(noexcept) MLIB_IF_NOT_CXX([[]])
 
+/**
+ * @brief Expands to `constexpr` when compiled as C++, otherwise `inline`
+ */
+#define mlib_constexpr MLIB_IF_CXX(constexpr) MLIB_IF_NOT_CXX(inline)
+
+/**
+ * @brief Expands to an `alignas()` attribute for the current language
+ */
 #define mlib_alignas(T) MLIB_IF_CXX(alignas(T)) MLIB_IF_NOT_CXX(_Alignas(T))
+
+/**
+ * @brief Expands to a `thread_local` specifier for the current language
+ */
+#define mlib_thread_local                                                      \
+  MLIB_IF_CXX(thread_local) MLIB_IF_NOT_CXX(_Thread_local)
 
 /**
  * @brief Expands to a `static_assert` for the current language

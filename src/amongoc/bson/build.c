@@ -15,7 +15,7 @@ extern inline bool _bson_mut_realloc(bson_mut*, uint32_t);
 
 extern inline int32_t bson_reserve(bson_mut*, uint32_t);
 
-extern inline bson_mut bson_mut_new_ex(const mlib_allocator* allocator, uint32_t reserve);
+extern inline bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve);
 
 extern inline bson_mut bson_mut_new(void);
 
