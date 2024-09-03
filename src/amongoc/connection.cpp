@@ -1,4 +1,5 @@
 #include "./connection.hpp"
+#include "./string.hpp"
 #include "amongoc/bson/build.h"
 
 #include <amongoc/connection.h>
@@ -25,7 +26,7 @@ emitter amongoc_connection::command(const bson_view& doc) noexcept {
     return amongoc_conn_command(*this, doc);
 }
 
-emitter _connect(amongoc_loop* loop, std::string name, std::string svc) noexcept {
+emitter _connect(amongoc_loop* loop, string name, string svc) noexcept {
     auto addr   = *co_await async_resolve(*loop, name.data(), svc.data());
     auto socket = *co_await async_connect(*loop, std::move(addr));
 
@@ -39,12 +40,12 @@ emitter _connect(amongoc_loop* loop, std::string name, std::string svc) noexcept
 
 emitter amongoc_conn_connect(amongoc_loop* loop, const char* name, const char* svc) noexcept {
     // Copy the name/svc into a string to outlive the operation state.
-    return _connect(loop, std::string(name), std::string(svc));
+    return _connect(loop, string(name, loop->get_allocator()), string(svc, loop->get_allocator()));
 }
 
 static nanosender_of<emitter_result> auto _command(amongoc_connection cl, auto doc) noexcept {
     return cl._impl->_conn.send_op_msg(doc)
-        | amongoc::then([cl](result<bson_doc>&& r) -> emitter_result {
+        | amongoc::then([cl](result<bson::document>&& r) -> emitter_result {
                if (r.has_value()) {
                    bson_mut m = std::move(r).value().release();
                    return emitter_result(  //
@@ -59,7 +60,8 @@ static nanosender_of<emitter_result> auto _command(amongoc_connection cl, auto d
 }
 
 emitter amongoc_conn_command(amongoc_connection cl, bson_view doc) noexcept {
-    return as_emitter(cl.get_allocator(), _command(cl, bson_doc(doc))).release();
+    return as_emitter(cl.get_allocator(), _command(cl, bson::document(doc, cl.get_allocator())))
+        .release();
 }
 
 emitter amongoc_conn_command_nocopy(amongoc_connection cl, bson_view doc) noexcept {

@@ -1306,22 +1306,6 @@ inline constexpr struct undefined_t {
 inline constexpr struct null_t {
 } null;
 
-template <typename T>
-concept convertible_to_string_view = requires {
-    requires std::convertible_to<T, std::string_view> or std::convertible_to<T, utf8_view>;
-};
-
-template <typename T>
-concept convertible_to_value_type = convertible_to_string_view<T> or std::integral<std::decay_t<T>>
-    or std::floating_point<std::decay_t<T>>;
-
-template <typename T>
-concept element_compatible_pair = requires {
-    requires std::tuple_size_v<T> == 2;
-    requires convertible_to_string_view<std::tuple_element_t<0, T>>;
-    requires convertible_to_value_type<std::tuple_element_t<1, T>>;
-};
-
 /**
  * @brief Presents a mutable BSON document STL-like interface
  *
@@ -1337,8 +1321,12 @@ public:
 
     using iterator = bson_iterator;
 
+#if !mlib_audit_allocator_passing()
     document()
         : document(allocator_type(mlib_default_allocator)) {}
+    constexpr explicit document(bson_view v)
+        : document(v, allocator_type(mlib_default_allocator)) {}
+#endif
 
     ~document() { _del(); }
 
@@ -1351,6 +1339,9 @@ public:
             throw std::bad_alloc();
         }
     }
+
+    constexpr explicit document(::mlib_allocator alloc)
+        : document(allocator_type(alloc)) {}
 
     /**
      * @brief Take ownership of a C-style `::bson_mut` object
@@ -1366,8 +1357,7 @@ public:
      * @param v The document to be copied
      * @param alloc An allocator for the operation
      */
-    constexpr explicit document(bson_view      v,
-                                allocator_type alloc = allocator_type(mlib_default_allocator))
+    constexpr explicit document(bson_view v, allocator_type alloc)
         : _mut(bson_mut_new_ex(alloc.c_allocator(), bson_size(v))) {
         if (data() == nullptr)
             throw std::bad_alloc();
@@ -1505,8 +1495,7 @@ private:
     }
 
 public:
-    template <element_compatible_pair P>
-    constexpr iterator insert(iterator pos, P const& pair)
+    constexpr iterator insert(iterator pos, auto const& pair)
         requires requires { _emplace(pos, std::get<0>(pair), std::get<1>(pair)); }
     {
         return _emplace(pos, std::get<0>(pair), std::get<1>(pair));
@@ -1519,14 +1508,13 @@ public:
         return _emplace(pos, key, val);
     }
 
-    constexpr iterator push_back(element_compatible_pair auto const& pair)
+    constexpr iterator push_back(auto const& pair)
         requires requires { insert(end(), pair); }
     {
         return insert(end(), pair);
     }
 
-    constexpr iterator emplace_back(convertible_to_string_view auto&& key,
-                                    convertible_to_value_type auto&&  val)
+    constexpr iterator emplace_back(auto const& key, auto const& val)
         requires requires { emplace(end(), key, val); }
     {
         return emplace(end(), key, val);

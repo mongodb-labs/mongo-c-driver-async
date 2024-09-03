@@ -112,6 +112,20 @@
   /* Expand to the second operand, throw away the first */                     \
   IfFalse MLIB_NOTHING(#IfTrue)
 
+#ifdef __has_include
+#if __has_include(<mlib.tweaks.h>)
+#include <mlib.tweaks.h>
+#endif // __has_include()
+#endif // __has_include
+
+#ifndef mlib_audit_allocator_passing
+/**
+ * @brief Macro that should be used to toggle convenience APIs that will
+ * pass default allocators.
+ */
+#define mlib_audit_allocator_passing() 0
+#endif // mlib_audit_allocator_passing
+
 #if mlib_is_cxx()
 namespace mlib {
 

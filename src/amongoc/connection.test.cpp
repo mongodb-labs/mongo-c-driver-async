@@ -19,27 +19,6 @@
 
 using namespace amongoc;
 
-TEST_CASE("C++ Connection/Simple") {
-    asio::io_context      ioc;
-    asio::ip::tcp::socket sock{ioc};
-
-    auto ep = asio::ip::tcp::endpoint(asio::ip::make_address_v4("127.0.0.1"), 27017);
-    sock.connect(ep);
-    raw_connection cl{std::allocator<void>{}, sock};
-
-    bson::document doc;
-    doc.emplace_back("hello", 1.0);
-    doc.emplace_back("$db", "test");
-    auto op = cl.send_op_msg(doc).connect([&](auto r) { doc = r.value(); });
-    op.start();
-    ioc.run();
-    auto it = bson_view(doc).find("ok");
-    it.throw_if_error();
-    CHECK(it.has_value());
-    CHECK(it->key() == "ok");
-    CHECK(it->as_double() == 1);
-}
-
 TEST_CASE("C Connection/Good") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
@@ -99,7 +78,7 @@ TEST_CASE("C Connection/Simple request") {
         = std::move(s).connect(allocator<>{mlib_default_allocator}, [&](status ec, unique_box cl) {
               if (!ec.code) {
                   client_box = std::move(cl);
-                  bson::document doc;
+                  bson::document doc{allocator<>{mlib_default_allocator}};
                   doc.emplace_back("hello", 1.0);
                   doc.emplace_back("$db", "test");
                   auto s1 = client_box->as<amongoc_connection>().command(doc).as_unique();

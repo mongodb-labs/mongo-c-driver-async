@@ -110,9 +110,6 @@ namespace amongoc {
 template <typename T, typename E>
 class result;
 
-// forward-decl from nano/stop.hpp
-struct get_stop_token_fn;
-
 /**
  * @brief Provides a stoppable token based on an amongoc_handler
  */
@@ -158,7 +155,7 @@ public:
         }
 
         // The function object to be called
-        F _fn;
+        [[no_unique_address]] F _fn;
         // The stop registration cookie
         unique_box _reg_cookie;
     };
@@ -248,7 +245,7 @@ public:
         struct wrapped {
             AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
             // Wrapped function
-            F func;
+            [[no_unique_address]] F func;
             // Call the underlying function
             void call(status st, unique_box&& value) {
                 static_cast<F&&>(func)(st, mlib_fwd(value));

@@ -103,7 +103,7 @@ public:
                    // Read the document header that specifies the document size
                    auto doc_size = _read_int_le<std::uint32_t>(section_data + 1);
                    // Create the document.
-                   bson::document body;
+                   bson::document body{_alloc};
                    body.resize_and_overwrite(doc_size, [&](auto out) {
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
