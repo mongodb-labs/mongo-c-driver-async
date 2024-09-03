@@ -74,6 +74,13 @@
 #define MLIB_IS_EMPTY(...) MLIB_FIRST_ARG(__VA_OPT__(0, ) 1, ~)
 #define MLIB_IS_NOT_EMPTY(...) MLIB_FIRST_ARG(__VA_OPT__(1, ) 0, ~)
 
+#define MLIB_EVAL_32(...) MLIB_EVAL_16(MLIB_EVAL_16(__VA_ARGS__))
+#define MLIB_EVAL_16(...) MLIB_EVAL_8(MLIB_EVAL_8(__VA_ARGS__))
+#define MLIB_EVAL_8(...) MLIB_EVAL_4(MLIB_EVAL_4(__VA_ARGS__))
+#define MLIB_EVAL_4(...) MLIB_EVAL_2(MLIB_EVAL_2(__VA_ARGS__))
+#define MLIB_EVAL_2(...) MLIB_EVAL_1(MLIB_EVAL_1(__VA_ARGS__))
+#define MLIB_EVAL_1(...) __VA_ARGS__
+
 /**
  * @brief Expands to an integer literal corresponding to the number of macro
  * arguments. Supports up to fifteen arguments.

@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 MongoDB, Inc.
+ * Copyright 2024 MongoDB, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef MCD_INTEGER_H_INCLUDED
-#define MCD_INTEGER_H_INCLUDED
+#pragma once
+
+#include "./config.h"
 
 #include <neo/pp.hpp>
 
-#include <setjmp.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 /// Return 'true' iff (left * right) would overflow with int64
-inline bool _mcd_i64_mul_would_overflow(int64_t left, int64_t right) {
+inline bool _mlib_i64_mul_would_overflow(int64_t left, int64_t right) {
     if (right == -1) {
         // We will perform an integer division, and only (MIN / -1) is undefined
         // for integer division.
@@ -181,7 +181,7 @@ inline bool _mcd_i64_mul_would_overflow(int64_t left, int64_t right) {
 }
 
 /// Return 'true' iff (left + right) would overflow with int64
-inline bool _mcd_i64_add_would_overflow(int64_t left, int64_t right) {
+inline bool _mlib_i64_add_would_overflow(int64_t left, int64_t right) {
     /**
      * Context:
      *
@@ -361,14 +361,14 @@ inline bool _mcd_i64_add_would_overflow(int64_t left, int64_t right) {
 }
 
 /// Return 'true' iff (left - right) would overflow with int64
-inline bool _mcd_i64_sub_would_overflow(int64_t left, int64_t right) {
+inline bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
     // Lemma: N - M = N + (-M), therefore (N - M) is bounded iff (N + -M)
     // is bounded.
     if (right > 0) {
-        return _mcd_i64_add_would_overflow(left, -right);
+        return _mlib_i64_add_would_overflow(left, -right);
     } else if (right < 0) {
         if (left > 0) {
-            return _mcd_i64_add_would_overflow(-left, right);
+            return _mlib_i64_add_would_overflow(-left, right);
         } else {
             // Both negative. Subtracting two negatives will never overflow
             return false;
@@ -382,19 +382,10 @@ inline bool _mcd_i64_sub_would_overflow(int64_t left, int64_t right) {
     }
 }
 
-#define _mcMathEval16(...) _mcMathEval8(_mcMathEval8(_mcMathEval8(_mcMathEval8(__VA_ARGS__))))
-#define _mcMathEval8(...) _mcMathEval4(_mcMathEval4(__VA_ARGS__))
-#define _mcMathEval4(...) _mcMathEval2(_mcMathEval2(__VA_ARGS__))
-#define _mcMathEval2(...) _mcMathEval1(_mcMathEval1(__VA_ARGS__))
-#define _mcMathEval1(...) __VA_ARGS__
-#define _mcMathPaste(A, ...) _mcMathPasteImpl(A, __VA_ARGS__)
-#define _mcMathPasteImpl(A, ...) A##__VA_ARGS__
-#define _mcMathNothing(...)
-
 /**
  * @brief Perform safe integer arithmetic.
  *
- * The math is performed in terms of 64-bit integers, encoded by mcd_integer,
+ * The math is performed in terms of 64-bit integers, encoded by mlib_integer,
  * which also keeps track of any overflows or arithmetic errors during
  * computation. Any operation that overflows will set a flag indicating the
  * overflow, and return a result as if the value would wrap the int64_t range.
@@ -412,53 +403,59 @@ inline bool _mcd_i64_sub_would_overflow(int64_t left, int64_t right) {
  *
  *    • add(...)
  *       ◇ Add a set of values
- *       ∅ [MC_INTEGER_ADD_OVERFLOW]
+ *       ∅ [mlib_integer_add_overflow]
  *    • sub(...)
  *       ◇ Subtract values (left-associative)
- *       ∅ [MC_INTEGER_SUB_OVERFLOW]
+ *       ∅ [mlib_integer_sub_overflow]
  *    • mul(...)
  *       ◇ Multiply values
- *       ∅ [MC_INTEGER_MUL_OVERFLOW]
+ *       ∅ [mlib_integer_mul_overflow]
  *    • div(N, D)
  *       ◇ Divide value N by value D
- *       ∅ [MC_INTEGER_DIV_OVERFLOW | MC_INTEGER_DIVZERO]
+ *       ∅ [mlib_integer_div_overflow | mlib_integer_divzero]
  *    • neg(N)
  *       ◇ Subtract value N from 0
- *       ∅ [MC_INTEGER_SUB_OVERFLOW]
+ *       ∅ [mlib_integer_sub_overflow]
  *    • fromInt(X)
  *       ◇ Create a value from an int64_t-convertible C expression.
  *       ∅ (Never errors)
  *    • fromUnsigned(X)
  *       ◇ Create a value from a uint64_t-convertible C expression.
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *    • value(x)
- *       ◇ Create a value from an mcd_integer.
- *       ∅ (Inherits error flags from the given mcd_integer)
+ *       ◇ Create a value from an mlib_integer.
+ *       ∅ (Inherits error flags from the given mlib_integer)
  *    • checkBounds(Min, Max, V)
  *       ◇ Check that V is AT LEAST Min, and AT MOST Max. Flags from Min and Max
  *         are propagated onto V.
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *    • checkNonNegative(V)
  *       ◇ Check that V is not a negative value
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *    • checkNonPositive(V)
- *       ◇ Check that V is not a positive value (greater than zero)
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ◇ Check that V is not a positive value (i.e. N ≤ 0)
+ *       ∅ [mlib_integer_bounds]
+ *    • checkPositive(V)
+ *       ◇ Check that V is a positive value (i.e. N > 0)
+ *       ∅ [mlib_integer_bounds]
  *    • checkInt32(V)
  *       ◇ Check that V fits within a 32-bit integer
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *    • checkInt16(V)
  *       ◇ Check that V fits within a 16-bit integer
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *    • checkInt8(V)
  *       ◇ Check that V fits within an 8-bit integer
- *       ∅ [MC_INTEGER_BOUNDS]
+ *       ∅ [mlib_integer_bounds]
  *
  * The following compound checks are also available:
  *
  *    • checkNonNegativeInt32
  *    • checkNonNegativeInt16
  *    • checkNonNegativeInt8
+ *    • checkPositiveInt32
+ *    • checkPositiveInt16
+ *    • checkPositiveInt8
  *
  * In addition, integer literals 0, 1, 2, 3, 4, and 5 are valid direct
  * expressions, as well as power of two literals up to 1024. Other integer
@@ -469,201 +466,246 @@ inline bool _mcd_i64_sub_would_overflow(int64_t left, int64_t right) {
  *    • strlen(CString)
  *       ◇ Equivalent to fromUnsigned(strlen(CString))
  *    • strnlen(CString, MaxLen)
- *       ◇ Similar to strnlen(), but MaxLen must be an mcMath expression.
+ *       ◇ Similar to strnlen(), but MaxLen must be an mlibMath expression.
  *    • strlen32(CString)
  *       ◇ Equivalent to: checkInt32(strlen(CString))
  *    • strnlen32(CString, MaxLen)
  *       ◇ Equivalent to: checkInt32(strnlen(CString, MaxLen))
  *    • clearFlags(Bits, V)
- *       ◇ Unset the mc_integer_flags 'Bits' from the value 'V'
+ *       ◇ Unset the mlib_integer_flags 'Bits' from the value 'V'
  *    • setFlags(Bits, V)
- *       ◇ Set the mc_integer_flags 'Bits' on the value 'V'
+ *       ◇ Set the mlib_integer_flags 'Bits' on the value 'V'
  *    • assertNot(Bits, V)
- *       ◇ Assert that none of mc_integer_flags 'Bits' are set on 'V'
+ *       ◇ Assert that none of mlib_integer_flags 'Bits' are set on 'V'
+ *
+ * ! **** Casting and try/catch
+ *
+ * The following "cast" operations may also be used but require a previous utterance
+ * of `mlib_math_try();` within an enclosing scope:
+ *
+ *    • cast(T, V)
+ *      ⋄ Cast the expression `V` to type `T`. Does no bounds checking
+ *    • castInt64(V)
+ *    • castUint64(V)
+ *    • castInt32(V)
+ *    • castUInt32(V)
+ *    • castPositiveInt32(V)
+ *    • castPositiveUInt32(V)
+ *    • castNonNegativeInt32(V)
+ *      ⋄ Casts the expression `V` to the appropriate type, with bounds checking.
+ *
+ * If any of the above operations result in a bounds check failure OR the operand `V`
+ * has non-zero flags, the error information will be stored in the error context
+ * that was declared with by `mlib_math_try()`.
+ *
+ * Within a scope of `mlib_math_try()`, the `mlib_match_catch(E)` macro may be
+ * used to conditionally execute an associated (compound) statement if the current `try`
+ * scope has an error, which will be stored in `E`.
  */
-#define mcMath(...) _mcMathEval16(_mcMath(__VA_ARGS__))
-#define _mcMath(Expression) _mcMath1 _mcMathNothing()(Expression)
-#define _mcMath1(Expression) _mcMathPaste(_mcMathSubExpr_, Expression)
-#define _mcMathEval(...) _mcMath _mcMathNothing()(__VA_ARGS__)
+#define mlibMath(...) MLIB_EVAL_16(_mlibMath(__VA_ARGS__))
+#define _mlibMath(Expression) _mlibMath1 MLIB_NOTHING()(Expression)
+#define _mlibMath1(Expression) MLIB_PASTE(_mlibMathSubExpr_, Expression)
+#define _mlibMathEval(...) _mlibMath MLIB_NOTHING()(__VA_ARGS__)
 
-// clang-format off
-/// Expand to an opening call to the given function, leaving parens open:
-#define _mcMathCallOpen(Item, Func, _ignore2) \
-   Func(_mcMathEval(Item),
-/// Expand to a comma, argument, and closing parenthesis:
-#define _mcMathCallArgAndCloseParen(_ignore0, _ignore1, _ignore2) \
-   )
-/// Create a chain of binary function calls for each argument, left-associative.
-/// The "Identity" is passed as the left-most argument
-#define _mcMathChainBinop(Func, Identity, ...) \
-   /* Expand an opening call to _math_add for each argument: */ \
-   NEO_MAP _mcMathNothing () \
-      (_mcMathCallOpen, Func, __VA_ARGS__) \
-   /* Ent with the identity argument: */ \
-   Identity \
-   /* Closing paren for each argument: */ \
-   NEO_MAP _mcMathNothing () \
-      (_mcMathCallArgAndCloseParen, ~, __VA_ARGS__)
 // Four basic operations:
-#define _mcMathSubExpr_add(A, B) _mc_math_add(_mcMathEval(A), _mcMathEval(B))
-#define _mcMathSubExpr_sub(A, B) _mc_math_sub(_mcMathEval(A), _mcMathEval(B))
-#define _mcMathSubExpr_mul(A, B) _mc_math_mul(_mcMathEval(A), _mcMathEval(B))
-#define _mcMathSubExpr_div(a, b) _mc_math_div(_mcMathEval(a), _mcMathEval(b))
+#define _mlibMathSubExpr_add(A, B) _mlib_math_add(_mlibMathEval(A), _mlibMathEval(B))
+#define _mlibMathSubExpr_sub(A, B) _mlib_math_sub(_mlibMathEval(A), _mlibMathEval(B))
+#define _mlibMathSubExpr_mul(A, B) _mlib_math_mul(_mlibMathEval(A), _mlibMathEval(B))
+#define _mlibMathSubExpr_div(a, b) _mlib_math_div(_mlibMathEval(a), _mlibMathEval(b))
 //  Negate the given argument (subtract from zero)
-#define _mcMathSubExpr_neg(n) _mcMathEval (sub (0, n))
-// clang-format on
+#define _mlibMathSubExpr_neg(n) _mlibMathEval(sub(0, n))
 
-#define _mcMathSubExpr_fromInt(x) _mc_math_from_i64(x)
-#define _mcMathSubExpr_I(x) _mc_math_from_i64(x)
-#define _mcMathSubExpr_fromUnsigned(x) _mc_math_from_u64(x)
-#define _mcMathSubExpr_U(x) _mc_math_from_u64(x)
-#define _mcMathSubExpr_value(x) x
-#define _mcMathSubExpr_V(x) x
+#define _mlibMathSubExpr_fromInt(x) _mlib_math_from_i64(x)
+#define _mlibMathSubExpr_I(x) _mlib_math_from_i64(x)
+#define _mlibMathSubExpr_fromUnsigned(x) _mlib_math_from_u64(x)
+#define _mlibMathSubExpr_U(x) _mlib_math_from_u64(x)
+#define _mlibMathSubExpr_value(x) x
+#define _mlibMathSubExpr_V(x) x
 
-#define _mcMathSubExpr_1024 _mcMathEval _mcMathNothing()(fromInt(1024))
-#define _mcMathSubExpr_512 _mcMathEval _mcMathNothing()(fromInt(512))
-#define _mcMathSubExpr_256 _mcMathEval _mcMathNothing()(fromInt(256))
-#define _mcMathSubExpr_128 _mcMathEval _mcMathNothing()(fromInt(128))
-#define _mcMathSubExpr_64 _mcMathEval _mcMathNothing()(fromInt(64))
-#define _mcMathSubExpr_32 _mcMathEval _mcMathNothing()(fromInt(32))
-#define _mcMathSubExpr_16 _mcMathEval _mcMathNothing()(fromInt(16))
-#define _mcMathSubExpr_8 _mcMathEval _mcMathNothing()(fromInt(8))
-#define _mcMathSubExpr_5 _mcMathEval _mcMathNothing()(fromInt(5))
-#define _mcMathSubExpr_4 _mcMathEval _mcMathNothing()(fromInt(4))
-#define _mcMathSubExpr_3 _mcMathEval _mcMathNothing()(fromInt(3))
-#define _mcMathSubExpr_2 _mcMathEval _mcMathNothing()(fromInt(2))
-#define _mcMathSubExpr_1 _mcMathEval _mcMathNothing()(fromInt(1))
-#define _mcMathSubExpr_0 _mcMathEval _mcMathNothing()(fromInt(0))
+#define _mlibMathSubExpr_1024 _mlibMathEval MLIB_NOTHING()(fromInt(1024))
+#define _mlibMathSubExpr_512 _mlibMathEval MLIB_NOTHING()(fromInt(512))
+#define _mlibMathSubExpr_256 _mlibMathEval MLIB_NOTHING()(fromInt(256))
+#define _mlibMathSubExpr_128 _mlibMathEval MLIB_NOTHING()(fromInt(128))
+#define _mlibMathSubExpr_64 _mlibMathEval MLIB_NOTHING()(fromInt(64))
+#define _mlibMathSubExpr_32 _mlibMathEval MLIB_NOTHING()(fromInt(32))
+#define _mlibMathSubExpr_16 _mlibMathEval MLIB_NOTHING()(fromInt(16))
+#define _mlibMathSubExpr_8 _mlibMathEval MLIB_NOTHING()(fromInt(8))
+#define _mlibMathSubExpr_5 _mlibMathEval MLIB_NOTHING()(fromInt(5))
+#define _mlibMathSubExpr_4 _mlibMathEval MLIB_NOTHING()(fromInt(4))
+#define _mlibMathSubExpr_3 _mlibMathEval MLIB_NOTHING()(fromInt(3))
+#define _mlibMathSubExpr_2 _mlibMathEval MLIB_NOTHING()(fromInt(2))
+#define _mlibMathSubExpr_1 _mlibMathEval MLIB_NOTHING()(fromInt(1))
+#define _mlibMathSubExpr_0 _mlibMathEval MLIB_NOTHING()(fromInt(0))
 
-#define _mcMathSubExpr_checkBounds(Min, Max, Value)                                                \
-    _mc_math_check_bounds(_mcMathEval(Min), _mcMathEval(Max), _mcMathEval(Value))
+#define _mlibMathSubExpr_checkBounds(Min, Max, Value)                                              \
+    _mlib_math_check_bounds(_mlibMathEval(Min), _mlibMathEval(Max), _mlibMathEval(Value))
 
-#define _mcMathSubExpr_checkMin(Min, V) _mcMathEval(checkBounds(Min, fromInt(INT64_MAX), V))
-#define _mcMathSubExpr_checkMax(Max, V) _mcMathEval(checkBounds(fromInt(INT64_MIN), Max, V))
+#define _mlibMathSubExpr_checkMin(Min, V) _mlibMathEval(checkBounds(Min, fromInt(INT64_MAX), V))
+#define _mlibMathSubExpr_checkMax(Max, V) _mlibMathEval(checkBounds(fromInt(INT64_MIN), Max, V))
 
-#define _mcMathSubExpr_checkInt32(Value)                                                           \
-    _mcMathSubExpr_checkBounds(fromInt(INT32_MIN), fromInt(INT32_MAX), Value)
-#define _mcMathSubExpr_checkNonNegativeInt32(Value)                                                \
-    _mcMathSubExpr_checkBounds(0, fromInt(INT32_MAX), Value)
-#define _mcMathSubExpr_checkPositiveInt32(Value)                                                   \
-    _mcMathSubExpr_checkBounds(1, fromInt(INT32_MAX), Value)
+#define _mlibMathSubExpr_checkInt32(Value)                                                         \
+    _mlibMathSubExpr_checkBounds(fromInt(INT32_MIN), fromInt(INT32_MAX), Value)
+#define _mlibMathSubExpr_checkNonNegativeInt32(Value)                                              \
+    _mlibMathSubExpr_checkBounds(0, fromInt(INT32_MAX), Value)
+#define _mlibMathSubExpr_checkPositiveInt32(Value)                                                 \
+    _mlibMathSubExpr_checkBounds(1, fromInt(INT32_MAX), Value)
 
-#define _mcMathSubExpr_checkInt16(Value)                                                           \
-    _mcMathSubExpr_checkBounds(fromInt(INT16_MIN), fromInt(INT16_MAX), Value)
-#define _mcMathSubExpr_checkNonNegativeInt16(Value)                                                \
-    _mcMathSubExpr_checkBounds(0, fromInt(INT64_MAX), Value)
-#define _mcMathSubExpr_checkPositiveInt16(Value)                                                   \
-    _mcMathSubExpr_checkBounds(1, fromInt(INT64_MAX), Value)
+#define _mlibMathSubExpr_checkInt16(Value)                                                         \
+    _mlibMathSubExpr_checkBounds(fromInt(INT16_MIN), fromInt(INT16_MAX), Value)
+#define _mlibMathSubExpr_checkNonNegativeInt16(Value)                                              \
+    _mlibMathSubExpr_checkBounds(0, fromInt(INT64_MAX), Value)
+#define _mlibMathSubExpr_checkPositiveInt16(Value)                                                 \
+    _mlibMathSubExpr_checkBounds(1, fromInt(INT64_MAX), Value)
 
-#define _mcMathSubExpr_checkInt8(Value)                                                            \
-    _mcMathSubExpr_checkBounds(fromInt(INT8_MIN), fromInt(INT8_MAX), Value)
-#define _mcMathSubExpr_checkNonNegativeInt8(Value)                                                 \
-    _mcMathSubExpr_checkBounds(0, fromInt(INT8_MAX), Value)
-#define _mcMathSubExpr_checkPositiveInt8(Value)                                                    \
-    _mcMathSubExpr_checkBounds(1, fromInt(INT8_MAX), Value)
+#define _mlibMathSubExpr_checkInt8(Value)                                                          \
+    _mlibMathSubExpr_checkBounds(fromInt(INT8_MIN), fromInt(INT8_MAX), Value)
+#define _mlibMathSubExpr_checkNonNegativeInt8(Value)                                               \
+    _mlibMathSubExpr_checkBounds(0, fromInt(INT8_MAX), Value)
+#define _mlibMathSubExpr_checkPositiveInt8(Value)                                                  \
+    _mlibMathSubExpr_checkBounds(1, fromInt(INT8_MAX), Value)
 
-#define _mcMathSubExpr_checkNonNegative(Value)                                                     \
-    _mcMathSubExpr_checkBounds(0, fromInt(INT64_MAX), Value)
-#define _mcMathSubExpr_checkNonPositive(Value)                                                     \
-    _mcMathSubExpr_checkBounds(fromInt(INT64_MIN), 0, Value)
-#define _mcMathSubExpr_checkPositive(Value) _mcMathSubExpr_checkBounds(1, fromInt(INT64_MAX), Value)
+#define _mlibMathSubExpr_checkNonNegative(Value)                                                   \
+    _mlibMathSubExpr_checkBounds(0, fromInt(INT64_MAX), Value)
+#define _mlibMathSubExpr_checkNonPositive(Value)                                                   \
+    _mlibMathSubExpr_checkBounds(fromInt(INT64_MIN), 0, Value)
+#define _mlibMathSubExpr_checkPositive(Value)                                                      \
+    _mlibMathSubExpr_checkBounds(1, fromInt(INT64_MAX), Value)
 
-#define _mcMathSubExpr_strlen(CString) _mcMathEval(fromUnsigned(strlen(CString)))
+#define _mlibMathSubExpr_strlen(CString) _mlibMathEval(fromUnsigned(strlen(CString)))
 
-#define _mcMathSubExpr_strlen32(CString) _mcMathEval(checkInt32(strlen(CString)))
+#define _mlibMathSubExpr_strlen32(CString) _mlibMathEval(checkInt32(strlen(CString)))
 
-#define _mcMathSubExpr_strnlen(CString, MaxLen) _mc_math_strnlen(CString, _mcMathEval(MaxLen))
+#define _mlibMathSubExpr_strnlen(CString, MaxLen) _mlib_math_strnlen(CString, _mlibMathEval(MaxLen))
 
-#define _mcMathSubExpr_strnlen32(CString, MaxLen) _mcMathEval(checkInt32(strnlen(CString, MaxLen)))
+#define _mlibMathSubExpr_strnlen32(CString, MaxLen)                                                \
+    _mlibMathEval(checkInt32(strnlen(CString, MaxLen)))
 
-#define _mcMathSubExpr_clearFlags(Bits, V) _mc_math_clear_flags(Bits, _mcMathEval(V))
+#define _mlibMathSubExpr_clearFlags(Bits, V) _mlib_math_clear_flags(Bits, _mlibMathEval(V))
 
-#define _mcMathSubExpr_assertNot(Bits, V)                                                          \
-    _mc_math_assert_not_flags(Bits, NEO_STR(Bits), _mcMathEval(V), NEO_STR(V), __FILE__, __LINE__)
+#define _mlibMathSubExpr_assertNot(Bits, V)                                                        \
+    _mlib_math_assert_not_flags(Bits,                                                              \
+                                NEO_STR(Bits),                                                     \
+                                _mlibMathEval(V),                                                  \
+                                NEO_STR(V),                                                        \
+                                __FILE__,                                                          \
+                                __LINE__)
 
-enum mcd_integer_flags {
-    MC_INTEGER_OKAY          = 0,
-    MC_INTEGER_ADD_OVERFLOW  = 1 << 0,
-    MC_INTEGER_SUB_OVERFLOW  = 1 << 1,
-    MC_INTEGER_MUL_OVERFLOW  = 1 << 2,
-    MC_INTEGER_DIV_OVERFLOW  = 1 << 3,
-    MC_INTEGER_OVERFLOW_BITS = MC_INTEGER_ADD_OVERFLOW | MC_INTEGER_SUB_OVERFLOW
-        | MC_INTEGER_MUL_OVERFLOW |  //
-        MC_INTEGER_DIV_OVERFLOW,
-    MC_INTEGER_BOUNDS  = 1 << 4,
-    MC_INTEGER_ZERODIV = 1 << 5,
-    MC_INTEGER_ALLBITS = 0xff,
+/**
+ * @brief Flags corresponding to arithmetic errors during checked arithmetic
+ */
+enum mlib_integer_flags {
+    // Zero value: No errors
+    mlib_integer_okay = 0,
+    // Overflow during addition
+    mlib_integer_add_overflow = 1 << 0,
+    // Overflow during subtraction
+    mlib_integer_sub_overflow = 1 << 1,
+    // Overflow during multiplication
+    mlib_integer_mul_overflow = 1 << 2,
+    // Overflow during division
+    mlib_integer_div_overflow = 1 << 3,
+    // All arithmetic overflow bits
+    mlib_integer_overflow_bits = mlib_integer_add_overflow | mlib_integer_sub_overflow
+        | mlib_integer_mul_overflow | mlib_integer_div_overflow,
+    // Integer bounds violation during a narrowing cast
+    mlib_integer_bounds = 1 << 4,
+    // Attempt to divide by zero
+    mlib_integer_zerodiv = 1 << 5,
+    // All error bits
+    // XXX: Be sure to update this if more bits are added
+    mlib_integer_allbits = (1 << 6) - 1,
 };
 
-typedef struct mcd_integer {
+/**
+ * @brief A "checked" integer type for integer arithmetic
+ *
+ * Internally stores a 64-bit integer, as well as a bitmask of status flags for
+ * mathematical operations.
+ *
+ * Operations accumulate flags in the integer between operands.
+ */
+typedef struct mlib_integer {
+    // The current int64_t value of the integer
     int64_t i64;
-    uint8_t flags;
-} mcd_integer;
+    // Status flags for the integer value
+    enum mlib_integer_flags flags;
+} mlib_integer;
 
-inline mcd_integer _mc_math_make_signed(mcd_integer val) {
-    mcd_integer r = {0};
-    return r;
+// Unset the given status flags on the given integer
+inline mlib_integer _mlib_math_clear_flags(mlib_integer v, enum mlib_integer_flags flags) {
+    v.flags = (enum mlib_integer_flags)(v.flags & ~flags);
+    return v;
 }
 
-inline mcd_integer _mc_math_from_i64(int64_t val) { return (mcd_integer){val, 0}; }
+// Set additional status flags on the given integer (does not clear any bits)
+inline mlib_integer _mlib_math_set_flags(mlib_integer v, enum mlib_integer_flags flags) {
+    v.flags = (enum mlib_integer_flags)(flags | v.flags);
+    return v;
+}
 
-inline mcd_integer _mc_math_from_u64(uint64_t val) {
-    mcd_integer v = _mc_math_from_i64((int64_t)val);
+inline mlib_integer _mlib_math_from_i64(int64_t val) {
+    return (mlib_integer){val, mlib_integer_okay};
+}
+
+inline mlib_integer _mlib_math_from_u64(uint64_t val) {
+    mlib_integer v = _mlib_math_from_i64((int64_t)val);
     if (val > INT64_MAX) {
-        v.flags |= MC_INTEGER_BOUNDS;
+        v = _mlib_math_set_flags(v, mlib_integer_bounds);
     }
     return v;
 }
 
-inline mcd_integer _mc_math_add(mcd_integer l, mcd_integer r) {
-    l.flags |= r.flags;
-    if (_mcd_i64_add_would_overflow(l.i64, r.i64)) {
-        l.flags |= MC_INTEGER_SUB_OVERFLOW;
+inline mlib_integer _mlib_math_add(mlib_integer l, mlib_integer r) {
+    l = _mlib_math_set_flags(l, r.flags);
+    if (_mlib_i64_add_would_overflow(l.i64, r.i64)) {
+        l = _mlib_math_set_flags(l, mlib_integer_add_overflow);
     }
     uint64_t ret = (uint64_t)l.i64 + (uint64_t)r.i64;
     l.i64        = (int64_t)ret;
     return l;
 }
 
-inline mcd_integer _mc_math_sub(mcd_integer l, mcd_integer r) {
-    l.flags |= r.flags;
-    if (_mcd_i64_sub_would_overflow(l.i64, r.i64)) {
-        l.flags |= MC_INTEGER_SUB_OVERFLOW;
+inline mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
+    l = _mlib_math_set_flags(l, r.flags);
+    if (_mlib_i64_sub_would_overflow(l.i64, r.i64)) {
+        l = _mlib_math_set_flags(l, mlib_integer_sub_overflow);
     }
     uint64_t ret = (uint64_t)l.i64 - (uint64_t)r.i64;
     l.i64        = (int64_t)ret;
     return l;
 }
 
-inline mcd_integer _mc_math_mul(mcd_integer l, mcd_integer r) {
-    l.flags |= r.flags;
-    if (_mcd_i64_mul_would_overflow(l.i64, r.i64)) {
-        l.flags |= MC_INTEGER_MUL_OVERFLOW;
+inline mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
+    l = _mlib_math_set_flags(l, r.flags);
+    if (_mlib_i64_mul_would_overflow(l.i64, r.i64)) {
+        l = _mlib_math_set_flags(l, mlib_integer_mul_overflow);
     }
     uint64_t ret = (uint64_t)l.i64 * (uint64_t)r.i64;
     l.i64        = (int64_t)ret;
     return l;
 }
 
-inline mcd_integer _mc_math_check_bounds(mcd_integer min, mcd_integer max, mcd_integer value) {
-    value.flags |= min.flags | max.flags;
+inline mlib_integer
+_mlib_math_check_bounds(mlib_integer min, mlib_integer max, mlib_integer value) {
+    value = _mlib_math_set_flags(value, min.flags);
+    value = _mlib_math_set_flags(value, max.flags);
     if (value.i64 < min.i64) {
-        value.flags |= MC_INTEGER_BOUNDS;
+        value     = _mlib_math_set_flags(value, mlib_integer_bounds);
         value.i64 = min.i64;
     } else if (value.i64 > max.i64) {
-        value.flags |= MC_INTEGER_BOUNDS;
+        value     = _mlib_math_set_flags(value, mlib_integer_bounds);
         value.i64 = max.i64;
     }
     return value;
 }
 
-inline mcd_integer _mc_math_div(mcd_integer num, mcd_integer den) {
-    num.flags |= den.flags;
+inline mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
+    num = _mlib_math_set_flags(num, den.flags);
     if (den.i64 == 0) {
-        num.flags |= MC_INTEGER_ZERODIV;
+        num     = _mlib_math_set_flags(num, mlib_integer_zerodiv);
         num.i64 = INT64_MAX;
     } else if (num.i64 == INT64_MIN && den.i64 == -1) {
-        num.flags |= MC_INTEGER_DIV_OVERFLOW;
+        num     = _mlib_math_set_flags(num, mlib_integer_div_overflow);
         num.i64 = 0;
     } else {
         num.i64 /= den.i64;
@@ -671,44 +713,34 @@ inline mcd_integer _mc_math_div(mcd_integer num, mcd_integer den) {
     return num;
 }
 
-inline mcd_integer _mc_math_strnlen(const char* string, mcd_integer maxlen) {
+inline mlib_integer _mlib_math_strnlen(const char* string, mlib_integer maxlen) {
     if (maxlen.flags) {
         // It is not safe to strlen() the string, since 'maxlen' may have a bogus
         // value.
-        mcd_integer r = {0, maxlen.flags};
+        mlib_integer r = {0, maxlen.flags};
         return r;
     }
     if (maxlen.i64 < 0) {
-        mcd_integer r = {0, MC_INTEGER_BOUNDS};
+        mlib_integer r = {0, mlib_integer_bounds};
         return r;
     }
     int64_t ret = 0;
     while (string[ret] && ret < maxlen.i64) {
         ++ret;
     }
-    mcd_integer r = {ret, 0};
+    mlib_integer r = {ret, mlib_integer_okay};
     return r;
 }
 
-inline mcd_integer _mc_math_clear_flags(enum mcd_integer_flags flags, mcd_integer v) {
-    v.flags &= (uint8_t)~flags;
-    return v;
-}
-
-inline mcd_integer _mc_math_set_flags(enum mcd_integer_flags flags, mcd_integer v) {
-    v.flags |= (uint8_t)flags;
-    return v;
-}
-
-inline mcd_integer _mc_math_assert_not_flags(enum mcd_integer_flags flags,
-                                             const char*            bits_str,
-                                             mcd_integer            v,
-                                             const char* const      expr_str,
-                                             const char*            file,
-                                             int                    line) {
+inline mlib_integer _mlib_math_assert_not_flags(enum mlib_integer_flags flags,
+                                                const char*             bits_str,
+                                                mlib_integer            v,
+                                                const char* const       expr_str,
+                                                const char*             file,
+                                                int                     line) {
     if (flags & v.flags) {
         fprintf(stderr,
-                "           mcMath: assertNot FAILED\n"
+                "           mlibMath: assertNot FAILED\n"
                 "         Location: %s:%d\n"
                 "    Subexpression: %s\n"
                 "Checked for flags: %s\n"
@@ -723,64 +755,54 @@ inline mcd_integer _mc_math_assert_not_flags(enum mcd_integer_flags flags,
     return v;
 }
 
-struct mc_math_fail_info {
-    int64_t     i64;
-    uint8_t     flags;
-    const char* file;
-    int         line;
+struct mlib_math_fail_info {
+    int64_t                 i64;
+    enum mlib_integer_flags flags;
+    const char*             file;
+    int                     line;
 };
 
-inline mcd_integer _mc_math_check_or_jump(jmp_buf*                           jmp,
-                                          volatile struct mc_math_fail_info* info,
-                                          mcd_integer                        v,
-                                          const char*                        file,
-                                          int                                line) {
-    if (!v.flags) {
-        return v;
+inline mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_fail_info* info,
+                                             mlib_integer                         v,
+                                             const char*                          file,
+                                             int                                  line) {
+    if (v.flags) {
+        info->i64   = v.i64;
+        info->flags = v.flags;
+        info->file  = file;
+        info->line  = line;
     }
-    info->i64   = v.i64;
-    info->flags = v.flags;
-    info->file  = file;
-    info->line  = line;
-    longjmp(*jmp, 1);
+    return v;
 }
 
-inline struct mc_math_fail_info
-_mc_math_fail_unvolatile(const volatile struct mc_math_fail_info* f) {
-    struct mc_math_fail_info ret = {f->i64, f->flags, f->file, f->line};
-    return ret;
-}
+#define _mlibMathSubExpr_checkOrFail(V)                                                            \
+    _mlibMathFillFailureInfo(&_mlibMathScopeErrorInfo, _mlibMathEval(V), __FILE__, __LINE__)
 
-#define _mcMathSubExpr_checkOrJump(V)                                                              \
-    _mc_math_check_or_jump(&_mcMathOnFailJmpBuf,                                                   \
-                           &_mcMathFailInfo,                                                       \
-                           _mcMathEval(V),                                                         \
-                           __FILE__,                                                               \
-                           __LINE__)
+#define _mlibMathSubExpr_cast(Type, V) (Type) _mlibMathEval(checkOrFail(V)).i64
+#define _mlibMathSubExpr_castInt64(V) _mlibMathEval(cast(int64_t, V))
+#define _mlibMathSubExpr_castUInt64(V) _mlibMathEval(cast(uint64_t, checkNonNegative(V)))
+#define _mlibMathSubExpr_castInt32(V) _mlibMathEval(cast(int32_t, checkInt32(V)))
+#define _mlibMathSubExpr_castUInt32(V) _mlibMathEval(cast(uint32_t, checkNonNegativeInt32(V)))
+#define _mlibMathSubExpr_castPositiveInt32(V) _mlibMathEval(castInt32(checkPositiveInt32(V)))
+#define _mlibMathSubExpr_castPositiveUInt32(V) _mlibMathEval(castUInt32(checkPositive(V)))
+#define _mlibMathSubExpr_castNonNegativeInt32(V) _mlibMathEval(castInt32(checkNonNegative(V)))
 
-#define _mcMathSubExpr_cast(Type, V) (Type) _mcMathEval(checkOrJump(V)).i64
-#define _mcMathSubExpr_castInt32(V) _mcMathEval(cast(int32_t, checkInt32(V)))
-#define _mcMathSubExpr_castUInt32(V) _mcMathEval(cast(uint32_t, checkNonNegativeInt32(V)))
-#define _mcMathSubExpr_castPositiveInt32(V) _mcMathEval(castInt32(checkPositiveInt32(V)))
-#define _mcMathSubExpr_castPositiveUInt32(V) _mcMathEval(castUInt32(checkPositive(V)))
-#define _mcMathSubExpr_castNonNegativeInt32(V) _mcMathEval(castInt32(checkNonNegative(V)))
+#define mlibMathInt64(X) mlibMath(castInt64(X))
+#define mlibMathPositiveInt64(X) mlibMath(castInt64(checkPositive(V)))
+#define mlibMathNonNegativeInt64(X) mlibMath(castInt64(checkNonNegative(V)))
+#define mlibMathUInt64(X) mlibMath(castUInt64(X))
+#define mlibMathPositiveUInt64(X) mlibMath(castUInt64(checkPositive(V)))
 
-#define mcMathInt32(X) mcMath(castInt32(X))
-#define mcMathUInt32(X) mcMath(castUInt32(X))
-#define mcMathPositiveUInt32(X) mcMath(castPositiveUInt32(X))
-#define mcMathPositiveInt32(X) mcMath(castPositiveInt32(X))
-#define mcMathNonNegativeInt32(X) mcMath(castNonNegativeInt32(X))
+#define mlibMathInt32(X) mlibMath(castInt32(X))
+#define mlibMathPositiveInt32(X) mlibMath(castPositiveInt32(X))
+#define mlibMathNonNegativeInt32(X) mlibMath(castNonNegativeInt32(X))
+#define mlibMathUInt32(X) mlibMath(castUInt32(X))
+#define mlibMathPositiveUInt32(X) mlibMath(castPositiveUInt32(X))
 
-#define mcMathOnFail(VarName)                                                                      \
-    jmp_buf                           _mcMathOnFailJmpBuf = {0};                                   \
-    volatile struct mc_math_fail_info _mcMathFailInfo     = {0};                                   \
-    if (setjmp(_mcMathOnFailJmpBuf) == 0) {                                                        \
-        /* Do nothing */                                                                           \
+#define mlib_math_try() struct mlib_math_fail_info _mlibMathScopeErrorInfo = {0}
+
+#define mlib_math_catch(E)                                                                         \
+    if (!&_mlibMathScopeErrorInfo.flags) {                                                         \
     } else                                                                                         \
-        for (bool once = true; once; once = false)                                                 \
-            for (const struct mc_math_fail_info VarName                                            \
-                 = _mc_math_fail_unvolatile(&_mcMathFailInfo);                                     \
-                 once;                                                                             \
-                 once = false)
-
-#endif  // MCD_INTEGER_H_INCLUDED
+        for (int once = 1; once; once = 0)                                                         \
+            for (struct mlib_math_fail_info E = _mlibMathScopeErrorInfo; once; once = 0)

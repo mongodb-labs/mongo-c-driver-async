@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mlib/config.h>
+#include <mlib/integer.h>
 
 #if defined(__GNUC__) || defined(__clang__)
 #define BV_LIKELY(X) __builtin_expect((X), 1)
@@ -10,7 +11,6 @@
 #define BV_UNLIKELY(X) (X)
 #endif
 
-#include "./mcd-integer.h"
 #include "./types.h"
 
 #include <inttypes.h>
@@ -73,7 +73,7 @@ typedef struct bson_view bson_view;
  * @param bytes Pointer-to an array of AT LEAST four octets
  * @return uint32_t The decoded integer value.
  */
-inline int32_t _bson_read_int32_le(const bson_byte* bytes) mlib_noexcept {
+mlib_constexpr int32_t _bson_read_int32_le(const bson_byte* bytes) mlib_noexcept {
     uint32_t u32 = 0;
     u32 |= bytes[3].v;
     u32 <<= 8;
@@ -93,7 +93,7 @@ inline int32_t _bson_read_int32_le(const bson_byte* bytes) mlib_noexcept {
  * @param bytes Pointer-to an array of AT LEAST eight octets
  * @return uint64_t The decoded integer value.
  */
-inline int64_t _bson_read_int64_le(const bson_byte* bytes) mlib_noexcept {
+mlib_constexpr int64_t _bson_read_int64_le(const bson_byte* bytes) mlib_noexcept {
     const uint64_t lo  = (uint64_t)_bson_read_int32_le(bytes);
     const uint64_t hi  = (uint64_t)_bson_read_int32_le(bytes + 4);
     const uint64_t u64 = (hi << 32) | lo;
@@ -164,9 +164,7 @@ typedef struct bson_iterator {
     using iterator_concept  = std::forward_iterator_tag;
     using pointer           = bson_iterator;
 
-    inline bool operator==(const bson_iterator other) const noexcept;
-
-    bool operator!=(const bson_iterator other) const noexcept { return !(*this == other); }
+    constexpr bool operator==(const bson_iterator other) const noexcept;
 
     inline reference operator*() const;
 
@@ -203,10 +201,10 @@ typedef struct bson_iterator {
  *
  * Used as a type guard in the bson_data() macro
  */
-inline const bson_byte* _bson_data_as_const(const bson_byte* p) { return p; }
+mlib_constexpr const bson_byte* _bson_data_as_const(const bson_byte* p) { return p; }
 
 // Equivalen to as_const, but accepts non-const
-inline bson_byte* _bson_data_as_mut(bson_byte* p) { return p; }
+mlib_constexpr bson_byte* _bson_data_as_mut(bson_byte* p) { return p; }
 
 /**
  * @brief Obtain a pointer to the beginning of the data for the given document.
@@ -530,9 +528,8 @@ inline bson_utf8_view bson_utf8_view_autolen(const char* s, ssize_t len) mlib_no
  * if `str` contains no null characters.
  */
 inline bson_utf8_view bson_utf8_view_chopnulls(bson_utf8_view str) mlib_noexcept {
-    mcd_integer realsize = mcMath(strnlen(str.data, U(str.len)));
-    BV_ASSERT(realsize.i64 <= (int64_t)str.len);
-    str.len = (size_t)realsize.i64;
+    size_t len = strnlen(str.data, str.len);
+    str.len    = len;
     return str;
 }
 
@@ -609,10 +606,10 @@ inline const bson_byte* _bson_iterator_value_ptr(bson_iterator iter) mlib_noexce
  * @return int32_t The number of bytes occupied by the regex value.
  */
 inline int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) {
-    mcMathOnFail(_) { return -(int)BSON_ITER_INVALID_LENGTH; }
     BV_ASSERT(maxlen > 0);
+    mlib_math_try();
     // A regex is encoded as <cstring><cstring>
-    int64_t rx_len = mcMathNonNegativeInt32(strnlen32(valptr, I(maxlen)));
+    int64_t rx_len = mlibMathNonNegativeInt32(strnlen32(valptr, I(maxlen)));
     // Because the entire document is guaranteed to have null terminator
     // (this was checked before the iterator was created) and `maxlen >= 0`, we
     // can assume that rx_len is less than `maxlen`
@@ -626,16 +623,17 @@ inline int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) {
     // The number of bytes available for the regex option string. If the
     // regex cstring was missing a null terminator, this will end up as
     // zero.
-    const int64_t opt_bytes_avail = mcMathNonNegativeInt32(sub(I(maxlen), I(rx_len)));
+    const int64_t opt_bytes_avail = mlibMathNonNegativeInt32(sub(I(maxlen), I(rx_len)));
     // The length of the option string. If the regex string was missing a
     // null terminator, then strnlen()'s maxlen argument will be zero, and
     // opt_len will therefore also be zero.
-    int64_t opt_len = mcMathNonNegativeInt32(strnlen32(opt_begin_ptr, I(opt_bytes_avail)));
+    int64_t opt_len = mlibMathNonNegativeInt32(strnlen32(opt_begin_ptr, I(opt_bytes_avail)));
     /// The number of bytes remaining in the doc following the option. This
     /// includes the null terminator for the option string, which we
     /// haven't passed yet.
     const int64_t trailing_bytes_remain
-        = mcMathNonNegativeInt32(sub(I(opt_bytes_avail), I(opt_len)));
+        = mlibMathNonNegativeInt32(sub(I(opt_bytes_avail), I(opt_len)));
+    mlib_math_catch(_) { return -(int)BSON_ITER_INVALID_LENGTH; }
     // There MUST be two more null terminators (the one after the opt
     // string, and the one at the end of the doc itself), so
     // 'trailing_bytes' must be at least two.
@@ -645,7 +643,9 @@ inline int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) {
     // Advance past the option string's nul
     opt_len += 1;
     // This is the value's length
-    return mcMathNonNegativeInt32(add(I(rx_len), I(opt_len)));
+    int32_t ret = mlibMathNonNegativeInt32(add(I(rx_len), I(opt_len)));
+    mlib_math_catch(_) { return -(int)BSON_ITER_INVALID_LENGTH; }
+    return ret;
 }
 
 /**
@@ -1293,12 +1293,13 @@ inline bson_regex bson_iterator_regex(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != BSON_TYPE_REGEX) {
         return null_regex;
     }
-    mcMathOnFail(f) { return null_regex; }
-    const bson_byte* const p       = _bson_iterator_value_ptr(it);
-    const char* const      regex   = (const char*)p;
-    const int64_t          rx_len  = mcMath(cast(int64_t, strlen32(regex)));
-    const char* const      options = regex + rx_len + 1;
-    const int64_t          opt_len = mcMath(cast(int64_t, strlen32(options)));
+    const bson_byte* const p = _bson_iterator_value_ptr(it);
+    mlib_math_try();
+    const char* const regex   = (const char*)p;
+    const int64_t     rx_len  = mlibMath(cast(int64_t, strlen32(regex)));
+    const char* const options = regex + rx_len + 1;
+    const int64_t     opt_len = mlibMath(cast(int64_t, strlen32(options)));
+    mlib_math_catch(_) { return null_regex; }
     return mlib_init(bson_regex){regex, (int32_t)rx_len, options, (int32_t)opt_len};
 }
 
@@ -1586,7 +1587,7 @@ bson_iterator::reference bson_iterator::operator*() const {
 
 bson_iterator::arrow bson_iterator::operator->() const noexcept { return arrow{**this}; }
 
-bool bson_iterator::operator==(bson_iterator other) const noexcept {
+constexpr bool bson_iterator::operator==(bson_iterator other) const noexcept {
     return bson_iterator_eq(*this, other);
 }
 

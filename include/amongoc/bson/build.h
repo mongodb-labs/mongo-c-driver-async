@@ -4,6 +4,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/integer.h>
 
 #include <inttypes.h>
 #include <stddef.h>
@@ -156,20 +157,20 @@ inline uint32_t bson_capacity(bson_mut d) {
         // document in the context of the parent's capacity.
         bson_mut parent = *d._parent_mut;
         // Number of bytes between the parent start and this element start:
-        const mcd_integer bytes_before
-            = mcMath(neg(I(d._capacity_or_negative_offset_within_parent_data)));
+        const mlib_integer bytes_before
+            = mlibMath(neg(I(d._capacity_or_negative_offset_within_parent_data)));
         // Number of bytes from the element start until the end of the parent:
-        const mcd_integer bytes_until_parent_end
-            = mcMath(sub(I(bson_ssize(parent)), V(bytes_before)));
+        const mlib_integer bytes_until_parent_end
+            = mlibMath(sub(I(bson_ssize(parent)), V(bytes_before)));
         // Num bytes in the parent after this document element:
-        const mcd_integer bytes_after = mcMath(sub(V(bytes_until_parent_end), I(bson_ssize(d))));
+        const mlib_integer bytes_after = mlibMath(sub(V(bytes_until_parent_end), I(bson_ssize(d))));
         // Number of bytes in the parent that are not our own:
-        const mcd_integer bytes_other = mcMath(add(V(bytes_before), V(bytes_after)));
+        const mlib_integer bytes_other = mlibMath(add(V(bytes_before), V(bytes_after)));
         // The number of bytes we can grow to until we will break the capacity of
         // the parent:
-        const mcd_integer bytes_remaining
-            = mcMath(checkNonNegativeInt32(sub(I(bson_capacity(parent)), V(bytes_other))));
-        mcMath(assertNot(MC_INTEGER_ALLBITS, V(bytes_remaining)));
+        const mlib_integer bytes_remaining
+            = mlibMath(checkNonNegativeInt32(sub(I(bson_capacity(parent)), V(bytes_other))));
+        mlibMath(assertNot(mlib_integer_allbits, V(bytes_remaining)));
         return (uint32_t)bytes_remaining.i64;
     }
     return (uint32_t)d._capacity_or_negative_offset_within_parent_data;
@@ -369,7 +370,6 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
                                       uint32_t               n_delete,
                                       uint32_t               n_insert,
                                       const bson_byte* const insert_from) {
-    mcMathOnFail(err) { return NULL; }
     // The offset of the position. We use this to later recover a pointer upon
     // reallocation
     const ssize_t pos_offset = position - bson_data(*doc);
@@ -379,9 +379,11 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
     BV_ASSERT(pos_offset < bson_ssize(*doc));
 
     // Calculate the new document size:
-    const int32_t size_diff = mcMathInt32(sub(I(n_insert), I(n_delete)));
+    mlib_math_try();
+    const int32_t size_diff = mlibMathInt32(sub(I(n_insert), I(n_delete)));
     uint32_t      new_doc_size
-        = (uint32_t)mcMathNonNegativeInt32(add(I(bson_ssize(*doc)), I(size_diff)));
+        = (uint32_t)mlibMathNonNegativeInt32(add(I(bson_ssize(*doc)), I(size_diff)));
+    mlib_math_catch(_) { return NULL; }
 
     if (doc->_capacity_or_negative_offset_within_parent_data < 0) {
         // We are in CHILD MODE, so we need to tell the parent to do the work:
@@ -399,7 +401,8 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
     } else {
         const bson_byte* const doc_data_end = bson_data(*doc) + bson_ssize(*doc);
         const uint32_t         avail_to_delete
-            = (uint32_t)mcMathNonNegativeInt32(I(doc_data_end - position));
+            = (uint32_t)mlibMathNonNegativeInt32(I(doc_data_end - position));
+        mlib_math_catch(_) { return NULL; }
         if (n_delete > avail_to_delete) {
             // Not enough data to actual delete, so this splice request is bogus?
             return NULL;
@@ -409,7 +412,8 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
             // We need to grow larger. Add some extra to prevent repeated
             // allocations:
             const uint32_t new_capacity
-                = (uint32_t)mcMathNonNegativeInt32(add(I(new_doc_size), 1024));
+                = (uint32_t)mlibMathNonNegativeInt32(add(I(new_doc_size), 1024));
+            mlib_math_catch(_) { return NULL; }
             // Resize:
             if (bson_reserve(doc, (uint32_t)new_capacity) < 0) {
                 // Allocation failed...
@@ -427,7 +431,8 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
         // The destination of the shifted buffer tail:
         bson_byte* const move_from = position + n_delete;
         // The size of the tail that is being moved:
-        const uint32_t data_remain = (uint32_t)mcMathNonNegativeInt32(I(doc_end - move_from));
+        const uint32_t data_remain = (uint32_t)mlibMathNonNegativeInt32(I(doc_end - move_from));
+        mlib_math_catch(_) { return NULL; }
         // Move the data, and insert a marker in the empty space:
         memmove(move_dest, move_from, data_remain);
         if (insert_from) {
@@ -466,15 +471,16 @@ inline bson_byte* _bson_prep_element_region(bson_mut* const      d,
                                             const bson_type      type,
                                             bson_utf8_view       key,
                                             const uint32_t       datasize) {
-    mcMathOnFail(_) {
-        *pos = bson_end(*d);
-        return NULL;
-    }
     // Prevent embedded nulls within document keys:
     key = bson_utf8_view_chopnulls(key);
     // The total size of the element (add two: for the tag and the key's null):
+    mlib_math_try();
     const uint32_t elem_size
-        = (uint32_t)mcMathNonNegativeInt32(add(U(key.len), add(2, U(datasize))));
+        = (uint32_t)mlibMathNonNegativeInt32(add(U(key.len), add(2, U(datasize))));
+    mlib_math_catch(_) {
+        *pos = bson_end(*d);
+        return NULL;
+    }
     // The offset of the element within the doc:
     const ptrdiff_t pos_offset = bson_iterator_data(*pos) - bson_mut_data(*d);
     // Insert a new set of bytes for the data:
@@ -510,16 +516,16 @@ inline bson_byte* _bson_prep_element_region(bson_mut* const      d,
  * @return bson_iterator Iterator to the inserted element, or the end iterator
  * on failure
  */
-
 inline bson_iterator _bson_insert_stringlike(bson_mut*      doc,
                                              bson_iterator  pos,
                                              bson_utf8_view key,
                                              bson_type      realtype,
                                              bson_utf8_view string) {
-    mcMathOnFail(_) { return bson_end(*doc); }
-    const int32_t string_size = mcMathPositiveInt32(add(U(string.len), 1));
-    const int32_t elem_size   = mcMathPositiveInt32(add(I(string_size), 4));
-    bson_byte*    out = _bson_prep_element_region(doc, &pos, realtype, key, (uint32_t)elem_size);
+    mlib_math_try();
+    const int32_t string_size = mlibMathPositiveInt32(add(U(string.len), 1));
+    const int32_t elem_size   = mlibMathPositiveInt32(add(I(string_size), 4));
+    mlib_math_catch(_) { return bson_end(*doc); }
+    bson_byte* out = _bson_prep_element_region(doc, &pos, realtype, key, (uint32_t)elem_size);
     if (out) {
         out    = _bson_write_int32le(out, string_size);
         out    = _bson_memcpy(out, string.data, (uint32_t)string.len);
@@ -672,8 +678,8 @@ inline bson_iterator bson_parent_iterator(bson_mut doc) {
     // Recover the address of the element:
     ret._ptr         = bson_mut_data(par) + -doc._capacity_or_negative_offset_within_parent_data;
     ptrdiff_t offset = ret._ptr - bson_mut_data(par);
-    ret._keylen      = (int32_t)mcMath(
-                      assertNot(MC_INTEGER_ALLBITS, sub(I(doc._bson_document_data - ret._ptr), 2)))
+    ret._keylen      = (int32_t)mlibMath(assertNot(mlib_integer_allbits,
+                                              sub(I(doc._bson_document_data - ret._ptr), 2)))
                       .i64;
     ret._rlen = (int32_t)(bson_size(par) - offset);
     return ret;
@@ -691,10 +697,11 @@ inline bson_iterator bson_parent_iterator(bson_mut doc) {
  */
 inline bson_iterator
 bson_insert_binary(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_binary bin) {
-    mcMathOnFail(_) { return bson_end(*doc); }
-    const int32_t bin_size  = mcMathNonNegativeInt32(I(bin.data_len));
-    const int32_t elem_size = mcMathPositiveInt32(add(I(bin_size), 5));
-    bson_byte*    out
+    mlib_math_try();
+    const int32_t bin_size  = mlibMathNonNegativeInt32(I(bin.data_len));
+    const int32_t elem_size = mlibMathPositiveInt32(add(I(bin_size), 5));
+    mlib_math_catch(_) { return bson_end(*doc); }
+    bson_byte* out
         = _bson_prep_element_region(doc, &pos, BSON_TYPE_BINARY, key, (uint32_t)elem_size);
     if (out) {
         out      = _bson_write_int32le(out, bin_size);
@@ -803,17 +810,18 @@ inline bson_iterator bson_insert_null(bson_mut* doc, bson_iterator pos, bson_utf
  */
 inline bson_iterator
 bson_insert_regex(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_regex rx) {
-    mcMathOnFail(_) { return bson_end(*doc); }
+    mlib_math_try();
     // Neither regex nor options may contain embedded nulls, so we cannot trust
     // the caller giving us the correct length:
     // Compute regex length:
-    const int32_t rx_len = mcMathNonNegativeInt32(strnlen(rx.regex, I(rx.regex_len)));
+    const int32_t rx_len = mlibMathNonNegativeInt32(strnlen(rx.regex, I(rx.regex_len)));
     // Compute options length:
     const int32_t opts_len
-        = rx.options ? mcMathNonNegativeInt32(strnlen32(rx.options, I(rx.options_len))) : 0;
+        = rx.options ? mlibMathNonNegativeInt32(strnlen32(rx.options, I(rx.options_len))) : 0;
     // The total value size:
-    const int32_t size = mcMathNonNegativeInt32(checkMin(2, add(I(rx_len), add(I(opts_len), 5))));
-    bson_byte*    out  = _bson_prep_element_region(doc, &pos, BSON_TYPE_REGEX, key, (uint32_t)size);
+    const int32_t size = mlibMathNonNegativeInt32(checkMin(2, add(I(rx_len), add(I(opts_len), 5))));
+    mlib_math_catch(_) { return bson_end(*doc); }
+    bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_REGEX, key, (uint32_t)size);
     if (out) {
         out        = _bson_memcpy(out, rx.regex, (uint32_t)rx_len);
         (out++)->v = 0;
@@ -837,11 +845,12 @@ bson_insert_regex(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_reg
  */
 inline bson_iterator
 bson_insert_dbpointer(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_dbpointer dbp) {
-    mcMathOnFail(_) { return bson_end(*doc); }
+    mlib_math_try();
     const int32_t collname_string_size
-        = mcMathPositiveInt32(add(strnlen(dbp.collection, I(dbp.collection_len)), 1));
-    const int32_t el_size = mcMathNonNegativeInt32(add(I(collname_string_size), I(12 + 4)));
-    bson_byte*    out
+        = mlibMathPositiveInt32(add(strnlen(dbp.collection, I(dbp.collection_len)), 1));
+    const int32_t el_size = mlibMathNonNegativeInt32(add(I(collname_string_size), I(12 + 4)));
+    mlib_math_catch(_) { return bson_end(*doc); }
+    bson_byte* out
         = _bson_prep_element_region(doc, &pos, BSON_TYPE_DBPOINTER, key, (uint32_t)el_size);
     if (out) {
         out        = _bson_write_int32le(out, collname_string_size);
@@ -887,10 +896,11 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
                                                  bson_utf8_view key,
                                                  bson_utf8_view code,
                                                  bson_view      scope) {
-    mcMathOnFail(err) { return bson_end(*doc); }
-    const int32_t code_size = mcMathPositiveInt32(add(1, U(code.len)));
-    const int32_t elem_size = mcMathPositiveInt32(add(I(code_size), add(I(bson_size(scope)), 4)));
-    bson_byte*    out
+    mlib_math_try();
+    const int32_t code_size = mlibMathPositiveInt32(add(1, U(code.len)));
+    const int32_t elem_size = mlibMathPositiveInt32(add(I(code_size), add(I(bson_size(scope)), 4)));
+    mlib_math_catch(_) { return bson_end(*doc); }
+    bson_byte* out
         = _bson_prep_element_region(doc, &pos, BSON_TYPE_CODEWSCOPE, key, (uint32_t)elem_size);
     if (out) {
         out = _bson_write_int32le(out, elem_size);
@@ -1022,7 +1032,7 @@ inline bson_iterator bson_insert_minkey(bson_mut* doc, bson_iterator pos, bson_u
  */
 inline bson_iterator
 bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
-    mcMathOnFail(_) { return bson_end(*doc); }
+    mlib_math_try();
     BV_ASSERT(!bson_iterator_done(pos));
     // Truncate the key to not contain an null bytes:
     newkey = bson_utf8_view_chopnulls(newkey);
@@ -1031,7 +1041,8 @@ bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexc
     // The number of bytes added for the new key (or possible negative)
     const ptrdiff_t size_diff = newkey.len - curkey.len;
     // The new remaining len following the adjusted key size
-    const int32_t new_rlen = mcMathPositiveInt32(add(I(pos._rlen), I(size_diff)));
+    const int32_t new_rlen = mlibMathPositiveInt32(add(I(pos._rlen), I(size_diff)));
+    mlib_math_catch(_) { return bson_end(*doc); }
     // The current iterator's offset within the document:
     const ptrdiff_t iter_off = bson_iterator_data(pos) - bson_data(*doc);
     BV_ASSERT(iter_off > 0);
@@ -1125,7 +1136,7 @@ inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
                                                  bson_iterator delete_end,
                                                  bson_iterator from_begin,
                                                  bson_iterator from_end) mlib_noexcept {
-    mcMathOnFail(_) { return bson_end(*doc); }
+    mlib_math_try();
     // We don't copy individually, since we can just memcpy the entire range:
     const bson_byte* const copy_begin = bson_iterator_data(from_begin);
     const bson_byte* const copy_end   = bson_iterator_data(from_end);
@@ -1135,9 +1146,10 @@ inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
     ptrdiff_t delete_size = bson_iterator_data(delete_end) - bson_iterator_data(pos);
     BV_ASSERT(delete_size >= 0 && "Invalid deletion range for bson_splice_disjoint_ranges()");
     // The number of bytes different from when we began:
-    const int32_t size_diff = mcMathInt32(sub(I(copy_size), I(delete_size)));
+    const int32_t size_diff = mlibMathInt32(sub(I(copy_size), I(delete_size)));
     // The new "bytes remaining" size for the returned iterator:
-    const int32_t new_rlen = mcMathPositiveInt32(add(U(pos._rlen), I(size_diff)));
+    const int32_t new_rlen = mlibMathPositiveInt32(add(U(pos._rlen), I(size_diff)));
+    mlib_math_catch(_) { return bson_end(*doc); }
 
     // Do the splice:
     bson_byte* new_posptr = _bson_splice_region(doc,
