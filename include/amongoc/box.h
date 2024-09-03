@@ -504,8 +504,7 @@ public:
         amongoc_box ret;
         // Make storage
         T* ptr = ret.prepare_storage<T>(alloc, dtor);
-        // Placement-new the object
-        new (ptr) T(mlib_fwd(obj));
+        alloc.rebind<T>().construct(ptr, mlib_fwd(obj));
         return mlib_fwd(ret).as_unique();
     }
 
@@ -536,11 +535,11 @@ public:
         if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(mlib_fwd(args)...))) {
             // No exception handling required: The constructor cannot throw OR we didn't allocate
             // any dynamic storage and there is nothing that would need to be freed
-            new (ptr)(T)(mlib_fwd(args)...);
+            alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
         } else {
             // We will need to free the storage if the constructor throws
             try {
-                new (ptr)(T)((Args&&)args...);
+                alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
             } catch (...) {
                 amongoc_box_free_storage(ret);
                 throw;
