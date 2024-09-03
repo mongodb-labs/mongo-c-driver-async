@@ -60,6 +60,9 @@
  */
 #define mlib_init(T) MLIB_IF_CXX(T) MLIB_IF_NOT_CXX((T))
 
+#define mlib_is_consteval()                                                    \
+  MLIB_IF_CXX(::mlib::is_constant_evaluated()) MLIB_IF_NOT_CXX(0)
+
 /**
  * @brief (C++ only) Expands to a `static_cast` expression that perfect-forwards
  * the argument.
@@ -108,3 +111,17 @@
 #define _mlibIfElsePick_0(IfTrue, IfFalse)                                     \
   /* Expand to the second operand, throw away the first */                     \
   IfFalse MLIB_NOTHING(#IfTrue)
+
+#if mlib_is_cxx()
+namespace mlib {
+
+static mlib_constexpr bool is_constant_evaluated() noexcept {
+  if consteval {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+} // namespace mlib
+#endif

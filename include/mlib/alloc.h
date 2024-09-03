@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #if mlib_is_cxx()
+#include <memory>
 #include <new>
 #endif
 
@@ -141,7 +142,8 @@ public:
     }
 
     // Compare two allocators. They are equivalent if the underlying C allocators are equal
-    constexpr bool operator==(allocator other) const noexcept {
+    template <typename U>
+    constexpr bool operator==(allocator<U> other) const noexcept {
         return _alloc.userdata == other.c_allocator().userdata
             and _alloc.reallocate == other.c_allocator().reallocate;
     }
@@ -165,6 +167,12 @@ public:
     template <typename U>
     constexpr allocator<U> rebind() const noexcept {
         return *this;
+    }
+
+    // Construct the object, injecting this allocator if appropriate
+    template <typename... Args>
+    constexpr void construct(pointer p, Args&&... args) {
+        std::uninitialized_construct_using_allocator(p, *this, static_cast<Args&&>(args)...);
     }
 
 private:

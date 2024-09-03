@@ -47,7 +47,7 @@ public:
                             typename std::allocator_traits<Alloc>::template rebind_alloc<char>>;
 
     template <typename BSON>
-    constexpr nanosender_of<result<bson_doc>> auto send_op_msg(BSON doc)
+    constexpr nanosender_of<result<bson::document>> auto send_op_msg(BSON doc)
         requires requires {
             doc.byte_size();
             doc.data();
@@ -94,7 +94,7 @@ public:
                                            asio::transfer_exactly(remaining),
                                            asio_as_nanosender);
                }})
-            // Parse the message into a bson_doc
+            // Parse the message into a bson::document
             | amongoc::then(result_join) | amongoc::then(result_fmap{[this](std::size_t) {
                    auto dbuf         = asio::dynamic_buffer(_recv_buf);
                    auto section_data = dbuf.data() + _msg_header_size + sizeof(std::uint32_t);
@@ -103,7 +103,7 @@ public:
                    // Read the document header that specifies the document size
                    auto doc_size = _read_int_le<std::uint32_t>(section_data + 1);
                    // Create the document.
-                   bson_doc body;
+                   bson::document body;
                    body.resize_and_overwrite(doc_size, [&](auto out) {
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
@@ -113,13 +113,14 @@ public:
                                                            + 1 + body.byte_size());
                    return NEO_MOVE(body);
                }})  //
-            | amongoc::then([](result<bson_doc, asio::error_code>&& r) -> result<bson_doc> {
-                   if (r.has_error()) {
-                       return amongoc::error(status::from(r.error()));
-                   } else {
-                       return amongoc::success(NEO_MOVE(r.value()));
-                   }
-               });
+            | amongoc::then(
+                   [](result<bson::document, asio::error_code>&& r) -> result<bson::document> {
+                       if (r.has_error()) {
+                           return amongoc::error(status::from(r.error()));
+                       } else {
+                           return amongoc::success(NEO_MOVE(r.value()));
+                       }
+                   });
     }
 
     T&       socket() noexcept { return _socket; }

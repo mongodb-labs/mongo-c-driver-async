@@ -12,7 +12,10 @@
 #include <string.h>
 
 #if mlib_is_cxx()
+#include <concepts>
+#include <new>
 #include <string_view>
+#include <tuple>
 #endif
 
 /**
@@ -38,7 +41,7 @@ mlib_extern_c_begin();
  * @param bytes The destination to write into
  * @param v The value to write
  */
-inline bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mlib_noexcept {
+mlib_constexpr bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mlib_noexcept {
     uint32_t v = (uint32_t)i32;
     bytes[0].v = (v >> 0) & 0xff;
     bytes[1].v = (v >> 8) & 0xff;
@@ -55,7 +58,7 @@ inline bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mlib_noexce
  * @param bytes The destination of the write
  * @param v  The value to write
  */
-inline bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) mlib_noexcept {
+mlib_constexpr bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) mlib_noexcept {
     const uint64_t u64 = (uint64_t)i64;
     out                = _bson_write_int32le(out, (int32_t)u64);
     out                = _bson_write_int32le(out, (int32_t)(u64 >> 32));
@@ -71,11 +74,70 @@ inline bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) mlib_noexcept
  * @param len The number of bytes to copy
  * @return bson_byte* The value of (out + len)
  */
-inline bson_byte* _bson_memcpy(bson_byte* out, const void* src, uint32_t len) mlib_noexcept {
-    if (src && len) {
-        memcpy(out, src, len);
+mlib_constexpr bson_byte*
+_bson_memcpy(bson_byte* dst, const bson_byte* src, uint32_t len) mlib_noexcept {
+    if (src && mlib_is_consteval()) {
+        for (uint32_t n = 0; n < len; ++n) {
+            dst[n] = src[n];
+        }
+    } else if (src && len) {
+        memcpy(dst, src, len);
     }
-    return out + len;
+    return dst + len;
+}
+
+mlib_constexpr bson_byte*
+_bson_memmove(bson_byte* dst, const bson_byte* src, uint32_t len) mlib_noexcept {
+    if (src && mlib_is_consteval()) {
+        if (src < dst) {
+            for (uint32_t n = len; n; --n) {
+                dst[n - 1] = src[n - 1];
+            }
+        } else {
+            for (uint32_t n = 0; n < len; ++n) {
+                dst[n] = src[n];
+            }
+        }
+
+    } else if (src && len) {
+        memmove(dst, src, len);
+    }
+    return dst + len;
+}
+
+mlib_constexpr bson_byte* _bson_memset(bson_byte* dst, char v, uint32_t len) mlib_noexcept {
+    if (mlib_is_consteval()) {
+        for (uint32_t n = 0; n < len; ++n) {
+            dst[n].v = v;
+        }
+    } else {
+        memset(dst, v, len);
+    }
+    return dst + len;
+}
+
+mlib_constexpr bson_byte*
+_bson_memcpy_chr(bson_byte* dst, const char* src, uint32_t len) mlib_noexcept {
+    if (src && mlib_is_consteval()) {
+        for (uint32_t n = 0; n < len; ++n) {
+            dst[n].v = src[n];
+        }
+    } else if (src && len) {
+        memcpy(dst, src, len);
+    }
+    return dst + len;
+}
+
+mlib_constexpr bson_byte*
+_bson_memcpy_u8(bson_byte* dst, const uint8_t* src, uint32_t len) mlib_noexcept {
+    if (src && mlib_is_consteval()) {
+        for (uint32_t n = 0; n < len; ++n) {
+            dst[n].v = src[n];
+        }
+    } else if (src && len) {
+        memcpy(dst, src, len);
+    }
+    return dst + len;
 }
 
 /**
@@ -151,7 +213,7 @@ typedef struct bson_mut {
  * bytes for the maximum size of `d` until which we will require reallocating
  * the parent, transitively.
  */
-inline uint32_t bson_capacity(bson_mut d) {
+mlib_constexpr uint32_t bson_capacity(bson_mut d) mlib_noexcept {
     if (d._capacity_or_negative_offset_within_parent_data < 0) {
         // We are a subdocument, so we need to calculate the capacity of our
         // document in the context of the parent's capacity.
@@ -177,37 +239,6 @@ inline uint32_t bson_capacity(bson_mut d) {
 }
 
 /**
- * @brief The default reallocation function for a bson_mut
- *
- * This function is used to manage the data buffers of a bson_mut as it is
- * manipulated. This is implemented in terms of realloc() and free() from
- * stdlib.h
- *
- * @see bson_mut_allocator_fn
- */
-inline bson_byte* bson_mut_default_reallocate(bson_byte* previous,
-                                              uint32_t   request_size,
-                                              uint32_t   prev_size,
-                                              uint32_t*  actual_size,
-                                              void*      userdata) {
-    // An allocation of zero is a request to free:
-    if (request_size == 0) {
-        free(previous);
-        *actual_size = 0;
-        return NULL;
-    }
-    // Reallocate:
-    bson_byte* const p = (bson_byte*)realloc(previous, request_size);
-    if (!p) {
-        // Failure:
-        return NULL;
-    }
-    // Tell the caller how much we allocated
-    *actual_size = request_size;
-    return p;
-}
-
-/**
  * @internal
  * @brief Reallocate the data buffer of a bson_mut
  *
@@ -218,7 +249,7 @@ inline bson_byte* bson_mut_default_reallocate(bson_byte* previous,
  *
  * All iterators and pointers to the underlying data are invalidated
  */
-inline bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) {
+mlib_constexpr bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) mlib_noexcept {
     // We are only called on ROOT MODE bson_muts
     BV_ASSERT(m->_capacity_or_negative_offset_within_parent_data >= 0);
     // Cap allocation size:
@@ -263,7 +294,7 @@ inline bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) {
  * All outstanding iterators and pointers are invalidated if the requested size
  * is greater than our current capacity.
  */
-inline int32_t bson_reserve(bson_mut* d, uint32_t size) {
+mlib_constexpr int32_t bson_reserve(bson_mut* d, uint32_t size) mlib_noexcept {
     BV_ASSERT(d->_capacity_or_negative_offset_within_parent_data >= 0
               && "Called bson_reserve() on child bson_mut");
     if (bson_capacity(*d) >= size) {
@@ -282,7 +313,7 @@ inline int32_t bson_reserve(bson_mut* d, uint32_t size) {
  * @param reserve The size to reserve within the new document
  * @return bson_mut A new mutator. Must be deleted with bson_mut_delete()
  */
-inline bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve) {
+mlib_constexpr bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve) mlib_noexcept {
     // Create the object:
     bson_mut r                                        = {0};
     r._capacity_or_negative_offset_within_parent_data = 0;
@@ -297,7 +328,9 @@ inline bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve) {
     }
     // Set an initial empty document:
     BV_ASSERT(r._capacity_or_negative_offset_within_parent_data >= 0);
-    memset(r._bson_document_data, 0, (uint32_t)r._capacity_or_negative_offset_within_parent_data);
+    _bson_memset(r._bson_document_data,
+                 0,
+                 (uint32_t)r._capacity_or_negative_offset_within_parent_data);
     r._bson_document_data[0].v = 5;
     return r;
 }
@@ -306,13 +339,17 @@ inline bson_mut bson_mut_new_ex(mlib_allocator allocator, uint32_t reserve) {
  * @brief Create a new empty document for later manipulation
  *
  * @note The return value must later be deleted using bson_mut_delete
+ *
+ * @note Not `constexpr` because the default allocator is not `constexpr`
  */
-inline bson_mut bson_mut_new(void) { return bson_mut_new_ex(mlib_default_allocator, 512); }
+inline bson_mut bson_mut_new(void) mlib_noexcept {
+    return bson_mut_new_ex(mlib_default_allocator, 512);
+}
 
 /**
  * @brief Obtain the `mlib_allocator` used with the given BSON mutator object
  */
-inline mlib_allocator bson_mut_get_allocator(bson_mut m) {
+mlib_constexpr mlib_allocator bson_mut_get_allocator(bson_mut m) mlib_noexcept {
     if (m._capacity_or_negative_offset_within_parent_data < 0) {
         // We are a child document
         return bson_mut_get_allocator(*m._parent_mut);
@@ -320,16 +357,16 @@ inline mlib_allocator bson_mut_get_allocator(bson_mut m) {
     return m._allocator;
 }
 
-inline bson_mut bson_mut_copy(bson_mut other) {
+mlib_constexpr bson_mut bson_mut_copy(bson_mut other) mlib_noexcept {
     bson_mut ret = bson_mut_new_ex(bson_mut_get_allocator(other), bson_size(other));
-    memcpy(ret._bson_document_data, bson_data(other), bson_size(other));
+    _bson_memcpy(ret._bson_document_data, bson_data(other), bson_size(other));
     return ret;
 }
 
 /**
  * @brief Free the resources of the given BSON document
  */
-inline void bson_mut_delete(bson_mut d) { _bson_mut_realloc(&d, 0); }
+mlib_constexpr void bson_mut_delete(bson_mut d) mlib_noexcept { _bson_mut_realloc(&d, 0); }
 
 /**
  * @internal
@@ -338,7 +375,7 @@ inline void bson_mut_delete(bson_mut d) { _bson_mut_realloc(&d, 0); }
  * @param doc The document that owns the element
  * @param pos An element iterator
  */
-inline bson_byte* _bson_mut_data_at(bson_mut doc, bson_iterator pos) {
+mlib_constexpr bson_byte* _bson_mut_data_at(bson_mut doc, bson_iterator pos) mlib_noexcept {
     const ssize_t off = bson_iterator_data(pos) - bson_data(doc);
     return bson_mut_data(doc) + off;
 }
@@ -365,11 +402,11 @@ inline bson_byte* _bson_mut_data_at(bson_mut doc, bson_iterator pos) {
  * the splice results in growing the document beyond its capacity. Care must
  * be taken to restore iterators and pointers following this operation.
  */
-inline bson_byte* _bson_splice_region(bson_mut* const        doc,
-                                      bson_byte*             position,
-                                      uint32_t               n_delete,
-                                      uint32_t               n_insert,
-                                      const bson_byte* const insert_from) {
+mlib_constexpr bson_byte* _bson_splice_region(bson_mut* const        doc,
+                                              bson_byte*             position,
+                                              uint32_t               n_delete,
+                                              uint32_t               n_insert,
+                                              const bson_byte* const insert_from) mlib_noexcept {
     // The offset of the position. We use this to later recover a pointer upon
     // reallocation
     const ssize_t pos_offset = position - bson_data(*doc);
@@ -434,11 +471,11 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
         const uint32_t data_remain = (uint32_t)mlibMathNonNegativeInt32(I(doc_end - move_from));
         mlib_math_catch(_) { return NULL; }
         // Move the data, and insert a marker in the empty space:
-        memmove(move_dest, move_from, data_remain);
+        _bson_memmove(move_dest, move_from, data_remain);
         if (insert_from) {
-            memmove(position, insert_from, n_insert);
+            _bson_memmove(position, insert_from, n_insert);
         } else {
-            memset(position, 'X', n_insert);
+            _bson_memset(position, 'X', n_insert);
         }
     }
     // Update our document header to match the new size:
@@ -466,11 +503,11 @@ inline bson_byte* _bson_splice_region(bson_mut* const        doc,
  * @note In case of success, `pos` will be updated to point to the newly
  * inserted element.
  */
-inline bson_byte* _bson_prep_element_region(bson_mut* const      d,
-                                            bson_iterator* const pos,
-                                            const bson_type      type,
-                                            bson_utf8_view       key,
-                                            const uint32_t       datasize) {
+mlib_constexpr bson_byte* _bson_prep_element_region(bson_mut* const      d,
+                                                    bson_iterator* const pos,
+                                                    const bson_type      type,
+                                                    bson_utf8_view       key,
+                                                    const uint32_t       datasize) mlib_noexcept {
     // Prevent embedded nulls within document keys:
     key = bson_utf8_view_chopnulls(key);
     // The total size of the element (add two: for the tag and the key's null):
@@ -493,7 +530,7 @@ inline bson_byte* _bson_prep_element_region(bson_mut* const      d,
     // Wriet the type tag:
     (*outptr++).v = (uint8_t)type;
     // Write the key
-    outptr = _bson_memcpy(outptr, key.data, key.len);
+    outptr = _bson_memcpy_chr(outptr, key.data, key.len);
     // Write the null terminator:
     (*outptr++).v = 0;  // null terminator
 
@@ -516,11 +553,11 @@ inline bson_byte* _bson_prep_element_region(bson_mut* const      d,
  * @return bson_iterator Iterator to the inserted element, or the end iterator
  * on failure
  */
-inline bson_iterator _bson_insert_stringlike(bson_mut*      doc,
-                                             bson_iterator  pos,
-                                             bson_utf8_view key,
-                                             bson_type      realtype,
-                                             bson_utf8_view string) {
+mlib_constexpr bson_iterator _bson_insert_stringlike(bson_mut*      doc,
+                                                     bson_iterator  pos,
+                                                     bson_utf8_view key,
+                                                     bson_type      realtype,
+                                                     bson_utf8_view string) mlib_noexcept {
     mlib_math_try();
     const int32_t string_size = mlibMathPositiveInt32(add(U(string.len), 1));
     const int32_t elem_size   = mlibMathPositiveInt32(add(I(string_size), 4));
@@ -528,7 +565,7 @@ inline bson_iterator _bson_insert_stringlike(bson_mut*      doc,
     bson_byte* out = _bson_prep_element_region(doc, &pos, realtype, key, (uint32_t)elem_size);
     if (out) {
         out    = _bson_write_int32le(out, string_size);
-        out    = _bson_memcpy(out, string.data, (uint32_t)string.len);
+        out    = _bson_memcpy_chr(out, string.data, (uint32_t)string.len);
         out->v = 0;
     }
     return pos;
@@ -544,8 +581,10 @@ inline bson_iterator _bson_insert_stringlike(bson_mut*      doc,
  * @return bson_iterator An iterator for the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_double(bson_mut* doc, bson_iterator pos, bson_utf8_view key, double d) {
+mlib_constexpr bson_iterator bson_insert_double(bson_mut*      doc,
+                                                bson_iterator  pos,
+                                                bson_utf8_view key,
+                                                double         d) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_DOUBLE, key, sizeof(double));
     if (out) {
         int64_t tmp;
@@ -565,8 +604,10 @@ bson_insert_double(bson_mut* doc, bson_iterator pos, bson_utf8_view key, double 
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-static inline bson_iterator
-bson_insert_utf8(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_utf8_view utf8) {
+static mlib_constexpr bson_iterator bson_insert_utf8(bson_mut*      doc,
+                                                     bson_iterator  pos,
+                                                     bson_utf8_view key,
+                                                     bson_utf8_view utf8) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, BSON_TYPE_UTF8, utf8);
 }
 
@@ -584,8 +625,10 @@ bson_insert_utf8(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_utf8
  * @note To modify the child document, use @ref bson_mut_subdocument with the
  * returned iterator to obtain a bson_mut that modifies the subdocument.
  */
-inline bson_iterator
-bson_insert_doc(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_view insert_doc) {
+mlib_constexpr bson_iterator bson_insert_doc(bson_mut*      doc,
+                                             bson_iterator  pos,
+                                             bson_utf8_view key,
+                                             bson_view      insert_doc) mlib_noexcept {
     if (!bson_data(insert_doc)) {
         // There was no document given. Re-call ourself with a view of an empty
         // doc:
@@ -623,10 +666,12 @@ bson_insert_doc(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_view 
  * integers starting from zero "0". It is up to the caller to use such keys for
  * array elements. Use @ref bson_tmp_uint_string() to easily create array keys.
  */
-inline bson_iterator bson_insert_array(bson_mut* doc, bson_iterator pos, bson_utf8_view key) {
+mlib_constexpr bson_iterator bson_insert_array(bson_mut*      doc,
+                                               bson_iterator  pos,
+                                               bson_utf8_view key) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_ARRAY, key, 5);
     if (out) {
-        memset(out, 0, 5);
+        _bson_memset(out, 0, 5);
         out[0].v = 5;
     }
     return pos;
@@ -645,7 +690,8 @@ inline bson_iterator bson_insert_array(bson_mut* doc, bson_iterator pos, bson_ut
  * @note The `parent` is passed by-pointer, because the child mutator may need
  * to update the parent in case of element insertion/deletion.
  */
-inline bson_mut bson_mut_subdocument(bson_mut* parent, bson_iterator subdoc_iter) {
+mlib_constexpr bson_mut bson_mut_subdocument(bson_mut*     parent,
+                                             bson_iterator subdoc_iter) mlib_noexcept {
     bson_mut ret = {0};
     if (bson_iterator_type(subdoc_iter) != BSON_TYPE_DOCUMENT
         && bson_iterator_type(subdoc_iter) != BSON_TYPE_ARRAY) {
@@ -671,7 +717,7 @@ inline bson_mut bson_mut_subdocument(bson_mut* parent, bson_iterator subdoc_iter
  * @param doc A child document mutator
  * @return bson_iterator An iterator within the parent that refers to the child
  */
-inline bson_iterator bson_parent_iterator(bson_mut doc) {
+mlib_constexpr bson_iterator bson_parent_iterator(bson_mut doc) mlib_noexcept {
     BV_ASSERT(doc._capacity_or_negative_offset_within_parent_data < 0);
     bson_mut      par = *doc._parent_mut;
     bson_iterator ret = {0};
@@ -695,8 +741,10 @@ inline bson_iterator bson_parent_iterator(bson_mut doc) {
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_binary(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_binary bin) {
+mlib_constexpr bson_iterator bson_insert_binary(bson_mut*      doc,
+                                                bson_iterator  pos,
+                                                bson_utf8_view key,
+                                                bson_binary    bin) mlib_noexcept {
     mlib_math_try();
     const int32_t bin_size  = mlibMathNonNegativeInt32(I(bin.data_len));
     const int32_t elem_size = mlibMathPositiveInt32(add(I(bin_size), 5));
@@ -721,7 +769,9 @@ bson_insert_binary(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_bi
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator bson_insert_undefined(bson_mut* doc, bson_iterator pos, bson_utf8_view key) {
+mlib_constexpr bson_iterator bson_insert_undefined(bson_mut*      doc,
+                                                   bson_iterator  pos,
+                                                   bson_utf8_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, BSON_TYPE_UNDEFINED, key, 0);
     return pos;
 }
@@ -736,8 +786,10 @@ inline bson_iterator bson_insert_undefined(bson_mut* doc, bson_iterator pos, bso
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_oid(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_oid oid) {
+mlib_constexpr bson_iterator bson_insert_oid(bson_mut*      doc,
+                                             bson_iterator  pos,
+                                             bson_utf8_view key,
+                                             bson_oid       oid) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_OID, key, sizeof oid);
     if (out) {
         memcpy(out, &oid, sizeof oid);
@@ -755,8 +807,10 @@ bson_insert_oid(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_oid o
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_bool(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bool b) {
+mlib_constexpr bson_iterator bson_insert_bool(bson_mut*      doc,
+                                              bson_iterator  pos,
+                                              bson_utf8_view key,
+                                              bool           b) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_BOOL, key, 1);
     if (out) {
         out[0].v = b ? 1 : 0;
@@ -775,8 +829,10 @@ bson_insert_bool(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bool b) {
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_datetime(bson_mut* doc, bson_iterator pos, bson_utf8_view key, int64_t dt) {
+mlib_constexpr bson_iterator bson_insert_datetime(bson_mut*      doc,
+                                                  bson_iterator  pos,
+                                                  bson_utf8_view key,
+                                                  int64_t        dt) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_DATE_TIME, key, sizeof dt);
     if (out) {
         _bson_write_int64le(out, dt);
@@ -793,7 +849,9 @@ bson_insert_datetime(bson_mut* doc, bson_iterator pos, bson_utf8_view key, int64
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator bson_insert_null(bson_mut* doc, bson_iterator pos, bson_utf8_view key) {
+mlib_constexpr bson_iterator bson_insert_null(bson_mut*      doc,
+                                              bson_iterator  pos,
+                                              bson_utf8_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, BSON_TYPE_NULL, key, 0);
     return pos;
 }
@@ -808,8 +866,10 @@ inline bson_iterator bson_insert_null(bson_mut* doc, bson_iterator pos, bson_utf
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_regex(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_regex rx) {
+mlib_constexpr bson_iterator bson_insert_regex(bson_mut*      doc,
+                                               bson_iterator  pos,
+                                               bson_utf8_view key,
+                                               bson_regex     rx) mlib_noexcept {
     mlib_math_try();
     // Neither regex nor options may contain embedded nulls, so we cannot trust
     // the caller giving us the correct length:
@@ -823,10 +883,10 @@ bson_insert_regex(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_reg
     mlib_math_catch(_) { return bson_end(*doc); }
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_REGEX, key, (uint32_t)size);
     if (out) {
-        out        = _bson_memcpy(out, rx.regex, (uint32_t)rx_len);
+        out        = _bson_memcpy_chr(out, rx.regex, (uint32_t)rx_len);
         (out++)->v = 0;
         if (rx.options) {
-            out = _bson_memcpy(out, rx.options, (uint32_t)opts_len);
+            out = _bson_memcpy_chr(out, rx.options, (uint32_t)opts_len);
         }
         (out++)->v = 0;
     }
@@ -843,8 +903,10 @@ bson_insert_regex(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_reg
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_dbpointer(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_dbpointer dbp) {
+mlib_constexpr bson_iterator bson_insert_dbpointer(bson_mut*      doc,
+                                                   bson_iterator  pos,
+                                                   bson_utf8_view key,
+                                                   bson_dbpointer dbp) mlib_noexcept {
     mlib_math_try();
     const int32_t collname_string_size
         = mlibMathPositiveInt32(add(strnlen(dbp.collection, I(dbp.collection_len)), 1));
@@ -854,9 +916,9 @@ bson_insert_dbpointer(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson
         = _bson_prep_element_region(doc, &pos, BSON_TYPE_DBPOINTER, key, (uint32_t)el_size);
     if (out) {
         out        = _bson_write_int32le(out, collname_string_size);
-        out        = _bson_memcpy(out, dbp.collection, (uint32_t)collname_string_size - 1);
+        out        = _bson_memcpy_chr(out, dbp.collection, (uint32_t)collname_string_size - 1);
         (out++)->v = 0;
-        out        = _bson_memcpy(out, &dbp.object_id, sizeof dbp.object_id);
+        out        = _bson_memcpy_u8(out, dbp.object_id.bytes, sizeof dbp.object_id);
     }
     return pos;
 }
@@ -871,8 +933,10 @@ bson_insert_dbpointer(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-static inline bson_iterator
-bson_insert_code(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_utf8_view code) {
+static mlib_constexpr bson_iterator bson_insert_code(bson_mut*      doc,
+                                                     bson_iterator  pos,
+                                                     bson_utf8_view key,
+                                                     bson_utf8_view code) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, BSON_TYPE_CODE, code);
 }
 
@@ -886,16 +950,18 @@ bson_insert_code(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_utf8
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-static inline bson_iterator
-bson_insert_symbol(bson_mut* doc, bson_iterator pos, bson_utf8_view key, bson_utf8_view sym) {
+static mlib_constexpr bson_iterator bson_insert_symbol(bson_mut*      doc,
+                                                       bson_iterator  pos,
+                                                       bson_utf8_view key,
+                                                       bson_utf8_view sym) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, BSON_TYPE_SYMBOL, sym);
 }
 
-inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
-                                                 bson_iterator  pos,
-                                                 bson_utf8_view key,
-                                                 bson_utf8_view code,
-                                                 bson_view      scope) {
+mlib_constexpr bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
+                                                         bson_iterator  pos,
+                                                         bson_utf8_view key,
+                                                         bson_utf8_view code,
+                                                         bson_view      scope) mlib_noexcept {
     mlib_math_try();
     const int32_t code_size = mlibMathPositiveInt32(add(1, U(code.len)));
     const int32_t elem_size = mlibMathPositiveInt32(add(I(code_size), add(I(bson_size(scope)), 4)));
@@ -905,7 +971,7 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
     if (out) {
         out = _bson_write_int32le(out, elem_size);
         out = _bson_write_int32le(out, code_size);
-        out = _bson_memcpy(out, code.data, (uint32_t)code.len);
+        out = _bson_memcpy_chr(out, code.data, (uint32_t)code.len);
         out = _bson_memcpy(out, bson_data(scope), bson_size(scope));
     }
     return pos;
@@ -921,8 +987,10 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_int32(bson_mut* doc, bson_iterator pos, bson_utf8_view key, int32_t value) {
+mlib_constexpr bson_iterator bson_insert_int32(bson_mut*      doc,
+                                               bson_iterator  pos,
+                                               bson_utf8_view key,
+                                               int32_t        value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_INT32, key, sizeof(int32_t));
     if (out) {
         out = _bson_write_int32le(out, value);
@@ -940,8 +1008,10 @@ bson_insert_int32(bson_mut* doc, bson_iterator pos, bson_utf8_view key, int32_t 
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_timestamp(bson_mut* doc, bson_iterator pos, bson_utf8_view key, uint64_t ts) {
+mlib_constexpr bson_iterator bson_insert_timestamp(bson_mut*      doc,
+                                                   bson_iterator  pos,
+                                                   bson_utf8_view key,
+                                                   uint64_t       ts) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_TIMESTAMP, key, sizeof ts);
     if (out) {
         out = _bson_write_int64le(out, (uint64_t)ts);
@@ -959,8 +1029,10 @@ bson_insert_timestamp(bson_mut* doc, bson_iterator pos, bson_utf8_view key, uint
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator
-bson_insert_int64(bson_mut* doc, bson_iterator pos, bson_utf8_view key, int64_t value) {
+mlib_constexpr bson_iterator bson_insert_int64(bson_mut*      doc,
+                                               bson_iterator  pos,
+                                               bson_utf8_view key,
+                                               int64_t        value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_INT64, key, sizeof value);
     if (out) {
         out = _bson_write_int64le(out, value);
@@ -982,13 +1054,13 @@ struct bson_decimal128 {
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator bson_insert_decimal128(bson_mut*              doc,
-                                            bson_iterator          pos,
-                                            bson_utf8_view         key,
-                                            struct bson_decimal128 value) {
+mlib_constexpr bson_iterator bson_insert_decimal128(bson_mut*              doc,
+                                                    bson_iterator          pos,
+                                                    bson_utf8_view         key,
+                                                    struct bson_decimal128 value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, BSON_TYPE_DECIMAL128, key, sizeof value);
     if (out) {
-        out = _bson_memcpy(out, &value, sizeof value);
+        out = _bson_memcpy_u8(out, value.bytes, sizeof value);
     }
     return pos;
 }
@@ -1002,7 +1074,9 @@ inline bson_iterator bson_insert_decimal128(bson_mut*              doc,
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator bson_insert_maxkey(bson_mut* doc, bson_iterator pos, bson_utf8_view key) {
+mlib_constexpr bson_iterator bson_insert_maxkey(bson_mut*      doc,
+                                                bson_iterator  pos,
+                                                bson_utf8_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, BSON_TYPE_MAXKEY, key, 0);
     return pos;
 }
@@ -1016,7 +1090,9 @@ inline bson_iterator bson_insert_maxkey(bson_mut* doc, bson_iterator pos, bson_u
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-inline bson_iterator bson_insert_minkey(bson_mut* doc, bson_iterator pos, bson_utf8_view key) {
+mlib_constexpr bson_iterator bson_insert_minkey(bson_mut*      doc,
+                                                bson_iterator  pos,
+                                                bson_utf8_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, BSON_TYPE_MINKEY, key, 0);
     return pos;
 }
@@ -1030,8 +1106,9 @@ inline bson_iterator bson_insert_minkey(bson_mut* doc, bson_iterator pos, bson_u
  * @return bson_iterator The iterator referring to the element after being
  * updated.
  */
-inline bson_iterator
-bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
+mlib_constexpr bson_iterator bson_set_key(bson_mut*      doc,
+                                          bson_iterator  pos,
+                                          bson_utf8_view newkey) mlib_noexcept {
     mlib_math_try();
     BV_ASSERT(!bson_iterator_done(pos));
     // Truncate the key to not contain an null bytes:
@@ -1064,7 +1141,7 @@ bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexc
 mlib_thread_local extern char _bson_tmp_integer_key_tl_storage[12];
 
 /// Write the decimal representation of a uint32_t into the given string.
-inline char* _bson_write_uint(uint32_t v, char* at) {
+mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
     if (v == 0) {
         *at++ = '0';
     } else if (v >= 10) {
@@ -1090,13 +1167,13 @@ inline char* _bson_write_uint(uint32_t v, char* at) {
  * remain valid only until a subsequent call to bson_tmp_uint_string within the
  * same thread.
  */
-inline bson_utf8_view bson_tmp_uint_string(uint32_t val) mlib_noexcept {
+mlib_constexpr bson_utf8_view bson_tmp_uint_string(uint32_t val) mlib_noexcept {
     const char* const end = _bson_write_uint(val, _bson_tmp_integer_key_tl_storage);
     return bson_utf8_view_from_data(_bson_tmp_integer_key_tl_storage,
                                     (size_t)(end - _bson_tmp_integer_key_tl_storage));
 }
 
-inline void
+mlib_constexpr void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
     for (; !bson_iterator_done(pos); pos = bson_next(pos)) {
         pos = bson_set_key(doc, pos, bson_tmp_uint_string(idx));
@@ -1109,7 +1186,7 @@ bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) m
  *
  * @param doc The document that will be modified.
  */
-inline void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
+mlib_constexpr void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
     bson_relabel_array_elements_at(doc, bson_begin(*doc), 0);
 }
 
@@ -1131,11 +1208,11 @@ inline void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
  * @note `delete_end` MUST be reachable from `pos`, and `from_end` MUST be
  * reachable from `from_begin`.
  */
-inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
-                                                 bson_iterator pos,
-                                                 bson_iterator delete_end,
-                                                 bson_iterator from_begin,
-                                                 bson_iterator from_end) mlib_noexcept {
+mlib_constexpr bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
+                                                         bson_iterator pos,
+                                                         bson_iterator delete_end,
+                                                         bson_iterator from_begin,
+                                                         bson_iterator from_end) mlib_noexcept {
     mlib_math_try();
     // We don't copy individually, since we can just memcpy the entire range:
     const bson_byte* const copy_begin = bson_iterator_data(from_begin);
@@ -1176,10 +1253,10 @@ inline bson_iterator bson_splice_disjoint_ranges(bson_mut*     doc,
     return pos;
 }
 
-inline bson_iterator bson_insert_disjoint_range(bson_mut*     doc,
-                                                bson_iterator pos,
-                                                bson_iterator from_begin,
-                                                bson_iterator from_end) mlib_noexcept {
+mlib_constexpr bson_iterator bson_insert_disjoint_range(bson_mut*     doc,
+                                                        bson_iterator pos,
+                                                        bson_iterator from_begin,
+                                                        bson_iterator from_end) mlib_noexcept {
     return bson_splice_disjoint_ranges(doc, pos, pos, from_begin, from_end);
 }
 
@@ -1197,8 +1274,9 @@ inline bson_iterator bson_insert_disjoint_range(bson_mut*     doc,
  * @note If `first` and `last` are equal, no elements are removed.
  * @note If `last` is not reachable from `first`, the behavior is undefined.
  */
-inline bson_iterator
-bson_erase_range(bson_mut* const doc, const bson_iterator first, const bson_iterator last) {
+mlib_constexpr bson_iterator bson_erase_range(bson_mut* const     doc,
+                                              const bson_iterator first,
+                                              const bson_iterator last) mlib_noexcept {
     return bson_splice_disjoint_ranges(doc, first, last, last, last);
 }
 
@@ -1211,77 +1289,134 @@ bson_erase_range(bson_mut* const doc, const bson_iterator first, const bson_iter
  * @return bson_iterator An iterator referring to the element after the removed
  * element.
  */
-static inline bson_iterator bson_erase(bson_mut* doc, bson_iterator pos) {
+static mlib_constexpr bson_iterator bson_erase(bson_mut* doc, bson_iterator pos) mlib_noexcept {
     return bson_erase_range(doc, pos, bson_next(pos));
 }
 
 mlib_extern_c_end();
 
 #if mlib_is_cxx()
-class bson_doc {
+
+namespace bson {
+
+using view      = ::bson_view;
+using utf8_view = ::bson_utf8_view;
+inline constexpr struct undefined_t {
+} undefined;
+inline constexpr struct null_t {
+} null;
+
+template <typename T>
+concept convertible_to_string_view = requires {
+    requires std::convertible_to<T, std::string_view> or std::convertible_to<T, utf8_view>;
+};
+
+template <typename T>
+concept convertible_to_value_type = convertible_to_string_view<T> or std::integral<std::decay_t<T>>
+    or std::floating_point<std::decay_t<T>>;
+
+template <typename T>
+concept element_compatible_pair = requires {
+    requires std::tuple_size_v<T> == 2;
+    requires convertible_to_string_view<std::tuple_element_t<0, T>>;
+    requires convertible_to_value_type<std::tuple_element_t<1, T>>;
+};
+
+/**
+ * @brief Presents a mutable BSON document STL-like interface
+ *
+ * This type provides insert/emplace/push_back/emplace_back APIs based on those
+ * found on std::map.
+ *
+ * The type *does not* provide a `size()`, because such a method cannot be implemented
+ * as a constant-time algorithm. To get the number of elements, use `std::ranges::distance`
+ */
+class document {
 public:
     using allocator_type = mlib::allocator<bson_byte>;
 
-    bson_doc() { _mut = bson_mut_new(); }
-    ~bson_doc() { _del(); }
+    using iterator = bson_iterator;
 
-    explicit bson_doc(bson_mut&& o) {
+    document()
+        : document(allocator_type(mlib_default_allocator)) {}
+
+    ~document() { _del(); }
+
+    /**
+     * @brief Construct a document object using the given allocator
+     */
+    constexpr explicit document(allocator_type alloc) {
+        _mut = bson_mut_new_ex(alloc.c_allocator(), 512);
+        if (data() == nullptr) {
+            throw std::bad_alloc();
+        }
+    }
+
+    /**
+     * @brief Take ownership of a C-style `::bson_mut` object
+     */
+    constexpr explicit document(bson_mut&& o) noexcept {
         _mut = o;
         o    = bson_mut{};
     }
 
-    explicit bson_doc(bson_view v, allocator_type alloc = allocator_type(mlib_default_allocator))
+    /**
+     * @brief Copy from the given BSON view
+     *
+     * @param v The document to be copied
+     * @param alloc An allocator for the operation
+     */
+    constexpr explicit document(bson_view      v,
+                                allocator_type alloc = allocator_type(mlib_default_allocator))
         : _mut(bson_mut_new_ex(alloc.c_allocator(), bson_size(v))) {
+        if (data() == nullptr)
+            throw std::bad_alloc();
         memcpy(data(), v.data(), v.byte_size());
     }
 
-    bson_doc(bson_doc const& other) { _mut = bson_mut_copy(other._mut); }
-    bson_doc(bson_doc&& other)
-        : _mut(((bson_doc&&)other).release()) {}
+    constexpr document(document const& other) { _mut = bson_mut_copy(other._mut); }
+    constexpr document(document&& other) noexcept
+        : _mut(((document&&)other).release()) {}
 
-    bson_doc& operator=(const bson_doc& other) noexcept {
+    constexpr document& operator=(const document& other) {
         _del();
         _mut = bson_mut_copy(other._mut);
+        if (data() == nullptr) {
+            throw std::bad_alloc();
+        }
         return *this;
     }
 
-    bson_doc& operator=(bson_doc&& other) noexcept {
+    constexpr document& operator=(document&& other) noexcept {
         _del();
-        _mut = ((bson_doc&&)other).release();
+        _mut = ((document&&)other).release();
         return *this;
     }
 
-    bson_iterator begin() const noexcept { return bson_begin(_mut); }
-    bson_iterator end() const noexcept { return bson_end(_mut); }
+    constexpr iterator begin() const noexcept { return bson_begin(_mut); }
+    constexpr iterator end() const noexcept { return bson_end(_mut); }
 
-    bson_byte*       data() noexcept { return bson_mut_data(_mut); }
-    const bson_byte* data() const noexcept { return bson_data(_mut); }
-    std::size_t      byte_size() const noexcept { return bson_size(_mut); }
-
-    bson_iterator insert(bson_iterator pos, std::string_view key, std::same_as<double> auto d) {
-        return bson_insert_double(&_mut, pos, bson_utf8_view::from_str(key), d);
-    }
-
-    bson_iterator insert(bson_iterator pos, std::string_view key, std::string_view str) {
-        return bson_insert_utf8(&_mut,
-                                pos,
-                                bson_utf8_view::from_str(key),
-                                bson_utf8_view::from_str(key));
-    }
-
-    bson_iterator push_back(std::string_view key, auto&& val)
-        requires requires { insert(end(), key, val); }
+    constexpr iterator find(auto&& key) const noexcept
+        requires requires(view v) { v.find(key); }
     {
-        return insert(end(), key, val);
+        return view(*this).find(key);
     }
 
-    void reserve(std::size_t n) {
+    constexpr bson_byte*       data() noexcept { return bson_mut_data(_mut); }
+    constexpr const bson_byte* data() const noexcept { return bson_data(_mut); }
+    constexpr std::size_t      byte_size() const noexcept { return bson_size(_mut); }
+
+    constexpr bool empty() const noexcept { return byte_size() == 5; }
+
+    constexpr void reserve(std::size_t n) {
         if (bson_reserve(&_mut, static_cast<std::uint32_t>(n)) < 0) {
             throw std::bad_alloc();
         }
     }
 
-    operator bson_view() const noexcept { return bson_view::from_data(data(), byte_size()); }
+    constexpr operator bson_view() const noexcept {
+        return bson_view::from_data(data(), byte_size());
+    }
 
     /**
      * @brief Prepare the internal buffer to be overwritten via invoking the given
@@ -1305,18 +1440,18 @@ public:
         }
     }
 
-    bson_mut release() && noexcept {
+    constexpr bson_mut release() && noexcept {
         auto m                   = _mut;
         _mut._bson_document_data = nullptr;
         return m;
     }
 
-    allocator_type get_allocator() const noexcept {
+    constexpr allocator_type get_allocator() const noexcept {
         return allocator_type(bson_mut_get_allocator(_mut));
     }
 
 private:
-    void _del() noexcept {
+    constexpr void _del() noexcept {
         if (_mut._bson_document_data) {
             // Moving from the object will set the data pointer to null, which prevents a
             // double-free
@@ -1325,7 +1460,80 @@ private:
         _mut._bson_document_data = nullptr;
     }
     bson_mut _mut;
+
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, double d) noexcept {
+        return bson_insert_double(&_mut, pos, key, d);
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, float d) noexcept {
+        return bson_insert_double(&_mut, pos, key, d);
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::int32_t d) noexcept {
+        return bson_insert_int32(&_mut, pos, key, d);
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::int64_t d) noexcept {
+        return bson_insert_int64(&_mut, pos, key, d);
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::string_view d) noexcept {
+        return bson_insert_utf8(&_mut, pos, key, utf8_view::from_str(d));
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, null_t) noexcept {
+        return bson_insert_null(&_mut, pos, key);
+    }
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, undefined_t) noexcept {
+        return bson_insert_undefined(&_mut, pos, key);
+    }
+    // Constrain to exactly handle `bool` (no conversions)
+    constexpr iterator
+    _do_emplace(iterator pos, utf8_view key, std::same_as<bool> auto b) noexcept {
+        return bson_insert_bool(&_mut, pos, key, b);
+    }
+
+    template <typename K, typename V>
+    constexpr iterator _emplace(iterator pos, K const& k, V const& val)
+        requires requires(utf8_view key) {
+            utf8_view::from_str(k);
+            _do_emplace(pos, key, val);
+        }
+    {
+        const utf8_view key = utf8_view::from_str(k);
+        const iterator  ret = _do_emplace(pos, key, val);
+        if (ret == end()) {
+            // This will only occur if there was an allocation failure
+            throw std::bad_alloc();
+        }
+        return ret;
+    }
+
+public:
+    template <element_compatible_pair P>
+    constexpr iterator insert(iterator pos, P const& pair)
+        requires requires { _emplace(pos, std::get<0>(pair), std::get<1>(pair)); }
+    {
+        return _emplace(pos, std::get<0>(pair), std::get<1>(pair));
+    }
+
+    template <typename K, typename V>
+    constexpr iterator emplace(iterator pos, K const& key, V const& val)
+        requires requires { _emplace(pos, key, val); }
+    {
+        return _emplace(pos, key, val);
+    }
+
+    constexpr iterator push_back(element_compatible_pair auto const& pair)
+        requires requires { insert(end(), pair); }
+    {
+        return insert(end(), pair);
+    }
+
+    constexpr iterator emplace_back(convertible_to_string_view auto&& key,
+                                    convertible_to_value_type auto&&  val)
+        requires requires { emplace(end(), key, val); }
+    {
+        return emplace(end(), key, val);
+    }
 };
+
+}  // namespace bson
 #endif  // C++
 
 #undef BV_ASSERT

@@ -27,9 +27,9 @@ TEST_CASE("C++ Connection/Simple") {
     sock.connect(ep);
     raw_connection cl{std::allocator<void>{}, sock};
 
-    bson_doc doc;
-    doc.push_back("hello", 1.0);
-    doc.push_back("$db", "test");
+    bson::document doc;
+    doc.emplace_back("hello", 1.0);
+    doc.emplace_back("$db", "test");
     auto op = cl.send_op_msg(doc).connect([&](auto r) { doc = r.value(); });
     op.start();
     ioc.run();
@@ -99,9 +99,9 @@ TEST_CASE("C Connection/Simple request") {
         = std::move(s).connect(allocator<>{mlib_default_allocator}, [&](status ec, unique_box cl) {
               if (!ec.code) {
                   client_box = std::move(cl);
-                  bson_doc doc;
-                  doc.push_back("hello", 1.0);
-                  doc.push_back("$db", "test");
+                  bson::document doc;
+                  doc.emplace_back("hello", 1.0);
+                  doc.emplace_back("$db", "test");
                   auto s1 = client_box->as<amongoc_connection>().command(doc).as_unique();
                   req_op  = std::move(s1).connect(  //
                       mlib::terminating_allocator,
@@ -109,7 +109,7 @@ TEST_CASE("C Connection/Simple request") {
                           CHECK_FALSE(ec.is_error());
                           if (not ec.code) {
                               req_ec         = ec;
-                              bson_view resp = b.as<bson_doc>();
+                              bson_view resp = b.as<bson::document>();
                               auto      ok   = resp.find("ok");
                               CHECK(ok->as_boolean());
                               did_run = true;

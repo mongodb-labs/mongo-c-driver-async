@@ -25,8 +25,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+mlib_extern_c_begin();
+
 /// Return 'true' iff (left * right) would overflow with int64
-inline bool _mlib_i64_mul_would_overflow(int64_t left, int64_t right) {
+mlib_constexpr bool _mlib_i64_mul_would_overflow(int64_t left, int64_t right) {
     if (right == -1) {
         // We will perform an integer division, and only (MIN / -1) is undefined
         // for integer division.
@@ -181,7 +183,7 @@ inline bool _mlib_i64_mul_would_overflow(int64_t left, int64_t right) {
 }
 
 /// Return 'true' iff (left + right) would overflow with int64
-inline bool _mlib_i64_add_would_overflow(int64_t left, int64_t right) {
+mlib_constexpr bool _mlib_i64_add_would_overflow(int64_t left, int64_t right) {
     /**
      * Context:
      *
@@ -361,7 +363,7 @@ inline bool _mlib_i64_add_would_overflow(int64_t left, int64_t right) {
 }
 
 /// Return 'true' iff (left - right) would overflow with int64
-inline bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
+mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
     // Lemma: N - M = N + (-M), therefore (N - M) is bounded iff (N + -M)
     // is bounded.
     if (right > 0) {
@@ -632,22 +634,22 @@ typedef struct mlib_integer {
 } mlib_integer;
 
 // Unset the given status flags on the given integer
-inline mlib_integer _mlib_math_clear_flags(mlib_integer v, enum mlib_integer_flags flags) {
+mlib_constexpr mlib_integer _mlib_math_clear_flags(mlib_integer v, enum mlib_integer_flags flags) {
     v.flags = (enum mlib_integer_flags)(v.flags & ~flags);
     return v;
 }
 
 // Set additional status flags on the given integer (does not clear any bits)
-inline mlib_integer _mlib_math_set_flags(mlib_integer v, enum mlib_integer_flags flags) {
+mlib_constexpr mlib_integer _mlib_math_set_flags(mlib_integer v, enum mlib_integer_flags flags) {
     v.flags = (enum mlib_integer_flags)(flags | v.flags);
     return v;
 }
 
-inline mlib_integer _mlib_math_from_i64(int64_t val) {
+mlib_constexpr mlib_integer _mlib_math_from_i64(int64_t val) {
     return (mlib_integer){val, mlib_integer_okay};
 }
 
-inline mlib_integer _mlib_math_from_u64(uint64_t val) {
+mlib_constexpr mlib_integer _mlib_math_from_u64(uint64_t val) {
     mlib_integer v = _mlib_math_from_i64((int64_t)val);
     if (val > INT64_MAX) {
         v = _mlib_math_set_flags(v, mlib_integer_bounds);
@@ -655,7 +657,7 @@ inline mlib_integer _mlib_math_from_u64(uint64_t val) {
     return v;
 }
 
-inline mlib_integer _mlib_math_add(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_add(mlib_integer l, mlib_integer r) {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_add_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_add_overflow);
@@ -665,7 +667,7 @@ inline mlib_integer _mlib_math_add(mlib_integer l, mlib_integer r) {
     return l;
 }
 
-inline mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_sub_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_sub_overflow);
@@ -675,7 +677,7 @@ inline mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
     return l;
 }
 
-inline mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_mul_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_mul_overflow);
@@ -685,8 +687,9 @@ inline mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
     return l;
 }
 
-inline mlib_integer
-_mlib_math_check_bounds(mlib_integer min, mlib_integer max, mlib_integer value) {
+mlib_constexpr mlib_integer _mlib_math_check_bounds(mlib_integer min,
+                                                    mlib_integer max,
+                                                    mlib_integer value) {
     value = _mlib_math_set_flags(value, min.flags);
     value = _mlib_math_set_flags(value, max.flags);
     if (value.i64 < min.i64) {
@@ -699,7 +702,7 @@ _mlib_math_check_bounds(mlib_integer min, mlib_integer max, mlib_integer value) 
     return value;
 }
 
-inline mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
+mlib_constexpr mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
     num = _mlib_math_set_flags(num, den.flags);
     if (den.i64 == 0) {
         num     = _mlib_math_set_flags(num, mlib_integer_zerodiv);
@@ -713,7 +716,7 @@ inline mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
     return num;
 }
 
-inline mlib_integer _mlib_math_strnlen(const char* string, mlib_integer maxlen) {
+mlib_constexpr mlib_integer _mlib_math_strnlen(const char* string, mlib_integer maxlen) {
     if (maxlen.flags) {
         // It is not safe to strlen() the string, since 'maxlen' may have a bogus
         // value.
@@ -732,12 +735,12 @@ inline mlib_integer _mlib_math_strnlen(const char* string, mlib_integer maxlen) 
     return r;
 }
 
-inline mlib_integer _mlib_math_assert_not_flags(enum mlib_integer_flags flags,
-                                                const char*             bits_str,
-                                                mlib_integer            v,
-                                                const char* const       expr_str,
-                                                const char*             file,
-                                                int                     line) {
+mlib_constexpr mlib_integer _mlib_math_assert_not_flags(enum mlib_integer_flags flags,
+                                                        const char*             bits_str,
+                                                        mlib_integer            v,
+                                                        const char* const       expr_str,
+                                                        const char*             file,
+                                                        int                     line) {
     if (flags & v.flags) {
         fprintf(stderr,
                 "           mlibMath: assertNot FAILED\n"
@@ -762,10 +765,10 @@ struct mlib_math_fail_info {
     int                     line;
 };
 
-inline mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_fail_info* info,
-                                             mlib_integer                         v,
-                                             const char*                          file,
-                                             int                                  line) {
+mlib_constexpr mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_fail_info* info,
+                                                     mlib_integer                         v,
+                                                     const char*                          file,
+                                                     int                                  line) {
     if (v.flags) {
         info->i64   = v.i64;
         info->flags = v.flags;
@@ -802,7 +805,9 @@ inline mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_fail_info
 #define mlib_math_try() struct mlib_math_fail_info _mlibMathScopeErrorInfo = {0}
 
 #define mlib_math_catch(E)                                                                         \
-    if (!&_mlibMathScopeErrorInfo.flags) {                                                         \
+    if (!_mlibMathScopeErrorInfo.flags) {                                                          \
     } else                                                                                         \
         for (int once = 1; once; once = 0)                                                         \
             for (struct mlib_math_fail_info E = _mlibMathScopeErrorInfo; once; once = 0)
+
+mlib_extern_c_end();
