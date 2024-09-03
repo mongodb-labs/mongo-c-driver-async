@@ -17,7 +17,7 @@ $(_poetry_stamp): $(THIS_DIR)/poetry.lock $(THIS_DIR)/pyproject.toml
 	touch $@
 
 SPHINX_JOBS ?= auto
-SPHINX_ARGS := -W -n -j "$(SPHINX_JOBS)" -a -b dirhtml
+SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -a -b dirhtml
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
