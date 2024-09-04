@@ -90,7 +90,7 @@ TEST_CASE("C Connection/Simple request") {
                               req_ec         = ec;
                               bson_view resp = b.as<bson::document>();
                               auto      ok   = resp.find("ok");
-                              CHECK(ok->as_boolean());
+                              CHECK(ok->as_bool());
                               did_run = true;
                           }
                       });

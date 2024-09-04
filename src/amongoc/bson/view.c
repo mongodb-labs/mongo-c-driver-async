@@ -55,8 +55,6 @@ extern mlib_constexpr bson_utf8_view _bson_read_stringlike_at(const bson_byte* p
 extern mlib_constexpr bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept;
 
 extern mlib_constexpr double         bson_iterator_double(bson_iterator it) mlib_noexcept;
-extern mlib_constexpr int32_t        bson_iterator_int32(bson_iterator it) mlib_noexcept;
-extern mlib_constexpr int64_t        bson_iterator_int64(bson_iterator it) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept;
 extern mlib_constexpr bson_view
 bson_iterator_document(bson_iterator it, enum bson_view_invalid_reason* error) mlib_noexcept;
@@ -68,7 +66,15 @@ extern mlib_constexpr bson_regex     bson_iterator_regex(bson_iterator) mlib_noe
 extern mlib_constexpr bson_dbpointer bson_iterator_dbpointer(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_iterator_code(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_iterator_symbol(bson_iterator) mlib_noexcept;
+extern mlib_constexpr int32_t        bson_iterator_int32(bson_iterator) mlib_noexcept;
+extern mlib_constexpr uint64_t       bson_iterator_timestamp(bson_iterator) mlib_noexcept;
+extern mlib_constexpr int64_t        bson_iterator_int64(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_utf8_view_chopnulls(bson_utf8_view str) mlib_noexcept;
+
+extern mlib_constexpr double  bson_iterator_as_double(bson_iterator it) mlib_noexcept;
+extern mlib_constexpr bool    bson_iterator_as_bool(bson_iterator it) mlib_noexcept;
+extern mlib_constexpr int32_t bson_iterator_as_int32(bson_iterator it) mlib_noexcept;
+extern mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept;
 
 extern mlib_constexpr int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) mlib_noexcept;
 
