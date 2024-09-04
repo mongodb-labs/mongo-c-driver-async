@@ -8,6 +8,7 @@
 #include "./nano/let.hpp"
 #include "./nano/result.hpp"
 #include "./nano/then.hpp"
+#include "./string.hpp"
 
 #include <amongoc/alloc.h>
 #include <amongoc/bson/build.h>
@@ -41,11 +42,6 @@ public:
         : _alloc(alloc)
         , _socket(NEO_FWD(sock)) {}
 
-    using string_type
-        = std::basic_string<char,
-                            std::char_traits<char>,
-                            typename std::allocator_traits<Alloc>::template rebind_alloc<char>>;
-
     template <typename BSON>
     constexpr nanosender_of<result<bson::document>> auto send_op_msg(BSON doc)
         requires requires {
@@ -70,33 +66,37 @@ public:
                                             asio::transfer_all(),
                                             asio_as_nanosender);
                })
-            // Read back a message header's worth of data
-            | amongoc::let(result_fmap{std::move([this](std::size_t n) {
+            // Read back a message header's worth of data.
+            // XXX: The recv_buffer is stored in this closure and passed by reference
+            // through the chain using pair_append()
+            | amongoc::let(result_fmap{[this, recv_buffer = string(_alloc)](std::size_t n) mutable {
                    return asio::async_read(socket(),
-                                           asio::dynamic_buffer(_recv_buf),
+                                           asio::dynamic_buffer(recv_buffer),
                                            asio::transfer_exactly(_msg_header_size),
-                                           asio_as_nanosender);
-               })})
+                                           asio_as_nanosender)
+                       | then(result_fmap(pair_append(recv_buffer)));
+               }})
             // Read a full message
             | amongoc::then(result_join)
-            | amongoc::let(result_fmap{[this](std::size_t n) {
+            | amongoc::let(result_fmap{unpack_args{[this](std::size_t n, string& recv_buffer) {
                    assert(n == _msg_header_size);
-                   assert(_recv_buf.size() == _msg_header_size);
                    // Read a LE-uint32 from the beginning of the receive buffer. This is the
                    // total message size
-                   const auto sz = _read_int_le<std::uint32_t>(asio::buffer(_recv_buf));
+                   const auto sz = _read_int_le<std::uint32_t>(asio::buffer(recv_buffer));
                    // The message must be at least as large as the message header
                    assert(sz >= _msg_header_size);
                    // Read the remainder of the message.
                    auto remaining = sz - _msg_header_size;
                    return asio::async_read(socket(),
-                                           asio::dynamic_buffer(_recv_buf),
+                                           asio::dynamic_buffer(recv_buffer),
                                            asio::transfer_exactly(remaining),
-                                           asio_as_nanosender);
-               }})
+                                           asio_as_nanosender)
+                       | then(result_fmap(pair_append(recv_buffer)));
+               }}})
             // Parse the message into a bson::document
-            | amongoc::then(result_join) | amongoc::then(result_fmap{[this](std::size_t) {
-                   auto dbuf         = asio::dynamic_buffer(_recv_buf);
+            | amongoc::then(result_join)
+            | amongoc::then(result_fmap{unpack_args{[this](std::size_t n, string& recv_buffer) {
+                   auto dbuf         = asio::dynamic_buffer(recv_buffer);
                    auto section_data = dbuf.data() + _msg_header_size + sizeof(std::uint32_t);
                    auto k            = asio::buffers_begin(section_data)[0];
                    assert(k == 0);  // We only handle Body kind sections yet
@@ -108,11 +108,8 @@ public:
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
                    });
-                   // Discard data from the receiver buffer
-                   asio::dynamic_buffer(_recv_buf).consume(_msg_header_size + sizeof(std::uint32_t)
-                                                           + 1 + body.byte_size());
                    return NEO_MOVE(body);
-               }})  //
+               }}})  //
             | amongoc::then(
                    [](result<bson::document, asio::error_code>&& r) -> result<bson::document> {
                        if (r.has_error()) {
@@ -171,12 +168,6 @@ public:
 
     // The socket to which we read/write messages
     T _socket;
-
-    // Buffer the receives data from the socket
-    string_type _recv_buf{_alloc};
-
-    // Lock for modifing pending_buf
-    std::mutex _mtx;
 
     // Request ID counter
     std::atomic_uint32_t _req_id{1};

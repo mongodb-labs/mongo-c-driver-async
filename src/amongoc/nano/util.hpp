@@ -159,6 +159,80 @@ template <typename T>
 explicit konst(T&&) -> konst<T>;
 
 /**
+ * @brief Create an invocable that will pair-up the given argument as the second
+ * element of pair.
+ *
+ * @tparam T The object to be paired. Will be forwarded through the pair (preserves references)
+ *
+ * Invocable signature of pair_append<T>: (U) -> pair<U, T>
+ */
+template <typename T>
+class pair_append {
+public:
+    constexpr explicit pair_append(T&& t)
+        : _object(mlib_fwd(t)) {}
+
+    template <typename Arg>
+    constexpr std::pair<Arg, T> operator()(Arg&& arg) const& noexcept {
+        return std::pair<Arg, T>(mlib_fwd(arg), _object);
+    }
+
+    template <typename Arg>
+    constexpr std::pair<Arg, T> operator()(Arg&& arg) && noexcept {
+        return std::pair<Arg, T>(mlib_fwd(arg), static_cast<T&&>(_object));
+    }
+
+private:
+    T _object;
+};
+
+template <typename T>
+explicit pair_append(T&&) -> pair_append<T>;
+
+/**
+ * @brief Combinator that unpacks a tuple-like argument before invoking the underlying invocable
+ *
+ * @tparam F The wrapped invocable
+ *
+ * When this object is invoked with an N-tuple argument, the underlying invocable
+ * will be called with N arguments as-if by std::apply()
+ */
+template <typename F>
+class unpack_args {
+public:
+    explicit constexpr unpack_args(F&& fn)
+        : _func(mlib_fwd(fn)) {}
+
+private:
+    [[no_unique_address]] F _func;
+
+public:
+    template <typename Tpl>
+        constexpr decltype(auto) operator()(Tpl&& tpl) &
+            requires requires { std::apply(_func, mlib_fwd(tpl)); }
+    {
+        return std::apply(_func, mlib_fwd(tpl));
+    }
+
+    template <typename Tpl>
+    constexpr decltype(auto) operator()(Tpl&& tpl) const&
+        requires requires { std::apply(_func, mlib_fwd(tpl)); }
+    {
+        return std::apply(_func, mlib_fwd(tpl));
+    }
+
+    template <typename Tpl>
+        constexpr decltype(auto) operator()(Tpl&& tpl) &&
+            requires requires { std::apply(static_cast<F&&>(_func), mlib_fwd(tpl)); }
+    {
+        return std::apply(static_cast<F&&>(_func), mlib_fwd(tpl));
+    }
+};
+
+template <typename F>
+explicit unpack_args(F&&) -> unpack_args<F>;
+
+/**
  * @brief Variable template for an invocable that calls the constructor of an object
  *
  * @tparam T The type to be constructed.
