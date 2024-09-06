@@ -261,11 +261,12 @@ mlib_constexpr bool _bson_mut_realloc(bson_mut* m, uint32_t new_size) mlib_noexc
     // Perform the reallocation:
     size_t     got_size = 0;
     bson_byte* newptr
-        = (bson_byte*)alloc.reallocate(alloc.userdata,
-                                       m->_bson_document_data,
-                                       new_size,
-                                       (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
-                                       &got_size);
+        = (bson_byte*)mlib_reallocate(alloc,
+                                      m->_bson_document_data,
+                                      new_size,
+                                      1,
+                                      (uint32_t)m->_capacity_or_negative_offset_within_parent_data,
+                                      &got_size);
     if (!newptr) {
         // The allocatore reports failure
         return false;

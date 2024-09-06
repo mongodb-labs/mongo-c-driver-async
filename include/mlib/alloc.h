@@ -18,7 +18,7 @@ mlib_extern_c_begin();
  */
 typedef struct mlib_allocator mlib_allocator;
 
-struct mlib_allocator {
+struct mlib_allocator_impl {
     /**
      * @brief Pointer to a user-provided object for the allocator context
      */
@@ -30,7 +30,7 @@ struct mlib_allocator {
      * @param userdata The `userdata` pointer for the allocator
      * @param prev_ptr Pointer to a previous allocated region that should be reclaimed
      * @param requested_size The new size of the allocated region, or zero to request deallocation
-     * @param previous_size The previous size of the allocate region
+     * @param previous_size The previous size of the allocated region
      * @param out_new_size Output parameter: The size of the newly allocated region
      *
      * @return A pointer to the allocated region, or a null pointer if alloation failed.
@@ -42,8 +42,13 @@ struct mlib_allocator {
     void* (*reallocate)(void*   userdata,
                         void*   prev_ptr,
                         size_t  requested_size,
+                        size_t  alignment,
                         size_t  previous_size,
                         size_t* out_new_size)mlib_noexcept;
+};
+
+struct mlib_allocator {
+    struct mlib_allocator_impl const* impl;
 };
 
 /**
@@ -59,9 +64,11 @@ struct mlib_allocator {
 mlib_constexpr void* mlib_reallocate(mlib_allocator alloc,
                                      void*          prev_ptr,
                                      size_t         new_size,
+                                     size_t         alignment,
                                      size_t         prev_size,
                                      size_t*        out_new_size) mlib_noexcept {
-    return alloc.reallocate(alloc.userdata, prev_ptr, new_size, prev_size, out_new_size);
+    return alloc.impl
+        ->reallocate(alloc.impl->userdata, prev_ptr, new_size, alignment, prev_size, out_new_size);
 }
 
 /**
@@ -70,14 +77,14 @@ mlib_constexpr void* mlib_reallocate(mlib_allocator alloc,
  * Returns NULL on allocation failure.
  */
 mlib_constexpr void* mlib_allocate(mlib_allocator alloc, size_t sz) mlib_noexcept {
-    return mlib_reallocate(alloc, NULL, sz, 0, &sz);
+    return mlib_reallocate(alloc, NULL, sz, mlib_alignof(max_align_t), 0, &sz);
 }
 
 /**
  * @brief Deallocate a region that was obtained from the given `mlib_allocator`
  */
 mlib_constexpr void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) mlib_noexcept {
-    mlib_reallocate(alloc, p, 0, sz, &sz);
+    mlib_reallocate(alloc, p, 0, 0, sz, &sz);
 }
 
 /**
@@ -129,7 +136,8 @@ public:
             // Multiplying would overflow
             return nullptr;
         }
-        pointer p = static_cast<pointer>(::mlib_allocate(_alloc, n * sizeof(T)));
+        pointer p = static_cast<pointer>(
+            ::mlib_reallocate(_alloc, nullptr, n * sizeof(T), alignof(T), 0, &n));
         if (p == nullptr) {
             throw std::bad_alloc();
         }
@@ -144,8 +152,7 @@ public:
     // Compare two allocators. They are equivalent if the underlying C allocators are equal
     template <typename U>
     constexpr bool operator==(allocator<U> other) const noexcept {
-        return _alloc.userdata == other.c_allocator().userdata
-            and _alloc.reallocate == other.c_allocator().reallocate;
+        return _alloc.impl == other.c_allocator().impl;
     }
 
     // Utility to dynamically allocate and construct a single object using this allocator

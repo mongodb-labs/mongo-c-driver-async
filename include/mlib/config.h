@@ -36,6 +36,7 @@
  * @brief Expands to an `alignas()` attribute for the current language
  */
 #define mlib_alignas(T) MLIB_IF_CXX(alignas(T)) MLIB_IF_NOT_CXX(_Alignas(T))
+#define mlib_alignof(T) MLIB_IF_CXX(alignof(T)) MLIB_IF_NOT_CXX(_Alignof(T))
 
 /**
  * @brief Expands to a `thread_local` specifier for the current language
