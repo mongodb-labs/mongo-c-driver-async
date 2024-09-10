@@ -7,7 +7,14 @@ Header: |this-header|
 
   Contains types, functions, and constants related to dynamic memory management.
 
-.. struct:: mlib_allocator
+C APIs
+######
+
+Types
+*****
+
+.. struct::
+  mlib_allocator
 
   Provides support for customizing dynamic memory allocation.
 
@@ -18,15 +25,23 @@ Header: |this-header|
   associated allocator, and therefore any object associated with an event loop
   will also use that same allocator).
 
+  .. member:: mlib_allactor_impl const* impl
+
+    Pointer to the allocator implementation.
+
+.. struct:: mlib_allactor_impl
+
+  Provides the backing implementation for an `mlib_allocator`
+
   .. member:: void* userdata
 
     Arbitrary pointer to context for the allocator.
 
-  .. function:: void* reallocate(void* userdata, void* prev_ptr, std::size_t requested_size, std::size_t previous_size, std::size_t* [[storage]] out_new_size)
+  .. function:: void* reallocate(void* userdata, void* prev_ptr, std::size_t requested_size, std::size_t alignment, std::size_t previous_size, std::size_t* [[storage]] out_new_size)
 
     **(Function pointer member)**
 
-    .. note:: Don't call this directly. Use `mlib_allocate` and `mlib_deallocate`
+    .. note:: Don't call this directly. Use `mlib_allocate`, `mlib_deallocate`, and `mlib_reallocate`
 
     Implements custom allocation for the allocator. The user must provide a
     non-null pointer to a function for the allocator.
@@ -35,10 +50,16 @@ Header: |this-header|
     :param prev_ptr: Pointer that was previously returned by `reallocate`
     :param requested_size: The requested amount of memory for the new region, **or**
       zero to request deallocation of `prev_ptr`.
+    :param alignment: The requested alignment of the new memory region. Must be
+      a power of two.
     :param previous_size: If `prev_ptr` is not :cpp:`nullptr`, this is the
       previous `requested_size` used when `prev_ptr` was allocated.
     :param out_new_size: An output parameter: The allocator will write the actually
       allocated size to this pointer. The argument may be :cpp:`nullptr`.
+    :return:
+      - **Upon success**, must return a pointer to the newly allocated region of
+        size at least `requested_size` with alignment of at least `alignment`.
+      - **Upon failure**, must return :cpp:`nullptr`.
 
     .. rubric:: Allocation Behavior
 
@@ -119,9 +140,13 @@ Header: |this-header|
           not modify the region |Rp| nor write anything to `out_new_size`).
 
 
+Functions
+*********
+
 .. function::
   void* mlib_allocate(mlib_allocator alloc, std::size_t sz)
   void mlib_deallocate(mlib_allocator alloc, void* p, std::size_t sz)
+  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, std::size_t sz, std::size_t alignment, std::size_t prev_size, std::size_t* out_new_size)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
@@ -130,8 +155,19 @@ Header: |this-header|
     using the same `alloc` parameter.
   :param sz: For allocation, the requested size. For deallocation, this must be
     the original `sz` value that was used with `mlib_allocate`.
+  :return:
+    - For allocation functions: **upon success**: returns a pointer to the
+      beginning of a newly allocated region of at least size `sz` and optional
+      alignment `alignment`. **Upon failure**, returns :cpp:`nullptr`.
+
   :header: |this-header|
 
+  The `mlib_reallocate` function is a wrapper around the
+  `mlib_allactor_impl::reallocate` function.
+
+
+Constants
+*********
 
 .. cpp:var:: const mlib_allocator amongoc_default_allocator
 
@@ -156,7 +192,13 @@ Header: |this-header|
   standard error and :cpp:`abort()` will be called.
 
 
+C++ APIs (Namespace ``mlib``)
+#############################
+
 .. namespace:: mlib
+
+Types
+*****
 
 .. class:: template <typename T = void> allocator
 
@@ -209,9 +251,46 @@ Header: |this-header|
     Calls `mlib_allocate`/`mlib_deallocate` to perform the allocation.
 
 
+.. class::
+  template <typename Alloc, typename T> \
+  bind_allocator
+
+  Create an object with a bound allocator.
+
+  :header: |this-header|
+
+  This class type supports CTAD, and using CTAD is recommended. It will
+  perfect-forward the bound object into the resulting `bind_allocator` wrapper.
+
+  .. function::
+    bind_allocator(Alloc a, T&& obj)
+
+    Bind the allocator `a` to the object `obj`
+
+  .. type:: allocator_type = Alloc
+  .. function:: allocator_type get_allocator() const
+
+    Return the allocate that was bound with this object
+
+  .. function::
+    decltype(auto) operator()(auto&&...)
+
+    Call the underlying invocable with the given arguments, if such a call is
+    well-formed.
+
+    This method is cvref-overloaded for the underlying object.
+
+  .. function::
+    auto query(auto q) const
+
+    Apply a query to the underlying object. (See: :doc:`/dev/queries`)
+
+
+Constants
+*********
+
 .. var:: const allocator<> terminating_allocator{::amongoc_terminating_allocator}
 
   A C++ version of the `amongoc_terminating_allocator`
 
   :header: |this-header|
-

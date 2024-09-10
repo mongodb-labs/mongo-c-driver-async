@@ -181,6 +181,7 @@ amongoc_emitter amongoc_alloc_failure() mlib_noexcept;
  * @param em The emitter to be connected
  * @param status Storage destination for the output status (optional)
  * @param value Storage destination for the output result (optional)
+ * @param alloc Allocator to use for dynamic operation state
  * @return amongoc_operation An operation that, when complete, will update `*status`
  * and `*value` with the result of the emitter.
  *
@@ -188,14 +189,16 @@ amongoc_emitter amongoc_alloc_failure() mlib_noexcept;
  *
  * @note The pointed-to locations must remain valid until the operation is complete or is destroyed
  */
-amongoc_operation
-amongoc_tie(amongoc_emitter em, amongoc_status* status, amongoc_box* value) mlib_noexcept;
+amongoc_operation amongoc_tie(amongoc_emitter em,
+                              amongoc_status* status,
+                              amongoc_box*    value,
+                              mlib_allocator  alloc) mlib_noexcept;
 
 /**
  * @brief Create a "detached" operation from an emitter. This returns a simple operation
  * object that can be started. The final result from the emitter will simply be destroyed
  * when it resolves.
  */
-amongoc_operation amongoc_detach(amongoc_emitter emit) mlib_noexcept;
+amongoc_operation amongoc_detach(amongoc_emitter emit, mlib_allocator alloc) mlib_noexcept;
 
 mlib_extern_c_end();

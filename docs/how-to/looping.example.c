@@ -1,6 +1,3 @@
-#include "amongoc/alloc.h"
-#include "amongoc/box.h"
-#include "amongoc/loop.h"
 #include <amongoc/amongoc.h>
 
 #include <stdio.h>
@@ -80,7 +77,7 @@ int main(int argc, char const* const* argv) {
     // Tie the final result for later, and start the program
     amongoc_status    status;
     amongoc_box       result;
-    amongoc_operation op = amongoc_tie(em, &status, &result);
+    amongoc_operation op = amongoc_tie(em, &status, &result, mlib_default_allocator);
     amongoc_start(&op);
     // Run the program within the event loop
     amongoc_default_loop_run(&loop);

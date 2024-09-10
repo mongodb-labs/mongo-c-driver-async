@@ -79,9 +79,8 @@ struct amongoc_loop {
                     loop,
                     amongoc_okay,
                     amongoc_nil,
-                    amongoc::unique_handler::from(mlib::terminating_allocator,
-                                                  [this](amongoc_status,
-                                                         amongoc::unique_box) mutable {
+                    amongoc::unique_handler::from(loop->get_allocator(),
+                                                  [this](amongoc::emitter_result&&) mutable {
                                                       static_cast<R&&>(_recv)(nullptr);
                                                   })
                         .release());

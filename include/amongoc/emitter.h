@@ -80,8 +80,6 @@ using emitter = ::amongoc_emitter;
 class unique_emitter {
 public:
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
-    unique_emitter() = default;
-
     explicit unique_emitter(emitter&& em)
         : _emitter(em) {
         em = {};
@@ -125,10 +123,11 @@ public:
 
         // The vtable for this object.
         static amongoc_emitter_vtable vtable = {
-            .connect = [](amongoc_box userdata, amongoc_handler recv) -> amongoc_operation {
+            .connect = [](amongoc_box self_, amongoc_handler recv) -> amongoc_operation {
                 // Invoke the wrapped function object. Wrap the handler in a unique_handler
-                unique_operation op = static_cast<F&&>(
-                    mlib_fwd(userdata).as_unique().as<wrapped>()._fn)(mlib_fwd(recv).as_unique());
+                wrapped          self = mlib_fwd(self_).as_unique().take<wrapped>();
+                unique_handler   h    = mlib_fwd(recv).as_unique();
+                unique_operation op   = mlib_fwd(self)._fn(mlib_fwd(h));
                 return mlib_fwd(op).release();
             },
         };
@@ -138,18 +137,18 @@ public:
         return unique_emitter(mlib_fwd(ret));
     }
 
-    template <typename F>
-        requires requires(F fn, status st, unique_box ub) {  //
-            mlib_fwd(fn)(st, mlib_fwd(ub));
-        }
-    unique_operation connect(allocator<> a, F fn) && {
-        return ((unique_emitter&&)(*this)).connect(unique_handler::from(a, mlib_fwd(fn)));
+    unique_operation bind_allocator_connect(allocator<> a, auto&& fn) && {
+        return static_cast<unique_emitter&&>(*this).connect(unique_handler::from(a, mlib_fwd(fn)));
     }
 
     unique_operation connect(amongoc::unique_handler&& hnd) && {
-        return amongoc_emitter_connect(((unique_emitter&&)*this).release(), mlib_fwd(hnd).release())
-            .as_unique();
+        ::amongoc_emitter self = static_cast<unique_emitter&&>(*this).release();
+        ::amongoc_handler h    = mlib_fwd(hnd).release();
+        return amongoc_emitter_connect(self, h).as_unique();
     }
+
+    template <std::size_t... Sz, typename F>
+    auto compress(F&& fn) &&;
 
 private:
     emitter _emitter{};
@@ -166,9 +165,7 @@ struct nanosender_traits<unique_emitter> {
     // private header. Move this whole specialization to a private header?
     template <typename R>
     static unique_operation connect(unique_emitter&& em, R&& recv) {
-        // TODO: A custom allocator here for as_handler?
-        return mlib_fwd(em).connect(
-            as_handler(allocator<>{mlib_default_allocator}, mlib_fwd(recv)));
+        return mlib_fwd(em).connect(as_handler(mlib_fwd(recv)));
     }
 
     // Special: We receive a handler directly, no need to convert it to a C handler

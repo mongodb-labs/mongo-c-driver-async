@@ -20,8 +20,8 @@ emitter basic_coro(mlib_allocator = mlib_default_allocator) { co_return 0; }
 TEST_CASE("Coroutine/Basic") {
     auto em      = basic_coro().as_unique();
     bool did_run = false;
-    auto op      = std::move(em).connect(mlib::terminating_allocator,
-                                    [&](status st, unique_box) { did_run = true; });
+    auto op      = std::move(em).bind_allocator_connect(mlib::terminating_allocator,
+                                                   [&](emitter_result&&) { did_run = true; });
     op.start();
     CHECK(did_run);
 }
@@ -32,7 +32,8 @@ TEST_CASE("Coroutine/Discard") {
 }
 
 TEST_CASE("Coroutine/Discard After Connect") {
-    auto op = basic_coro().as_unique().connect(mlib::terminating_allocator, [](auto...) {});
+    auto op = basic_coro().as_unique().bind_allocator_connect(mlib::terminating_allocator,
+                                                              [](auto...) {});
     // Discard the connected operation. Should not leak memory
 }
 

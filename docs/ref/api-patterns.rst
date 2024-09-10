@@ -9,9 +9,9 @@ Naming
 ######
 
 All C types, macros, functions declared by |amongoc| are prefixed with
-``amongoc_``. All public C++ APIs are written within the ``amongoc`` namespace.
-All public APIs (including macros and enumerators) are written in ``snake_case``
-with lowercase letters.
+``amongoc_`` or ``mlib_``. All public C++ APIs are written within the
+``amongoc`` or ``mlib`` namespaces. All public APIs (including macros and
+enumerators) are written in ``snake_case`` with lowercase letters.
 
 All public C API structs, unless otherwise noted, are ``typedef``\ 'd to their
 own name, meaning that the ``struct`` tag is unnecessary.
@@ -22,7 +22,7 @@ C Function Names
 
 Most C API functions follow the naming scheme:
 
-``amongoc_<term>``
+``<namespace>_<term>``
     For very-high-level building-block APIs that are expected to be used
     frequently. Examples:
 
@@ -30,8 +30,9 @@ Most C API functions follow the naming scheme:
     - `amongoc_let`
     - `amongoc_start`
     - `amongoc_is_error`
+    - `mlib_allocate`
 
-``amongoc_<subject>_<verb>``
+``<namespace>_<subject>_<verb>``
     For functions that act on a single value, where ``<subject>`` is a noun or
     noun phrase that designates the kind of its subject parameter. Examples:
 
@@ -39,7 +40,7 @@ Most C API functions follow the naming scheme:
     - `amongoc_handler_complete`
     - `amongoc_default_loop_run`
 
-``amongoc_<subject>_<verb>_<object>``
+``<namespace>_<subject>_<verb>_<object>``
     For functions that act on a primary value with a secondary object type,
     where ``<subject>`` and ``<object>`` are nouns or noun phrases corresponding
     to the kind of the associated parameter. Examples:

@@ -191,6 +191,70 @@ private:
 inline const allocator<> terminating_allocator = allocator<>{::mlib_terminating_allocator};
 
 /**
+ * @brief Bind a memory allocator to an invocable object
+ *
+ * @tparam Alloc The type of the allocator to be bound
+ * @tparam T The object being wrapped
+ */
+template <typename Alloc, typename T>
+class bind_allocator {
+public:
+    bind_allocator() = default;
+
+    constexpr explicit bind_allocator(Alloc alloc, T&& obj)
+        : _object(mlib_fwd(obj))
+        , _alloc(alloc) {}
+
+    // This type alias is required for some external libraries that expect a declared
+    // allocator_type in addition to get_allocator() (e.g. Asio)
+    using allocator_type = Alloc;
+    constexpr allocator_type get_allocator() const noexcept { return _alloc; }
+
+private:
+    [[no_unique_address]] T              _object;
+    [[no_unique_address]] allocator_type _alloc;
+
+public:
+    template <typename... Args>
+        constexpr decltype(auto) operator()(Args&&... args) &
+            requires requires { _object(mlib_fwd(args)...); }
+    {
+        return _object(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... args) const&
+        requires requires { _object(mlib_fwd(args)...); }
+    {
+        return _object(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+        constexpr decltype(auto) operator()(Args&&... args) &&
+            requires requires { static_cast<T&&>(_object)(mlib_fwd(args)...); }
+    {
+        return static_cast<T&&>(_object)(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... args) const&&
+        requires requires { static_cast<T const&&>(_object)(mlib_fwd(args)...); }
+    {
+        return static_cast<T const&&>(_object)(mlib_fwd(args)...);
+    }
+
+    // Forward other queries to the underlying type
+    constexpr auto query(auto q) const noexcept
+        requires requires { q(_object); }
+    {
+        return q(_object);
+    }
+};
+
+template <typename Alloc, typename T>
+explicit bind_allocator(Alloc, T&&) -> bind_allocator<Alloc, T>;
+
+/**
  * @brief Query function object type that obtains the allocator associated with an object
  *
  */
@@ -206,6 +270,14 @@ struct get_allocator_fn {
     {
         return arg.get_allocator();
     }
+
+    constexpr auto operator()(const auto& arg, auto dflt) const noexcept {
+        if constexpr (requires { (*this)(arg); }) {
+            return (*this)(arg);
+        } else {
+            return dflt;
+        }
+    }
 };
 
 /**
@@ -220,6 +292,14 @@ inline constexpr struct get_allocator_fn get_allocator {};
  */
 template <typename T>
 concept has_allocator = requires(const T& obj) { get_allocator(obj); };
+
+/**
+ * @brief Match a type that provides an associated allocator that is convertible to
+ * an `mlib::allocator<>`
+ */
+template <typename T>
+concept has_mlib_allocator
+    = has_allocator<T> and requires(allocator<> a, const T obj) { a = get_allocator(obj); };
 
 /**
  * @brief Obtain the type of allocator associated with an object

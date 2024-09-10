@@ -191,7 +191,7 @@ Functions
   :header: |this-header|
 
 
-.. function:: amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value)
+.. function:: amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value, mlib_allocator alloc)
 
   Create an `amongoc_operation` object that captures the emitter's results in
   the given locations.
@@ -202,7 +202,7 @@ Functions
   :param value: |attr.storage| Pointer to an `amongoc_box` object that will hold
     the emitter's result. If ``NULL``, the emitter's result value will be
     destoyed instead of stored.
-  :allocation: Memory allocation is controlled by the emitter.
+  :param alloc: Allocator used for operation state.
   :header: |this-header|
 
   .. important::
@@ -211,12 +211,12 @@ Functions
     the returned `amongoc_operation` completes or is destroyed.
 
 
-.. function:: amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em)
+.. function:: amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em, mlib_allocator alloc)
 
   Create a "detached" operation for an emitter.
 
   :param em: The emitter to be detached.
-  :allocation: Memory allocation is controlled by the emitter.
+  :param alloc: Allocator used for operation state.
   :header: |this-header|
 
   The returned operation object can be launched with `amongoc_start`. The final
@@ -225,7 +225,7 @@ Functions
 
   .. hint::
 
-    This function is equivalent to :expr:`amongoc_tie(em, nullptr, nullptr)`
+    This function is equivalent to :expr:`amongoc_tie(em, nullptr, nullptr, alloc)`
 
 
 Types
