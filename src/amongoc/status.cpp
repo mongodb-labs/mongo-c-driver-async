@@ -47,7 +47,7 @@ constexpr amongoc_status_category_vtable amongoc_generic_category = {
     .name            = [] { return "amongoc.generic"; },
     .strdup_message  = [](int c) { return strdup(std::generic_category().message(c).data()); },
     .is_cancellation = [](int c) { return c == ECANCELED; },
-    .is_timeout      = [](int c) { return c == ETIMEDOUT || c == ETIME; },
+    .is_timeout      = [](int c) { return c == ETIMEDOUT; },
 };
 
 constexpr amongoc_status_category_vtable amongoc_system_category = {
@@ -55,9 +55,8 @@ constexpr amongoc_status_category_vtable amongoc_system_category = {
     .strdup_message = [](int c) { return strdup(std::system_category().message(c).data()); },
     // TODO: On Windows, this will not be sufficient
     .is_cancellation = [](int c) { return c == ECANCELED; },
-    .is_timeout      = [](int c) { return c == ETIMEDOUT || c == ETIME; },
+    .is_timeout      = [](int c) { return c == ETIMEDOUT; },
 };
-;
 
 constexpr amongoc_status_category_vtable amongoc_netdb_category = {
     .name = [] { return "amongoc.netdb"; },
