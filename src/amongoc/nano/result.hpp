@@ -184,26 +184,6 @@ public:
         }
     }
 
-    // Construct an instance from a captured exception, or re-throw
-    static result from_exception_or_rethrow(std::exception_ptr e)
-        requires std::same_as<E, std::error_code>
-    {
-        try {
-            std::rethrow_exception(e);
-        } catch (std::system_error const& exc) {
-            return amongoc::error(exc.code());
-        } catch (std::bad_alloc const&) {
-            return amongoc::error(std::errc::not_enough_memory);
-        }
-    }
-
-    // Construct an instance from a std::exception_ptr
-    static result from_exception_or_rethrow(std::exception_ptr e) noexcept
-        requires std::same_as<E, std::exception_ptr>
-    {
-        return amongoc::error(e);
-    }
-
 private:
     template <typename... Args, std::size_t... Ns>
     constexpr explicit result(success_tag<Args...> const&, auto&& tpl, std::index_sequence<Ns...>)
