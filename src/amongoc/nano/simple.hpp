@@ -102,9 +102,10 @@ struct cxx_recv_as_c_handler {
 
     static constexpr amongoc_handler_vtable handler_vtable = {
         .complete =
-            [](amongoc_view self, amongoc_status st, amongoc_box value) noexcept {
-                auto val = mlib_fwd(value).as_unique();
-                R&   r   = self.as<cxx_recv_as_c_handler>()._recv;
+            [](amongoc_handler* hnd, amongoc_status st, amongoc_box value) noexcept {
+                auto& self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
+                auto  val  = mlib_fwd(value).as_unique();
+                R&    r    = self._recv;
                 if constexpr (nanoreceiver_of<R, emitter_result>) {
                     // Invoke with an emitter_result
                     static_cast<R&&>(r)(emitter_result(st, mlib_fwd(val)));
@@ -126,13 +127,12 @@ struct cxx_recv_as_c_handler {
             [] {
                 if constexpr (has_stop_token<R>) {
                     // Expose the stop token to the handler
-                    return [](amongoc_view self_,
-                              void*        userdata,
+                    return [](amongoc_handler const* hnd,
+                              void*                  userdata,
                               void (*callback)(void*)) noexcept {
-                        auto&                self = self_.as<cxx_recv_as_c_handler>();
+                        auto&                self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
                         stoppable_token auto tk   = get_stop_token(self._recv);
-                        // TODO: Pass an allocator here
-                        return unique_box::make<stop_callback>(allocator<>{mlib_default_allocator},
+                        return unique_box::make<stop_callback>(allocator<>{hnd->get_allocator()},
                                                                tk,
                                                                stopper{userdata, callback})
                             .release();
@@ -145,8 +145,10 @@ struct cxx_recv_as_c_handler {
             [] {
                 if constexpr (mlib::has_mlib_allocator<R>) {
                     // Expose the associated allocator to the hnadler
-                    return [](amongoc_view self, ::mlib_allocator) noexcept -> ::mlib_allocator {
-                        allocator<> a = mlib::get_allocator(self.as<cxx_recv_as_c_handler>()._recv);
+                    return [](amongoc_handler const* self,
+                              ::mlib_allocator) noexcept -> ::mlib_allocator {
+                        allocator<> a = mlib::get_allocator(
+                            self->userdata.view.as<cxx_recv_as_c_handler>()._recv);
                         return a.c_allocator();
                     };
                 } else {

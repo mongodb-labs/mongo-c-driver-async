@@ -22,13 +22,14 @@ typedef struct amongoc_handler amongoc_handler;
  */
 struct amongoc_handler_vtable {
     // Call the completion callback on the handler
-    void (*complete)(amongoc_view userdata, amongoc_status st, amongoc_box value) mlib_noexcept;
+    void (*complete)(amongoc_handler* handler, amongoc_status st, amongoc_box value) mlib_noexcept;
     // Register a stop callback with the handler (optional)
-    amongoc_box (*register_stop)(amongoc_view hnd_userdata,
-                                 void*        userdata,
+    amongoc_box (*register_stop)(amongoc_handler const* handler,
+                                 void*                  userdata,
                                  void (*callback)(void*)) mlib_noexcept;
     // Obtain the allocator associated with a handler (optional)
-    mlib_allocator (*get_allocator)(amongoc_view hnd_userdata, mlib_allocator dflt) mlib_noexcept;
+    mlib_allocator (*get_allocator)(amongoc_handler const* handler,
+                                    mlib_allocator         dflt) mlib_noexcept;
 };
 
 /**
@@ -53,13 +54,12 @@ struct amongoc_handler {
      */
     void complete(amongoc_status st, amongoc::unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        this->vtable->complete(this->userdata.view, st, mlib_fwd(result).release());
+        this->vtable->complete(this, st, mlib_fwd(result).release());
     }
 
     mlib::allocator<> get_allocator() const noexcept {
         if (vtable->get_allocator) {
-            return mlib::allocator<>(
-                vtable->get_allocator(userdata.view, ::mlib_default_allocator));
+            return mlib::allocator<>(vtable->get_allocator(this, ::mlib_default_allocator));
         }
         return mlib::allocator<>(::mlib_default_allocator);
     }
@@ -75,11 +75,11 @@ mlib_extern_c_begin();
  * @param st The result status for the operation
  * @param result The result value for the operation. This call takes ownership of that value
  */
-static inline void amongoc_handler_complete(amongoc_handler* recv,
+static inline void amongoc_handler_complete(amongoc_handler* hnd,
                                             amongoc_status   st,
                                             amongoc_box      result) mlib_noexcept {
     // Invoke the callback. The callback takes ownership of the userdata and the result value
-    recv->vtable->complete(recv->userdata.view, st, result);
+    hnd->vtable->complete(hnd, st, result);
 }
 
 /**
@@ -105,7 +105,7 @@ static inline amongoc_box amongoc_handler_register_stop(const amongoc_handler* h
                                                         void*                  userdata,
                                                         void (*callback)(void*)) mlib_noexcept {
     if (hnd->vtable->register_stop) {
-        return hnd->vtable->register_stop(hnd->userdata.view, userdata, callback);
+        return hnd->vtable->register_stop(hnd, userdata, callback);
     }
     return amongoc_nil;
 }
@@ -120,7 +120,7 @@ static inline amongoc_box amongoc_handler_register_stop(const amongoc_handler* h
 static inline mlib_allocator amongoc_handler_get_allocator(const amongoc_handler* hnd,
                                                            mlib_allocator dflt) mlib_noexcept {
     if (hnd->vtable->get_allocator) {
-        return hnd->vtable->get_allocator(hnd->userdata.view, dflt);
+        return hnd->vtable->get_allocator(hnd, dflt);
     }
     return dflt;
 }
@@ -287,13 +287,14 @@ private:
         allocator<>             _alloc;
         [[no_unique_address]] R _fn;
 
-        static void _complete(amongoc_view self, status st, box result) noexcept {
-            auto& fn = self.as<wrapper>()._fn;
+        static void _complete(amongoc_handler* self, status st, box result) noexcept {
+            auto& fn = self->userdata.view.as<wrapper>()._fn;
             static_cast<R&&>(fn)(emitter_result(st, unique_box(mlib_fwd(result))));
         }
 
-        static ::mlib_allocator _get_allocator(amongoc_view self, ::mlib_allocator) noexcept {
-            allocator<> a = self.as<wrapper>()._alloc;
+        static ::mlib_allocator _get_allocator(amongoc_handler const* self,
+                                               ::mlib_allocator) noexcept {
+            allocator<> a = self->userdata.view.as<wrapper>()._alloc;
             return a.c_allocator();
         }
 
@@ -311,13 +312,14 @@ private:
 
         [[no_unique_address]] R _fn;
 
-        static void _complete(amongoc_view self, status st, box result) noexcept {
-            auto& fn = self.as<wrapper>()._fn;
+        static void _complete(amongoc_handler* self, status st, box result) noexcept {
+            auto& fn = self->userdata.view.as<wrapper>()._fn;
             static_cast<R&&>(fn)(emitter_result(st, unique_box(mlib_fwd(result))));
         }
 
-        static ::mlib_allocator _get_allocator(amongoc_view self, ::mlib_allocator) noexcept {
-            allocator<> a = mlib::get_allocator(self.as<wrapper>()._fn);
+        static ::mlib_allocator _get_allocator(amongoc_handler const* self,
+                                               ::mlib_allocator) noexcept {
+            allocator<> a = mlib::get_allocator(self->userdata.view.as<wrapper>()._fn);
             return a.c_allocator();
         }
 

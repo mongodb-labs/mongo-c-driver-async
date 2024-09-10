@@ -54,22 +54,22 @@ Handlers
 
   :header: |this-header|
 
-  .. function:: void complete(amongoc_view [[type(UserData)]] userdata, amongoc_status st, amongoc_box [[transfer, type(T)]] result)
+  .. function:: void complete(amongoc_handler* self, amongoc_status st, amongoc_box [[transfer, type(T)]] result)
 
     The function that handles the completion of an associated operation. This
     function is **required** to be defined for all handler objects.
 
-    :param userdata: View of the `amongoc_handler::userdata` value for the associated handler.
+    :param self: Pointer to the handler object being completed.
     :param st: The status of the operation.
     :param result: |attr.transfer| The result value of the operation.
 
     .. seealso:: `amongoc_handler_complete`
 
-  .. function:: amongoc_box register_stop(amongoc_view [[type(UserData)]] hnd_userdata, void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]])) [[optional]]
+  .. function:: amongoc_box register_stop(amongoc_handler const* self, void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]])) [[optional]]
 
     Register a stop callback with the handler.
 
-    :param hnd_userdata: An `amongoc_view` derived from the `amongoc_handler::userdata` value.
+    :param self: Pointer to the handler object.
     :param userdata: An arbitrary pointer that should be used when the `callback` is invoked
       during operation cancellation.
     :param callback: The callback function that should be invoked to cancel the associated
@@ -86,11 +86,11 @@ Handlers
     .. note:: Instead of calling this API function directly, use `amongoc_register_stop` or
         `amongoc::unique_handler::register_stop`
 
-  .. function:: mlib_allocator get_allocator(amongoc_view [[type(UserData)]] userdata, mlib_allocator dflt) [[optional]]
+  .. function:: mlib_allocator get_allocator(amongoc_handler const* self, mlib_allocator dflt) [[optional]]
 
     Obtain an allocator associated with this handler.
 
-    :param userdata: The `amongoc_handler::userdata` associated with the handler.
+    :param self: Pointer to the handler object
     :param dflt: The default allocator that should be returned if the handler
       does not provide an allocator.
     :return: The function must return a valid allocator that is associated with the

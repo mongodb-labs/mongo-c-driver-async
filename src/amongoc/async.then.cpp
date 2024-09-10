@@ -48,8 +48,8 @@ emitter amongoc_then(emitter                  in,
     auto alloc = allocator<>{alloc_};
     return mlib_fwd(in)
         .as_unique()
-        .compress([&](auto&& in) -> unique_emitter {
-            return mlib_fwd(userdata_).as_unique().compress(
+        .compress<0, 8, 16>([&](auto&& in) -> unique_emitter {
+            return mlib_fwd(userdata_).as_unique().compress<0, 8, 16>(
                 [&](auto&& ud_compressed) -> unique_emitter {
                     if (flags & amongoc_async_forward_errors) {
                         return ::_then<true>(mlib_fwd(in), mlib_fwd(ud_compressed), alloc, tr);
@@ -87,9 +87,9 @@ emitter amongoc_then_just(amongoc_emitter          in,
         // We are replacing both the status and value. We need to pass the status
         // and the value to the then() algorithm.
         allocator<> cx_alloc{alloc};
-        return mlib_fwd(value).as_unique().compress<0 /*, 8, 16 */>([&]<typename Compressed>(
-                                                                        Compressed&& compressed)
-                                                                        -> emitter {
+        return mlib_fwd(value).as_unique().compress<0, 8, 16>([&]<typename Compressed>(
+                                                                  Compressed&& compressed)
+                                                                  -> emitter {
             struct value_with_status {
                 status                           st;
                 [[no_unique_address]] Compressed value;

@@ -78,5 +78,8 @@ TEST_CASE("Box/Compress dynamic") {
         char f[256];
     };
     auto b = unique_box::from(allocator<>(::mlib_default_allocator), very_large{});
-    mlib_fwd(b).compress([](auto c) { CHECK(sizeof(c) == sizeof(void*)); });
+    mlib_fwd(b).compress([](auto c) {
+        CHECK(sizeof(c) == sizeof(void*));
+        (void)mlib_fwd(c).recover();  // Recover the box to destroy it
+    });
 }
