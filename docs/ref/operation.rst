@@ -36,11 +36,11 @@ Header: ``amongoc/operation.h``
 
 .. function:: void amongoc_start(amongoc_operation* op)
 
-  Launch the asynchronous operation defined by the given operation object.
+  Launch the operation defined by the given operation object.
 
 .. function:: void amongoc_operation_destroy(amongoc_operation [[transfer]] op)
 
-  Destroy an asynchronous operation object.
+  Destroy an operation object.
 
   .. note::
 
@@ -62,20 +62,23 @@ Header: ``amongoc/operation.h``
 
     Calls `amongoc_operation_destroy` on the operation.
 
-  .. function:: template <typename F> unique_operation from_starter(mlib::allocator<> a, unique_handler&& h, F fn)
+  .. function:: template <typename F> unique_operation from_starter(unique_handler&& h, F&& fn)
 
     Create an operation object based on a starter function `fn` with an
-    associated handler `h`. The function object must be invocable with a single
-    :expr:`amongoc_operation&` argument, and will be called when the
-    `start`/`amongoc_start` function is called on the operation. The given
-    handler `h` will be attached to the returned operation in the
-    `amongoc_operation::handler` field.
+    associated handler `h`.
+
+    :param h: The handler object to be attached to the operation.
+    :param fn: The starter invocable that will be invoked whent he operation is
+      is started. A l-value reference to the stored handler will be passed as the
+      sole argument to the starter function.
+    :allocation: The operation state will be allocated using
+      :ref:`the allocator associated with the handler <handler.allocator>` `h`.
 
   .. function:: void start()
 
     :C API: `amongoc_start`
 
-  .. function:: amongoc_operation [[transfer]] release()
+  .. function:: amongoc_operation release()
 
     Relinquish ownership of the wrapped operation and return it to the caller.
     This function is used to interface with C APIs that want to |attr.transfer|

@@ -67,6 +67,7 @@ rst_prolog = """
     behavior are not part of any public API guarantees.
 
 .. |A| replace:: :math:`A`
+.. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
 .. |E| replace:: :math:`E`
 .. |H| replace:: :math:`H`

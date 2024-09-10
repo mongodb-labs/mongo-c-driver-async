@@ -95,10 +95,6 @@ Header: ``amongoc/emitter.h``
 
   :header: :header-file:`amongoc/emitter.h`
 
-  .. function:: unique_emitter() = default
-
-    Default-construct to a null emitter
-
   .. function:: unique_emitter(amongoc_emitter&&)
 
     Take ownership of the given C emitter object.
@@ -126,17 +122,20 @@ Header: ``amongoc/emitter.h``
     :return: A new emitter for the connected operation.
 
   .. function::
-    template <typename F> \
-    unique_operation connect(F&& fn) &&
     unique_operation connect(unique_handler&& [[type(T)]] hnd) &&
 
     :C API: `amongoc_emitter_connect_handler`
 
-    :param fn:
-      An invocable object that supports the signature :expr:`void(amongoc_status, unique_box)`.
-      The object `fn` will automatically be wrapped using `unique_handler::from` for the
-      call. **NOTE**: For this overload, the resulting handler will not have cancellation support.
-    :param hnd: A handler for the final operation.
+  .. function::
+    template <typename F> \
+    unique_operation bind_allocator_connect(allocator<> a, F&& fn) &&
+
+    Creates an invocable object with `unique_handler::from` and calls `connect`
+    with that new handler.
+
+    :param a: The allocator to be bound with the new handler. See: :ref:`handler.allocator`
+    :param fn: The function that impelments the handler callback. Must accept
+      an `emitter_result` argument.
 
 
 .. header-file:: amongoc/emitter_result.h

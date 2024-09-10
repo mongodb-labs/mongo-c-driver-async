@@ -22,7 +22,6 @@ class simultaneous_operation
       // that it can be passed as a constructor argument to the impl class
       detail::simul_op_impl<simultaneous_operation<Handler, Ss...>,
                             std::index_sequence_for<Ss...>,
-                            Handler,
                             Ss...> {
 public:
     /**
@@ -33,14 +32,9 @@ public:
     constexpr explicit simultaneous_operation(auto&& h, Ss&&... ss)
         // Construct the handler object first:
         : detail::simul_handler_storage<Handler>(NEO_FWD(h))
-        // Construct the impl base class, passing the handler that we constructed in
-        // our first base:
-        , detail::
-              simul_op_impl<simultaneous_operation, std::index_sequence_for<Ss...>, Handler, Ss...>(
-                  // The handler object, stored within the handle_storage base
-                  this->_handler,
-                  // Perfect-forward the senders
-                  NEO_FWD(ss)...) {}
+        , detail::simul_op_impl<simultaneous_operation, std::index_sequence_for<Ss...>, Ss...>(
+              // Perfect-forward the senders
+              NEO_FWD(ss)...) {}
 
     // Start all sub-operations
     constexpr void start() noexcept {
@@ -52,7 +46,7 @@ public:
 
 private:
     // Allow our simul_recv base class to call _nth_result
-    template <typename, typename, typename, std::size_t>
+    template <typename, typename, std::size_t>
     friend class detail::simul_recv;
 
     /**

@@ -19,13 +19,16 @@ typedef struct amongoc_handler amongoc_handler;
 
 /**
  * @brief Virtual method table for amongoc_handler objects
- *
  */
 struct amongoc_handler_vtable {
+    // Call the completion callback on the handler
     void (*complete)(amongoc_view userdata, amongoc_status st, amongoc_box value) mlib_noexcept;
+    // Register a stop callback with the handler (optional)
     amongoc_box (*register_stop)(amongoc_view hnd_userdata,
                                  void*        userdata,
                                  void (*callback)(void*)) mlib_noexcept;
+    // Obtain the allocator associated with a handler (optional)
+    mlib_allocator (*get_allocator)(amongoc_view hnd_userdata, mlib_allocator dflt) mlib_noexcept;
 };
 
 /**
@@ -52,6 +55,14 @@ struct amongoc_handler {
         // The callback takes ownership of the handler and the result
         this->vtable->complete(this->userdata.view, st, mlib_fwd(result).release());
     }
+
+    mlib::allocator<> get_allocator() const noexcept {
+        if (vtable->get_allocator) {
+            return mlib::allocator<>(
+                vtable->get_allocator(userdata.view, ::mlib_default_allocator));
+        }
+        return mlib::allocator<>(::mlib_default_allocator);
+    }
 #endif
 };
 
@@ -72,9 +83,7 @@ static inline void amongoc_handler_complete(amongoc_handler* recv,
 }
 
 /**
- * @brief Discard and destroy a handler that is otherwise unused.
- *
- * @param hnd The handler to be discarded
+ * @brief Destroy a handler object
  *
  * @note This function should not be used on a handler that was consumed by another operation.
  */
@@ -101,14 +110,25 @@ static inline amongoc_box amongoc_handler_register_stop(const amongoc_handler* h
     return amongoc_nil;
 }
 
+/**
+ * @brief Obtain the allocator associated with the given handler.
+ *
+ * @param hnd The handle to be queried
+ * @param dflt The allocator that should be returned in case the handler does not provide an
+ * allocator
+ */
+static inline mlib_allocator amongoc_handler_get_allocator(const amongoc_handler* hnd,
+                                                           mlib_allocator dflt) mlib_noexcept {
+    if (hnd->vtable->get_allocator) {
+        return hnd->vtable->get_allocator(hnd->userdata.view, dflt);
+    }
+    return dflt;
+}
+
 mlib_extern_c_end();
 
 #if mlib_is_cxx()
 namespace amongoc {
-
-// forward-decl from nano/result.hpp
-template <typename T, typename E>
-class result;
 
 /**
  * @brief Provides a stoppable token based on an amongoc_handler
@@ -231,45 +251,81 @@ public:
         return _handler.vtable->register_stop != nullptr;
     }
 
+    // Obtain the stop token for this handler
+    handler_stop_token get_stop_token() const noexcept { return handler_stop_token(_handler); }
+
+    // Obtain the allocator associated with the handler.
+    allocator<> get_allocator() const noexcept {
+        return allocator<>(::amongoc_handler_get_allocator(&_handler, ::mlib_default_allocator));
+    }
+
     /**
      * @brief Create a handler object that will invoke the given invocable
      * object when it is completed
      */
     template <typename F>
     static unique_handler from(allocator<> alloc, F&& fn) noexcept(box_inlinable_type<F>) {
-        static_assert(
-            requires(amongoc_status st, amongoc::unique_box b) {
-                fn(st, (amongoc::unique_box&&)b);
-            }, "The from() invocable must be callable as fn(status, unique_box&&)");
-        // Wrapper type for the function object
-        struct wrapped {
-            AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
-            // Wrapped function
-            [[no_unique_address]] F func;
-            // Call the underlying function
-            void call(status st, unique_box&& value) {
-                static_cast<F&&>(func)(st, mlib_fwd(value));
-            }
-
-            // Completion callback
-            static void complete(amongoc_view self, status st, box value) noexcept {
-                mlib_fwd(self)  //
-                    .as<wrapped>()
-                    .call(st, mlib_fwd(value).as_unique());
-            }
-        };
-        static amongoc_handler_vtable vt = {.complete = &wrapped::complete};
+        using wrapper_type = wrapper<F>;
+        wrapper_type wr{alloc, mlib_fwd(fn)};
 
         amongoc_handler ret;
-        ret.userdata = unique_box::from(alloc, wrapped{mlib_fwd(fn)}).release();
-        ret.vtable   = &vt;
-        return unique_handler(std::move(ret));
-    }
+        ret.userdata = unique_box::from(alloc, mlib_fwd(wr)).release();
+        ret.vtable   = &wrapper_type::vtable;
+        return unique_handler(mlib_fwd(ret));
 
-    handler_stop_token get_stop_token() const noexcept { return handler_stop_token(_handler); }
+        static_assert(
+            requires(emitter_result res) { fn(mlib_fwd(res)); },
+            "The from() invocable must be callable as fn(emitter_result&&)");
+    }
 
 private:
     amongoc_handler _handler{};
+
+    // Implement the wrapper for invocable objects, used by from()
+    template <typename R>
+    struct wrapper {
+        allocator<>             _alloc;
+        [[no_unique_address]] R _fn;
+
+        static void _complete(amongoc_view self, status st, box result) noexcept {
+            auto& fn = self.as<wrapper>()._fn;
+            static_cast<R&&>(fn)(emitter_result(st, unique_box(mlib_fwd(result))));
+        }
+
+        static ::mlib_allocator _get_allocator(amongoc_view self, ::mlib_allocator) noexcept {
+            allocator<> a = self.as<wrapper>()._alloc;
+            return a.c_allocator();
+        }
+
+        static constexpr amongoc_handler_vtable vtable = {
+            .complete      = &_complete,
+            .get_allocator = &_get_allocator,
+        };
+    };
+
+    template <typename R>
+        requires mlib::has_mlib_allocator<R>
+    struct wrapper<R> {
+        explicit wrapper(allocator<>, R&& r)
+            : _fn(mlib_fwd(r)) {}
+
+        [[no_unique_address]] R _fn;
+
+        static void _complete(amongoc_view self, status st, box result) noexcept {
+            auto& fn = self.as<wrapper>()._fn;
+            static_cast<R&&>(fn)(emitter_result(st, unique_box(mlib_fwd(result))));
+        }
+
+        static ::mlib_allocator _get_allocator(amongoc_view self, ::mlib_allocator) noexcept {
+            allocator<> a = mlib::get_allocator(self.as<wrapper>()._fn);
+            return a.c_allocator();
+        }
+
+        static constexpr amongoc_handler_vtable vtable = {
+            .complete      = &_complete,
+            .get_allocator = &_get_allocator,
+        };
+    };
 };
 
 }  // namespace amongoc

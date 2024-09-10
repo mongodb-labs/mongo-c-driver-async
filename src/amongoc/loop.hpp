@@ -11,6 +11,7 @@
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
 #include "amongoc/alloc.h"
+#include "amongoc/emitter_result.h"
 
 #include <amongoc/box.h>
 #include <amongoc/handler.h>
@@ -41,7 +42,7 @@ struct amongoc_loop_asio_executor {
                                 amongoc_okay,
                                 amongoc_nil,
                                 unique_handler::from(get_allocator(*loop),
-                                                     [f = NEO_FWD(fn)](auto, auto) mutable {
+                                                     [f = NEO_FWD(fn)](emitter_result&&) mutable {
                                                          static_cast<F&&>(f)();
                                                      })
                                     .release());
@@ -80,17 +81,18 @@ struct tcp_connection_rw_stream {
      * Because this is part of a private API, as long as it compiles, it is good enough for us.
      */
     void async_read_some(asio::mutable_buffer buf, auto cb) {
-        loop->vtable->tcp_read_some(loop,
-                                    conn,
-                                    static_cast<char*>(buf.data()),
-                                    buf.size(),
-                                    unique_handler::from(get_allocator(*loop),
-                                                         [cb](status     st,
-                                                              unique_box nbytes) mutable {
-                                                             cb(st.as_error_code(),
-                                                                nbytes.as<std::size_t>());
-                                                         })
-                                        .release());
+        loop->vtable
+            ->tcp_read_some(loop,
+                            conn,
+                            static_cast<char*>(buf.data()),
+                            buf.size(),
+                            unique_handler::from(loop->get_allocator(),
+                                                 [cb](emitter_result&& res_nbytes) mutable {
+                                                     std::move(
+                                                         cb)(res_nbytes.status.as_error_code(),
+                                                             res_nbytes.value.as<std::size_t>());
+                                                 })
+                                .release());
     }
 
     /**
@@ -107,11 +109,12 @@ struct tcp_connection_rw_stream {
                              conn,
                              static_cast<const char*>(buf.data()),
                              buf.size(),
-                             unique_handler::from(get_allocator(*loop),
-                                                  [cb = mlib_fwd(cb)](status     st,
-                                                                      unique_box nwritten) mutable {
-                                                      std::move(cb)(st.as_error_code(),
-                                                                    nwritten.as<std::size_t>());
+                             unique_handler::from(loop->get_allocator(),
+                                                  [cb = mlib_fwd(cb)](
+                                                      emitter_result&& res_nbytes) mutable {
+                                                      std::move(
+                                                          cb)(res_nbytes.status.as_error_code(),
+                                                              res_nbytes.value.as<std::size_t>());
                                                   })
                                  .release());
     }
@@ -151,16 +154,15 @@ struct address_info {
  */
 inline nanosender_of<result<address_info>> auto
 async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
-    return make_simple_sender<result<address_info>>([=, &loop](auto&& recv) {
-        return simple_operation([r = neo::object_box(NEO_FWD(recv)), name, svc, &loop] mutable {
-            loop.vtable->getaddrinfo(  //
-                &loop,
-                name,
-                svc,
-                as_handler(loop.get_allocator(),
-                           atop(r.forward(), result_fmap(construct<address_info>)))
-                    .release());
-        });
+    return make_simple_sender<result<address_info>>([=, &loop]<typename R>(R&& recv) {
+        return simple_operation(
+            [r = neo::object_box(NEO_FWD(recv)), name, svc, &loop] mutable -> void {
+                loop.vtable->getaddrinfo(  //
+                    &loop,
+                    name,
+                    svc,
+                    as_handler(atop(r.forward(), result_fmap(construct<address_info>))).release());
+            });
     });
 }
 
@@ -182,8 +184,7 @@ inline nanosender_of<result<tcp_connection_rw_stream>> auto async_connect(amongo
                     loop.vtable->tcp_connect(  //
                         &loop,
                         ai.box,
-                        as_handler(loop.get_allocator(),
-                                   atop(r.forward(), result_fmap([&loop](unique_box b) {
+                        as_handler(atop(r.forward(), result_fmap([&loop](unique_box b) {
                                             return tcp_connection_rw_stream(&loop, NEO_MOVE(b));
                                         })))
                             .release());

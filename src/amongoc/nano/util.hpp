@@ -2,6 +2,8 @@
 
 #include "./query.hpp"
 
+#include <amongoc/box.h>
+
 #include <neo/attrib.hpp>
 #include <neo/invoke.hpp>
 #include <neo/like.hpp>
@@ -88,6 +90,9 @@ public:
         : _f(NEO_FWD(f))
         , _g(NEO_FWD(g)) {}
 
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+
 private:
     NEO_NO_UNIQUE_ADDRESS neo::object_t<F> _f;
     NEO_NO_UNIQUE_ADDRESS neo::object_t<G> _g;
@@ -141,6 +146,8 @@ public:
     constexpr explicit konst(T&& t)
         : _value(NEO_FWD(t)) {}
 
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
+
 private:
     NEO_NO_UNIQUE_ADDRESS neo::object_t<T> _value;
 
@@ -169,6 +176,8 @@ explicit konst(T&&) -> konst<T>;
 template <typename T>
 class pair_append {
 public:
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
+
     constexpr explicit pair_append(T&& t)
         : _object(mlib_fwd(t)) {}
 
@@ -202,6 +211,8 @@ class unpack_args {
 public:
     explicit constexpr unpack_args(F&& fn)
         : _func(mlib_fwd(fn)) {}
+
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
 
 private:
     [[no_unique_address]] F _func;
@@ -246,5 +257,8 @@ constexpr auto construct = []<typename... Args>(Args && ... args) -> T
 {
     return T(NEO_FWD(args)...);
 };
+
+template <typename T>
+constexpr std::size_t effective_sizeof_v = std::is_empty_v<T> ? 0 : sizeof(T);
 
 }  // namespace amongoc

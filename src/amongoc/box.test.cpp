@@ -1,4 +1,4 @@
-#include "amongoc/alloc.h"
+#include <amongoc/box.compress.hpp>
 #include <amongoc/box.h>
 
 #include <catch2/catch.hpp>
@@ -66,4 +66,17 @@ TEST_CASE("Box/With C++ Object") {
                                           "be dynamically allocated."))
                  .release();
     amongoc_box_destroy(b);  // Will release the string memory
+}
+
+TEST_CASE("Box/Compress trivial") {
+    auto b = unique_box::from(mlib::terminating_allocator, 42);
+    mlib_fwd(b).compress<1, 2, 3, 4, 5, 6, 7, 8>([](auto c) { CHECK(sizeof(c) == sizeof(int)); });
+}
+
+TEST_CASE("Box/Compress dynamic") {
+    struct very_large {
+        char f[256];
+    };
+    auto b = unique_box::from(allocator<>(::mlib_default_allocator), very_large{});
+    mlib_fwd(b).compress([](auto c) { CHECK(sizeof(c) == sizeof(void*)); });
 }

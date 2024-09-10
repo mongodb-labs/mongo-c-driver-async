@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./concepts.hpp"
+#include "./query.hpp"
 #include "./simultaneous.hpp"
 #include "./stop.hpp"
 #include "./util.hpp"
@@ -177,7 +178,9 @@ private:
         // Synchronization for updating internal state
         std::mutex _mtx;
 
-        auto query(get_stop_token_fn) const noexcept { return _stopper.get_token(); }
+        auto get_stop_token() const noexcept { return _stopper.get_token(); }
+
+        constexpr auto query(valid_query_for<R> auto q) const noexcept { return q(_final_recv); }
 
         // Callback handler when the Nth result is received from the input
         template <std::size_t N>

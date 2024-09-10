@@ -134,6 +134,14 @@ Header: :header-file:`amongoc/box.h`
     function is used to interface with C APIs that will |attr.transfer| an
     `amongoc_box` by-value.
 
+  .. function::
+    void* data();
+    const void* data() const;
+
+    Obtain a pointer to the data stored in the box.
+
+    :C API: :c:macro:`amongoc_box_data`
+
 
 .. Reset to the global namespace
 .. namespace:: 0
@@ -313,13 +321,24 @@ Other
   undefined.
 
 
+.. c:macro:: amongoc_box_data(Box)
+
+  Obtain a pointer to the object stored within a box. Expands to an r-value of
+  type :cpp:`void*`.
+
+  :param Box: A l-value expression of type `amongoc_box`
+  :C++ API: `amongoc::unique_box::data`
+
+
 .. c:macro:: amongoc_box_take(Dest, Box)
 
-  :param Dest: An l-value expression of type :math:`T` that will receive the
-    boxed value.
-  :param Box: |attr.transfer| A box that is :ref:`active <box.active>` for the type :math:`T`.
-
   Moves the value stored in ``Box`` to overwrite the object ``Dest``.
+
+  :param Dest: An l-value expression of type |T| that will receive the boxed
+    value.
+  :param Box: |attr.transfer| A box that is :ref:`active <box.active>` for the
+    type |T|.
+  :postcondition: The box ``Box`` is :ref:`dead <box.dead>`.
 
   This is useful to move an object from the type-erased box into a typed storage
   variable for more convenient access. The dynamic storage for ``Box`` will be

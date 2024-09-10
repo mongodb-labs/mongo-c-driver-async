@@ -25,10 +25,11 @@ TEST_CASE("C Connection/Good") {
     auto   s = amongoc_conn_connect(&loop, "localhost", "27017").as_unique();
     status got_ec;
     bool   did_run = false;
-    auto   op = std::move(s).connect(mlib::terminating_allocator, [&](status ec, unique_box b) {
-        got_ec  = ec;
-        did_run = true;
-    });
+    auto   op      = std::move(s).connect(
+        unique_handler::from(mlib::terminating_allocator, [&](emitter_result&& r) {
+            got_ec  = r.status;
+            did_run = true;
+        }));
     op.start();
     amongoc_default_loop_run(&loop);
     CHECK(got_ec.code == 0);
@@ -42,8 +43,9 @@ TEST_CASE("C Connection/Invalid hostname") {
     // Connecting to an invalid TLD will fail
     auto   s = amongoc_conn_connect(&loop, "asdfasdfaczxv.invalidtld", "27017").as_unique();
     status got_ec;
-    auto   op = std::move(s).connect(mlib::terminating_allocator,
-                                   [&](status ec, unique_box b) { got_ec = ec; });
+    auto   op = std::move(s).connect(
+        unique_handler::from(mlib::terminating_allocator,
+                             [&](emitter_result&& r) { got_ec = r.status; }));
     op.start();
     amongoc_default_loop_run(&loop);
     REQUIRE(got_ec.code == asio::error::netdb_errors::host_not_found);
@@ -57,8 +59,8 @@ TEST_CASE("C Connection/Timeout") {
     auto   conn = amongoc_conn_connect(&loop, "example.com", "27017");
     auto   s    = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
     status got_ec;
-    auto   op = std::move(s).connect(mlib::terminating_allocator,
-                                   [&](status ec, unique_box b) { got_ec = ec; });
+    auto   op = std::move(s).bind_allocator_connect(mlib::terminating_allocator,
+                                                  [&](emitter_result&& r) { got_ec = r.status; });
     op.start();
     amongoc_default_loop_run(&loop);
     INFO(got_ec.message());
@@ -75,28 +77,29 @@ TEST_CASE("C Connection/Simple request") {
     unique_operation          req_op;
     bool                      did_run = false;
     auto                      op
-        = std::move(s).connect(allocator<>{mlib_default_allocator}, [&](status ec, unique_box cl) {
-              if (!ec.code) {
-                  client_box = std::move(cl);
-                  bson::document doc{allocator<>{mlib_default_allocator}};
-                  doc.emplace_back("hello", 1.0);
-                  doc.emplace_back("$db", "test");
-                  auto s1 = client_box->as<amongoc_connection>().command(doc).as_unique();
-                  req_op  = std::move(s1).connect(  //
-                      mlib::terminating_allocator,
-                      [&](status ec, unique_box b) {
-                          CHECK_FALSE(ec.is_error());
-                          if (not ec.code) {
-                              req_ec         = ec;
-                              bson_view resp = b.as<bson::document>();
-                              auto      ok   = resp.find("ok");
-                              CHECK(ok->as_bool());
-                              did_run = true;
-                          }
-                      });
-                  req_op.start();
-              }
-          });
+        = std::move(s)
+              .bind_allocator_connect(allocator<>{mlib_default_allocator}, [&](emitter_result&& r) {
+                  if (!r.status.is_error()) {
+                      client_box = std::move(r).value;
+                      bson::document doc{allocator<>{mlib_default_allocator}};
+                      doc.emplace_back("hello", 1.0);
+                      doc.emplace_back("$db", "test");
+                      auto s1 = client_box->as<amongoc_connection>().command(doc).as_unique();
+                      req_op  = std::move(s1).bind_allocator_connect(  //
+                          mlib::allocator<>{mlib_default_allocator},
+                          [&](emitter_result&& res) {
+                              CHECK_FALSE(res.status.is_error());
+                              if (not res.status.is_error()) {
+                                  req_ec         = res.status;
+                                  bson_view resp = res.value.as<bson::document>();
+                                  auto      ok   = resp.find("ok");
+                                  CHECK(ok->as_bool());
+                                  did_run = true;
+                              }
+                          });
+                      req_op.start();
+                  }
+              });
     op.start();
     amongoc_default_loop_run(&loop);
     CHECK(did_run);

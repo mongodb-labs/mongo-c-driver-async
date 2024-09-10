@@ -159,6 +159,9 @@ struct nanosender_awaitable {
             return get_stop_token(co.promise());
         }
 
+        // Forward the allocator from the promise
+        auto get_allocator() const noexcept { return mlib::get_allocator(co.promise()); }
+
         // Emplace the result and resume the associated coroutine
         void operator()(sends_t<S>&& result) {
             // Put the sent value into the awaitable's storage to be returned at await_resume
@@ -197,9 +200,13 @@ struct nanosender_awaitable {
         if (_is_immediate) {
             // The nanosender would complete immediately, meaning await_suspend() was never called.
             // We need to connect the emitter and run the operation inline.
-            amongoc::connect(std::forward<S>(_sender), [&](sends_t<S>&& value) {
-                _sent_value.emplace(NEO_FWD(value));
-            }).start();
+            amongoc::connect(std::forward<S>(_sender),
+                             // XXX: Should this be a terminating allocator?
+                             mlib::bind_allocator(mlib::terminating_allocator,
+                                                  [&](sends_t<S>&& value) {
+                                                      _sent_value.emplace(NEO_FWD(value));
+                                                  }))
+                .start();
         }
         return static_cast<sends_t<S>&&>(*_sent_value);
     }
@@ -311,9 +318,9 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
         unique_co_handle<emitter_promise> _co;
 
-        void operator()(amongoc_operation& op) const {
+        void operator()(amongoc_handler& h) const {
             // Move the handler from the operation to the coroutine
-            _co.promise().fin_handler = std::move(op.handler).as_unique();
+            _co.promise().fin_handler = std::move(h).as_unique();
             _co.resume();
         }
     };
@@ -324,9 +331,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         unique_co_handle<emitter_promise> _co;
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
-            return unique_operation::from_starter(mlib::terminating_allocator,
-                                                  mlib_fwd(hnd),
-                                                  starter{NEO_MOVE(_co)});
+            return unique_operation::from_starter(mlib_fwd(hnd), starter{NEO_MOVE(_co)});
         }
     };
 

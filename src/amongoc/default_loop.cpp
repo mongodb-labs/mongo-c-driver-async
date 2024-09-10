@@ -63,12 +63,8 @@ using cancellation_ticket = pool<asio::cancellation_signal>::ticket;
 template <typename Transform>
 class adapt_handler {
 public:
-    explicit adapt_handler(allocator<>           alloc,
-                           unique_handler&&      h,
-                           Transform&&           tr,
-                           cancellation_ticket&& sig)
-        : _alloc(alloc)
-        , _handler(NEO_FWD(h))
+    explicit adapt_handler(unique_handler&& h, Transform&& tr, cancellation_ticket&& sig)
+        : _handler(NEO_FWD(h))
         , _transform(NEO_FWD(tr))
         , _signal(NEO_MOVE(sig)) {
         if (_handler.stop_possible()) {
@@ -95,10 +91,9 @@ public:
 
     // Expose the memory allocator of the loop to Asio
     using allocator_type = allocator<>;
-    allocator_type get_allocator() const noexcept { return _alloc; }
+    allocator_type get_allocator() const noexcept { return _handler.get_allocator(); }
 
 private:
-    allocator<> _alloc;
     // The adapted handler
     unique_handler _handler;
     // The transformer
@@ -118,20 +113,25 @@ explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_han
 
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
-    allocator<> alloc;
+    allocator<> _alloc;
 
     asio::io_context ioc;
 
-    pool<asio::cancellation_signal> _cancel_signals{alloc};
-    pool<tcp::resolver>             _resolvers{alloc};
-    pool<asio::steady_timer>        _timers{alloc};
+    pool<asio::cancellation_signal> _cancel_signals{_alloc};
+    pool<tcp::resolver>             _resolvers{_alloc};
+    pool<asio::steady_timer>        _timers{_alloc};
 
     // TODO: Define behavior when the below operations fail to allocate memory.
 
     void call_soon(status st, box res, amongoc_handler h) {
-        asio::post(ioc, [st, res = mlib_fwd(res).as_unique(), h = mlib_fwd(h).as_unique()] mutable {
-            h.complete(st, mlib_fwd(res));
-        });
+        auto a = h.get_allocator();
+        asio::post(ioc,
+                   mlib::bind_allocator(a,
+                                        [st,
+                                         res = mlib_fwd(res).as_unique(),
+                                         h   = mlib_fwd(h).as_unique()] mutable {
+                                            h.complete(st, mlib_fwd(res));
+                                        }));
     }
 
     void call_later(std::timespec dur_ts, box value_, amongoc_handler handler) {
@@ -146,8 +146,7 @@ struct default_loop {
             return;
         }
         auto go = timer->async_wait(asio::deferred);
-        std::move(go)(asio::consign(adapt_handler(alloc,
-                                                  mlib_fwd(uh),
+        std::move(go)(asio::consign(adapt_handler(mlib_fwd(uh),
                                                   konst(mlib_fwd(value)),
                                                   _cancel_signals.checkout()),
                                     NEO_MOVE(timer)));
@@ -157,23 +156,22 @@ struct default_loop {
         auto uh  = mlib_fwd(hnd).as_unique();
         auto res = _resolvers.checkout([&] { return tcp::resolver{ioc}; });
         auto go  = res->async_resolve(name, svc, asio::deferred);
-        std::move(go)(asio::consign(adapt_handler(alloc,
-                                                  mlib_fwd(uh),
-                                                  as_box(alloc),
-                                                  _cancel_signals.checkout()),
-                                    NEO_MOVE(res)));
+        auto a   = uh.get_allocator();
+        std::move(go)(
+            asio::consign(adapt_handler(mlib_fwd(uh), as_box(a), _cancel_signals.checkout()),
+                          NEO_MOVE(res)));
     }
 
     void tcp_connect(amongoc_view ai, amongoc_handler on_connect) {
         auto uh   = mlib_fwd(on_connect).as_unique();
         auto sock = std::make_unique<tcp::socket>(ioc);
         auto go   = asio::async_connect(*sock, ai.as<tcp_resolve_results>(), asio::deferred);
+        auto a    = uh.get_allocator();
         std::move(go)(adapt_handler(
-            alloc,
             mlib_fwd(uh),
-            [sock = NEO_MOVE(sock), this](asio::ip::tcp::endpoint) {
+            [sock = NEO_MOVE(sock), a](asio::ip::tcp::endpoint) {
                 // Discard the endpoint and return the connected socket
-                return unique_box::from(alloc, NEO_MOVE(*sock));
+                return unique_box::from(a, NEO_MOVE(*sock));
             },
             _cancel_signals.checkout()));
     }
@@ -182,20 +180,20 @@ struct default_loop {
                         const char*     data,
                         std::size_t     maxlen,
                         amongoc_handler on_write) {
+        auto a  = on_write.get_allocator();
         auto uh = mlib_fwd(on_write).as_unique();
         sock.as<tcp::socket>().async_write_some(asio::buffer(data, maxlen),
-                                                adapt_handler(alloc,
-                                                              mlib_fwd(uh),
-                                                              as_box(alloc),
+                                                adapt_handler(mlib_fwd(uh),
+                                                              as_box(a),
                                                               _cancel_signals.checkout()));
     }
 
     void tcp_read_some(amongoc_view sock, char* data, std::size_t maxlen, amongoc_handler on_read) {
+        auto a  = on_read.get_allocator();
         auto uh = mlib_fwd(on_read).as_unique();
         sock.as<tcp::socket>().async_read_some(asio::buffer(data, maxlen),
-                                               adapt_handler(alloc,
-                                                             mlib_fwd(uh),
-                                                             as_box(alloc),
+                                               adapt_handler(mlib_fwd(uh),
+                                                             as_box(a),
                                                              _cancel_signals.checkout()));
     }
 };
@@ -227,7 +225,7 @@ static constexpr amongoc_loop_vtable default_loop_vtable = {
     .tcp_write_some = adapt_memfun<&default_loop::tcp_write_some>,
     .tcp_read_some  = adapt_memfun<&default_loop::tcp_read_some>,
     .get_allocator  = [](const amongoc_loop* l) noexcept -> mlib_allocator {
-        return l->userdata.view.as<default_loop>().alloc.c_allocator();
+        return l->userdata.view.as<default_loop>()._alloc.c_allocator();
     },
 };
 

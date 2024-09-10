@@ -78,7 +78,7 @@ struct _amongoc_nontrivial_inline {
 struct _amongoc_dynamic_box {
     mlib_allocator         alloc;
     amongoc_box_destructor destroy;
-    size_t                 size;
+    size_t                 alloc_size;
     mlib_alignas(max_align_t) char object[1];
 };
 
@@ -94,6 +94,7 @@ struct _amongoc_box_storage {
     unsigned char is_dynamic : 1;
     // Non-zero if the box has an associated destructor function
     unsigned char has_dtor : 1;
+    unsigned char inline_size : 6;
 };
 
 #if mlib_is_cxx()
@@ -200,14 +201,16 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
                                            mlib_allocator         alloc) mlib_noexcept {
     if (allow_inline && !dtor && size <= AMONGOC_BOX_SMALL_SIZE) {
         // Store as a trivial object with no destructor
-        box->_storage.is_dynamic = 0;
-        box->_storage.has_dtor   = 0;
+        box->_storage.is_dynamic  = 0;
+        box->_storage.has_dtor    = 0;
+        box->_storage.inline_size = size;
         memset(&box->_storage.u.trivial_inline, 0, sizeof box->_storage.u.trivial_inline);
         return &box->_storage.u.trivial_inline;
     } else if (allow_inline && dtor && size <= AMONGOC_BOX_SMALL_SIZE_WITH_DTOR) {
         // Store as a non-trivial inline object with a destructor
-        box->_storage.is_dynamic = 0;
-        box->_storage.has_dtor   = 1;
+        box->_storage.is_dynamic  = 0;
+        box->_storage.has_dtor    = 1;
+        box->_storage.inline_size = size;
         memset(&box->_storage.u.nontrivial_inline.bytes,
                0,
                sizeof box->_storage.u.nontrivial_inline.bytes);
@@ -225,9 +228,9 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
             return NULL;
         }
         memset(dyn, 0, alloc_size);
-        dyn->alloc   = alloc;
-        dyn->size    = alloc_size;
-        dyn->destroy = dtor;
+        dyn->alloc      = alloc;
+        dyn->alloc_size = alloc_size;
+        dyn->destroy    = dtor;
         return dyn->object;
     }
 }
@@ -246,7 +249,7 @@ static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
     if (box._storage.is_dynamic) {
         mlib_deallocate(box._storage.u.dynamic->alloc,
                         box._storage.u.dynamic,
-                        box._storage.u.dynamic->size);
+                        box._storage.u.dynamic->alloc_size);
     }
 }
 
@@ -334,6 +337,11 @@ mlib_extern_c_end();
     (T*)_amongocBoxInitStorage(&(Box), AllowInline, sizeof(T), Dtor, Alloc)
 
 /**
+ * @brief Obtain a pointer to the stored data within an amongoc_box or amongoc_view
+ */
+#define amongoc_box_data(Box) (_amongocBoxDataPtr(&(Box)._storage))
+
+/**
  * @brief Cast an amongoc_box expression to a contained type T
  *
  * Syntax:
@@ -345,7 +353,7 @@ mlib_extern_c_end();
  * Expands to an l-value expression of type T
  */
 #define amongoc_box_cast(T) (*(T*) _amongocBoxCastOpen
-#define _amongocBoxCastOpen(Box) (_amongocBoxDataPtr(&(Box)._storage)))
+#define _amongocBoxCastOpen(Box) (amongoc_box_data(Box)))
 
 /**
  * @brief A special amongoc_box value that represents no value. It is safe to
@@ -462,6 +470,11 @@ public:
         return ret;
     }
 
+    constexpr void*       data() noexcept { return amongoc_box_data(_box); };
+    constexpr const void* data() const noexcept {
+        return amongoc_box_data(const_cast<unique_box&>(*this)._box);
+    };
+
     /**
      * @brief Construct a new box value by decay-copying the given value
      *
@@ -547,6 +560,17 @@ public:
         }
         return mlib_fwd(ret).as_unique();
     }
+
+    /**
+     * @internal
+     * @brief An internal API to visit a compressed box. See `box.compress.hpp` for information
+     *
+     * @tparam Sz Candidate compression sizes
+     * @param fn The visitor function
+     * @return auto Returns the result of invoking the visitor
+     */
+    template <std::size_t... Sz, typename F>
+    decltype(auto) compress(F&& fn) &&;
 
 private:
     // The managed box

@@ -101,17 +101,16 @@ public:
      * @param fn A function that, when called, will initiate the operation
      */
     template <typename F>
-    static unique_operation
-    from_starter(allocator<> a, unique_handler&& hnd, F&& fn) noexcept(box_inlinable_type<F>) {
+    static unique_operation from_starter(unique_handler&& hnd,
+                                         F&&              fn) noexcept(box_inlinable_type<F>) {
         amongoc_operation ret;
         ret.handler  = mlib_fwd(hnd).release();
-        ret.userdata = unique_box::from(a, mlib_fwd(fn)).release();
-        static_assert(requires { fn(ret); });
+        ret.userdata = unique_box::from(ret.handler.get_allocator(), mlib_fwd(fn)).release();
         static_assert(
-            not requires(const amongoc_operation& cop) { fn(cop); },
-            "The starter must accept the operation by non-const lvalue reference");
+            requires(amongoc_handler& h) { fn(h); },
+            "The starter must accept a handler as its sole parameter");
         ret.start_callback = [](amongoc_operation* self) noexcept {
-            self->userdata.view.as<std::remove_cvref_t<F>>()(*self);
+            self->userdata.view.as<std::remove_cvref_t<F>>()(self->handler);
         };
         return mlib_fwd(ret).as_unique();
     }
