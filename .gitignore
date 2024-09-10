@@ -1,1 +1,3 @@
 _build/
+# PAckages installed by vcpkg in manifest mode
+vcpkg_installed/

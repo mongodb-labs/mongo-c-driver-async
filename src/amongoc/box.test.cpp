@@ -1,7 +1,7 @@
 #include <amongoc/box.compress.hpp>
 #include <amongoc/box.h>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 
 using namespace amongoc;

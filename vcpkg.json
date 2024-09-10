@@ -1,0 +1,9 @@
+{
+  "name": "amongoc",
+  "version": "0.1.0",
+  "dependencies": [
+    "neo-fun",
+    "asio",
+    "catch2"
+  ]
+}

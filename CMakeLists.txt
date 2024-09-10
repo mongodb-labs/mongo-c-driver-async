@@ -16,9 +16,13 @@ include(LLDLinker)
 # Enable C++20 for our C++ code
 set(CMAKE_CXX_STANDARD 20)
 
-# Pull our deps with PMM
+# Pull our deps with PMM+vcpkg
 include(pmm)
-pmm(BPT DEP_FILES bpt.deps.yaml)
+# "--keep-going" is required towork around issue pmm#64
+pmm(VCPKG REVISION 2024.08.23 REQUIRES --keep-going)
+find_package(Catch2 CONFIG REQUIRED)
+find_package(asio CONFIG REQUIRED)
+find_package(neo-fun CONFIG REQUIRED)
 
 # Add Catch integrations
 include(Catch)
@@ -76,11 +80,11 @@ target_compile_features(amongoc PUBLIC cxx_std_23)
 
 # Link deps and platform libs.
 # TODO: Export these deps
-target_link_libraries(amongoc PUBLIC neo-fun::neo-fun asio::asio amongoc::detail::c_platform)
+target_link_libraries(amongoc PUBLIC neo::fun asio::asio amongoc::detail::c_platform)
 
 # Add tests
 add_executable(amongoc-test ${test_sources})
-target_link_libraries(amongoc-test PRIVATE amongoc catch2::main)
+target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
 target_include_directories(amongoc-test PRIVATE src)
 catch_discover_tests(amongoc-test)
 
