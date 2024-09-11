@@ -120,8 +120,8 @@ private:
         constexpr explicit op(InputSender&& snd, Transformer&& hnd, FinalReceiver&& recv) noexcept
             /// Connect the input sender to the intermediate receiver
             : _input_operation(
-                amongoc::connect(NEO_FWD(snd),
-                                 intermediate_receiver(NEO_FWD(hnd), NEO_FWD(recv)))) {}
+                  amongoc::connect(NEO_FWD(snd),
+                                   intermediate_receiver(NEO_FWD(hnd), NEO_FWD(recv)))) {}
 
         /// The intermediate operation state that will be created after the user's
         /// transformer is invoked and connected to the final receiver

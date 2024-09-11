@@ -63,3 +63,24 @@ ContinuationIndentWidth: 4
 CommentPragmas: "^ IWYU pragma:"
 SpaceBeforeParens: ControlStatements
 DisableFormat: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '"\.' # Relative headers
+    Priority: 10
+  - Regex: '<amongoc/|"amongoc/' # amongoc headers first
+    Priority: 20
+  - Regex: '<mlib/|"mlib/' # mlib headers next
+    Priority: 30
+  - Regex: '<.*/.*\.h>|<.*/.*\.hpp>' # Other non-standard headres
+    Priority: 40
+  - Regex: '<.*\.h>|<.*\.hpp>' # Other non-standard headres
+    Priority: 50
+  - Regex: '<[[:alnum:]_.]+>|<std.*\.h>' # Standard headres
+    Priority: 60
+InsertNewlineAtEOF: true
+IfMacros:
+  - mlib_math_catch
+AllowBreakBeforeNoexceptSpecifier: Always
+---
+# For some reason, Clang sees some files as Objective-C. Add this section just to appease it.
+Language: ObjC

@@ -195,6 +195,30 @@ files = [
 ]
 
 [[package]]
+name = "clang-format"
+version = "18.1.8"
+description = "Clang-Format is an LLVM-based code formatting tool"
+optional = false
+python-versions = "*"
+files = [
+    {file = "clang_format-18.1.8-py2.py3-none-macosx_10_9_x86_64.whl", hash = "sha256:7c41e2521b7e6ba706cc5d1c3e95eed9a41c1522244e23624e1518991f02a604"},
+    {file = "clang_format-18.1.8-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:4be2b5d983a0cc1ef90a224b599f5928d82ce31154ba69accfdcb670aea62f40"},
+    {file = "clang_format-18.1.8-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d2db077523bd4517b41fa6adb2e5ee63fc91bc7b641dc6e28b959fa8050cf41b"},
+    {file = "clang_format-18.1.8-py2.py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:310206c21fa8177c019a3871de8c5400e51867376cae630ee3d1610aa6c93816"},
+    {file = "clang_format-18.1.8-py2.py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:c11ecdae9cd9068ed010b7cc5fa9d3d2ae08de8bbfa493df865774ad63fd7d76"},
+    {file = "clang_format-18.1.8-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:2a73a50e17c94325712631c15e5b210e374841bbeefb915f12934b902310df7b"},
+    {file = "clang_format-18.1.8-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2de122b8aa78ba49e326f974131caab2c79f4ae877c227cd4e3e5d82a98d21e5"},
+    {file = "clang_format-18.1.8-py2.py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:7d71869103d0f27be3c4930bea59dc6325177a259ba321a04663a231432ec343"},
+    {file = "clang_format-18.1.8-py2.py3-none-musllinux_1_2_i686.whl", hash = "sha256:ea103b3ae5b0941152cd29c67eab086aafc98675370ac13581005807680132aa"},
+    {file = "clang_format-18.1.8-py2.py3-none-musllinux_1_2_ppc64le.whl", hash = "sha256:82c5dd546efa80a838bb9fd4cf6f6e37d85301c0bca13cd79ab5749422ca35a1"},
+    {file = "clang_format-18.1.8-py2.py3-none-musllinux_1_2_s390x.whl", hash = "sha256:d3a41b7c7c3e65fa56763f5712f919111b35d7a8e857f8bef4ad5a4cdc1be131"},
+    {file = "clang_format-18.1.8-py2.py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:4762e95ea887d522bf664c1411d93d4d41fc9eb059835dd88b9ad54bc3cb08e0"},
+    {file = "clang_format-18.1.8-py2.py3-none-win32.whl", hash = "sha256:03e0a762b4b504750ce4999174fa50a3c4d6b83d7999481e1b6a1b3bc2915121"},
+    {file = "clang_format-18.1.8-py2.py3-none-win_amd64.whl", hash = "sha256:6ca6768270e291495174faa6d8c082aa0181722b29ef8e36558b397069fa4a2d"},
+    {file = "clang_format-18.1.8.tar.gz", hash = "sha256:065ddb7fdd0cb329976115fa03500dd560d9753dd50c25a269776648e6e6bf35"},
+]
+
+[[package]]
 name = "click"
 version = "8.1.7"
 description = "Composable command line interface toolkit"
@@ -872,4 +896,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "d0bbeb2fc8aca12fea2ed2b8258171daf1dcdcd2d040cf227af26cb07b965f1b"
+content-hash = "3c9b1eb28340628dfc3900f66fcc4bdb4440931615c071375460324aebeaebcd"

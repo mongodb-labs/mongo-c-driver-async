@@ -2,8 +2,6 @@
 
 #include "./simultaneous.detail.hpp"
 
-#include "./nano.hpp"
-
 namespace amongoc {
 
 /**

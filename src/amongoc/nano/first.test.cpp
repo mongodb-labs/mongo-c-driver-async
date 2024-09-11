@@ -1,6 +1,7 @@
 #include "./first.hpp"
-#include "amongoc/nano/branch.hpp"
-#include "amongoc/nano/just.hpp"
+
+#include <amongoc/nano/branch.hpp>
+#include <amongoc/nano/just.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 

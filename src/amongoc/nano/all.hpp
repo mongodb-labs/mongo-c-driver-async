@@ -4,10 +4,12 @@
 #include "./query.hpp"
 #include "./simultaneous.hpp"
 
+#include <neo/like.hpp>
 #include <neo/object_t.hpp>
 
 #include <atomic>
 #include <cstddef>
+#include <optional>
 #include <tuple>
 
 namespace amongoc {

@@ -3,7 +3,8 @@
 #include "./concepts.hpp"
 #include "./nano.hpp"
 #include "./util.hpp"
-#include "amongoc/nano/query.hpp"
+
+#include <amongoc/nano/query.hpp>
 
 #include <neo/fwd.hpp>
 #include <neo/invoke.hpp>

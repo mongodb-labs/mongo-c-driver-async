@@ -1,7 +1,7 @@
+#include "./coroutine.hpp"
+
 #include <amongoc/async.h>
 #include <amongoc/default_loop.h>
-
-#include "./coroutine.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 

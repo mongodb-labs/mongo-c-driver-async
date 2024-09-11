@@ -1,5 +1,4 @@
 #include <amongoc/async.h>
-
 #include <amongoc/box.compress.hpp>
 #include <amongoc/nano/simple.hpp>
 #include <amongoc/nano/then.hpp>

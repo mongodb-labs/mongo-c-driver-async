@@ -643,7 +643,9 @@ mlib_constexpr int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) ml
     /// haven't passed yet.
     const int64_t trailing_bytes_remain
         = mlibMathNonNegativeInt32(sub(I(opt_bytes_avail), I(opt_len)));
-    mlib_math_catch(_) { return -(int)BSON_ITER_INVALID_LENGTH; }
+    mlib_math_catch (_) {
+        return -(int)BSON_ITER_INVALID_LENGTH;
+    }
     // There MUST be two more null terminators (the one after the opt
     // string, and the one at the end of the doc itself), so
     // 'trailing_bytes' must be at least two.
@@ -654,7 +656,9 @@ mlib_constexpr int32_t _bson_value_re_len(const char* valptr, int32_t maxlen) ml
     opt_len += 1;
     // This is the value's length
     int32_t ret = mlibMathNonNegativeInt32(add(I(rx_len), I(opt_len)));
-    mlib_math_catch(_) { return -(int)BSON_ITER_INVALID_LENGTH; }
+    mlib_math_catch (_) {
+        return -(int)BSON_ITER_INVALID_LENGTH;
+    }
     return ret;
 }
 
@@ -1314,7 +1318,9 @@ mlib_constexpr bson_regex bson_iterator_regex(bson_iterator it) mlib_noexcept {
     const int64_t     rx_len  = mlibMath(cast(int64_t, strlen32(regex)));
     const char* const options = regex + rx_len + 1;
     const int64_t     opt_len = mlibMath(cast(int64_t, strlen32(options)));
-    mlib_math_catch(_) { return null_regex; }
+    mlib_math_catch (_) {
+        return null_regex;
+    }
     return mlib_init(bson_regex){regex, (int32_t)rx_len, options, (int32_t)opt_len};
 }
 

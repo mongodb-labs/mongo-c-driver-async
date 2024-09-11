@@ -1,10 +1,10 @@
 #pragma once
 
-#include <amongoc/status.h>
-
 #include "./concepts.hpp"
 #include "./nano.hpp"
 #include "./util.hpp"
+
+#include <amongoc/status.h>
 
 #include <neo/attrib.hpp>
 #include <neo/concepts.hpp>

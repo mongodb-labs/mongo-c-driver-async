@@ -1,8 +1,7 @@
 #pragma once
 
-#include "./let.detail.hpp"
-
 #include "./concepts.hpp"
+#include "./let.detail.hpp"
 #include "./util.hpp"
 
 #include <utility>

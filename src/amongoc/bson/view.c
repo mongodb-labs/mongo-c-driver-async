@@ -1,5 +1,6 @@
-#include "mlib/config.h"
 #include <amongoc/bson/view.h>
+
+#include <mlib/config.h>
 
 #include <string.h>
 

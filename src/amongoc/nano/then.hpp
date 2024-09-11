@@ -1,9 +1,8 @@
 #pragma once
 
-#include "./then.detail.hpp"
-
 #include "./concepts.hpp"
 #include "./stop.hpp"
+#include "./then.detail.hpp"
 #include "./util.hpp"
 
 #include <utility>

@@ -17,7 +17,8 @@
 #include "./nano/simple.hpp"
 #include "./nano/stop.hpp"
 #include "./nano/util.hpp"
-#include "mlib/alloc.h"
+
+#include <mlib/alloc.h>
 
 // C library headers
 #include <amongoc/alloc.h>
@@ -187,9 +188,8 @@ struct nanosender_awaitable {
     // Handle suspension
     void await_suspend(std::coroutine_handle<Promise> co) noexcept {
         // Construct the operation
-        _operation.emplace(defer_convert([&] {
-            return amongoc::connect(std::forward<S>(_sender), receiver{this, co});
-        }));
+        _operation.emplace(defer_convert(
+            [&] { return amongoc::connect(std::forward<S>(_sender), receiver{this, co}); }));
         // Start the operation immediately
         _operation->start();
     }

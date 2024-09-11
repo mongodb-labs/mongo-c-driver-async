@@ -1,5 +1,4 @@
 #include <amongoc/async.h>
-
 #include <amongoc/box.compress.hpp>
 
 using namespace amongoc;

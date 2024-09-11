@@ -252,11 +252,9 @@ explicit unpack_args(F&&) -> unpack_args<F>;
  * overload set as an invocable object
  */
 template <typename T>
-constexpr auto construct = []<typename... Args>(Args && ... args) -> T
+constexpr auto construct = []<typename... Args>(Args&&... args) -> T
     requires std::constructible_from<T, Args...>
-{
-    return T(NEO_FWD(args)...);
-};
+{ return T(NEO_FWD(args)...); };
 
 template <typename T>
 constexpr std::size_t effective_sizeof_v = std::is_empty_v<T> ? 0 : sizeof(T);

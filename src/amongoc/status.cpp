@@ -1,7 +1,6 @@
 #include <amongoc/status.h>
 
 #include <asio/error.hpp>
-#include <netdb.h>
 
 #include <cstring>
 #include <system_error>

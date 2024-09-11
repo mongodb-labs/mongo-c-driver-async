@@ -5,7 +5,8 @@
 #include "./handler.h"
 #include "./operation.h"
 #include "./status.h"
-#include "amongoc/alloc.h"
+
+#include <amongoc/alloc.h>
 
 #include <mlib/config.h>
 
@@ -113,8 +114,8 @@ public:
      * @return unique_emitter An emitter that owns the associated connector object
      */
     template <typename F>
-    static unique_emitter from_connector(allocator<> alloc,
-                                         F&&         fn) noexcept(box_inlinable_type<F>) {
+    static unique_emitter from_connector(allocator<> alloc, F&& fn)
+        noexcept(box_inlinable_type<F>) {
         // Wrap the connector in an object, preserving reference semantics
         struct wrapped {
             AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);

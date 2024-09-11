@@ -1,7 +1,8 @@
-#include <cstdint>
 #include <mlib/integer.h>
 
 #include <catch2/catch_test_macros.hpp>
+
+#include <cstdint>
 
 TEST_CASE("mlib/integer/make") {
     auto i = mlibMath(0);
@@ -25,7 +26,7 @@ TEST_CASE("mlib/integer/catch") {
     mlib_math_try();
     auto i   = mlibMath(I(412));
     auto i64 = mlibMathInt32(mul(I(54), mul(512, mul(512, mul(512, mul(512, mul(512, 512)))))));
-    mlib_math_catch(e) {
+    mlib_math_catch (e) {
         CHECK(e.flags == mlib_integer_bounds);
         return;
     }

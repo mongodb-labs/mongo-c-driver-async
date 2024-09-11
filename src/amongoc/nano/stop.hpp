@@ -39,7 +39,7 @@ concept stoppable_token =  //
         { tok.stop_requested() } noexcept -> std::same_as<bool>;
         { tok.stop_possible() } noexcept -> std::same_as<bool>;
         { Token(tok) } noexcept;
-    }                                    //
+    }  //
     and std::copyable<Token>             //
     and std::equality_comparable<Token>  //
     and std::swappable<Token>;

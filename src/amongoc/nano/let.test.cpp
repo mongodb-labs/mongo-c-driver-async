@@ -1,6 +1,7 @@
 #include "./let.hpp"
-#include "amongoc/nano/concepts.hpp"
-#include "amongoc/nano/just.hpp"
+
+#include <amongoc/nano/concepts.hpp>
+#include <amongoc/nano/just.hpp>
 
 #include <functional>
 

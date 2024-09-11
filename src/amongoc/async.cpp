@@ -1,16 +1,15 @@
-#include <amongoc/async.h>
-
-#include <amongoc/box.h>
-#include <amongoc/emitter.h>
-#include <amongoc/handler.h>
-#include <amongoc/operation.h>
-
 #include "./box.compress.hpp"
 #include "./coroutine.hpp"
 #include "./nano/first.hpp"
 #include "./nano/let.hpp"
 #include "./nano/simple.hpp"
 #include "./nano/then.hpp"
+
+#include <amongoc/async.h>
+#include <amongoc/box.h>
+#include <amongoc/emitter.h>
+#include <amongoc/handler.h>
+#include <amongoc/operation.h>
 
 #include <new>
 

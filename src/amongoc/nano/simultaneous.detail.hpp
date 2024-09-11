@@ -1,8 +1,8 @@
 #pragma once
 
 #include "./nano.hpp"
-#include "./stop.hpp"
-#include "./util.hpp"
+
+#include <amongoc/nano/query.hpp>
 
 #include <mlib/config.h>
 

@@ -1,7 +1,7 @@
 #include <amongoc/status.h>
 
-#include <asm-generic/errno-base.h>
 #include <catch2/catch_test_macros.hpp>
+
 #include <system_error>
 
 TEST_CASE("Status/Okay") {

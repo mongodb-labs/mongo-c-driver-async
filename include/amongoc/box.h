@@ -529,9 +529,8 @@ public:
      * @param args The constructor arguments
      */
     template <typename T, typename... Args>
-    static unique_box make(allocator<> alloc,
-                           Args&&... args) noexcept(noexcept(T(mlib_fwd(args)...))
-                                                    and box_inlinable_type<T>) {
+    static unique_box make(allocator<> alloc, Args&&... args)
+        noexcept(noexcept(T(mlib_fwd(args)...)) and box_inlinable_type<T>) {
         amongoc_box ret;
         T*          ptr;
         // Conditionally add a destructor to the box based on whether the type

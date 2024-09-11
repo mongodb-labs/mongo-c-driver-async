@@ -101,8 +101,8 @@ public:
      * @param fn A function that, when called, will initiate the operation
      */
     template <typename F>
-    static unique_operation from_starter(unique_handler&& hnd,
-                                         F&&              fn) noexcept(box_inlinable_type<F>) {
+    static unique_operation from_starter(unique_handler&& hnd, F&& fn)
+        noexcept(box_inlinable_type<F>) {
         amongoc_operation ret;
         ret.handler  = mlib_fwd(hnd).release();
         ret.userdata = unique_box::from(ret.handler.get_allocator(), mlib_fwd(fn)).release();

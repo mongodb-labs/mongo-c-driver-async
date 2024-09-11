@@ -216,31 +216,10 @@ private:
 
 public:
     template <typename... Args>
-        constexpr decltype(auto) operator()(Args&&... args) &
-            requires requires { _object(mlib_fwd(args)...); }
+    constexpr decltype(auto) operator()(this auto&& self, Args&&... args)
+        requires requires { mlib_fwd(self)._object(mlib_fwd(args)...); }
     {
-        return _object(mlib_fwd(args)...);
-    }
-
-    template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) const&
-        requires requires { _object(mlib_fwd(args)...); }
-    {
-        return _object(mlib_fwd(args)...);
-    }
-
-    template <typename... Args>
-        constexpr decltype(auto) operator()(Args&&... args) &&
-            requires requires { static_cast<T&&>(_object)(mlib_fwd(args)...); }
-    {
-        return static_cast<T&&>(_object)(mlib_fwd(args)...);
-    }
-
-    template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) const&&
-        requires requires { static_cast<T const&&>(_object)(mlib_fwd(args)...); }
-    {
-        return static_cast<T const&&>(_object)(mlib_fwd(args)...);
+        return mlib_fwd(self)._object(mlib_fwd(args)...);
     }
 
     // Forward other queries to the underlying type
@@ -256,7 +235,6 @@ explicit bind_allocator(Alloc, T&&) -> bind_allocator<Alloc, T>;
 
 /**
  * @brief Query function object type that obtains the allocator associated with an object
- *
  */
 struct get_allocator_fn {
     constexpr auto operator()(const auto& arg) const noexcept
