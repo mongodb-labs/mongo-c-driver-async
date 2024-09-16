@@ -76,6 +76,49 @@ template <std::size_t N>
 using size_constant = std::integral_constant<std::size_t, N>;
 
 /**
+ * @brief Helper mixin for providing cvref-qualified overloads of `operator()`
+ *
+ * Calls a static method `invoke` with the perfect-forwarded object as the first
+ * argument.
+ *
+ * @tparam D The derived type that implements invocable
+ *
+ * @note This can be removed when we can use C++ explicit object parameters
+ */
+template <typename D>
+class invocable_cvr_helper {
+    D&       _self() noexcept { return static_cast<D&>(*this); }
+    const D& _self() const noexcept { return static_cast<const D&>(*this); }
+
+public:
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... x) &
+        requires requires { D::invoke(_self(), mlib_fwd(x)...); }
+    {
+        return D::invoke(_self(), mlib_fwd(x)...);
+    };
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... x) const&
+        requires requires { D::invoke(_self(), mlib_fwd(x)...); }
+    {
+        return D::invoke(_self(), mlib_fwd(x)...);
+    };
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... x) &&
+        requires requires { D::invoke(std::move(_self()), mlib_fwd(x)...); }
+    {
+        return D::invoke(std::move(_self()), mlib_fwd(x)...);
+    };
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... x) const&&
+        requires requires { D::invoke(std::move(_self()), mlib_fwd(x)...); }
+    {
+        return D::invoke(std::move(_self()), mlib_fwd(x)...);
+    };
+};
+
+/**
  * @brief Create a composed function from two functions (f ∘ g)
  *
  * The expression `atop(f, g)(x)` is equivalent to `f(g(x))`
@@ -83,56 +126,68 @@ using size_constant = std::integral_constant<std::size_t, N>;
  * The `atop` object forwards `query()` calls to the `f` function.
  */
 template <typename F, typename G>
-class atop {
+class atop : public invocable_cvr_helper<atop<F, G>> {
 public:
     atop() = default;
     constexpr explicit atop(F&& f, G&& g)
-        : _f(NEO_FWD(f))
-        , _g(NEO_FWD(g)) {}
+        : _f(mlib_fwd(f))
+        , _g(mlib_fwd(g)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
         enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<F> _f;
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<G> _g;
+    NEO_NO_UNIQUE_ADDRESS neo::object_box<F> _f;
+    NEO_NO_UNIQUE_ADDRESS neo::object_box<G> _g;
 
 public:
-    template <typename X>
-        requires neo::invocable2<const G&, X&&>
-        and neo::invocable2<const F&, neo::invoke_result_t<const G&, X&&>>
-    constexpr auto operator()(X&& x) const&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<const F&>(_f),
-                                   NEO_INVOKE(static_cast<const G&>(_g), NEO_FWD(x))));
-
-    template <typename X>
-        requires neo::invocable2<G&, X&&>
-        and neo::invocable2<F&, neo::invoke_result_t<G&, X&&>>
-    constexpr auto operator()(X&& x) &  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&>(_f),
-                                   NEO_INVOKE(static_cast<G&>(_g), NEO_FWD(x))));
-
-    template <typename X>
-        requires neo::invocable2<G&&, X&&> and neo::invocable2<F&&, neo::invoke_result_t<G&&, X&&>>
-    constexpr auto operator()(X&& x) &&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F&&>(_f),
-                                   NEO_INVOKE(static_cast<G&&>(_g), NEO_FWD(x))));
-
-    template <typename X>
-        requires neo::invocable2<const G&&, X&&>
-        and neo::invocable2<const F&&, neo::invoke_result_t<const G&&, X&&>>
-    constexpr auto operator()(X&& x) const&&  //
-        AMONGOC_RETURNS(NEO_INVOKE(static_cast<F const&&>(_f),
-                                   NEO_INVOKE(static_cast<G const&&>(_g), NEO_FWD(x))));
+    template <typename... Ts>
+    static constexpr auto invoke(auto&& self, Ts&&... args)
+        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f.get(),
+                                   NEO_INVOKE(mlib_fwd(self)._g.get(), mlib_fwd(args)...)));
 
     template <valid_query_for<F> Q>
     constexpr query_t<Q, F> query(Q q) const {
-        return q(static_cast<const F&>(_f));
+        return q(_f.get());
     }
 };
 
 template <typename F, typename G>
 explicit atop(F&&, G&&) -> atop<F, G>;
+
+/**
+ * @brief Like `atop`, but passes multiple arguments to `g` separately
+ *
+ * `over(f, g)(x, y, z)` is equivalent to `f(g(x), g(y), g(z))`
+ */
+template <typename F, typename G>
+class over : public invocable_cvr_helper<over<F, G>> {
+public:
+    constexpr explicit over(F&& f, G&& g)
+        : _f(mlib_fwd(f))
+        , _g(mlib_fwd(g)) {}
+
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+
+private:
+    NEO_NO_UNIQUE_ADDRESS neo::object_box<F> _f;
+    NEO_NO_UNIQUE_ADDRESS neo::object_box<G> _g;
+
+public:
+    template <typename... Ts>
+    static constexpr auto invoke(auto&& self, Ts&&... args)
+        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f.get(),
+                                   NEO_INVOKE(mlib_fwd(self)._g.get(), mlib_fwd(args))...));
+
+    template <valid_query_for<F> Q>
+    constexpr query_t<Q, F> query(Q q) const {
+        return q(_f.get());
+    }
+};
+
+template <typename F, typename G>
+explicit over(F&&, G&&) -> over<F, G>;
 
 /**
  * @brief An invocable object that always returns the given value regardless
@@ -144,7 +199,7 @@ template <typename T>
 class konst {
 public:
     constexpr explicit konst(T&& t)
-        : _value(NEO_FWD(t)) {}
+        : _value(mlib_fwd(t)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
 
@@ -174,7 +229,7 @@ explicit konst(T&&) -> konst<T>;
  * Invocable signature of pair_append<T>: (U) -> pair<U, T>
  */
 template <typename T>
-class pair_append {
+class pair_append : public invocable_cvr_helper<pair_append<T>> {
 public:
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
 
@@ -182,13 +237,8 @@ public:
         : _object(mlib_fwd(t)) {}
 
     template <typename Arg>
-    constexpr std::pair<Arg, T> operator()(Arg&& arg) const& noexcept {
-        return std::pair<Arg, T>(mlib_fwd(arg), _object);
-    }
-
-    template <typename Arg>
-    constexpr std::pair<Arg, T> operator()(Arg&& arg) && noexcept {
-        return std::pair<Arg, T>(mlib_fwd(arg), static_cast<T&&>(_object));
+    static constexpr std::pair<Arg, T> invoke(auto&& self, Arg&& arg) noexcept {
+        return std::pair<Arg, T>(mlib_fwd(arg), mlib_fwd(self)._object);
     }
 
 private:
@@ -207,8 +257,10 @@ explicit pair_append(T&&) -> pair_append<T>;
  * will be called with N arguments as-if by std::apply()
  */
 template <typename F>
-class unpack_args {
+class unpack_args : public invocable_cvr_helper<unpack_args<F>> {
 public:
+    unpack_args() = default;
+
     explicit constexpr unpack_args(F&& fn)
         : _func(mlib_fwd(fn)) {}
 
@@ -219,24 +271,10 @@ private:
 
 public:
     template <typename Tpl>
-        constexpr decltype(auto) operator()(Tpl&& tpl) &
-            requires requires { std::apply(_func, mlib_fwd(tpl)); }
+    static constexpr decltype(auto) invoke(auto&& self, Tpl&& tpl)
+        requires requires { std::apply(mlib_fwd(self)._func, mlib_fwd(tpl)); }
     {
-        return std::apply(_func, mlib_fwd(tpl));
-    }
-
-    template <typename Tpl>
-    constexpr decltype(auto) operator()(Tpl&& tpl) const&
-        requires requires { std::apply(_func, mlib_fwd(tpl)); }
-    {
-        return std::apply(_func, mlib_fwd(tpl));
-    }
-
-    template <typename Tpl>
-        constexpr decltype(auto) operator()(Tpl&& tpl) &&
-            requires requires { std::apply(static_cast<F&&>(_func), mlib_fwd(tpl)); }
-    {
-        return std::apply(static_cast<F&&>(_func), mlib_fwd(tpl));
+        return std::apply(mlib_fwd(self)._func, mlib_fwd(tpl));
     }
 };
 
