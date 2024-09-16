@@ -118,7 +118,7 @@ public:
     using pointer    = value_type*;
 
     // Construct around an existing mlib_allocator object
-    constexpr explicit allocator(mlib_allocator a) noexcept
+    constexpr allocator(mlib_allocator a) noexcept
         : _alloc(a) {}
 
     // Convert-construct from an allocator of another type
