@@ -131,11 +131,14 @@
 namespace mlib {
 
 static mlib_constexpr bool is_constant_evaluated() noexcept {
+#ifdef __cpp_if_consteval
   if consteval {
     return true;
   } else {
     return false;
   }
+#endif
+  return false;
 }
 
 } // namespace mlib
