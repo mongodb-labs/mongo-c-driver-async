@@ -216,10 +216,31 @@ private:
 
 public:
     template <typename... Args>
-    constexpr decltype(auto) operator()(this auto&& self, Args&&... args)
-        requires requires { mlib_fwd(self)._object(mlib_fwd(args)...); }
+    constexpr decltype(auto) operator()(Args&&... args) &
+        requires requires { _object(mlib_fwd(args)...); }
     {
-        return mlib_fwd(self)._object(mlib_fwd(args)...);
+        return _object(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... args) const&
+        requires requires { _object(mlib_fwd(args)...); }
+    {
+        return _object(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... args) &&
+        requires requires { std::move(*this)._object(mlib_fwd(args)...); }
+    {
+        return std::move(*this)._object(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+    constexpr decltype(auto) operator()(Args&&... args) const&&
+        requires requires { std::move(*this)._object(mlib_fwd(args)...); }
+    {
+        return std::move(*this)._object(mlib_fwd(args)...);
     }
 
     // Forward other queries to the underlying type
