@@ -8,7 +8,7 @@ _bson_memcpy(bson_byte*, const bson_byte* src, uint32_t) mlib_noexcept;
 extern mlib_constexpr bson_byte*
 _bson_memcpy_chr(bson_byte*, const char* src, uint32_t) mlib_noexcept;
 extern mlib_constexpr bson_byte*
-_bson_memcpy_u8(bson_byte*, const u_int8_t* src, uint32_t) mlib_noexcept;
+_bson_memcpy_u8(bson_byte*, const uint8_t* src, uint32_t) mlib_noexcept;
 extern mlib_constexpr bson_byte*
 _bson_memmove(bson_byte*, const bson_byte*, uint32_t) mlib_noexcept;
 extern mlib_constexpr bson_byte* _bson_memset(bson_byte*, char v, uint32_t) mlib_noexcept;

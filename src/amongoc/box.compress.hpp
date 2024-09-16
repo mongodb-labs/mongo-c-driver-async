@@ -4,6 +4,7 @@
 #include <amongoc/emitter.h>
 #include <amongoc/handler.h>
 
+#include <array>
 #include <utility>
 
 namespace amongoc {
