@@ -74,6 +74,7 @@ struct amongoc_status {
 
     // Construct an amongoc_status from a std::error_code
     static amongoc_status from(std::error_code const&) noexcept;
+    static amongoc_status from(std::errc ec) noexcept { return from(std::make_error_code(ec)); }
 
     /**
      * @brief Convert a status to a `std::error_code`

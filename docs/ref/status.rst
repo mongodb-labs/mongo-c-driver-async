@@ -32,6 +32,7 @@ Header: ``amongoc/status.h``
 
   .. function::
     static amongoc_status from(std::error_code) noexcept
+    static amongoc_status from(std::errc) noexcept
     std::error_code as_error_code() const noexcept
 
     |C++ API| Construct a new `amongoc_status` from a `std::error_code`, or
