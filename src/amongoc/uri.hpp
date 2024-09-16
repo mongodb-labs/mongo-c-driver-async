@@ -10,6 +10,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <variant>
 
 namespace amongoc {
 
