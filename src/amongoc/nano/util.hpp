@@ -26,11 +26,9 @@ template <typename F>
 struct deferred_conversion {
     neo::object_t<F> _func;
 
-    constexpr explicit operator neo::invoke_result_t<F>() {
-        return NEO_INVOKE(static_cast<F&&>(_func));
-    }
+    constexpr operator neo::invoke_result_t<F>() { return NEO_INVOKE(static_cast<F&&>(_func)); }
 
-    constexpr explicit operator neo::invoke_result_t<const F>() const {
+    constexpr operator neo::invoke_result_t<const F>() const {
         return NEO_INVOKE(static_cast<F&&>(_func));
     }
 };
@@ -45,7 +43,7 @@ struct deferred_conversion {
  */
 template <typename F>
 constexpr deferred_conversion<F> defer_convert(F&& fn) {
-    return deferred_conversion<F>{NEO_FWD(fn)};
+    return deferred_conversion<F>{mlib_fwd(fn)};
 }
 
 // Enclose a partially-applied invocable object so that it may be used as the operand to operator|
@@ -56,20 +54,20 @@ struct [[nodiscard]] closure {
 
     template <typename Arg, std::size_t... Ns>
     constexpr static auto apply(auto&& self, Arg&& arg, std::index_sequence<Ns...>)
-        AMONGOC_RETURNS(std::invoke(NEO_FWD(self)._function.get(),
-                                    NEO_FWD(arg),
-                                    std::get<Ns>(NEO_FWD(self)._args)...));
+        AMONGOC_RETURNS(std::invoke(mlib_fwd(self)._function.get(),
+                                    mlib_fwd(arg),
+                                    std::get<Ns>(mlib_fwd(self)._args)...));
 
     // Handle the closure object appear on the right-hand of a vertical pipe expression
     template <typename Left, neo::alike<closure> Self>
         requires neo::invocable2<F, Left, Args...>
     friend constexpr auto operator|(Left&& lhs, Self&& rhs) AMONGOC_RETURNS(
-        closure::apply(NEO_FWD(rhs), NEO_FWD(lhs), std::make_index_sequence<sizeof...(Args)>{}));
+        closure::apply(mlib_fwd(rhs), mlib_fwd(lhs), std::make_index_sequence<sizeof...(Args)>{}));
 };
 
 template <typename T, typename... Args>
 constexpr closure<T, Args...> make_closure(T&& func, Args&&... args) noexcept {
-    return closure<T, Args...>{NEO_FWD(func), std::forward_as_tuple(NEO_FWD(args)...)};
+    return closure<T, Args...>{mlib_fwd(func), std::forward_as_tuple(mlib_fwd(args)...)};
 }
 
 template <std::size_t N>
