@@ -147,7 +147,7 @@ struct default_loop {
         }
         auto go = timer->async_wait(asio::deferred);
         std::move(go)(asio::consign(adapt_handler(mlib_fwd(uh),
-                                                  konst(mlib_fwd(value)),
+                                                  constant(mlib_fwd(value)),
                                                   _cancel_signals.checkout()),
                                     NEO_MOVE(timer)));
     }

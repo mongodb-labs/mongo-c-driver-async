@@ -120,6 +120,6 @@ emitter amongoc_let(emitter                 in_,
         // pull the default allocator later when it is needed.
         return let_1([] { return ::mlib_default_allocator; }).release();
     } else {
-        return let_1(konst(alloc)).release();
+        return let_1(constant(alloc)).release();
     }
 }

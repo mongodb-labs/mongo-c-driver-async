@@ -189,14 +189,14 @@ explicit over(F&&, G&&) -> over<F, G>;
 
 /**
  * @brief An invocable object that always returns the given value regardless
- * of arguments
+ * of arguments. This is the K-combinator
  *
- * @tparam T The type of object stored in the handler
+ * @tparam T The type of object stored and returned by the invocable
  */
 template <typename T>
-class konst {
+class constant {
 public:
-    constexpr explicit konst(T&& t)
+    constexpr explicit constant(T&& t)
         : _value(mlib_fwd(t)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
@@ -216,7 +216,8 @@ public:
 };
 
 template <typename T>
-explicit konst(T&&) -> konst<T>;
+explicit constant(T&&) -> constant<T>;
+
 
 /**
  * @brief Create an invocable that will pair-up the given argument as the second
