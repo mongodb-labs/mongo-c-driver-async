@@ -38,7 +38,7 @@ def subst(fpath: Path):
 
     def f(mat: re.Match[str]) -> str:
         # See groups in INCLUDE_RE
-        newl = f"{mat[1]}<{mat[2]}>{mat[4]}"
+        newl = f"{mat[1]}<{mat[2]}>{mat[3]}"
         print(f"{fpath}: update #include directive: {mat[0]!r} → {newl!r}")
         return newl
 
