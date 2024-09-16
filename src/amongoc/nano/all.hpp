@@ -3,6 +3,7 @@
 #include "./concepts.hpp"
 #include "./query.hpp"
 #include "./simultaneous.hpp"
+#include "./util.hpp"
 
 #include <neo/like.hpp>
 #include <neo/object_t.hpp>
@@ -41,7 +42,7 @@ public:
     constexpr nanooperation auto connect(R&& recv) const&
         requires(multishot_nanosender<Ss> and ...)
     {
-        return _connect(auto(_senders), NEO_FWD(recv), std::index_sequence_for<Ss...>{});
+        return _connect(decay_copy(_senders), NEO_FWD(recv), std::index_sequence_for<Ss...>{});
     }
 
 private:

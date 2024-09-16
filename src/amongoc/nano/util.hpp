@@ -460,4 +460,11 @@ struct opt_fmap {
     }
 };
 
+/**
+ * @brief Decay-copy an object.
+ *
+ * This can be replaced with `auto()` when C++23 is available
+ */
+constexpr auto decay_copy = []<typename T>(T&& obj) { return static_cast<T&&>(obj); };
+
 }  // namespace amongoc

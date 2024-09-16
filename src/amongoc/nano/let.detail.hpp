@@ -91,7 +91,9 @@ public:
         and multishot_nanosender<InputSender>
     {
         // Copy the input sender and the transformer
-        return op<R>{auto(_input_sender.get()), auto(_transformer.get()), NEO_FWD(recv)};
+        return op<R>{decay_copy(_input_sender.get()),
+                     decay_copy(_transformer.get()),
+                     NEO_FWD(recv)};
     }
 
     // We are an immediate sender type if:

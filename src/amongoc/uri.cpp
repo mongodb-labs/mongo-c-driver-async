@@ -95,8 +95,8 @@ result<connection_uri> connection_uri::parse(std::string_view                   
     auto comma_split = [](pct_string_view sv) {
         using is_comma = after<std::equal_to<>, ct_constant<','>>;
         using splitter = neo::simple_token_splitter<neo::charclass_splitter<is_comma>>;
-        auto tokens    = neo::tokenizer(auto(sv), splitter{});
-        return std::views::transform(auto(tokens), [](auto sub) {
+        auto tokens    = neo::tokenizer(std::string_view(sv), splitter{});
+        return std::views::transform(decay_copy(tokens), [](auto sub) {
             return pct_string_view(sub.data(), sub.size());
         });
     };

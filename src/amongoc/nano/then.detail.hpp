@@ -41,7 +41,7 @@ public:
     {
         return amongoc::connect(static_cast<InputSender const&>(_input_sender),
                                 atop(NEO_FWD(recv),
-                                     auto(static_cast<Transformer const&>(_transformer))));
+                                     decay_copy(static_cast<Transformer const&>(_transformer))));
     }
 
     template <valid_query_for<InputSender> Q>

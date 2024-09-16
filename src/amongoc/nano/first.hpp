@@ -11,9 +11,9 @@
 #include <neo/like.hpp>
 #include <neo/object_t.hpp>
 
-#include <atomic>
 #include <mutex>
 #include <tuple>
+#include <variant>
 
 namespace amongoc {
 
@@ -112,7 +112,7 @@ public:
         requires(multishot_nanosender<Ss> and ...)
     {
         return _connect(_senders,
-                        auto(static_cast<Predicate const&>(_predicate)),
+                        decay_copy(static_cast<Predicate const&>(_predicate)),
                         NEO_FWD(recv),
                         std::index_sequence_for<Ss...>{});
     }
