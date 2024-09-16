@@ -74,6 +74,12 @@ public:
     explicit(not neo::implicit_convertible_to<U&&, T>) constexpr result(U&& arg)
         : result(success(NEO_FWD(arg))) {}
 
+    template <neo::unalike<result> Err>
+        requires neo::explicit_convertible_to<Err&&, E>
+        and (not neo::explicit_convertible_to<Err &&, T>)
+    explicit(not neo::implicit_convertible_to<Err&&, E>) constexpr result(Err&& arg)
+        : result(amongoc::error(NEO_FWD(arg))) {}
+
     /// Construct a success-valued result object
     template <typename... Args>
         requires neo::constructible_from<T, Args&&...>
@@ -147,6 +153,11 @@ public:
     constexpr decltype(auto) operator*() const&& {
         this->_maybe_throw();
         return NEO_MOVE(*this).value();
+    }
+
+    constexpr std::add_pointer_t<T>       operator->() noexcept { return std::addressof(**this); }
+    constexpr std::add_pointer_t<const T> operator->() const noexcept {
+        return std::addressof(**this);
     }
 
     constexpr decltype(auto) error() & {
