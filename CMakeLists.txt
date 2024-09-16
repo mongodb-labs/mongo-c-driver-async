@@ -5,6 +5,15 @@ project(amongoc VERSION 0.1.0 DESCRIPTION "An Asynchronous MongoDB Library for C
 include(CTest)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
+# Pull our deps with PMM+vcpkg
+include(pmm)
+pmm(VCPKG REVISION 2024.08.23)
+
+find_package(Catch2 CONFIG REQUIRED)
+find_package(asio CONFIG REQUIRED)
+find_package(neo-fun CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED URL)
+find_package(fmt CONFIG REQUIRED)
 
 # Support modules
 include(CMakePackageConfigHelpers)
@@ -12,17 +21,6 @@ include(CMakePackageConfigHelpers)
 include(Sanitizers)
 include(Ccache)
 include(LLDLinker)
-
-# Enable C++20 for our C++ code
-set(CMAKE_CXX_STANDARD 20)
-
-# Pull our deps with PMM+vcpkg
-include(pmm)
-# "--keep-going" is required towork around issue pmm#64
-pmm(VCPKG REVISION 2024.08.23 REQUIRES --keep-going)
-find_package(Catch2 CONFIG REQUIRED)
-find_package(asio CONFIG REQUIRED)
-find_package(neo-fun CONFIG REQUIRED)
 
 # Add Catch integrations
 include(Catch)
@@ -76,11 +74,18 @@ target_sources(amongoc
 )
 
 # Enable C++23 features on the target
+# We currently only use C++23 for `auto(). Future revisions
+# can remove these requirements for greater portability.
 target_compile_features(amongoc PUBLIC cxx_std_23)
 
 # Link deps and platform libs.
-# TODO: Export these deps
-target_link_libraries(amongoc PUBLIC neo::fun asio::asio amongoc::detail::c_platform)
+target_link_libraries(amongoc PUBLIC
+    neo::fun
+    asio::asio
+    fmt::fmt
+    amongoc::detail::c_platform
+    Boost::url
+    )
 
 # Add tests
 add_executable(amongoc-test ${test_sources})

@@ -2,8 +2,10 @@
   "name": "amongoc",
   "version": "0.1.0",
   "dependencies": [
-    "neo-fun",
     "asio",
-    "catch2"
+    "boost-url",
+    "catch2",
+    "neo-fun",
+    "fmt"
   ]
 }
