@@ -470,8 +470,8 @@ public:
         return ret;
     }
 
-    constexpr void*       data() noexcept { return amongoc_box_data(_box); };
-    constexpr const void* data() const noexcept {
+    void*       data() noexcept { return amongoc_box_data(_box); };
+    const void* data() const noexcept {
         return amongoc_box_data(const_cast<unique_box&>(*this)._box);
     };
 

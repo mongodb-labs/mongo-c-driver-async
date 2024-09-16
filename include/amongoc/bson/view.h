@@ -298,7 +298,7 @@ typedef struct bson_view {
      * @return iterator An iterator referring to the found element, or the end
      * iterator, or an errant iterator
      */
-    [[nodiscard]] constexpr iterator find(std::string_view key) const noexcept;
+    [[nodiscard]] inline iterator find(std::string_view key) const noexcept;
 
     /**
      * @brief Construct a view from the given input data
@@ -406,42 +406,40 @@ enum bson_view_invalid_reason {
  * - Dereferencing `data` would be undefined behavior.
  * - Any data accessible via `data` is modified.
  */
-mlib_constexpr bson_view bson_view_from_data(const bson_byte* const               data,
-                                             const size_t                         data_len,
-                                             enum bson_view_invalid_reason* const error)
-    mlib_noexcept {
+mlib_constexpr bson_view bson_view_from_data(const bson_byte* const         data,
+                                             const size_t                   data_len,
+                                             enum bson_view_invalid_reason* error) mlib_noexcept {
     bson_view                     ret = BSON_VIEW_NULL;
     enum bson_view_invalid_reason err = BSON_VIEW_OKAY;
     int32_t                       len = 0;
+    enum bson_view_invalid_reason err_sink;
+    if (!error) {
+        error = &err_sink;
+    }
     // All BSON data must be at least five bytes long
     if (data_len < 5) {
-        err = BSON_VIEW_SHORT_READ;
-        goto done;
+        *error = BSON_VIEW_SHORT_READ;
+        return ret;
     }
     // Read the length header. This includes the header's four bytes, the
     // document's element data, and the null terminator byte.
     len = _bson_read_int32_le(data);
     // Check that the size is in-bounds
     if (len < 5) {
-        err = BSON_VIEW_INVALID_HEADER;
-        goto done;
+        *error = BSON_VIEW_INVALID_HEADER;
     }
     // Check that the buffer is large enough to hold expected the document
-    if ((uint32_t)len > data_len) {
+    else if ((uint32_t)len > data_len) {
         // Not enough data to do the read
-        err = BSON_VIEW_SHORT_READ;
-        goto done;
+        *error = BSON_VIEW_SHORT_READ;
     }
     // The document must have a zero-byte at the end.
-    if (data[len - 1].v != 0) {
-        err = BSON_VIEW_INVALID_TERMINATOR;
-        goto done;
+    else if (data[len - 1].v != 0) {
+        *error = BSON_VIEW_INVALID_TERMINATOR;
     }
     // Okay!
-    ret._bson_document_data = data;
-done:
-    if (error) {
-        *error = err;
+    else {
+        ret._bson_document_data = data;
     }
     return ret;
 }
@@ -575,7 +573,7 @@ static mlib_constexpr enum bson_iterator_error_cond bson_iterator_get_error(bson
  *
  * @pre bson_iterator_done(it) == false
  */
-mlib_constexpr bson_utf8_view bson_iterator_key(bson_iterator it) mlib_noexcept {
+inline bson_utf8_view bson_iterator_key(bson_iterator it) mlib_noexcept {
     BV_ASSERT(it._rlen >= it._keylen + 1);
     BV_ASSERT(it._ptr);
     return (bson_utf8_view){.data = (const char*)it._ptr + 1, .len = (uint32_t)it._keylen};
@@ -694,7 +692,7 @@ mlib_constexpr int32_t _bson_valsize(bson_type              tag,
     /// guard that checks the type tag again. Note the special minkey and maxkey
     /// tags, which are zero-length and valid, but not contiguous with the
     /// lower 20 type tags.
-    static const int32_t const_sizes[256] = {
+    const int32_t const_sizes[256] = {
         0,          // 0x0 BSON_TYPE_EOD
         8,          // 0x1 double
         4,          // 0x2 utf8
@@ -768,7 +766,7 @@ mlib_constexpr int32_t _bson_valsize(bson_type              tag,
 
     /// "varsize_pick" encodes whether a type tag contains a length prefix
     /// before its value.
-    static const bool varsize_pick[256] = {
+    const bool varsize_pick[256] = {
         false,  // 0x0 BSON_TYPE_EOD
         false,  // 0x1 double
         true,   // 0x2 utf8
@@ -1168,14 +1166,14 @@ mlib_constexpr bool bson_iterator_eq(bson_iterator left, bson_iterator right) ml
     return left._ptr == right._ptr;
 }
 
-mlib_constexpr bson_utf8_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept {
+inline bson_utf8_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept {
     const int32_t len = _bson_read_int32_le(p);
     // String length checks were already performed by our callers
     BV_ASSERT(len >= 1);
     return mlib_init(bson_utf8_view){(const char*)(p + sizeof len), (uint32_t)len - 1};
 }
 
-mlib_constexpr bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept {
+inline bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept {
     const bson_byte* after_key = _bson_iterator_value_ptr(it);
     bson_utf8_view   r         = _bson_read_stringlike_at(_bson_iterator_value_ptr(it));
     BV_ASSERT(r.len > 0);
@@ -1213,7 +1211,7 @@ mlib_constexpr double bson_iterator_double(bson_iterator it) mlib_noexcept {
  * sequence. Extra validation is required.
  * @note The `char` array may contain null characters.
  */
-mlib_constexpr bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept {
+inline bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != BSON_TYPE_UTF8) {
         return mlib_init(bson_utf8_view){NULL};
     }
@@ -1306,7 +1304,7 @@ typedef struct bson_regex {
     int32_t     options_len;
 } bson_regex;
 
-mlib_constexpr bson_regex bson_iterator_regex(bson_iterator it) mlib_noexcept {
+inline bson_regex bson_iterator_regex(bson_iterator it) mlib_noexcept {
     const bson_regex null_regex = {0};
 
     if (bson_iterator_type(it) != BSON_TYPE_REGEX) {
@@ -1345,14 +1343,14 @@ mlib_constexpr bson_dbpointer bson_iterator_dbpointer(bson_iterator it) mlib_noe
     return ret;
 }
 
-mlib_constexpr bson_utf8_view bson_iterator_code(bson_iterator it) mlib_noexcept {
+inline bson_utf8_view bson_iterator_code(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != BSON_TYPE_CODE) {
         return mlib_init(bson_utf8_view){0};
     }
     return _bson_iterator_stringlike(it);
 }
 
-mlib_constexpr bson_utf8_view bson_iterator_symbol(bson_iterator it) mlib_noexcept {
+inline bson_utf8_view bson_iterator_symbol(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != BSON_TYPE_SYMBOL) {
         return mlib_init(bson_utf8_view){0};
     }
@@ -1545,7 +1543,7 @@ mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept {
  * @retval true If the element's key is byte-wise equivalent to `key`
  * @retval false Otherwise
  */
-mlib_constexpr bool bson_key_eq(const bson_iterator it, const char* key, int keylen) mlib_noexcept {
+inline bool bson_key_eq(const bson_iterator it, const char* key, int keylen) mlib_noexcept {
     const bson_utf8_view k = bson_iterator_key(it);
     BV_ASSERT(it._keylen >= 0);
     if (keylen < 0)
@@ -1565,7 +1563,7 @@ mlib_constexpr bool bson_key_eq(const bson_iterator it, const char* key, int key
  */
 #define bson_find(View, Key) _bson_find(bson_view_of(Doc), Key, strlen(Key))
 
-mlib_constexpr bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_noexcept {
+inline bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_noexcept {
     bson_iterator it = bson_begin(v);
     for (; !bson_iterator_done(it); it = bson_next(it)) {
         if (bson_key_eq(it, key, keylen)) {
@@ -1656,13 +1654,11 @@ class bson_iterator::reference {
 public:
     [[nodiscard]] constexpr bson_type type() const noexcept { return bson_iterator_type(_iter); }
 
-    [[nodiscard]] constexpr std::string_view key() const noexcept {
+    [[nodiscard]] std::string_view key() const noexcept {
         return std::string_view(bson_iterator_key(_iter));
     }
     [[nodiscard]] constexpr double double_() const noexcept { return bson_iterator_double(_iter); }
-    [[nodiscard]] constexpr std::string_view utf8() const noexcept {
-        return bson_iterator_utf8(_iter);
-    }
+    [[nodiscard]] std::string_view utf8() const noexcept { return bson_iterator_utf8(_iter); }
     [[nodiscard]] constexpr bson_view document() const noexcept {
         return bson_iterator_document(_iter, NULL);
     }
@@ -1676,16 +1672,12 @@ public:
     [[nodiscard]] constexpr std::int64_t datetime() const noexcept {
         return bson_iterator_datetime(_iter);
     }
-    [[nodiscard]] constexpr bson_regex regex() const noexcept { return bson_iterator_regex(_iter); }
+    [[nodiscard]] bson_regex regex() const noexcept { return bson_iterator_regex(_iter); }
     [[nodiscard]] constexpr bson_dbpointer dbpointer() const noexcept {
         return bson_iterator_dbpointer(_iter);
     }
-    [[nodiscard]] constexpr std::string_view code() const noexcept {
-        return bson_iterator_code(_iter);
-    }
-    [[nodiscard]] constexpr std::string_view symbol() const noexcept {
-        return bson_iterator_symbol(_iter);
-    }
+    [[nodiscard]] std::string_view code() const noexcept { return bson_iterator_code(_iter); }
+    [[nodiscard]] std::string_view symbol() const noexcept { return bson_iterator_symbol(_iter); }
     [[nodiscard]] constexpr std::int32_t int32() const noexcept {
         return bson_iterator_int32(_iter);
     }
@@ -1758,7 +1750,7 @@ constexpr bson_iterator bson_view::end() const noexcept { return bson_end(*this)
 
 constexpr uint32_t bson_view::byte_size() const noexcept { return bson_size(*this); }
 
-constexpr bson_iterator bson_view::find(std::string_view key) const noexcept {
+inline bson_iterator bson_view::find(std::string_view key) const noexcept {
     return _bson_find(*this, key.data(), static_cast<int>(key.size()));
 }
 

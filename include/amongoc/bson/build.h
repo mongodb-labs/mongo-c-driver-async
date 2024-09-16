@@ -1125,9 +1125,8 @@ mlib_constexpr bson_iterator bson_insert_minkey(bson_mut*      doc,
  * @return bson_iterator The iterator referring to the element after being
  * updated.
  */
-mlib_constexpr bson_iterator bson_set_key(bson_mut*      doc,
-                                          bson_iterator  pos,
-                                          bson_utf8_view newkey) mlib_noexcept {
+inline bson_iterator
+bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
     mlib_math_try();
     BV_ASSERT(!bson_iterator_done(pos));
     // Truncate the key to not contain an null bytes:
@@ -1189,12 +1188,12 @@ mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
  * same thread.
  */
 mlib_constexpr bson_utf8_view bson_tmp_uint_string(uint32_t val) mlib_noexcept {
-    const char* const end = _bson_write_uint(val, _bson_tmp_integer_key_tl_storage);
-    return bson_utf8_view_from_data(_bson_tmp_integer_key_tl_storage,
-                                    (size_t)(end - _bson_tmp_integer_key_tl_storage));
+    char              buf[12];
+    const char* const end = _bson_write_uint(val, buf);
+    return bson_utf8_view_from_data(buf, (size_t)(end - buf));
 }
 
-mlib_constexpr void
+inline void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
     for (; !bson_iterator_done(pos); pos = bson_next(pos)) {
         pos = bson_set_key(doc, pos, bson_tmp_uint_string(idx));
@@ -1207,7 +1206,7 @@ bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) m
  *
  * @param doc The document that will be modified.
  */
-mlib_constexpr void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
+inline void bson_relabel_array_elements(bson_mut* doc) mlib_noexcept {
     bson_relabel_array_elements_at(doc, bson_begin(*doc), 0);
 }
 
@@ -1347,7 +1346,7 @@ public:
 #if !mlib_audit_allocator_passing()
     document()
         : document(allocator_type(mlib_default_allocator)) {}
-    constexpr explicit document(bson_view v)
+    explicit document(bson_view v)
         : document(v, allocator_type(mlib_default_allocator)) {}
 #endif
 
