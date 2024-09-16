@@ -404,4 +404,60 @@ struct construct {
 template <typename T>
 constexpr std::size_t effective_sizeof_v = std::is_empty_v<T> ? 0 : sizeof(T);
 
+/**
+ * @brief An invocable object that assigns its parameter into a bound object
+ *
+ * - `assign(x)(y)` → `x = y`
+ *
+ * @tparam T The object that is the target of the assignment
+ */
+template <typename T>
+class assign {
+public:
+    assign() = default;
+    constexpr explicit assign(T&& x)
+        : _dest(mlib_fwd(x)) {}
+
+    template <typename U>
+        requires std::assignable_from<T&, U>
+    constexpr T& operator()(U&& arg) noexcept {
+        _dest = mlib_fwd(arg);
+        return _dest;
+    }
+
+    template <typename U>
+        requires std::assignable_from<const T&, U>
+    constexpr const T& operator()(U&& arg) const noexcept {
+        _dest = mlib_fwd(arg);
+        return _dest;
+    }
+
+private:
+    [[no_unique_address]] T _dest;
+};
+
+template <typename T>
+explicit assign(T&&) -> assign<T>;
+
+/**
+ * @brief Convert a function `T -> U` to a function `optional<T> -> optional<U>`
+ */
+template <typename F>
+struct opt_fmap {
+    [[no_unique_address]] F _func;
+
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<F>);
+
+    template <typename Opt,
+              typename Result = decltype(std::declval<const F&>()(*std::declval<Opt>()))>
+    constexpr std::optional<Result> operator()(Opt&& opt) const {
+        std::optional<Result> ret;
+        if (opt) {
+            ret.emplace(_func(*mlib_fwd(opt)));
+        }
+        return ret;
+    }
+};
+
 }  // namespace amongoc
