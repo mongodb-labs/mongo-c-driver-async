@@ -297,7 +297,95 @@ template <typename F>
 explicit unpack_args(F&&) -> unpack_args<F>;
 
 /**
- * @brief Variable template for an invocable that calls the constructor of an object
+ * @brief Implement the S-combinator
+ *
+ * - `after(f, g)(x)` → `f(x, g(x))`
+ *
+ * @tparam F The binary function to be applied after `G`
+ * @tparam G The unary function to be applied before `F`
+ */
+template <typename F, typename G>
+struct after : invocable_cvr_helper<after<F, G>> {
+public:
+    after() = default;
+    explicit constexpr after(F&& f, G&& g)
+        : f(mlib_fwd(f))
+        , g(mlib_fwd(g)) {}
+
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+
+private:
+    [[no_unique_address]] F f;
+    [[no_unique_address]] G g;
+
+public:
+    static constexpr auto invoke(auto&& self, auto&& x)
+        AMONGOC_RETURNS(mlib_fwd(self).f(x, mlib_fwd(self).g(x)));
+};
+
+template <typename F, typename G>
+explicit after(F&&, G&&) -> after<F, G>;
+
+/**
+ * @brief Φ-Combinator:
+ *
+ * - `phi(h, f, g)(xs...)` → `h(f(xs...), g(xs...))`
+ *
+ * @tparam H A binary function
+ * @tparam F The left-hand function
+ * @tparam G The right-hand function
+ */
+template <typename H, typename F, typename G>
+struct phi : invocable_cvr_helper<phi<H, F, G>> {
+public:
+    phi() = default;
+    constexpr explicit phi(H&& h, F&& f, G&& g)
+        : h(mlib_fwd(h))
+        , f(mlib_fwd(f))
+        , g(mlib_fwd(g)) {}
+
+private:
+    [[no_unique_address]] H h;
+    [[no_unique_address]] F f;
+    [[no_unique_address]] G g;
+
+public:
+    template <typename... Args>
+    static constexpr auto invoke(auto&& self, Args&&... args) AMONGOC_RETURNS(  //
+        mlib_fwd(self).h(mlib_fwd(self).f(args...),                             //
+                         mlib_fwd(self).g(args...)));
+};
+
+template <typename H, typename F, typename G>
+explicit phi(H&&, F&&, G&&) -> phi<H, F, G>;
+
+// Return `true` if any boolean in the given range is true
+constexpr auto any = []<std::ranges::input_range R>(R&& rng) -> bool
+    requires std::convertible_to<std::ranges::range_value_t<R>, bool>
+{
+    for (bool b : rng) {
+        if (b) {
+            return true;
+        }
+    }
+    return false;
+};
+
+/**
+ * @brief Convert an ASCII char from an uppercase letter to a lowercase letter.
+ *
+ * This is different from `std::tolower` in that it does not consult a locale
+ */
+constexpr auto ascii_tolower = [](char c) noexcept -> char {
+    if (c >= 'A' and c <= 'Z') {
+        c += ('a' - 'A');
+    }
+    return c;
+};
+
+/**
+ * @brief Invocable that calls the constructor for an object
  *
  * @tparam T The type to be constructed.
  *
