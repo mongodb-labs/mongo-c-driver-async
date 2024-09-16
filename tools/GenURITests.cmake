@@ -26,8 +26,6 @@ set(GenURITests_HEAD [[// clang-format off
 #include <amongoc/uri.hpp>
 #include <amongoc/test_util.hpp>
 
-using namespace amongoc::test_utils;
-
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_range_equals.hpp>
 
