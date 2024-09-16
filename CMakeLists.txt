@@ -93,6 +93,10 @@ target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
 target_include_directories(amongoc-test PRIVATE src)
 catch_discover_tests(amongoc-test)
 
+# Generate URI tests
+include(GenURITests)
+target_sources(amongoc-test PRIVATE ${URITest_SOURCES})
+
 # Compile and link all documentation examples
 file(GLOB_RECURSE examples CONFIGURE_DEPENDS docs/*.example.c docs/*.example.cpp)
 
