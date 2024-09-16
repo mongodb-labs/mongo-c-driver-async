@@ -155,14 +155,14 @@ struct address_info {
 inline nanosender_of<result<address_info>> auto
 async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
     return make_simple_sender<result<address_info>>([=, &loop]<typename R>(R&& recv) {
-        return simple_operation(
-            [r = neo::object_box(NEO_FWD(recv)), name, svc, &loop] mutable -> void {
-                loop.vtable->getaddrinfo(  //
-                    &loop,
-                    name,
-                    svc,
-                    as_handler(atop(r.forward(), result_fmap(construct<address_info>))).release());
-            });
+        return simple_operation([r = neo::object_box(NEO_FWD(recv)), name, svc, &loop] mutable
+                                -> void {
+            loop.vtable->getaddrinfo(  //
+                &loop,
+                name,
+                svc,
+                as_handler(atop(r.forward(), result_fmap<construct<address_info>>{})).release());
+        });
     });
 }
 

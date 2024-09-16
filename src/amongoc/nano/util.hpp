@@ -11,6 +11,11 @@
 #include <neo/object_t.hpp>
 #include <neo/type_traits.hpp>
 
+#include <concepts>
+#include <numeric>
+#include <ranges>
+#include <type_traits>
+
 namespace amongoc {
 
 #define AMONGOC_RETURNS(...)                                                                       \
@@ -119,7 +124,7 @@ public:
 /**
  * @brief Create a composed function from two functions (f ∘ g)
  *
- * The expression `atop(f, g)(x)` is equivalent to `f(g(x))`
+ * The expression `atop(f, g)(xs...)` is equivalent to `f(g(xs...))`
  *
  * The `atop` object forwards `query()` calls to the `f` function.
  */
@@ -154,9 +159,11 @@ template <typename F, typename G>
 explicit atop(F&&, G&&) -> atop<F, G>;
 
 /**
- * @brief Like `atop`, but passes multiple arguments to `g` separately
+ * @brief Like `atop`, but passes each argument to `g` separately
  *
  * `over(f, g)(x, y, z)` is equivalent to `f(g(x), g(y), g(z))`
+ *
+ * The `over` object forwards `query()` calls to the `f` function.
  */
 template <typename F, typename G>
 class over : public invocable_cvr_helper<over<F, G>> {
@@ -218,6 +225,15 @@ public:
 template <typename T>
 explicit constant(T&&) -> constant<T>;
 
+/**
+ * @brief Like `constant`, but returns a compile-time constant value given as a template parameter
+ *
+ * @tparam Value The value that will be returned from the constant function
+ */
+template <auto Value>
+struct ct_constant {
+    constexpr auto operator()(auto&&...) const noexcept { return Value; }
+};
 
 /**
  * @brief Create an invocable that will pair-up the given argument as the second
@@ -241,7 +257,7 @@ public:
     }
 
 private:
-    T _object;
+    [[no_unique_address]] T _object;
 };
 
 template <typename T>
@@ -289,9 +305,13 @@ explicit unpack_args(F&&) -> unpack_args<F>;
  * overload set as an invocable object
  */
 template <typename T>
-constexpr auto construct = []<typename... Args>(Args&&... args) -> T
-    requires std::constructible_from<T, Args...>
-{ return T(NEO_FWD(args)...); };
+struct construct {
+    template <typename... Args>
+        requires std::constructible_from<T, Args...>
+    T operator()(Args&&... args) const noexcept(std::is_nothrow_constructible_v<T, Args...>) {
+        return T(static_cast<Args&&>(args)...);
+    }
+};
 
 template <typename T>
 constexpr std::size_t effective_sizeof_v = std::is_empty_v<T> ? 0 : sizeof(T);
