@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace amongoc {
 
 /**
@@ -16,6 +18,6 @@ concept valid_query_for = requires(const T& obj, const Q q) { q(obj); };
 
 template <typename Q, typename T>
     requires valid_query_for<Q, T>
-using query_t = decltype(Q{}(*(const T*)(nullptr)));
+using query_t = decltype(std::declval<const Q&>()(std::declval<const T&>()));
 
 }  // namespace amongoc
