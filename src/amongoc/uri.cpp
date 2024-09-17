@@ -10,7 +10,6 @@
 
 #include <boost/url.hpp>
 #include <fmt/chrono.h>  // Enable duration formatting
-#include <neo/overload.hpp>
 #include <neo/tokenize.hpp>
 #include <neo/utility.hpp>
 

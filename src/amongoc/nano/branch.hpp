@@ -3,7 +3,6 @@
 #include <mlib/invoke.hpp>
 
 #include <neo/get.hpp>
-#include <neo/meta.hpp>
 #include <neo/type_traits.hpp>
 #include <neo/visit.hpp>
 

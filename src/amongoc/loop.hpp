@@ -7,7 +7,6 @@
 #pragma once
 
 #include "./nano/concepts.hpp"
-#include "./nano/first.hpp"
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
 
@@ -21,13 +20,8 @@
 
 #include <asio/awaitable.hpp>
 #include <asio/buffer.hpp>
-#include <neo/unit.hpp>
 
-#include <chrono>
 #include <cstddef>
-#include <memory>
-#include <system_error>
-#include <variant>
 
 namespace amongoc {
 

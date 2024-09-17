@@ -8,7 +8,6 @@
 #include <mlib/object_t.hpp>
 
 #include <neo/like.hpp>
-#include <neo/type_traits.hpp>
 
 #include <concepts>
 #include <ranges>
@@ -53,7 +52,8 @@ struct [[nodiscard]] closure {
                                   std::get<Ns>(mlib_fwd(self)._args)...));
 
     // Handle the closure object appear on the right-hand of a vertical pipe expression
-    template <typename Left, neo::alike<closure> Self>
+    template <typename Left, typename Self>
+        requires std::same_as<std::remove_cvref_t<Self>, closure>
     friend constexpr auto operator|(Left&& lhs, Self&& rhs) MLIB_RETURNS(
         closure::apply(mlib_fwd(rhs), mlib_fwd(lhs), std::make_index_sequence<sizeof...(Args)>{}));
 };
