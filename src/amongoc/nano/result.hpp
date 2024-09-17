@@ -6,10 +6,10 @@
 
 #include <amongoc/status.h>
 
+#include <mlib/invoke.hpp>
 #include <mlib/object_t.hpp>
 
 #include <neo/concepts.hpp>
-#include <neo/invoke.hpp>
 #include <neo/like.hpp>
 
 #include <cassert>
@@ -179,7 +179,7 @@ public:
     }
 
     template <typename F>
-    constexpr auto transform(F&& fn) const& -> result<std::invoke_result_t<F, T const&>> {
+    constexpr auto transform(F&& fn) const& -> result<mlib::invoke_result_t<F, T const&>> {
         if (has_value()) {
             return success(mlib_fwd(fn)(this->value()));
         } else {
@@ -188,7 +188,7 @@ public:
     }
 
     template <typename F>
-    constexpr auto transform(F&& fn) && -> result<std::invoke_result_t<F, T&&>> {
+    constexpr auto transform(F&& fn) && -> result<mlib::invoke_result_t<F, T&&>> {
         if (has_value()) {
             return success(mlib_fwd(fn)(std::move(*this).value()));
         } else {
@@ -271,14 +271,14 @@ struct result_fmap {
               typename Rd          = std::remove_cvref_t<R>,
               typename SuccessType = Rd::success_type,
               typename InvokeResult
-              = neo::invoke_result_t<F&&, neo::forward_like_t<R, SuccessType>>,
+              = mlib::invoke_result_t<F&&, neo::forward_like_t<R, SuccessType>>,
               typename FinalResult = Rd::template rebind<InvokeResult>>
         requires is_result_v<Rd>
     constexpr FinalResult operator()(R&& res) {
         if (res.has_value()) {
             // The result has a success value. Forward that to the wrapped invocable and
             // wrap it in a new result:
-            return success(NEO_INVOKE(mlib_fwd(_fn), mlib_fwd(res).value()));
+            return success(mlib::invoke(mlib_fwd(_fn), mlib_fwd(res).value()));
         } else {
             // The result is errant. Just construct a new errant result
             return mlib_fwd(res).error_tag();
@@ -366,7 +366,7 @@ struct nanosender_traits<result<T, E>> {
             constexpr void operator()(inner_sends value) {
                 // Invoke the underlying receiver with a new result created from the success of
                 // the wrapped nanosender
-                NEO_INVOKE(static_cast<R&&>(_wrapped), sends_type(success(mlib_fwd(value))));
+                mlib::invoke(static_cast<R&&>(_wrapped), sends_type(success(mlib_fwd(value))));
             }
         };
 
@@ -403,7 +403,7 @@ struct nanosender_traits<result<T, E>> {
                 // The real operation was not constructed, which means that the result
                 // value holds an error. Invoke the receiver immediately with the same
                 // error that is contained in the result:
-                NEO_INVOKE(std::move(_recv), sends_type(std::move(_result).error_tag()));
+                mlib::invoke(std::move(_recv), sends_type(std::move(_result).error_tag()));
             }
         }
     };

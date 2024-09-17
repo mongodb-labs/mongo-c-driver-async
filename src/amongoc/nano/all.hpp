@@ -93,7 +93,7 @@ private:
             // Construct the final result tuple
             auto fin = sends_type(static_cast<sends_t<Ss>&&>(*std::get<Ns>(_opts))...);
             // Invoke the final receiver
-            NEO_INVOKE(std::move(_recv), std::move(fin));
+            mlib::invoke(std::move(_recv), std::move(fin));
         }
 
         // Invoked when when_all() is given no senders to wait on (finishes immediately)

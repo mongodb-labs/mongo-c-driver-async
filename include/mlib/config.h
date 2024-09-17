@@ -160,3 +160,12 @@ static mlib_constexpr bool is_constant_evaluated() noexcept {
 
 } // namespace mlib
 #endif
+
+#define MLIB_RETURNS(...)                                                      \
+  noexcept(noexcept(__VA_ARGS__))                                              \
+      ->decltype(auto)                                                         \
+    requires requires { (__VA_ARGS__); }                                       \
+  {                                                                            \
+    return __VA_ARGS__;                                                        \
+  }                                                                            \
+  static_assert(true)

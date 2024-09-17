@@ -31,7 +31,7 @@ public:
     constexpr explicit simple_operation(Starter&& start)
         : _start(mlib_fwd(start)) {}
 
-    constexpr void start() noexcept { NEO_INVOKE(_start); }
+    constexpr void start() noexcept { mlib::invoke(_start); }
 
 private:
     mlib_no_unique_address Starter _start;
@@ -48,7 +48,7 @@ explicit simple_operation(S&&) -> simple_operation<S>;
  * nanoreceiver for `T` and return a nanooperation
  */
 template <typename T, typename Connector>
-    requires neo::invocable2<Connector, archetype_nanoreceiver<T>>
+    requires mlib::invocable<Connector, archetype_nanoreceiver<T>>
 class simple_sender {
 public:
     using sends_type = T;

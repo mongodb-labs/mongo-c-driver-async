@@ -211,7 +211,7 @@ private:
                     this->_handle_no_accept();
                 }
                 // Invoke the final receiver with the chosen result object
-                NEO_INVOKE(static_cast<R&&>(_final_recv), std::move(*_result));
+                mlib::invoke(static_cast<R&&>(_final_recv), std::move(*_result));
             }
         }
 

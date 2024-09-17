@@ -35,7 +35,7 @@ public:
         assert(not _next_operation.has_value() && "let() transformer was invoked multiple times");
         // Invoke the transformer to obtain the next sender in the chained operation
         nanosender auto next_sender
-            = NEO_INVOKE(static_cast<Transformer&&>(_transform), mlib_fwd(result));
+            = mlib::invoke(static_cast<Transformer&&>(_transform), mlib_fwd(result));
         // Construct the operation state from the new sender and our final receiver
         _next_operation.emplace(amongoc::defer_convert([&] {
             return amongoc::connect(std::move(next_sender),
@@ -71,7 +71,7 @@ public:
 
     /// The sender type that is returned by the user's transformer function when fed the result from
     /// the input sender
-    using intermediate_sender_type = neo::invoke_result_t<Transformer, sends_t<InputSender>>;
+    using intermediate_sender_type = mlib::invoke_result_t<Transformer, sends_t<InputSender>>;
     /// The final sent type that comes from the generated intermediate sender
     using sends_type = sends_t<intermediate_sender_type>;
 
@@ -159,7 +159,7 @@ private:
 /// Require that the given handler returns a new sender when invoked with the given sender's
 /// result type
 template <typename Handler, typename Sender>
-concept let_handler_returns_sender = nanosender<neo::invoke_result_t<Handler, sends_t<Sender>>>;
+concept let_handler_returns_sender = nanosender<mlib::invoke_result_t<Handler, sends_t<Sender>>>;
 
 /**
  * @brief Match a handler that is invocable with the type for the given sender and
@@ -168,7 +168,7 @@ concept let_handler_returns_sender = nanosender<neo::invoke_result_t<Handler, se
 template <typename Handler, typename Sender>
 concept valid_let_handler                          //
     = nanosender<Sender>                           //
-    and neo::invocable2<Handler, sends_t<Sender>>  //
+    and mlib::invocable<Handler, sends_t<Sender>>  //
     and let_handler_returns_sender<Handler, Sender>;
 
 }  // namespace amongoc::detail

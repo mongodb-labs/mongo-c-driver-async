@@ -1,8 +1,8 @@
 #pragma once
 
 #include <mlib/config.h>
+#include <mlib/invoke.hpp>
 
-#include <neo/invoke.hpp>
 #include <neo/type_traits.hpp>
 
 #include <concepts>
@@ -31,7 +31,7 @@ using sends_t = nanosender_traits<std::remove_cvref_t<T>>::sends_type;
  * XXX: Should this require noexcept(true)?
  */
 template <typename Recv, typename Result>
-concept nanoreceiver_of = neo::invocable2<Recv, Result>;
+concept nanoreceiver_of = mlib::invocable<Recv, Result>;
 
 /**
  * @brief Archetype for operation types

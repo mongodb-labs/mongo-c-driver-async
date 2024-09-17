@@ -1,5 +1,7 @@
 #pragma once
 
+#include "./invoke.hpp"
+
 #include <memory>
 #include <type_traits>
 
@@ -34,7 +36,7 @@ public:
      * @param args The arguments to apply to the object
      */
     template <typename... Args>
-    constexpr std::invoke_result_t<Ref, Args...> operator()(Args&&... args) const
+    constexpr mlib::invoke_result_t<Ref, Args...> operator()(Args&&... args) const
         noexcept(std::is_nothrow_invocable_v<Ref, Args...>) {
         return (*_pointer)(static_cast<Args&&>(args)...);
     }

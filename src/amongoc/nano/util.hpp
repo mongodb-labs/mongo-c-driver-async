@@ -4,37 +4,26 @@
 
 #include <amongoc/box.h>
 
+#include <mlib/invoke.hpp>
 #include <mlib/object_t.hpp>
 
-#include <neo/invoke.hpp>
 #include <neo/like.hpp>
 #include <neo/type_traits.hpp>
 
 #include <concepts>
-#include <functional>
-#include <numeric>
 #include <ranges>
 #include <type_traits>
 
 namespace amongoc {
 
-#define AMONGOC_RETURNS(...)                                                                       \
-    noexcept(noexcept(__VA_ARGS__))                                                                \
-        ->decltype(__VA_ARGS__)                                                                    \
-        requires requires { (__VA_ARGS__); }                                                       \
-    {                                                                                              \
-        return __VA_ARGS__;                                                                        \
-    }                                                                                              \
-    static_assert(true)
-
 template <typename F>
 struct deferred_conversion {
     mlib::object_t<F> _func;
 
-    constexpr operator std::invoke_result_t<F>() { return std::invoke(static_cast<F&&>(_func)); }
+    constexpr operator mlib::invoke_result_t<F>() { return mlib::invoke(static_cast<F&&>(_func)); }
 
-    constexpr operator std::invoke_result_t<const F>() const {
-        return std::invoke(static_cast<F&&>(_func));
+    constexpr operator mlib::invoke_result_t<const F>() const {
+        return mlib::invoke(static_cast<F const&&>(_func));
     }
 };
 
@@ -59,14 +48,13 @@ struct [[nodiscard]] closure {
 
     template <typename Arg, std::size_t... Ns>
     constexpr static auto apply(auto&& self, Arg&& arg, std::index_sequence<Ns...>)
-        AMONGOC_RETURNS(std::invoke(mlib_fwd(self)._function,
-                                    mlib_fwd(arg),
-                                    std::get<Ns>(mlib_fwd(self)._args)...));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._function,
+                                  mlib_fwd(arg),
+                                  std::get<Ns>(mlib_fwd(self)._args)...));
 
     // Handle the closure object appear on the right-hand of a vertical pipe expression
     template <typename Left, neo::alike<closure> Self>
-        requires neo::invocable2<F, Left, Args...>
-    friend constexpr auto operator|(Left&& lhs, Self&& rhs) AMONGOC_RETURNS(
+    friend constexpr auto operator|(Left&& lhs, Self&& rhs) MLIB_RETURNS(
         closure::apply(mlib_fwd(rhs), mlib_fwd(lhs), std::make_index_sequence<sizeof...(Args)>{}));
 };
 
@@ -146,8 +134,8 @@ private:
 public:
     template <typename... Ts>
     static constexpr auto invoke(auto&& self, Ts&&... args)
-        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f,
-                                   NEO_INVOKE(mlib_fwd(self)._g, mlib_fwd(args)...)));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._f,
+                                  mlib::invoke(mlib_fwd(self)._g, mlib_fwd(args)...)));
 
     template <valid_query_for<F> Q>
     constexpr query_t<Q, F> query(Q q) const {
@@ -182,8 +170,8 @@ private:
 public:
     template <typename... Ts>
     static constexpr auto invoke(auto&& self, Ts&&... args)
-        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f,
-                                   NEO_INVOKE(mlib_fwd(self)._g, mlib_fwd(args))...));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._f,
+                                  mlib::invoke(mlib_fwd(self)._g, mlib_fwd(args))...));
 
     template <valid_query_for<F> Q>
     constexpr query_t<Q, F> query(Q q) const {
@@ -286,7 +274,7 @@ private:
 
 public:
     static constexpr auto invoke(auto&& self, auto&& tpl)
-        AMONGOC_RETURNS(std::apply(mlib_fwd(self)._func, mlib_fwd(tpl)));
+        MLIB_RETURNS(std::apply(mlib_fwd(self)._func, mlib_fwd(tpl)));
 };
 
 template <typename F>
@@ -317,7 +305,9 @@ private:
 
 public:
     static constexpr auto invoke(auto&& self, auto&& x)
-        AMONGOC_RETURNS(mlib_fwd(self).f(x, mlib_fwd(self).g(x)));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self).f,
+                                  x,  //
+                                  mlib::invoke(mlib_fwd(self).g, x)));
 };
 
 template <typename F, typename G>
@@ -348,8 +338,9 @@ private:
 
 public:
     static constexpr auto invoke(auto&& self, auto&&... args)
-        AMONGOC_RETURNS(mlib_fwd(self).h(mlib_fwd(self).f(args...),  //
-                                         mlib_fwd(self).g(args...)));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self).h,
+                                  mlib::invoke(mlib_fwd(self).f, args...),
+                                  mlib::invoke(mlib_fwd(self).g, args...)));
 };
 
 template <typename H, typename F, typename G>

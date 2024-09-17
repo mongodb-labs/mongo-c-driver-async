@@ -63,7 +63,7 @@ concept stoppable_source = requires(Src src, const Src csrc) {
  * @tparam Token A stoppable token type
  * @tparam F The handler function invoked during request_stop()
  */
-template <stoppable_token Token, neo::invocable2<> F>
+template <stoppable_token Token, mlib::invocable<> F>
 using stop_callback_t = Token::template callback_type<F>;
 
 /**
@@ -104,7 +104,7 @@ using get_stop_token_t = decltype(get_stop_token(std::declval<const R&>()));
  * @param token The stop token for the associated stop state
  * @param fn The stop handler that will be invoked during request_stop()
  */
-template <stoppable_token Token, neo::invocable2<> F>
+template <stoppable_token Token, mlib::invocable<> F>
 constexpr stop_callback_t<Token, F> create_stop_callback(Token token, F&& fn) {
     return stop_callback_t<Token, F>(token, mlib_fwd(fn));
 }
@@ -484,7 +484,7 @@ private:
     mlib_no_unique_address mlib::object_t<F> _func;
 
     /// Implement the invocation
-    void do_execute() noexcept override { NEO_INVOKE(static_cast<F&&>(_func)); }
+    void do_execute() noexcept override { mlib::invoke(static_cast<F&&>(_func)); }
 };
 
 /**
@@ -536,7 +536,7 @@ public:
 
     /// Invoke the underlying object.
     static constexpr auto invoke(auto&& self, auto&&... args)
-        AMONGOC_RETURNS(std::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
+        MLIB_RETURNS(std::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
 };
 
 template <typename Token, typename Wrapped>

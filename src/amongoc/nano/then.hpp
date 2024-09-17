@@ -19,7 +19,7 @@ struct _then {
      * The returned sender returns the result type of invoking `f` with the result
      * sent by `s`
      */
-    template <nanosender InputSender, neo::invocable2<sends_t<InputSender>> Transformer>
+    template <nanosender InputSender, mlib::invocable<sends_t<InputSender>> Transformer>
     constexpr detail::then_sender<InputSender, Transformer>
     operator()(InputSender&& s, Transformer&& f) const noexcept {
         return detail::then_sender<InputSender, Transformer>(mlib_fwd(s), mlib_fwd(f));
@@ -36,7 +36,7 @@ struct _then {
  */
 inline constexpr _then then;
 
-template <nanosender S, neo::invocable2<sends_t<S>> F>
+template <nanosender S, mlib::invocable<sends_t<S>> F>
 using then_t = decltype(then(std::declval<S>(), std::declval<F>()));
 
 }  // namespace amongoc

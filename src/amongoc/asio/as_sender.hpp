@@ -43,7 +43,7 @@ public:
         R    _recv;
 
         constexpr void start() noexcept {
-            auto h = [this] { NEO_INVOKE(static_cast<R&&>(_recv), sends_type()); };
+            auto h = [this] { mlib::invoke(static_cast<R&&>(_recv), sends_type()); };
             static_cast<Init&&>(_init)(h);
         }
     };
@@ -75,10 +75,10 @@ public:
         constexpr void start() noexcept {
             auto h = [this](std::error_code ec, T value) {
                 if (ec) {
-                    NEO_INVOKE(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
                 } else {
-                    NEO_INVOKE(static_cast<R&&>(_recv),
-                               sends_type(amongoc::success(mlib_fwd(value))));
+                    mlib::invoke(static_cast<R&&>(_recv),
+                                 sends_type(amongoc::success(mlib_fwd(value))));
                 }
             };
             static_cast<Init&&>(_init)(std::move(h));

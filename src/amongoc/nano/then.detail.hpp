@@ -8,8 +8,6 @@
 
 #include <mlib/object_t.hpp>
 
-#include <neo/invoke.hpp>
-
 #include <concepts>
 
 namespace amongoc::detail {
@@ -20,7 +18,7 @@ namespace amongoc::detail {
  * @tparam InputSender The sender that is being fed to then()
  * @tparam Transformer The user's transformation function
  */
-template <nanosender InputSender, neo::invocable2<sends_t<InputSender>> Transformer>
+template <nanosender InputSender, mlib::invocable<sends_t<InputSender>> Transformer>
 class then_sender {
 public:
     constexpr explicit then_sender(InputSender&& s, Transformer&& fn) noexcept
@@ -29,7 +27,7 @@ public:
 
     /// The type sent by the then() sender is the type returned by the transformer
     /// function when invoked with the object returned by the input sender
-    using sends_type = neo::invoke_result_t<Transformer, sends_t<InputSender>>;
+    using sends_type = mlib::invoke_result_t<Transformer, sends_t<InputSender>>;
 
     constexpr auto connect(nanoreceiver_of<sends_type> auto&& recv) && {
         return amongoc::connect(static_cast<InputSender&&>(_input_sender),

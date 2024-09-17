@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mlib/invoke.hpp>
+
 #include <neo/get.hpp>
 #include <neo/meta.hpp>
 #include <neo/type_traits.hpp>
@@ -29,7 +31,7 @@ private:
     static void _check_invoke(V&&, std::index_sequence<Ns...>)
         requires(neo::can_get_nth<V, Ns> and ...) and requires(Fs... fs, V v) {
             (fs(neo::get_nth<Ns>(mlib_fwd(v))), ...);
-            typename std::common_reference_t<neo::invoke_result_t<Fs, neo::get_nth_t<V, Ns>>...>;
+            typename std::common_reference_t<mlib::invoke_result_t<Fs, neo::get_nth_t<V, Ns>>...>;
         };
 
 public:
@@ -48,7 +50,7 @@ private:
     template <std::size_t N, typename Tpl, typename Var, typename Ret>
     struct brancher {
         constexpr static Ret apply(Tpl&& tpl, Var&& var) {
-            return NEO_INVOKE(neo::get_nth<N>(mlib_fwd(tpl)), neo::get_nth<N>(mlib_fwd(var)));
+            return mlib::invoke(neo::get_nth<N>(mlib_fwd(tpl)), neo::get_nth<N>(mlib_fwd(var)));
         }
     };
 
@@ -56,7 +58,7 @@ private:
               typename Tpl,
               std::size_t... Ns,
               typename Ret
-              = std::common_reference_t<neo::invoke_result_t<Fs, neo::get_nth_t<Var, Ns>>...>>
+              = std::common_reference_t<mlib::invoke_result_t<Fs, neo::get_nth_t<Var, Ns>>...>>
     constexpr Ret _do_branch(Var&& var, Tpl&& tpl, std::index_sequence<Ns...>) {
         Ret (*fns[])(Tpl&&, Var&&) = {&brancher<Ns, Tpl, Var, Ret>::apply...};
         return fns[var.index()](mlib_fwd(tpl), mlib_fwd(var));

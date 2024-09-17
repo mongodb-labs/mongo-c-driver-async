@@ -5,8 +5,6 @@
 #include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
-#include <neo/invoke.hpp>
-
 #include <concepts>
 
 namespace amongoc {
@@ -64,7 +62,7 @@ private:
         mlib_no_unique_address R _receiver;
 
         constexpr void start() noexcept {
-            NEO_INVOKE(static_cast<R&&>(_receiver), static_cast<T&&>(_value));
+            mlib::invoke(static_cast<R&&>(_receiver), static_cast<T&&>(_value));
         }
     };
 
