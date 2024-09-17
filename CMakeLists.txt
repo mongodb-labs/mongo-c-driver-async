@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.25)
 project(amongoc VERSION 0.1.0 DESCRIPTION "An Asynchronous MongoDB Library for C")
 
 # Enable testing with CTest
@@ -6,8 +6,11 @@ include(CTest)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 # Pull our deps with PMM+vcpkg
-include(pmm)
-pmm(VCPKG REVISION 2024.08.23)
+option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ON)
+if(AMONGOC_USE_PMM)
+    include(pmm)
+    pmm(VCPKG REVISION 2024.08.23)
+endif()
 
 find_package(Catch2 CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
