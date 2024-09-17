@@ -155,10 +155,10 @@ struct nanosender_awaitable {
         std::coroutine_handle<Promise> co;
 
         // The receiver has a stop token if the coroutine's promise has a stop token
-        stoppable_token auto query(get_stop_token_fn) const noexcept
+        stoppable_token auto get_stop_token() const noexcept
             requires has_stop_token<Promise>
         {
-            return get_stop_token(co.promise());
+            return amongoc::get_stop_token(co.promise());
         }
 
         // Forward the allocator from the promise
@@ -291,7 +291,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     using co_handle = std::coroutine_handle<emitter_promise>;
 
     // We have a stop token based on the stop functionality on the associated handler
-    stoppable_token auto query(get_stop_token_fn q) const noexcept { return q(fin_handler); }
+    handler_stop_token get_stop_token() const noexcept { return fin_handler.get_stop_token(); }
 
     // The final suspend will invoke the final handler with the coroutine's result
     static auto final_suspend() noexcept {

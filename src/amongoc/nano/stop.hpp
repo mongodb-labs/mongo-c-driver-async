@@ -6,9 +6,7 @@
  */
 #pragma once
 
-#include "./concepts.hpp"
-#include "./query.hpp"
-
+#include <amongoc/nano/query.hpp>
 #include <amongoc/nano/util.hpp>
 
 #include <mlib/object_t.hpp>
@@ -532,7 +530,11 @@ public:
     constexpr const Wrapped&& base() const&& { return mlib::unwrap_object(std::move(_wrapped)); }
 
     /// Get the bound stop token
-    constexpr Token query(get_stop_token_fn) const noexcept { return _token; }
+    constexpr Token get_stop_token() const noexcept { return _token; }
+
+    constexpr auto query(valid_query_for<Wrapped> auto q) const noexcept {
+        return q(static_cast<const Wrapped&>(_wrapped));
+    }
 
     /// Invoke the underlying object.
     static constexpr auto invoke(auto&& self, auto&&... args)
