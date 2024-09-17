@@ -9,6 +9,7 @@ Reference
 
   meta-attrs
   api-patterns
+  building
 
   box
   status
