@@ -1,6 +1,7 @@
 #pragma once
 
-#include <neo/fwd.hpp>
+#include <mlib/config.h>
+
 #include <neo/invoke.hpp>
 #include <neo/type_traits.hpp>
 
@@ -84,7 +85,7 @@ concept nanosender = requires {
     typename sends_t<Sender>;
 } and requires(std::remove_cvref_t<Sender>&& sender, archetype_nanoreceiver<sends_t<Sender>> recv) {
     {
-        nanosender_traits<std::remove_cvref_t<Sender>>::connect(NEO_FWD(sender), NEO_FWD(recv))
+        nanosender_traits<std::remove_cvref_t<Sender>>::connect(mlib_fwd(sender), mlib_fwd(recv))
     } -> nanooperation;
 };
 
@@ -98,7 +99,7 @@ template <typename S>
 concept multishot_nanosender = nanosender<S>
     and requires(std::remove_cvref_t<S> const& sender, archetype_nanoreceiver<sends_t<S>> recv) {
             {
-                nanosender_traits<std::remove_cvref_t<S>>::connect(sender, NEO_FWD(recv))
+                nanosender_traits<std::remove_cvref_t<S>>::connect(sender, mlib_fwd(recv))
             } -> nanooperation;
         };
 
@@ -125,10 +126,10 @@ struct nanosender_traits<T> {
     template <neo::alike<T> S, nanoreceiver_of<sends_type> R>
     static constexpr decltype(auto) connect(S&& sender, R&& recv) noexcept
         requires requires {
-            { NEO_FWD(sender).connect(NEO_FWD(recv)) } -> nanooperation;
+            { mlib_fwd(sender).connect(mlib_fwd(recv)) } -> nanooperation;
         }
     {
-        return NEO_FWD(sender).connect(NEO_FWD(recv));
+        return mlib_fwd(sender).connect(mlib_fwd(recv));
     }
 
     // Check for is_immediate() as a member function

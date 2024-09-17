@@ -14,8 +14,6 @@
 
 #include <mlib/object_t.hpp>
 
-#include <neo/attrib.hpp>
-
 #include <new>
 
 namespace amongoc {
@@ -31,12 +29,12 @@ public:
     simple_operation() = default;
 
     constexpr explicit simple_operation(Starter&& start)
-        : _start(NEO_FWD(start)) {}
+        : _start(mlib_fwd(start)) {}
 
     constexpr void start() noexcept { NEO_INVOKE(_start); }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS Starter _start;
+    mlib_no_unique_address Starter _start;
 };
 
 template <typename S>
@@ -56,22 +54,22 @@ public:
     using sends_type = T;
 
     constexpr explicit simple_sender(Connector&& fn)
-        : _connect(NEO_FWD(fn)) {}
+        : _connect(mlib_fwd(fn)) {}
 
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && noexcept {
-        return static_cast<Connector&&>(_connect)(NEO_FWD(recv));
+        return static_cast<Connector&&>(_connect)(mlib_fwd(recv));
     }
 
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) const& noexcept
-        requires requires(const Connector& conn) { conn(NEO_FWD(recv)); }
+        requires requires(const Connector& conn) { conn(mlib_fwd(recv)); }
     {
-        return static_cast<const Connector&>(_connect)(NEO_FWD(recv));
+        return static_cast<const Connector&>(_connect)(mlib_fwd(recv));
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Connector> _connect;
+    mlib_no_unique_address mlib::object_t<Connector> _connect;
 };
 
 /**
@@ -83,7 +81,7 @@ private:
  */
 template <typename T, typename F>
 constexpr simple_sender<T, F> make_simple_sender(F&& fn) {
-    return simple_sender<T, F>(NEO_FWD(fn));
+    return simple_sender<T, F>(mlib_fwd(fn));
 }
 
 /**
@@ -194,15 +192,15 @@ unique_emitter as_emitter(allocator<> alloc, S&& sender) noexcept {
     try {
         return unique_emitter::from_connector(  //
             alloc,
-            [s = NEO_FWD(sender)](unique_handler&& hnd) mutable -> unique_operation {
+            [s = mlib_fwd(sender)](unique_handler&& hnd) mutable -> unique_operation {
                 // Create an amongoc_operation from the C++ operation state
                 amongoc_operation oper = {};
                 // XXX: It would be more efficient to store the handler on the
                 // amongoc_operation::handler. How can we make that work?
                 oper.userdata
                     = unique_box::make<operation_type>(hnd.get_allocator(), defer_convert([&] {
-                                                           return connect(NEO_MOVE(s),
-                                                                          NEO_MOVE(hnd));
+                                                           return connect(std::move(s),
+                                                                          std::move(hnd));
                                                        }))
                           .release();
                 oper.start_callback = [](amongoc_operation* self) noexcept {

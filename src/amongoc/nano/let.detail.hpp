@@ -6,6 +6,7 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
 #include <concepts>
@@ -24,8 +25,8 @@ template <typename T, typename Transformer, typename NextReceiver, typename Next
 class let_recv {
 public:
     constexpr explicit let_recv(Transformer&& h, NextReceiver&& r)
-        : _transform(NEO_FWD(h))
-        , _next_recv(NEO_FWD(r)) {}
+        : _transform(mlib_fwd(h))
+        , _next_recv(mlib_fwd(r)) {}
 
     constexpr void operator()(T&& result) noexcept {
         // The let() receiver must be invoked at most once. A well-formed operation will only
@@ -34,10 +35,11 @@ public:
         assert(not _next_operation.has_value() && "let() transformer was invoked multiple times");
         // Invoke the transformer to obtain the next sender in the chained operation
         nanosender auto next_sender
-            = NEO_INVOKE(static_cast<Transformer&&>(_transform), NEO_FWD(result));
+            = NEO_INVOKE(static_cast<Transformer&&>(_transform), mlib_fwd(result));
         // Construct the operation state from the new sender and our final receiver
         _next_operation.emplace(amongoc::defer_convert([&] {
-            return amongoc::connect(NEO_MOVE(next_sender), static_cast<NextReceiver&&>(_next_recv));
+            return amongoc::connect(std::move(next_sender),
+                                    static_cast<NextReceiver&&>(_next_recv));
         }));
         // Initiate the next operation immediately
         _next_operation->start();
@@ -49,9 +51,9 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS Transformer  _transform;
-    std::optional<NextOperation>       _next_operation;
-    NEO_NO_UNIQUE_ADDRESS NextReceiver _next_recv;
+    mlib_no_unique_address Transformer  _transform;
+    std::optional<NextOperation>        _next_operation;
+    mlib_no_unique_address NextReceiver _next_recv;
 };
 
 /**
@@ -64,8 +66,8 @@ template <typename InputSender, typename Transformer>
 class let_sender {
 public:
     constexpr explicit let_sender(InputSender&& in, Transformer&& tr)
-        : _input_sender(NEO_FWD(in))
-        , _transformer(NEO_FWD(tr)) {}
+        : _input_sender(mlib_fwd(in))
+        , _transformer(mlib_fwd(tr)) {}
 
     /// The sender type that is returned by the user's transformer function when fed the result from
     /// the input sender
@@ -85,7 +87,7 @@ public:
         // Perfect-forward the sender and transformer
         return op<R>{static_cast<InputSender&&>(_input_sender),
                      static_cast<Transformer&&>(_transformer),
-                     NEO_FWD(recv)};
+                     mlib_fwd(recv)};
     }
 
     // Copy-connect the operation
@@ -97,7 +99,7 @@ public:
         // Copy the input sender and the transformer
         return op<R>{static_cast<InputSender>(_input_sender),
                      static_cast<Transformer>(_transformer),
-                     NEO_FWD(recv)};
+                     mlib_fwd(recv)};
     }
 
     // We are an immediate sender type if:
@@ -126,8 +128,8 @@ private:
         constexpr explicit op(InputSender&& snd, Transformer&& hnd, FinalReceiver&& recv) noexcept
             /// Connect the input sender to the intermediate receiver
             : _input_operation(
-                  amongoc::connect(NEO_FWD(snd),
-                                   intermediate_receiver(NEO_FWD(hnd), NEO_FWD(recv)))) {}
+                  amongoc::connect(mlib_fwd(snd),
+                                   intermediate_receiver(mlib_fwd(hnd), mlib_fwd(recv)))) {}
 
         /// The intermediate operation state that will be created after the user's
         /// transformer is invoked and connected to the final receiver
@@ -145,13 +147,13 @@ private:
         constexpr void start() noexcept { _input_operation.start(); }
 
     private:
-        NEO_NO_UNIQUE_ADDRESS input_operation _input_operation;
+        mlib_no_unique_address input_operation _input_operation;
     };
 
     /// The input sender
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<InputSender> _input_sender;
+    mlib_no_unique_address mlib::object_t<InputSender> _input_sender;
     /// The user's transformation function
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Transformer> _transformer;
+    mlib_no_unique_address mlib::object_t<Transformer> _transformer;
 };
 
 /// Require that the given handler returns a new sender when invoked with the given sender's

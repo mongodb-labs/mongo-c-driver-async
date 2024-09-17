@@ -22,12 +22,12 @@ struct _then {
     template <nanosender InputSender, neo::invocable2<sends_t<InputSender>> Transformer>
     constexpr detail::then_sender<InputSender, Transformer>
     operator()(InputSender&& s, Transformer&& f) const noexcept {
-        return detail::then_sender<InputSender, Transformer>(NEO_FWD(s), NEO_FWD(f));
+        return detail::then_sender<InputSender, Transformer>(mlib_fwd(s), mlib_fwd(f));
     }
 
     template <typename F>
     constexpr auto operator()(F&& fn) const noexcept {
-        return make_closure(_then{}, NEO_FWD(fn));
+        return make_closure(_then{}, mlib_fwd(fn));
     }
 };
 

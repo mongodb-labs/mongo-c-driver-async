@@ -6,7 +6,6 @@
 
 #include <mlib/object_t.hpp>
 
-#include <neo/attrib.hpp>
 #include <neo/invoke.hpp>
 #include <neo/like.hpp>
 #include <neo/type_traits.hpp>
@@ -55,8 +54,8 @@ constexpr deferred_conversion<F> defer_convert(F&& fn) {
 // Enclose a partially-applied invocable object so that it may be used as the operand to operator|
 template <typename F, typename... Args>
 struct [[nodiscard]] closure {
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<F> _function;
-    NEO_NO_UNIQUE_ADDRESS std::tuple<Args...> _args;
+    mlib_no_unique_address mlib::object_t<F> _function;
+    mlib_no_unique_address std::tuple<Args...> _args;
 
     template <typename Arg, std::size_t... Ns>
     constexpr static auto apply(auto&& self, Arg&& arg, std::index_sequence<Ns...>)
@@ -141,8 +140,8 @@ public:
         enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<F> _f;
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<G> _g;
+    mlib_no_unique_address mlib::object_t<F> _f;
+    mlib_no_unique_address mlib::object_t<G> _g;
 
 public:
     template <typename... Ts>
@@ -177,8 +176,8 @@ public:
         enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<F> _f;
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<G> _g;
+    mlib_no_unique_address mlib::object_t<F> _f;
+    mlib_no_unique_address mlib::object_t<G> _g;
 
 public:
     template <typename... Ts>
@@ -210,7 +209,7 @@ public:
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<T> _value;
+    mlib_no_unique_address mlib::object_t<T> _value;
 
 public:
     constexpr T&       operator()(auto&&...) & noexcept { return static_cast<T&>(_value); }

@@ -20,7 +20,7 @@ struct let_fn {
     template <nanosender InputSender, detail::valid_let_handler<InputSender> Transformer>
     constexpr nanosender auto operator()(InputSender&& sender,
                                          Transformer&& handler) const noexcept {
-        return detail::let_sender<InputSender, Transformer>{NEO_FWD(sender), NEO_FWD(handler)};
+        return detail::let_sender<InputSender, Transformer>{mlib_fwd(sender), mlib_fwd(handler)};
     }
 
     /**
@@ -29,7 +29,7 @@ struct let_fn {
      */
     template <typename Handler>
     constexpr auto operator()(Handler&& hnd) const noexcept {
-        return make_closure(let_fn{}, NEO_FWD(hnd));
+        return make_closure(let_fn{}, mlib_fwd(hnd));
     }
 };
 

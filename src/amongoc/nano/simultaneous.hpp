@@ -29,10 +29,10 @@ public:
      */
     constexpr explicit simultaneous_operation(auto&& h, Ss&&... ss)
         // Construct the handler object first:
-        : detail::simul_handler_storage<Handler>(NEO_FWD(h))
+        : detail::simul_handler_storage<Handler>(mlib_fwd(h))
         , detail::simul_op_impl<simultaneous_operation, std::index_sequence_for<Ss...>, Ss...>(
               // Perfect-forward the senders
-              NEO_FWD(ss)...) {}
+              mlib_fwd(ss)...) {}
 
     // Start all sub-operations
     constexpr void start() noexcept {
@@ -57,7 +57,7 @@ private:
     template <std::size_t N>
     constexpr void _nth_result(auto&& result) noexcept {
         // Defer to the handler object
-        this->_handler.template nth_result<N>(NEO_FWD(result));
+        this->_handler.template nth_result<N>(mlib_fwd(result));
     }
 };
 
@@ -86,13 +86,13 @@ private:
  */
 template <typename Handler, nanosender... Ss>
 constexpr nanooperation auto create_simultaneous_operation(auto&& h, Ss&&... ss) noexcept {
-    return simultaneous_operation<Handler, Ss...>(NEO_FWD(h), NEO_FWD(ss)...);
+    return simultaneous_operation<Handler, Ss...>(mlib_fwd(h), mlib_fwd(ss)...);
 }
 
 template <typename H, nanosender... Ss>
 constexpr nanooperation auto create_simultaneous_operation(H&& h, Ss&&... ss) noexcept {
     // Deduce the handler from the first argument
-    return simultaneous_operation<H, Ss...>(NEO_FWD(h), NEO_FWD(ss)...);
+    return simultaneous_operation<H, Ss...>(mlib_fwd(h), mlib_fwd(ss)...);
 }
 
 }  // namespace amongoc

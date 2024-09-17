@@ -39,7 +39,7 @@ class raw_connection {
 public:
     explicit raw_connection(Alloc alloc, T&& sock)
         : _alloc(alloc)
-        , _socket(NEO_FWD(sock)) {}
+        , _socket(mlib_fwd(sock)) {}
 
     template <typename BSON>
     constexpr nanosender_of<result<bson::document>> auto send_op_msg(BSON doc)
@@ -107,14 +107,14 @@ public:
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
                    });
-                   return NEO_MOVE(body);
+                   return std::move(body);
                }}})  //
             | amongoc::then(
                    [](result<bson::document, asio::error_code>&& r) -> result<bson::document> {
                        if (r.has_error()) {
                            return amongoc::error(status::from(r.error()));
                        } else {
-                           return amongoc::success(NEO_MOVE(r.value()));
+                           return amongoc::success(std::move(r.value()));
                        }
                    });
     }

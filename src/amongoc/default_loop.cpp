@@ -18,7 +18,6 @@
 #include <asio/steady_timer.hpp>
 #include <asio/system_error.hpp>
 #include <asio/write.hpp>
-#include <neo/fwd.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -64,9 +63,9 @@ template <typename Transform>
 class adapt_handler {
 public:
     explicit adapt_handler(unique_handler&& h, Transform&& tr, cancellation_ticket&& sig)
-        : _handler(NEO_FWD(h))
-        , _transform(NEO_FWD(tr))
-        , _signal(NEO_MOVE(sig)) {
+        : _handler(mlib_fwd(h))
+        , _transform(mlib_fwd(tr))
+        , _signal(std::move(sig)) {
         if (_handler.stop_possible()) {
             // Connect the amongoc_handler's stopper and the Asio cancellation signal
             _stop_cookie = _handler.register_stop(_signal.get(), [](void* s) {
@@ -149,7 +148,7 @@ struct default_loop {
         std::move(go)(asio::consign(adapt_handler(mlib_fwd(uh),
                                                   constant(mlib_fwd(value)),
                                                   _cancel_signals.checkout()),
-                                    NEO_MOVE(timer)));
+                                    std::move(timer)));
     }
 
     void getaddrinfo(const char* name, const char* svc, amongoc_handler hnd) {
@@ -159,7 +158,7 @@ struct default_loop {
         auto a   = uh.get_allocator();
         std::move(go)(
             asio::consign(adapt_handler(mlib_fwd(uh), as_box(a), _cancel_signals.checkout()),
-                          NEO_MOVE(res)));
+                          std::move(res)));
     }
 
     void tcp_connect(amongoc_view ai, amongoc_handler on_connect) {
@@ -169,9 +168,9 @@ struct default_loop {
         auto a    = uh.get_allocator();
         std::move(go)(adapt_handler(
             mlib_fwd(uh),
-            [sock = NEO_MOVE(sock), a](asio::ip::tcp::endpoint) {
+            [sock = std::move(sock), a](asio::ip::tcp::endpoint) {
                 // Discard the endpoint and return the connected socket
-                return unique_box::from(a, NEO_MOVE(*sock));
+                return unique_box::from(a, std::move(*sock));
             },
             _cancel_signals.checkout()));
     }

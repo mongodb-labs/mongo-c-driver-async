@@ -74,6 +74,9 @@
 #define MLIB_PASTE(A, ...) _mlibPaste1(A, __VA_ARGS__)
 #define _mlibPaste1(A, ...) A##__VA_ARGS__
 
+#define MLIB_STR(...) _mlibStr(__VA_ARGS__)
+#define _mlibStr(...) #__VA_ARGS__
+
 #define MLIB_FIRST_ARG(A, ...) A
 #define MLIB_IS_EMPTY(...) MLIB_FIRST_ARG(__VA_OPT__(0, ) 1, ~)
 #define MLIB_IS_NOT_EMPTY(...) MLIB_FIRST_ARG(__VA_OPT__(1, ) 0, ~)
@@ -126,6 +129,20 @@
  */
 #define mlib_audit_allocator_passing() 0
 #endif // mlib_audit_allocator_passing
+
+#ifdef __GNUC__
+#define mlib_is_gnu_like() true
+#define mlib_is_msvc() false
+#elif _MSC_VER
+#define mlib_is_gnu_like() false
+#define mlib_is_msvc() true
+#endif
+
+#if mlib_is_msvc()
+#define mlib_no_unique_address [[msvc::no_unique_address]]
+#else
+#define mlib_no_unique_address [[no_unique_address]]
+#endif
 
 #if mlib_is_cxx()
 namespace mlib {

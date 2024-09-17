@@ -297,7 +297,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     static auto final_suspend() noexcept {
         return suspends_by([](co_handle co) noexcept {
             emitter_promise& self = co.promise();
-            self.fin_handler.complete(self.fin_result.status, NEO_MOVE(self.fin_result.value));
+            self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
         });
     }
     // Always start suspended
@@ -332,7 +332,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         unique_co_handle<emitter_promise> _co;
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
-            return unique_operation::from_starter(mlib_fwd(hnd), starter{NEO_MOVE(_co)});
+            return unique_operation::from_starter(mlib_fwd(hnd), starter{std::move(_co)});
         }
     };
 
@@ -341,7 +341,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         auto co = co_handle::from_promise(*this);
         static_assert(box_inlinable_type<connector>);
         return unique_emitter::from_connector(mlib::terminating_allocator,
-                                              connector{unique_co_handle(NEO_MOVE(co))})
+                                              connector{unique_co_handle(std::move(co))})
             .release();
     }
 
@@ -363,9 +363,9 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 
     void return_value(std::nullptr_t) noexcept { return_value(emitter_result()); }
 
-    void return_value(unique_box&& b) noexcept { return_value(emitter_result(0, NEO_MOVE(b))); }
+    void return_value(unique_box&& b) noexcept { return_value(emitter_result(0, std::move(b))); }
     void return_value(status st) noexcept { return_value(emitter_result(st)); }
-    void return_value(emitter_result r) noexcept { fin_result = NEO_MOVE(r); }
+    void return_value(emitter_result r) noexcept { fin_result = std::move(r); }
     void return_value(std::error_code ec) noexcept { return_value(status::from(ec)); }
 };
 
@@ -396,7 +396,7 @@ public:
     template <nanoreceiver_of<T> R>
     nanooperation auto connect(R&& recv) && noexcept {
         assert(_co);
-        return operation<R>{mlib_fwd(recv), NEO_MOVE(_co)};
+        return operation<R>{mlib_fwd(recv), std::move(_co)};
     }
 
 private:
@@ -575,7 +575,7 @@ private:
     using co_handle = std::coroutine_handle<promise_type>;
 
     explicit co_task(co_handle&& co) noexcept
-        : _co(NEO_MOVE(co)) {}
+        : _co(std::move(co)) {}
 
     unique_co_handle<promise_type> _co;
 
@@ -587,7 +587,7 @@ private:
     template <nanoreceiver_of<T> R>
     struct operation {
         explicit operation(R&& recv, unique_co_handle<promise_type>&& co) noexcept
-            : _co(NEO_MOVE(co))
+            : _co(std::move(co))
             , _recv_invoker(mlib_fwd(recv)) {}
 
         struct recv_finisher : finisher_base {

@@ -106,7 +106,7 @@ using get_stop_token_t = decltype(get_stop_token(std::declval<const R&>()));
  */
 template <stoppable_token Token, neo::invocable2<> F>
 constexpr stop_callback_t<Token, F> create_stop_callback(Token token, F&& fn) {
-    return stop_callback_t<Token, F>(token, NEO_FWD(fn));
+    return stop_callback_t<Token, F>(token, mlib_fwd(fn));
 }
 
 template <typename Fn>
@@ -466,7 +466,7 @@ public:
      */
     template <neo::implicit_convertible_to<F> Arg>
     constexpr explicit in_place_stop_callback(in_place_stop_token token, Arg&& arg)
-        : _func(NEO_FWD(arg)) {
+        : _func(mlib_fwd(arg)) {
         if (token._src) {
             this->_try_register_or_execute(*token._src);
         }
@@ -481,7 +481,7 @@ public:
 
 private:
     /// The wrapped invocable
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<F> _func;
+    mlib_no_unique_address mlib::object_t<F> _func;
 
     /// Implement the invocation
     void do_execute() noexcept override { NEO_INVOKE(static_cast<F&&>(_func)); }
@@ -523,13 +523,13 @@ class bind_stop_token : public invocable_cvr_helper<bind_stop_token<Token, Wrapp
 public:
     constexpr explicit bind_stop_token(Token tok, Wrapped&& fn)
         : _token(tok)
-        , _wrapped(NEO_FWD(fn)) {}
+        , _wrapped(mlib_fwd(fn)) {}
 
     /// Obtain the wrapped object
     constexpr Wrapped&        base() & { return mlib::unwrap_object(_wrapped); }
-    constexpr Wrapped&&       base() && { return mlib::unwrap_object(NEO_MOVE(_wrapped)); }
+    constexpr Wrapped&&       base() && { return mlib::unwrap_object(std::move(_wrapped)); }
     constexpr const Wrapped&  base() const& { return mlib::unwrap_object(_wrapped); }
-    constexpr const Wrapped&& base() const&& { return mlib::unwrap_object(NEO_MOVE(_wrapped)); }
+    constexpr const Wrapped&& base() const&& { return mlib::unwrap_object(std::move(_wrapped)); }
 
     /// Get the bound stop token
     constexpr Token query(get_stop_token_fn) const noexcept { return _token; }
@@ -571,7 +571,7 @@ class stop_requester {
 public:
     stop_requester() = default;
     constexpr explicit stop_requester(S&& src) noexcept
-        : _src(NEO_FWD(src)) {}
+        : _src(mlib_fwd(src)) {}
 
     constexpr S&       get_stop_source() noexcept { return (S&)_src; }
     constexpr const S& get_stop_source() const noexcept { return (S&)_src; }
@@ -614,7 +614,7 @@ private:
     using stop_token_type = get_stop_token_t<R>;
     using callback_type   = stop_callback_t<stop_token_type, requester>;
 
-    NEO_NO_UNIQUE_ADDRESS callback_type _callback;
+    mlib_no_unique_address callback_type _callback;
 };
 
 }  // namespace amongoc

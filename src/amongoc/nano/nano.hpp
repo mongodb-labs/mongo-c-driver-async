@@ -16,7 +16,7 @@ struct connect_fn {
      */
     template <nanosender S, nanoreceiver_for<S> R>
     [[nodiscard]] constexpr nanooperation decltype(auto) operator()(S&& s, R&& r) const noexcept {
-        return nanosender_traits<std::remove_cvref_t<S>>::connect(NEO_FWD(s), NEO_FWD(r));
+        return nanosender_traits<std::remove_cvref_t<S>>::connect(mlib_fwd(s), mlib_fwd(r));
     }
 };
 

@@ -6,9 +6,9 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
-#include <neo/attrib.hpp>
 #include <neo/concepts.hpp>
 #include <neo/like.hpp>
 
@@ -92,8 +92,8 @@ public:
      * @brief Forward-construct each sender within the composed operation
      */
     constexpr explicit first_where(Predicate&& pr, neo::explicit_convertible_to<Ss> auto&&... ss)
-        : _predicate(NEO_FWD(pr))
-        , _senders(NEO_FWD(ss)...) {}
+        : _predicate(mlib_fwd(pr))
+        , _senders(mlib_fwd(ss)...) {}
 
     // We send a variant of the result values from each incoming sender.
     using sends_type = typename detail::infer_result_type<Predicate, sends_t<Ss>...>::type;
@@ -101,9 +101,9 @@ public:
     // Move-connect the sender.
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && noexcept {
-        return _connect(NEO_MOVE(_senders),
+        return _connect(std::move(_senders),
                         static_cast<Predicate&&>(_predicate),
-                        NEO_FWD(recv),
+                        mlib_fwd(recv),
                         std::index_sequence_for<Ss...>{});
     }
 
@@ -114,7 +114,7 @@ public:
     {
         return _connect(_senders,
                         decay_copy(static_cast<Predicate const&>(_predicate)),
-                        NEO_FWD(recv),
+                        mlib_fwd(recv),
                         std::index_sequence_for<Ss...>{});
     }
 
@@ -133,8 +133,8 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Predicate> _predicate;
-    NEO_NO_UNIQUE_ADDRESS std::tuple<mlib::object_t<Ss>...> _senders;
+    mlib_no_unique_address mlib::object_t<Predicate> _predicate;
+    mlib_no_unique_address std::tuple<mlib::object_t<Ss>...> _senders;
 
     // Impl for connect(). Perfect-forwards the senders from the given tuple
     template <typename Tpl, typename P, typename Recv, std::size_t... Ns>
@@ -142,9 +142,9 @@ private:
     _connect(Tpl&& tpl, P&& p, Recv&& recv, std::index_sequence<Ns...> is) noexcept {
         return amongoc::create_simultaneous_operation<
             handler<Recv, P>>(defer_convert(
-                                  [&] { return handler<Recv, P>(NEO_FWD(recv), NEO_FWD(p)); }),
+                                  [&] { return handler<Recv, P>(mlib_fwd(recv), mlib_fwd(p)); }),
                               static_cast<neo::forward_like_tuple_t<Tpl, Ss>>(
-                                  std::get<Ns>(NEO_FWD(tpl)))...);
+                                  std::get<Ns>(mlib_fwd(tpl)))...);
     }
 
     // Simultaneous operation handler. See create_simultaneous_operation()
@@ -154,13 +154,13 @@ private:
         // Forward-construct the receiver into place. This constructor is called
         // by simultaneous_operation<>
         constexpr explicit handler(R&& r, P&& pred)
-            : _final_recv(NEO_FWD(r))
-            , _predicate(NEO_FWD(pred)) {}
+            : _final_recv(mlib_fwd(r))
+            , _predicate(mlib_fwd(pred)) {}
 
         // The final receiver
-        NEO_NO_UNIQUE_ADDRESS R _final_recv;
+        mlib_no_unique_address R _final_recv;
         // The value predicate
-        NEO_NO_UNIQUE_ADDRESS P _predicate;
+        mlib_no_unique_address P _predicate;
         // The stop token that is used to stop all operations once any of the input
         // operations completes
         in_place_stop_source _stopper;
@@ -173,8 +173,8 @@ private:
 
         // Stopping forwarder that will attach a possible stop signal from _final_recv to the
         // stop token for this object.
-        NEO_NO_UNIQUE_ADDRESS stop_forwarder<R, in_place_stop_source&> _stop_fwd{_final_recv,
-                                                                                 _stopper};
+        mlib_no_unique_address stop_forwarder<R, in_place_stop_source&> _stop_fwd{_final_recv,
+                                                                                  _stopper};
 
         // Synchronization for updating internal state
         std::mutex _mtx;
@@ -200,7 +200,7 @@ private:
                 // Construct the final result object, to later be sent to the final receiver
                 // XXX: This holds the lock while the constructor is running, which is less than
                 // ideal. Could this nth_result be made lock-free?
-                _result.emplace(std::in_place_index<N>, NEO_FWD(x));
+                _result.emplace(std::in_place_index<N>, mlib_fwd(x));
             }
             // Allow other threads to continue
             lk.unlock();
@@ -211,7 +211,7 @@ private:
                     this->_handle_no_accept();
                 }
                 // Invoke the final receiver with the chosen result object
-                NEO_INVOKE(static_cast<R&&>(_final_recv), NEO_MOVE(*_result));
+                NEO_INVOKE(static_cast<R&&>(_final_recv), std::move(*_result));
             }
         }
 
@@ -221,7 +221,7 @@ private:
         }
 
         void _handle_no_accept()
-            requires requires(R recv) { _predicate.on_none_accepted(NEO_FWD(recv)); }
+            requires requires(R recv) { _predicate.on_none_accepted(mlib_fwd(recv)); }
         {
             // Allow the predicate object to decide what should be done next
             _predicate.on_none_accepted(static_cast<R&&>(_final_recv));
@@ -258,7 +258,7 @@ public:
      * @brief Forward-construct each sender within the composed operation
      */
     constexpr explicit first_completed(neo::explicit_convertible_to<Ss> auto&&... ss)
-        : first_where<always, Ss...>(always{}, NEO_FWD(ss)...) {}
+        : first_where<always, Ss...>(always{}, mlib_fwd(ss)...) {}
 };
 
 template <nanosender... Ss>

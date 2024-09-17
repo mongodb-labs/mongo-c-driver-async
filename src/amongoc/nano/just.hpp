@@ -2,13 +2,12 @@
 
 #include "./concepts.hpp"
 
+#include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
-#include <neo/attrib.hpp>
 #include <neo/invoke.hpp>
 
 #include <concepts>
-#include <utility>
 
 namespace amongoc {
 
@@ -30,7 +29,7 @@ public:
     template <typename U>
         requires std::constructible_from<T, U&&>
     constexpr explicit(not std::convertible_to<U&&, T>) just(U&& arg)
-        : _value(NEO_FWD(arg)) {}
+        : _value(mlib_fwd(arg)) {}
 
     // We send the exact type that we are given (including references)
     using sends_type = T;
@@ -40,7 +39,7 @@ public:
      */
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && noexcept {
-        return op<R>{static_cast<T&&>(_value), NEO_FWD(recv)};
+        return op<R>{static_cast<T&&>(_value), mlib_fwd(recv)};
     }
 
     /**
@@ -53,7 +52,7 @@ public:
     constexpr nanooperation auto connect(R&& recv) const& noexcept
         requires std::copy_constructible<sends_type>
     {
-        return op<R>{static_cast<const T&>(_value), NEO_FWD(recv)};
+        return op<R>{static_cast<const T&>(_value), mlib_fwd(recv)};
     }
 
     constexpr static bool is_immediate() noexcept { return true; }
@@ -61,15 +60,15 @@ public:
 private:
     template <typename R>
     struct [[nodiscard]] op {
-        NEO_NO_UNIQUE_ADDRESS T _value;
-        NEO_NO_UNIQUE_ADDRESS R _receiver;
+        mlib_no_unique_address T _value;
+        mlib_no_unique_address R _receiver;
 
         constexpr void start() noexcept {
             NEO_INVOKE(static_cast<R&&>(_receiver), static_cast<T&&>(_value));
         }
     };
 
-    NEO_NO_UNIQUE_ADDRESS mlib::object_t<T> _value;
+    mlib_no_unique_address mlib::object_t<T> _value;
 };
 
 template <typename T>

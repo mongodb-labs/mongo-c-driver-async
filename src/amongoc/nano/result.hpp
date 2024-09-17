@@ -8,7 +8,6 @@
 
 #include <mlib/object_t.hpp>
 
-#include <neo/attrib.hpp>
 #include <neo/concepts.hpp>
 #include <neo/invoke.hpp>
 #include <neo/like.hpp>
@@ -38,12 +37,13 @@ struct error_tag {
 };
 
 // Create a constructor tag for result<T> that imbues it with a success
-constexpr auto success
-    = []<typename... Args>(Args&&... args) -> success_tag<Args...> { return {{NEO_FWD(args)...}}; };
+constexpr auto success = []<typename... Args>(Args&&... args) -> success_tag<Args...> {
+    return {{mlib_fwd(args)...}};
+};
 
 // Create a constructor tag for result<T> that imbues it with an error
 constexpr auto error
-    = []<typename... Args>(Args&&... args) -> error_tag<Args...> { return {{NEO_FWD(args)...}}; };
+    = []<typename... Args>(Args&&... args) -> error_tag<Args...> { return {{mlib_fwd(args)...}}; };
 
 // Define the behavior of `result<T, E>` for handling the error type `E`
 template <typename E>
@@ -73,25 +73,25 @@ public:
         requires neo::explicit_convertible_to<U&&, T>
         and (not neo::explicit_convertible_to<U &&, E>)
     explicit(not neo::implicit_convertible_to<U&&, T>) constexpr result(U&& arg)
-        : result(success(NEO_FWD(arg))) {}
+        : result(success(mlib_fwd(arg))) {}
 
     template <neo::unalike<result> Err>
         requires neo::explicit_convertible_to<Err&&, E>
         and (not neo::explicit_convertible_to<Err &&, T>)
     explicit(not neo::implicit_convertible_to<Err&&, E>) constexpr result(Err&& arg)
-        : result(amongoc::error(NEO_FWD(arg))) {}
+        : result(amongoc::error(mlib_fwd(arg))) {}
 
     /// Construct a success-valued result object
     template <typename... Args>
         requires neo::constructible_from<T, Args&&...>
     constexpr result(success_tag<Args...> success)
-        : result(success, NEO_MOVE(success).args, std::index_sequence_for<Args...>{}) {}
+        : result(success, std::move(success).args, std::index_sequence_for<Args...>{}) {}
 
     /// Construct an error-valued result object
     template <typename... Args>
         requires neo::constructible_from<E, Args&&...>
     constexpr result(error_tag<Args...> err)
-        : result(err, NEO_MOVE(err).args, std::index_sequence_for<Args...>{}) {}
+        : result(err, std::move(err).args, std::index_sequence_for<Args...>{}) {}
 
     /// Returns `true` iff the result has a success value
     constexpr bool has_value() const noexcept { return _stored.index() == 0; }
@@ -112,11 +112,11 @@ public:
     }
     constexpr decltype(auto) error_tag() && {
         assert(has_error());
-        return amongoc::error(NEO_MOVE(*this).error());
+        return amongoc::error(std::move(*this).error());
     }
     constexpr decltype(auto) error_tag() const&& {
         assert(has_error());
-        return amongoc::error(NEO_MOVE(*this).error());
+        return amongoc::error(std::move(*this).error());
     }
 
     /**
@@ -149,11 +149,11 @@ public:
     }
     constexpr decltype(auto) operator*() && {
         this->_maybe_throw();
-        return NEO_MOVE(*this).value();
+        return std::move(*this).value();
     }
     constexpr decltype(auto) operator*() const&& {
         this->_maybe_throw();
-        return NEO_MOVE(*this).value();
+        return std::move(*this).value();
     }
 
     constexpr std::add_pointer_t<T>       operator->() noexcept { return std::addressof(**this); }
@@ -181,7 +181,7 @@ public:
     template <typename F>
     constexpr auto transform(F&& fn) const& -> result<std::invoke_result_t<F, T const&>> {
         if (has_value()) {
-            return success(NEO_FWD(fn)(this->value()));
+            return success(mlib_fwd(fn)(this->value()));
         } else {
             return this->error_tag();
         }
@@ -190,7 +190,7 @@ public:
     template <typename F>
     constexpr auto transform(F&& fn) && -> result<std::invoke_result_t<F, T&&>> {
         if (has_value()) {
-            return success(NEO_FWD(fn)(NEO_MOVE(*this).value()));
+            return success(mlib_fwd(fn)(std::move(*this).value()));
         } else {
             return this->error_tag();
         }
@@ -199,13 +199,13 @@ public:
 private:
     template <typename... Args, std::size_t... Ns>
     constexpr explicit result(success_tag<Args...> const&, auto&& tpl, std::index_sequence<Ns...>)
-        : _stored(std::in_place_index<0>, std::get<Ns>(NEO_FWD(tpl))...) {}
+        : _stored(std::in_place_index<0>, std::get<Ns>(mlib_fwd(tpl))...) {}
 
     template <typename... Args, std::size_t... Ns>
     constexpr explicit result(amongoc::error_tag<Args...> const&,
                               auto&& tpl,
                               std::index_sequence<Ns...>)
-        : _stored(std::in_place_index<1>, std::get<Ns>(NEO_FWD(tpl))...) {}
+        : _stored(std::in_place_index<1>, std::get<Ns>(mlib_fwd(tpl))...) {}
 
     std::variant<mlib::object_t<T>, mlib::object_t<E>> _stored;
 
@@ -278,10 +278,10 @@ struct result_fmap {
         if (res.has_value()) {
             // The result has a success value. Forward that to the wrapped invocable and
             // wrap it in a new result:
-            return success(NEO_INVOKE(NEO_FWD(_fn), NEO_FWD(res).value()));
+            return success(NEO_INVOKE(mlib_fwd(_fn), mlib_fwd(res).value()));
         } else {
             // The result is errant. Just construct a new errant result
-            return NEO_FWD(res).error_tag();
+            return mlib_fwd(res).error_tag();
         }
     }
 };
@@ -297,12 +297,12 @@ inline constexpr struct result_join_fn {
     constexpr result<T, E> operator()(result<result<T, E>, E>&& r) const noexcept {
         if (r.has_value()) {
             if (r.value().has_value()) {
-                return success(NEO_MOVE(r).value().value());
+                return success(std::move(r).value().value());
             } else {
-                return error(NEO_MOVE(r).value().error());
+                return error(std::move(r).value().error());
             }
         } else {
-            return error(NEO_MOVE(r).error());
+            return error(std::move(r).error());
         }
     }
 
@@ -343,12 +343,12 @@ struct nanosender_traits<result<T, E>> {
 
     template <nanoreceiver_of<sends_type> R>
     static constexpr nanooperation auto connect(result<T, E>&& r, R&& recv) {
-        return op<R>{NEO_FWD(r), NEO_FWD(recv)};
+        return op<R>{mlib_fwd(r), mlib_fwd(recv)};
     }
 
     template <nanoreceiver_of<sends_type> R>
     static constexpr nanooperation auto connect(result<T, E> const& r, R&& recv) {
-        return op<R>{r, NEO_FWD(recv)};
+        return op<R>{r, mlib_fwd(recv)};
     }
 
     template <nanoreceiver_of<sends_type> R>
@@ -356,7 +356,7 @@ struct nanosender_traits<result<T, E>> {
         // Wrap the receiver with an invocable that transforms the success value from
         // the input sender into a result
         struct wrapped_recv {
-            NEO_NO_UNIQUE_ADDRESS R _wrapped;
+            mlib_no_unique_address R _wrapped;
 
             template <valid_query_for<R> Q>
             constexpr query_t<Q, R> query(Q q) const {
@@ -366,19 +366,19 @@ struct nanosender_traits<result<T, E>> {
             constexpr void operator()(inner_sends value) {
                 // Invoke the underlying receiver with a new result created from the success of
                 // the wrapped nanosender
-                NEO_INVOKE(static_cast<R&&>(_wrapped), sends_type(success(NEO_FWD(value))));
+                NEO_INVOKE(static_cast<R&&>(_wrapped), sends_type(success(mlib_fwd(value))));
             }
         };
 
         constexpr explicit op(result<T, E>&& res, R recv)
-            : _result(NEO_MOVE(res))
-            , _recv(NEO_FWD(recv)) {
+            : _result(std::move(res))
+            , _recv(mlib_fwd(recv)) {
             if (_result.has_value()) {
                 // The input result has a value, which is the nanosender that we
                 // will connect immediately here:
                 _real_oper.emplace(defer_convert([&] -> connect_t<T, wrapped_recv> {
-                    return amongoc::connect(NEO_MOVE(_result).value(),
-                                            wrapped_recv{NEO_FWD(_recv)});
+                    return amongoc::connect(std::move(_result).value(),
+                                            wrapped_recv{mlib_fwd(_recv)});
                 }));
             }
         }
@@ -388,7 +388,7 @@ struct nanosender_traits<result<T, E>> {
         result<T, E> _result;
         // The operation receiver. Will be moved-from in the constructor if the result
         // has a success value.
-        NEO_NO_UNIQUE_ADDRESS R _recv;
+        mlib_no_unique_address R _recv;
 
         // The continued operation created by connecting the value from _result to
         // the receiver _recv. Will be non-null iff the input result has a success value
@@ -403,7 +403,7 @@ struct nanosender_traits<result<T, E>> {
                 // The real operation was not constructed, which means that the result
                 // value holds an error. Invoke the receiver immediately with the same
                 // error that is contained in the result:
-                NEO_INVOKE(NEO_MOVE(_recv), sends_type(NEO_MOVE(_result).error_tag()));
+                NEO_INVOKE(std::move(_recv), sends_type(std::move(_result).error_tag()));
             }
         }
     };
