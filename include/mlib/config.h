@@ -50,7 +50,7 @@
 #define mlib_static_assert                                                     \
   MLIB_IF_CXX(static_assert) MLIB_IF_NOT_CXX(_Static_assert)
 
-#define mlib_extern_c_begin() MLIB_IF_CXX(extern "C" {) mlib_static_assert(1)
+#define mlib_extern_c_begin() MLIB_IF_CXX(extern "C" {) mlib_static_assert(1, "")
 #define mlib_extern_c_end() MLIB_IF_CXX(                                       \
   }) mlib_static_assert(1)
 
