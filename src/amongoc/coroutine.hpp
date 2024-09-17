@@ -19,6 +19,7 @@
 #include "./nano/util.hpp"
 
 #include <mlib/alloc.h>
+#include <mlib/object_t.hpp>
 
 // C library headers
 #include <amongoc/alloc.h>
@@ -204,7 +205,7 @@ struct nanosender_awaitable {
                              // XXX: Should this be a terminating allocator?
                              mlib::bind_allocator(mlib::terminating_allocator,
                                                   [&](sends_t<S>&& value) {
-                                                      _sent_value.emplace(NEO_FWD(value));
+                                                      _sent_value.emplace(mlib_fwd(value));
                                                   }))
                 .start();
         }
@@ -310,7 +311,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
      */
     template <nanosender S>
     nanosender_awaitable<S, emitter_promise> await_transform(S&& s) noexcept {
-        return {NEO_FWD(s)};
+        return {mlib_fwd(s)};
     }
 
     // Starter function object for the amongoc_operation
@@ -395,7 +396,7 @@ public:
     template <nanoreceiver_of<T> R>
     nanooperation auto connect(R&& recv) && noexcept {
         assert(_co);
-        return operation<R>{NEO_FWD(recv), NEO_MOVE(_co)};
+        return operation<R>{mlib_fwd(recv), NEO_MOVE(_co)};
     }
 
 private:
@@ -435,7 +436,7 @@ public:
         using co_handle = std::coroutine_handle<promise_type>;
 
         // Storage for the return value
-        std::optional<neo::object_box<T>> _return_value;
+        std::optional<mlib::object_t<T>> _return_value;
         // A possible exception raised by the coroutine
         std::exception_ptr _exception;
         // Handles the completion of the coroutine. Set by connect() or nested_awaitable
@@ -456,14 +457,14 @@ public:
                         // and it is up to the target to move-from the return value.
                         // nested_awaitable will not move from the return value and instead leaves
                         // it in place
-                        return self._finisher->on_return(NEO_MOVE(*self._return_value).get());
+                        return self._finisher->on_return(static_cast<T&&>(*self._return_value));
                     }
                 });
         }
 
         template <nanosender S>
         nanosender_awaitable<S, promise_type> await_transform(S&& s) noexcept {
-            return {NEO_FWD(s)};
+            return {mlib_fwd(s)};
         }
 
         /**
@@ -528,8 +529,8 @@ public:
                     // The child threw an exception. Re-throw it now
                     std::rethrow_exception(_other_co.promise()._exception);
                 } else {
-                    // Perfect-forward from the child's object_box
-                    return NEO_MOVE(*_other_co.promise()._return_value).get();
+                    // Perfect-forward from the child's return value
+                    return static_cast<U&&>(*_other_co.promise()._return_value);
                 }
             }
 
@@ -562,7 +563,7 @@ public:
         // Emplace the return value in the return storage
         template <std::convertible_to<T> U>
         void return_value(U&& u) noexcept {
-            _return_value.emplace(NEO_FWD(u));
+            _return_value.emplace(mlib_fwd(u));
         }
     };
 
@@ -587,11 +588,11 @@ private:
     struct operation {
         explicit operation(R&& recv, unique_co_handle<promise_type>&& co) noexcept
             : _co(NEO_MOVE(co))
-            , _recv_invoker(NEO_FWD(recv)) {}
+            , _recv_invoker(mlib_fwd(recv)) {}
 
         struct recv_finisher : finisher_base {
             explicit recv_finisher(R&& r) noexcept
-                : _recv(NEO_FWD(r)) {}
+                : _recv(mlib_fwd(r)) {}
 
             R                    _recv;
             in_place_stop_source _stopper;
@@ -599,7 +600,7 @@ private:
             stop_forwarder<R, in_place_stop_source> _stop_fwd{_recv, _stopper};
 
             std::coroutine_handle<> on_return(T&& x) noexcept override {
-                NEO_FWD(_recv)(NEO_FWD(x));
+                mlib_fwd(_recv)(mlib_fwd(x));
                 return std::noop_coroutine();
             }
             in_place_stop_token stop_token() const noexcept override {

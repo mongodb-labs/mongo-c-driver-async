@@ -6,6 +6,8 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <mlib/object_t.hpp>
+
 #include <concepts>
 #include <optional>
 
@@ -81,7 +83,9 @@ public:
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && noexcept {
         // Perfect-forward the sender and transformer
-        return op<R>{_input_sender.forward(), _transformer.forward(), NEO_FWD(recv)};
+        return op<R>{static_cast<InputSender&&>(_input_sender),
+                     static_cast<Transformer&&>(_transformer),
+                     NEO_FWD(recv)};
     }
 
     // Copy-connect the operation
@@ -91,8 +95,8 @@ public:
         and multishot_nanosender<InputSender>
     {
         // Copy the input sender and the transformer
-        return op<R>{decay_copy(_input_sender.get()),
-                     decay_copy(_transformer.get()),
+        return op<R>{static_cast<InputSender>(_input_sender),
+                     static_cast<Transformer>(_transformer),
                      NEO_FWD(recv)};
     }
 
@@ -103,7 +107,7 @@ public:
     constexpr bool is_immediate() const noexcept
         requires statically_immediate<intermediate_sender_type>
     {
-        return amongoc::is_immediate(_input_sender.get());
+        return amongoc::is_immediate(mlib::unwrap_object(_input_sender));
     }
 
     // We are statically immediate if both sender types are statically immediate
@@ -145,9 +149,9 @@ private:
     };
 
     /// The input sender
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<InputSender> _input_sender;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<InputSender> _input_sender;
     /// The user's transformation function
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<Transformer> _transformer;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Transformer> _transformer;
 };
 
 /// Require that the given handler returns a new sender when invoked with the given sender's

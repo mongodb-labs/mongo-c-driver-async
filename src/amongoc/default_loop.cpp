@@ -77,7 +77,7 @@ public:
 
     // Handler for Asio operations that complete with an error code and no value
     void operator()(asio::error_code ec) {
-        _handler.complete(status::from(ec), std::move(_transform)(neo::unit{}));
+        _handler.complete(status::from(ec), std::move(_transform)(mlib::unit{}));
     }
 
     // Handler for Asio operations that complete with a value and an error code (most operations)

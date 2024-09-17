@@ -6,11 +6,12 @@
 
 #include <amongoc/status.h>
 
+#include <mlib/object_t.hpp>
+
 #include <neo/attrib.hpp>
 #include <neo/concepts.hpp>
 #include <neo/invoke.hpp>
 #include <neo/like.hpp>
-#include <neo/object_box.hpp>
 
 #include <cassert>
 #include <exception>
@@ -123,19 +124,19 @@ public:
      */
     constexpr decltype(auto) value() & {
         this->_maybe_throw();
-        return std::get_if<0>(&_stored)->get();
+        return static_cast<T&>(*std::get_if<0>(&_stored));
     }
     constexpr decltype(auto) value() const& {
         this->_maybe_throw();
-        return std::get_if<0>(&_stored)->get();
+        return static_cast<T const&>(*std::get_if<0>(&_stored));
     }
     constexpr decltype(auto) value() && {
         this->_maybe_throw();
-        return std::get_if<0>(&_stored)->forward();
+        return static_cast<T&&>(*std::get_if<0>(&_stored));
     }
     constexpr decltype(auto) value() const&& {
         this->_maybe_throw();
-        return std::get_if<0>(&_stored)->forward();
+        return static_cast<T const&&>(*std::get_if<0>(&_stored));
     }
 
     constexpr decltype(auto) operator*() & {
@@ -162,19 +163,19 @@ public:
 
     constexpr decltype(auto) error() & {
         assert(has_error());
-        return std::get_if<1>(&_stored)->get();
+        return static_cast<E&>(*std::get_if<1>(&_stored));
     }
     constexpr decltype(auto) error() const& {
         assert(has_error());
-        return std::get_if<1>(&_stored)->get();
+        return static_cast<const E&>(*std::get_if<1>(&_stored));
     }
     constexpr decltype(auto) error() && {
         assert(has_error());
-        return std::get_if<1>(&_stored)->forward();
+        return static_cast<E&&>(*std::get_if<1>(&_stored));
     }
     constexpr decltype(auto) error() const&& {
         assert(has_error());
-        return std::get_if<1>(&_stored)->forward();
+        return static_cast<const E&&>(*std::get_if<1>(&_stored));
     }
 
     template <typename F>
@@ -198,15 +199,15 @@ public:
 private:
     template <typename... Args, std::size_t... Ns>
     constexpr explicit result(success_tag<Args...> const&, auto&& tpl, std::index_sequence<Ns...>)
-        : _stored(std::in_place_index<0>, std::in_place, std::get<Ns>(NEO_FWD(tpl))...) {}
+        : _stored(std::in_place_index<0>, std::get<Ns>(NEO_FWD(tpl))...) {}
 
     template <typename... Args, std::size_t... Ns>
     constexpr explicit result(amongoc::error_tag<Args...> const&,
                               auto&& tpl,
                               std::index_sequence<Ns...>)
-        : _stored(std::in_place_index<1>, std::in_place, std::get<Ns>(NEO_FWD(tpl))...) {}
+        : _stored(std::in_place_index<1>, std::get<Ns>(NEO_FWD(tpl))...) {}
 
-    std::variant<neo::object_box<T>, neo::object_box<E>> _stored;
+    std::variant<mlib::object_t<T>, mlib::object_t<E>> _stored;
 
     constexpr void _maybe_throw() const {
         if (this->has_error()) {

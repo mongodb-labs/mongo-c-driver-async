@@ -6,10 +6,11 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <mlib/object_t.hpp>
+
 #include <neo/attrib.hpp>
 #include <neo/concepts.hpp>
 #include <neo/like.hpp>
-#include <neo/object_t.hpp>
 
 #include <mutex>
 #include <tuple>
@@ -132,8 +133,8 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<Predicate> _predicate;
-    NEO_NO_UNIQUE_ADDRESS std::tuple<neo::object_t<Ss>...> _senders;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Predicate> _predicate;
+    NEO_NO_UNIQUE_ADDRESS std::tuple<mlib::object_t<Ss>...> _senders;
 
     // Impl for connect(). Perfect-forwards the senders from the given tuple
     template <typename Tpl, typename P, typename Recv, std::size_t... Ns>

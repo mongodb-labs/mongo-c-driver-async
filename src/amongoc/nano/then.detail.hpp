@@ -6,9 +6,10 @@
 
 #include <amongoc/nano/query.hpp>
 
+#include <mlib/object_t.hpp>
+
 #include <neo/fwd.hpp>
 #include <neo/invoke.hpp>
-#include <neo/object_t.hpp>
 
 #include <concepts>
 
@@ -61,8 +62,8 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<InputSender> _input_sender;
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<Transformer> _transformer;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<InputSender> _input_sender;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Transformer> _transformer;
 };
 
 }  // namespace amongoc::detail

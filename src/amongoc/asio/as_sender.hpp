@@ -31,7 +31,7 @@ template <typename Init>
 class asio_nanosender<Init, void()> {
 public:
     Init _init;
-    using sends_type = neo::unit;
+    using sends_type = mlib::unit;
 
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && {
@@ -44,7 +44,7 @@ public:
         R    _recv;
 
         constexpr void start() noexcept {
-            auto h = [this] { NEO_INVOKE(static_cast<R&&>(_recv), neo::unit{}); };
+            auto h = [this] { NEO_INVOKE(static_cast<R&&>(_recv), sends_type()); };
             static_cast<Init&&>(_init)(h);
         }
     };

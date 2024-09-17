@@ -9,16 +9,17 @@
 #include "./concepts.hpp"
 #include "./query.hpp"
 
+#include <amongoc/nano/util.hpp>
+
+#include <mlib/object_t.hpp>
+
 #include <neo/concepts.hpp>
 #include <neo/like.hpp>
-#include <neo/object_box.hpp>
-#include <neo/object_t.hpp>
 
 #include <atomic>
 #include <cassert>
 #include <concepts>
 #include <thread>
-#include <type_traits>
 
 namespace amongoc {
 
@@ -480,7 +481,7 @@ public:
 
 private:
     /// The wrapped invocable
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<F> _func;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<F> _func;
 
     /// Implement the invocation
     void do_execute() noexcept override { NEO_INVOKE(static_cast<F&&>(_func)); }
@@ -513,11 +514,11 @@ public:
  * The returned object is invocable if the underlying object is invocable
  */
 template <stoppable_token Token, typename Wrapped>
-class bind_stop_token {
+class bind_stop_token : public invocable_cvr_helper<bind_stop_token<Token, Wrapped>> {
     // The bound token
     Token _token;
     // The wrapped object
-    neo::object_box<Wrapped> _wrapped;
+    mlib::object_t<Wrapped> _wrapped;
 
 public:
     constexpr explicit bind_stop_token(Token tok, Wrapped&& fn)
@@ -525,31 +526,17 @@ public:
         , _wrapped(NEO_FWD(fn)) {}
 
     /// Obtain the wrapped object
-    constexpr Wrapped&        base() & { return _wrapped.get(); }
-    constexpr Wrapped&&       base() && { return NEO_MOVE(_wrapped).get(); }
-    constexpr const Wrapped&  base() const& { return _wrapped.get(); }
-    constexpr const Wrapped&& base() const&& { return NEO_MOVE(_wrapped).get(); }
+    constexpr Wrapped&        base() & { return mlib::unwrap_object(_wrapped); }
+    constexpr Wrapped&&       base() && { return mlib::unwrap_object(NEO_MOVE(_wrapped)); }
+    constexpr const Wrapped&  base() const& { return mlib::unwrap_object(_wrapped); }
+    constexpr const Wrapped&& base() const&& { return mlib::unwrap_object(NEO_MOVE(_wrapped)); }
 
     /// Get the bound stop token
     constexpr Token query(get_stop_token_fn) const noexcept { return _token; }
 
-    /// Invoke the underlying object. Requires that the object is invocable with the proper cvref
-    /// qualifiers
-    template <typename... Args>
-    constexpr auto operator()(Args&&... args) const&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.get(), NEO_FWD(args)...));
-
-    template <typename... Args>
-        constexpr auto operator()(Args&&... args) &  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.get(), NEO_FWD(args)...));
-
-    template <typename... Args>
-    constexpr auto operator()(Args&&... args) const&&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.forward(), NEO_FWD(args)...));
-
-    template <typename... Args>
-        constexpr auto operator()(Args&&... args) &&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.forward(), NEO_FWD(args)...));
+    /// Invoke the underlying object.
+    static constexpr auto invoke(auto&& self, auto&&... args)
+        AMONGOC_RETURNS(std::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
 };
 
 template <typename Token, typename Wrapped>
@@ -595,7 +582,7 @@ public:
     constexpr void operator()() const noexcept { get_stop_source().request_stop(); }
 
 private:
-    neo::object_t<S> _src;
+    mlib::object_t<S> _src;
 };
 
 /**

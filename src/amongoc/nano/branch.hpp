@@ -2,7 +2,6 @@
 
 #include <neo/get.hpp>
 #include <neo/meta.hpp>
-#include <neo/object_t.hpp>
 #include <neo/type_traits.hpp>
 #include <neo/visit.hpp>
 

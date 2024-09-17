@@ -5,8 +5,9 @@
 #include "./simultaneous.hpp"
 #include "./util.hpp"
 
+#include <mlib/object_t.hpp>
+
 #include <neo/like.hpp>
-#include <neo/object_t.hpp>
 
 #include <atomic>
 #include <cstddef>
@@ -47,7 +48,7 @@ public:
 
 private:
     // Input senders of the operation
-    std::tuple<neo::object_t<Ss>...> _senders;
+    std::tuple<mlib::object_t<Ss>...> _senders;
 
     template <typename Tpl, typename R, std::size_t... Ns>
     constexpr static nanooperation auto _connect(Tpl&& tpl, R&& recv, std::index_sequence<Ns...>) {
@@ -68,7 +69,7 @@ private:
         R _recv;
 
         // Optional storage for each sub-operation's result
-        std::tuple<std::optional<neo::object_t<sends_t<Ss>>>...> _opts{};
+        std::tuple<std::optional<mlib::object_t<sends_t<Ss>>>...> _opts{};
 
         // Number of pending operations.
         std::atomic_size_t _n_remaining{sizeof...(Ss)};

@@ -12,8 +12,9 @@
 #include <amongoc/operation.h>
 #include <amongoc/status.h>
 
+#include <mlib/object_t.hpp>
+
 #include <neo/attrib.hpp>
-#include <neo/object_t.hpp>
 
 #include <new>
 
@@ -70,7 +71,7 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<Connector> _connect;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<Connector> _connect;
 };
 
 /**

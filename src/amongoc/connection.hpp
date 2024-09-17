@@ -30,7 +30,6 @@
 #include <string>
 #include <system_error>
 #include <type_traits>
-#include <variant>
 
 namespace amongoc {
 
@@ -56,7 +55,7 @@ public:
         _build_msg_header(dbuf, req_id, doc);
         assert(dbuf.size() == _op_msg_prefix_size);
         // Use a just() to barrier the initiation of the write operation
-        return amongoc::just(std::monostate{})
+        return amongoc::just(mlib::unit{})
             // Write the send-buffer
             | amongoc::let([this, h = op_msg_prefix, doc = mlib_fwd(doc)](auto) {
                    // Send two buffers: The message prefix and the BSON body

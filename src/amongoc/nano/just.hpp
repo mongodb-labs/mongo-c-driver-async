@@ -2,9 +2,10 @@
 
 #include "./concepts.hpp"
 
+#include <mlib/object_t.hpp>
+
 #include <neo/attrib.hpp>
 #include <neo/invoke.hpp>
-#include <neo/object_t.hpp>
 
 #include <concepts>
 #include <utility>
@@ -68,7 +69,7 @@ private:
         }
     };
 
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<T> _value;
+    NEO_NO_UNIQUE_ADDRESS mlib::object_t<T> _value;
 };
 
 template <typename T>
