@@ -29,6 +29,9 @@ include(Catch)
 # them from actual static libraries
 set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
 
+# Debug binaries will have a `-dbg` suffix to allow multi-conf installation
+set(CMAKE_DEBUG_POSTFIX -dbg)
+
 # Collect compiled source files
 file(
     GLOB_RECURSE sources
@@ -119,33 +122,31 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
-# TODO: These install paths aren't ideal. Get them sorted before a proper release.
-# TODO: The neo-fun and Asio dependencies need to be propagated
-if(WIN32)
-    set(install_infix ${PROJECT_NAME}-${PROJECT_VERSION})
-else()
-    set(install_infix lib/${PROJECT_NAME}-${PROJECT_VERSION})
-endif()
+# We base our install paths on the GNU style
+include(GNUInstallDirs)
+
+set(AMONGOC_INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake CACHE STRING "Installation directory where CMake package files will be written")
+install(
+    TARGETS amongoc
+    EXPORT amongoc-targets
+    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    FILE_SET HEADERS DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+)
 install(
     FILES
         ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig.cmake
         ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig-version.cmake
-    DESTINATION ${install_infix}/cmake
-)
-install(
-    TARGETS amongoc
-    EXPORT amongoc-targets
-    RUNTIME DESTINATION ${install_infix}/bin/
-    LIBRARY DESTINATION ${install_infix}/lib/
-    ARCHIVE DESTINATION ${install_infix}/lib/
-    FILE_SET HEADERS DESTINATION ${install_infix}/include/
-    INCLUDES DESTINATION ${install_infix}/include/
+    DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
 )
 install(
     EXPORT amongoc-targets
-    DESTINATION ${install_infix}/cmake
+    DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
     NAMESPACE amongoc::
 )
 
+string(TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
+string(APPEND CPACK_SYSTEM_NAME "-${CMAKE_SYSTEM_PROCESSOR}")
 include(CPack)
-
