@@ -24,7 +24,7 @@ extern mlib_constexpr bson_iterator _bson_iterator_at(const bson_byte* const dat
 
 extern mlib_constexpr bson_iterator bson_next(const bson_iterator it) mlib_noexcept;
 
-extern mlib_constexpr bson_utf8_view bson_iterator_key(bson_iterator it) mlib_noexcept;
+extern inline bson_utf8_view bson_iterator_key(bson_iterator it) mlib_noexcept;
 
 extern mlib_constexpr bson_type bson_iterator_type(bson_iterator it) mlib_noexcept;
 
@@ -44,29 +44,26 @@ extern mlib_constexpr bool bson_iterator_eq(bson_iterator left, bson_iterator ri
 
 extern mlib_constexpr bool bson_iterator_done(bson_iterator it) mlib_noexcept;
 
-extern mlib_constexpr bool
-bson_key_eq(const bson_iterator, const char* key, int keylen) mlib_noexcept;
+extern inline bool bson_key_eq(const bson_iterator, const char* key, int keylen) mlib_noexcept;
 
-extern mlib_constexpr bson_iterator _bson_find(bson_view   v,
-                                               const char* key,
-                                               int         keylen) mlib_noexcept;
+extern inline bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_noexcept;
 
-extern mlib_constexpr bson_utf8_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept;
+extern inline bson_utf8_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept;
 
-extern mlib_constexpr bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept;
+extern inline bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept;
 
-extern mlib_constexpr double         bson_iterator_double(bson_iterator it) mlib_noexcept;
-extern mlib_constexpr bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept;
+extern mlib_constexpr double bson_iterator_double(bson_iterator it) mlib_noexcept;
+extern inline bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept;
 extern mlib_constexpr bson_view
 bson_iterator_document(bson_iterator it, enum bson_view_invalid_reason* error) mlib_noexcept;
 extern mlib_constexpr bson_binary    bson_iterator_binary(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bson_oid       bson_iterator_oid(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bool           bson_iterator_bool(bson_iterator) mlib_noexcept;
-extern mlib_constexpr int64_t        bson_iterator_datetime(bson_iterator) mlib_noexcept;
-extern mlib_constexpr bson_regex     bson_iterator_regex(bson_iterator) mlib_noexcept;
+extern mlib_constexpr int64_t        bson_iterator_datetime_utc_ms(bson_iterator) mlib_noexcept;
+extern inline bson_regex             bson_iterator_regex(bson_iterator) mlib_noexcept;
 extern mlib_constexpr bson_dbpointer bson_iterator_dbpointer(bson_iterator) mlib_noexcept;
-extern mlib_constexpr bson_utf8_view bson_iterator_code(bson_iterator) mlib_noexcept;
-extern mlib_constexpr bson_utf8_view bson_iterator_symbol(bson_iterator) mlib_noexcept;
+extern inline bson_utf8_view         bson_iterator_code(bson_iterator) mlib_noexcept;
+extern inline bson_utf8_view         bson_iterator_symbol(bson_iterator) mlib_noexcept;
 extern mlib_constexpr int32_t        bson_iterator_int32(bson_iterator) mlib_noexcept;
 extern mlib_constexpr uint64_t       bson_iterator_timestamp(bson_iterator) mlib_noexcept;
 extern mlib_constexpr int64_t        bson_iterator_int64(bson_iterator) mlib_noexcept;

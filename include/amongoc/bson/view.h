@@ -1291,7 +1291,7 @@ mlib_constexpr bool bson_iterator_bool(bson_iterator it) mlib_noexcept {
     return _bson_iterator_value_ptr(it)[0].v != 0;
 }
 
-mlib_constexpr int64_t bson_iterator_datetime(bson_iterator it) mlib_noexcept {
+mlib_constexpr int64_t bson_iterator_datetime_utc_ms(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != BSON_TYPE_DATE_TIME) {
         return 0;
     }
@@ -1410,6 +1410,7 @@ mlib_constexpr double bson_iterator_as_double(bson_iterator it) mlib_noexcept {
     case BSON_TYPE_DECIMAL128:
     case BSON_TYPE_MAXKEY:
     case BSON_TYPE_MINKEY:
+    default:
         return 0;
     }
 }
@@ -1497,6 +1498,7 @@ mlib_constexpr int32_t bson_iterator_as_int32(bson_iterator it) mlib_noexcept {
     case BSON_TYPE_DECIMAL128:
     case BSON_TYPE_MAXKEY:
     case BSON_TYPE_MINKEY:
+    default:
         return 0;
     }
 }
@@ -1532,6 +1534,7 @@ mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept {
     case BSON_TYPE_DECIMAL128:
     case BSON_TYPE_MAXKEY:
     case BSON_TYPE_MINKEY:
+    default:
         return 0;
     }
 }
@@ -1670,8 +1673,8 @@ public:
         return bson_iterator_binary(_iter);
     }
     [[nodiscard]] constexpr bool bool_() const noexcept { return bson_iterator_bool(_iter); }
-    [[nodiscard]] constexpr std::int64_t datetime() const noexcept {
-        return bson_iterator_datetime(_iter);
+    [[nodiscard]] constexpr std::int64_t datetime_utc_ms() const noexcept {
+        return bson_iterator_datetime_utc_ms(_iter);
     }
     [[nodiscard]] bson_regex regex() const noexcept { return bson_iterator_regex(_iter); }
     [[nodiscard]] constexpr bson_dbpointer dbpointer() const noexcept {

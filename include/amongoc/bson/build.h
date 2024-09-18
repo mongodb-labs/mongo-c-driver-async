@@ -15,7 +15,6 @@
 #include <concepts>
 #include <new>
 #include <string_view>
-#include <tuple>
 #endif
 
 /**
@@ -1464,7 +1463,8 @@ public:
 
 private:
     constexpr void _del() noexcept {
-        if (_mut._bson_document_data) {
+        if (_mut._bson_document_data
+            and _mut._capacity_or_negative_offset_within_parent_data >= 0) {
             // Moving from the object will set the data pointer to null, which prevents a
             // double-free
             bson_mut_delete(_mut);
@@ -1500,14 +1500,10 @@ private:
         return bson_insert_bool(&_mut, pos, key, b);
     }
 
-    template <typename K, typename V>
-    constexpr iterator _emplace(iterator pos, K const& k, V const& val)
-        requires requires(utf8_view key) {
-            utf8_view::from_str(k);
-            _do_emplace(pos, key, val);
-        }
+    constexpr iterator _emplace(iterator pos, std::string_view key_, auto const& val)
+        requires requires(utf8_view key) { _do_emplace(pos, key, val); }
     {
-        const utf8_view key = utf8_view::from_str(k);
+        const utf8_view key = utf8_view::from_str(key_);
         const iterator  ret = _do_emplace(pos, key, val);
         if (ret == end()) {
             // This will only occur if there was an allocation failure
@@ -1516,15 +1512,22 @@ private:
         return ret;
     }
 
+    struct subdoc_tag {
+        bson_mut m;
+    };
+
+    constexpr document(subdoc_tag s) noexcept
+        : _mut(s.m) {}
+
 public:
+    struct inserted_subdocument;
     constexpr iterator insert(iterator pos, auto const& pair)
         requires requires { _emplace(pos, std::get<0>(pair), std::get<1>(pair)); }
     {
         return _emplace(pos, std::get<0>(pair), std::get<1>(pair));
     }
 
-    template <typename K, typename V>
-    constexpr iterator emplace(iterator pos, K const& key, V const& val)
+    constexpr iterator emplace(iterator pos, std::string_view key, auto const& val)
         requires requires { _emplace(pos, key, val); }
     {
         return _emplace(pos, key, val);
@@ -1536,12 +1539,38 @@ public:
         return insert(end(), pair);
     }
 
-    constexpr iterator emplace_back(auto const& key, auto const& val)
+    constexpr iterator emplace_back(std::string_view key, auto const& val)
         requires requires { emplace(end(), key, val); }
     {
         return emplace(end(), key, val);
     }
+
+    inline inserted_subdocument insert_subdoc(iterator pos, std::string_view key);
+
+    inline document push_subdoc(std::string_view key);
+
+    [[nodiscard]] document child(iterator pos) noexcept {
+        return document(subdoc_tag{::bson_mut_subdocument(&_mut, pos)});
+    }
+
+    [[nodiscard]] iterator position_in_parent() const noexcept {
+        return ::bson_parent_iterator(_mut);
+    }
 };
+
+struct document::inserted_subdocument {
+    iterator position;
+    document mutator;
+};
+
+document::inserted_subdocument document::insert_subdoc(iterator pos, std::string_view key) {
+    bson_byte buf[5] = {{5}};
+    auto      empty  = ::bson_view_from_data(buf, 5, nullptr);
+    auto      it     = ::bson_insert_doc(&_mut, pos, utf8_view::from_str(key), empty);
+    return {it, child(it)};
+}
+
+document document::push_subdoc(std::string_view key) { return insert_subdoc(end(), key).mutator; }
 
 }  // namespace bson
 #endif  // C++
