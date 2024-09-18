@@ -6,8 +6,6 @@
 
 #include <mlib/config.h>
 
-#include <neo/meta.hpp>
-
 namespace amongoc::detail {
 
 /**

@@ -6,19 +6,18 @@
  */
 #pragma once
 
-#include "./concepts.hpp"
-#include "./query.hpp"
+#include <amongoc/nano/query.hpp>
+#include <amongoc/nano/util.hpp>
+
+#include <mlib/object_t.hpp>
 
 #include <neo/concepts.hpp>
 #include <neo/like.hpp>
-#include <neo/object_box.hpp>
-#include <neo/object_t.hpp>
 
 #include <atomic>
 #include <cassert>
 #include <concepts>
 #include <thread>
-#include <type_traits>
 
 namespace amongoc {
 
@@ -62,7 +61,7 @@ concept stoppable_source = requires(Src src, const Src csrc) {
  * @tparam Token A stoppable token type
  * @tparam F The handler function invoked during request_stop()
  */
-template <stoppable_token Token, neo::invocable2<> F>
+template <stoppable_token Token, mlib::invocable<> F>
 using stop_callback_t = Token::template callback_type<F>;
 
 /**
@@ -103,9 +102,9 @@ using get_stop_token_t = decltype(get_stop_token(std::declval<const R&>()));
  * @param token The stop token for the associated stop state
  * @param fn The stop handler that will be invoked during request_stop()
  */
-template <stoppable_token Token, neo::invocable2<> F>
+template <stoppable_token Token, mlib::invocable<> F>
 constexpr stop_callback_t<Token, F> create_stop_callback(Token token, F&& fn) {
-    return stop_callback_t<Token, F>(token, NEO_FWD(fn));
+    return stop_callback_t<Token, F>(token, mlib_fwd(fn));
 }
 
 template <typename Fn>
@@ -465,7 +464,7 @@ public:
      */
     template <neo::implicit_convertible_to<F> Arg>
     constexpr explicit in_place_stop_callback(in_place_stop_token token, Arg&& arg)
-        : _func(NEO_FWD(arg)) {
+        : _func(mlib_fwd(arg)) {
         if (token._src) {
             this->_try_register_or_execute(*token._src);
         }
@@ -480,10 +479,10 @@ public:
 
 private:
     /// The wrapped invocable
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<F> _func;
+    mlib_no_unique_address mlib::object_t<F> _func;
 
     /// Implement the invocation
-    void do_execute() noexcept override { NEO_INVOKE(static_cast<F&&>(_func)); }
+    void do_execute() noexcept override { mlib::invoke(static_cast<F&&>(_func)); }
 };
 
 /**
@@ -513,43 +512,33 @@ public:
  * The returned object is invocable if the underlying object is invocable
  */
 template <stoppable_token Token, typename Wrapped>
-class bind_stop_token {
+class bind_stop_token : public invocable_cvr_helper<bind_stop_token<Token, Wrapped>> {
     // The bound token
     Token _token;
     // The wrapped object
-    neo::object_box<Wrapped> _wrapped;
+    mlib::object_t<Wrapped> _wrapped;
 
 public:
     constexpr explicit bind_stop_token(Token tok, Wrapped&& fn)
         : _token(tok)
-        , _wrapped(NEO_FWD(fn)) {}
+        , _wrapped(mlib_fwd(fn)) {}
 
     /// Obtain the wrapped object
-    constexpr Wrapped&        base() & { return _wrapped.get(); }
-    constexpr Wrapped&&       base() && { return NEO_MOVE(_wrapped).get(); }
-    constexpr const Wrapped&  base() const& { return _wrapped.get(); }
-    constexpr const Wrapped&& base() const&& { return NEO_MOVE(_wrapped).get(); }
+    constexpr Wrapped&        base() & { return mlib::unwrap_object(_wrapped); }
+    constexpr Wrapped&&       base() && { return mlib::unwrap_object(std::move(_wrapped)); }
+    constexpr const Wrapped&  base() const& { return mlib::unwrap_object(_wrapped); }
+    constexpr const Wrapped&& base() const&& { return mlib::unwrap_object(std::move(_wrapped)); }
 
     /// Get the bound stop token
-    constexpr Token query(get_stop_token_fn) const noexcept { return _token; }
+    constexpr Token get_stop_token() const noexcept { return _token; }
 
-    /// Invoke the underlying object. Requires that the object is invocable with the proper cvref
-    /// qualifiers
-    template <typename... Args>
-    constexpr auto operator()(Args&&... args) const&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.get(), NEO_FWD(args)...));
+    constexpr auto query(valid_query_for<Wrapped> auto q) const noexcept {
+        return q(static_cast<const Wrapped&>(_wrapped));
+    }
 
-    template <typename... Args>
-        constexpr auto operator()(Args&&... args) &  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.get(), NEO_FWD(args)...));
-
-    template <typename... Args>
-    constexpr auto operator()(Args&&... args) const&&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.forward(), NEO_FWD(args)...));
-
-    template <typename... Args>
-        constexpr auto operator()(Args&&... args) &&  //
-        NEO_RETURNS(NEO_INVOKE(_wrapped.forward(), NEO_FWD(args)...));
+    /// Invoke the underlying object.
+    static constexpr auto invoke(auto&& self, auto&&... args)
+        MLIB_RETURNS(std::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
 };
 
 template <typename Token, typename Wrapped>
@@ -584,7 +573,7 @@ class stop_requester {
 public:
     stop_requester() = default;
     constexpr explicit stop_requester(S&& src) noexcept
-        : _src(NEO_FWD(src)) {}
+        : _src(mlib_fwd(src)) {}
 
     constexpr S&       get_stop_source() noexcept { return (S&)_src; }
     constexpr const S& get_stop_source() const noexcept { return (S&)_src; }
@@ -595,7 +584,7 @@ public:
     constexpr void operator()() const noexcept { get_stop_source().request_stop(); }
 
 private:
-    neo::object_t<S> _src;
+    mlib::object_t<S> _src;
 };
 
 /**
@@ -627,7 +616,7 @@ private:
     using stop_token_type = get_stop_token_t<R>;
     using callback_type   = stop_callback_t<stop_token_type, requester>;
 
-    NEO_NO_UNIQUE_ADDRESS callback_type _callback;
+    mlib_no_unique_address callback_type _callback;
 };
 
 }  // namespace amongoc

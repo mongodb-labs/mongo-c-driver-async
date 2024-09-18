@@ -619,6 +619,23 @@ files = [
 test = ["flake8", "mypy", "pytest"]
 
 [[package]]
+name = "sphinxcontrib-moderncmakedomain"
+version = "3.29.0"
+description = "Sphinx Domain for Modern CMake"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "sphinxcontrib_moderncmakedomain-3.29.0-py3-none-any.whl", hash = "sha256:22385d9956e9565311eca41a09f26688312e4997a7366cb965fa610d1fd1436c"},
+    {file = "sphinxcontrib_moderncmakedomain-3.29.0.tar.gz", hash = "sha256:3587def241ff2577d0bbef11810a082e9dec1b78a3d4b4a066240b5f3dc1b5b2"},
+]
+
+[package.dependencies]
+sphinx = ">=2"
+
+[package.extras]
+test = ["defusedxml", "pytest"]
+
+[[package]]
 name = "sphinxcontrib-qthelp"
 version = "2.0.0"
 description = "sphinxcontrib-qthelp is a sphinx extension which outputs QtHelp documents"
@@ -896,4 +913,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "3c9b1eb28340628dfc3900f66fcc4bdb4440931615c071375460324aebeaebcd"
+content-hash = "86a9c108b1e28a01af212c8811851446fc8eb2fe1739194d2be2ba0cab679c20"

@@ -19,6 +19,7 @@
 #include "./nano/util.hpp"
 
 #include <mlib/alloc.h>
+#include <mlib/object_t.hpp>
 
 // C library headers
 #include <amongoc/alloc.h>
@@ -154,10 +155,10 @@ struct nanosender_awaitable {
         std::coroutine_handle<Promise> co;
 
         // The receiver has a stop token if the coroutine's promise has a stop token
-        stoppable_token auto query(get_stop_token_fn) const noexcept
+        stoppable_token auto get_stop_token() const noexcept
             requires has_stop_token<Promise>
         {
-            return get_stop_token(co.promise());
+            return amongoc::get_stop_token(co.promise());
         }
 
         // Forward the allocator from the promise
@@ -204,7 +205,7 @@ struct nanosender_awaitable {
                              // XXX: Should this be a terminating allocator?
                              mlib::bind_allocator(mlib::terminating_allocator,
                                                   [&](sends_t<S>&& value) {
-                                                      _sent_value.emplace(NEO_FWD(value));
+                                                      _sent_value.emplace(mlib_fwd(value));
                                                   }))
                 .start();
         }
@@ -290,13 +291,13 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     using co_handle = std::coroutine_handle<emitter_promise>;
 
     // We have a stop token based on the stop functionality on the associated handler
-    stoppable_token auto query(get_stop_token_fn q) const noexcept { return q(fin_handler); }
+    handler_stop_token get_stop_token() const noexcept { return fin_handler.get_stop_token(); }
 
     // The final suspend will invoke the final handler with the coroutine's result
     static auto final_suspend() noexcept {
         return suspends_by([](co_handle co) noexcept {
             emitter_promise& self = co.promise();
-            self.fin_handler.complete(self.fin_result.status, NEO_MOVE(self.fin_result.value));
+            self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
         });
     }
     // Always start suspended
@@ -310,7 +311,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
      */
     template <nanosender S>
     nanosender_awaitable<S, emitter_promise> await_transform(S&& s) noexcept {
-        return {NEO_FWD(s)};
+        return {mlib_fwd(s)};
     }
 
     // Starter function object for the amongoc_operation
@@ -331,7 +332,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         unique_co_handle<emitter_promise> _co;
 
         unique_operation operator()(unique_handler&& hnd) noexcept {
-            return unique_operation::from_starter(mlib_fwd(hnd), starter{NEO_MOVE(_co)});
+            return unique_operation::from_starter(mlib_fwd(hnd), starter{std::move(_co)});
         }
     };
 
@@ -340,7 +341,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         auto co = co_handle::from_promise(*this);
         static_assert(box_inlinable_type<connector>);
         return unique_emitter::from_connector(mlib::terminating_allocator,
-                                              connector{unique_co_handle(NEO_MOVE(co))})
+                                              connector{unique_co_handle(std::move(co))})
             .release();
     }
 
@@ -362,9 +363,9 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 
     void return_value(std::nullptr_t) noexcept { return_value(emitter_result()); }
 
-    void return_value(unique_box&& b) noexcept { return_value(emitter_result(0, NEO_MOVE(b))); }
+    void return_value(unique_box&& b) noexcept { return_value(emitter_result(0, std::move(b))); }
     void return_value(status st) noexcept { return_value(emitter_result(st)); }
-    void return_value(emitter_result r) noexcept { fin_result = NEO_MOVE(r); }
+    void return_value(emitter_result r) noexcept { fin_result = std::move(r); }
     void return_value(std::error_code ec) noexcept { return_value(status::from(ec)); }
 };
 
@@ -395,7 +396,7 @@ public:
     template <nanoreceiver_of<T> R>
     nanooperation auto connect(R&& recv) && noexcept {
         assert(_co);
-        return operation<R>{NEO_FWD(recv), NEO_MOVE(_co)};
+        return operation<R>{mlib_fwd(recv), std::move(_co)};
     }
 
 private:
@@ -435,7 +436,7 @@ public:
         using co_handle = std::coroutine_handle<promise_type>;
 
         // Storage for the return value
-        std::optional<neo::object_box<T>> _return_value;
+        std::optional<mlib::object_t<T>> _return_value;
         // A possible exception raised by the coroutine
         std::exception_ptr _exception;
         // Handles the completion of the coroutine. Set by connect() or nested_awaitable
@@ -456,14 +457,14 @@ public:
                         // and it is up to the target to move-from the return value.
                         // nested_awaitable will not move from the return value and instead leaves
                         // it in place
-                        return self._finisher->on_return(NEO_MOVE(*self._return_value).get());
+                        return self._finisher->on_return(static_cast<T&&>(*self._return_value));
                     }
                 });
         }
 
         template <nanosender S>
         nanosender_awaitable<S, promise_type> await_transform(S&& s) noexcept {
-            return {NEO_FWD(s)};
+            return {mlib_fwd(s)};
         }
 
         /**
@@ -528,8 +529,8 @@ public:
                     // The child threw an exception. Re-throw it now
                     std::rethrow_exception(_other_co.promise()._exception);
                 } else {
-                    // Perfect-forward from the child's object_box
-                    return NEO_MOVE(*_other_co.promise()._return_value).get();
+                    // Perfect-forward from the child's return value
+                    return static_cast<U&&>(*_other_co.promise()._return_value);
                 }
             }
 
@@ -562,7 +563,7 @@ public:
         // Emplace the return value in the return storage
         template <std::convertible_to<T> U>
         void return_value(U&& u) noexcept {
-            _return_value.emplace(NEO_FWD(u));
+            _return_value.emplace(mlib_fwd(u));
         }
     };
 
@@ -574,7 +575,7 @@ private:
     using co_handle = std::coroutine_handle<promise_type>;
 
     explicit co_task(co_handle&& co) noexcept
-        : _co(NEO_MOVE(co)) {}
+        : _co(std::move(co)) {}
 
     unique_co_handle<promise_type> _co;
 
@@ -586,12 +587,12 @@ private:
     template <nanoreceiver_of<T> R>
     struct operation {
         explicit operation(R&& recv, unique_co_handle<promise_type>&& co) noexcept
-            : _co(NEO_MOVE(co))
-            , _recv_invoker(NEO_FWD(recv)) {}
+            : _co(std::move(co))
+            , _recv_invoker(mlib_fwd(recv)) {}
 
         struct recv_finisher : finisher_base {
             explicit recv_finisher(R&& r) noexcept
-                : _recv(NEO_FWD(r)) {}
+                : _recv(mlib_fwd(r)) {}
 
             R                    _recv;
             in_place_stop_source _stopper;
@@ -599,7 +600,7 @@ private:
             stop_forwarder<R, in_place_stop_source> _stop_fwd{_recv, _stopper};
 
             std::coroutine_handle<> on_return(T&& x) noexcept override {
-                NEO_FWD(_recv)(NEO_FWD(x));
+                mlib_fwd(_recv)(mlib_fwd(x));
                 return std::noop_coroutine();
             }
             in_place_stop_token stop_token() const noexcept override {

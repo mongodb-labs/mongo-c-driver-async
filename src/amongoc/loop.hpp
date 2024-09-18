@@ -7,7 +7,6 @@
 #pragma once
 
 #include "./nano/concepts.hpp"
-#include "./nano/first.hpp"
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
 
@@ -17,16 +16,12 @@
 #include <amongoc/handler.h>
 #include <amongoc/loop.h>
 
+#include <mlib/object_t.hpp>
+
 #include <asio/awaitable.hpp>
 #include <asio/buffer.hpp>
-#include <neo/object_box.hpp>
-#include <neo/unit.hpp>
 
-#include <chrono>
 #include <cstddef>
-#include <memory>
-#include <system_error>
-#include <variant>
 
 namespace amongoc {
 
@@ -41,8 +36,8 @@ struct amongoc_loop_asio_executor {
         loop->vtable->call_soon(loop,
                                 amongoc_okay,
                                 amongoc_nil,
-                                unique_handler::from(get_allocator(*loop),
-                                                     [f = NEO_FWD(fn)](emitter_result&&) mutable {
+                                unique_handler::from(loop->get_allocator(),
+                                                     [f = mlib_fwd(fn)](emitter_result&&) mutable {
                                                          static_cast<F&&>(f)();
                                                      })
                                     .release());
@@ -154,15 +149,17 @@ struct address_info {
  */
 inline nanosender_of<result<address_info>> auto
 async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
-    return make_simple_sender<result<address_info>>([=, &loop]<typename R>(R&& recv) {
-        return simple_operation([r = neo::object_box(NEO_FWD(recv)), name, svc, &loop] mutable
-                                -> void {
-            loop.vtable->getaddrinfo(  //
-                &loop,
-                name,
-                svc,
-                as_handler(atop(r.forward(), result_fmap<construct<address_info>>{})).release());
-        });
+    return make_simple_sender<result<address_info>>([=, &loop](auto&& recv) {
+        return simple_operation(
+            [r = mlib::as_object(mlib_fwd(recv)), name, svc, &loop] mutable -> void {
+                loop.vtable->getaddrinfo(  //
+                    &loop,
+                    name,
+                    svc,
+                    as_handler(atop(mlib::unwrap_object(std::move(r)),
+                                    result_fmap<construct<address_info>>{}))
+                        .release());
+            });
     });
 }
 
@@ -177,15 +174,16 @@ async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
 inline nanosender_of<result<tcp_connection_rw_stream>> auto async_connect(amongoc_loop&  loop,
                                                                           address_info&& ai) {
     return make_simple_sender<result<tcp_connection_rw_stream>>(
-        [ai = NEO_MOVE(ai),
-         &loop](nanoreceiver_of<result<tcp_connection_rw_stream>> auto&& recv) mutable {
+        [ai = std::move(ai),
+         &loop]<nanoreceiver_of<result<tcp_connection_rw_stream>> R>(R&& recv) mutable {
             return simple_operation(
-                [ai = NEO_MOVE(ai), r = neo::object_box(NEO_FWD(recv)), &loop] mutable {
+                [ai = std::move(ai), r = mlib::as_object(mlib_fwd(recv)), &loop] mutable {
                     loop.vtable->tcp_connect(  //
                         &loop,
                         ai.box,
-                        as_handler(atop(r.forward(), result_fmap([&loop](unique_box b) {
-                                            return tcp_connection_rw_stream(&loop, NEO_MOVE(b));
+                        as_handler(atop(mlib::unwrap_object(std::move(r)),
+                                        result_fmap([&loop](unique_box b) {
+                                            return tcp_connection_rw_stream(&loop, std::move(b));
                                         })))
                             .release());
                 });

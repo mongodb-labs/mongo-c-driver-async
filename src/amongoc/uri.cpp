@@ -10,7 +10,6 @@
 
 #include <boost/url.hpp>
 #include <fmt/chrono.h>  // Enable duration formatting
-#include <neo/overload.hpp>
 #include <neo/tokenize.hpp>
 #include <neo/utility.hpp>
 
@@ -237,7 +236,7 @@ result<connection_uri> connection_uri::parse(std::string_view                   
                     }));
                 }
                 out = mlib_fwd(value);
-                return neo::unit{};
+                return mlib::unit{};
             };
         };
 

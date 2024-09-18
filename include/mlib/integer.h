@@ -18,8 +18,6 @@
 
 #include "./config.h"
 
-#include <neo/pp.hpp>
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -586,9 +584,9 @@ mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
 
 #define _mlibMathSubExpr_assertNot(Bits, V)                                                        \
     _mlib_math_assert_not_flags(Bits,                                                              \
-                                NEO_STR(Bits),                                                     \
+                                MLIB_STR(Bits),                                                    \
                                 _mlibMathEval(V),                                                  \
-                                NEO_STR(V),                                                        \
+                                MLIB_STR(V),                                                       \
                                 __FILE__,                                                          \
                                 __LINE__)
 

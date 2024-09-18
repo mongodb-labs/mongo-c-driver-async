@@ -30,7 +30,6 @@
 #include <string>
 #include <system_error>
 #include <type_traits>
-#include <variant>
 
 namespace amongoc {
 
@@ -40,7 +39,7 @@ class raw_connection {
 public:
     explicit raw_connection(Alloc alloc, T&& sock)
         : _alloc(alloc)
-        , _socket(NEO_FWD(sock)) {}
+        , _socket(mlib_fwd(sock)) {}
 
     template <typename BSON>
     constexpr nanosender_of<result<bson::document>> auto send_op_msg(BSON doc)
@@ -56,7 +55,7 @@ public:
         _build_msg_header(dbuf, req_id, doc);
         assert(dbuf.size() == _op_msg_prefix_size);
         // Use a just() to barrier the initiation of the write operation
-        return amongoc::just(std::monostate{})
+        return amongoc::just(mlib::unit{})
             // Write the send-buffer
             | amongoc::let([this, h = op_msg_prefix, doc = mlib_fwd(doc)](auto) {
                    // Send two buffers: The message prefix and the BSON body
@@ -108,14 +107,14 @@ public:
                        // TODO: The document content should be validated
                        asio::buffer_copy(asio::buffer(out, doc_size), section_data + 1);
                    });
-                   return NEO_MOVE(body);
+                   return std::move(body);
                }}})  //
             | amongoc::then(
                    [](result<bson::document, asio::error_code>&& r) -> result<bson::document> {
                        if (r.has_error()) {
                            return amongoc::error(status::from(r.error()));
                        } else {
-                           return amongoc::success(NEO_MOVE(r.value()));
+                           return amongoc::success(std::move(r.value()));
                        }
                    });
     }

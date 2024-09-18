@@ -4,5 +4,19 @@ if(DEFINED amongoc_FIND_COMPONENTS)
     message(SEND_ERROR "No COMPONENTS are supported for find_package(amongoc)")
 endif()
 
+string(JOIN " " __help
+    "For imported amongoc: If enabled (the default), we will import dependency"
+    "packages using the `find_dependency` macro. If disabled, then it is up to"
+    "the importer to define the required import targets needed by the amongoc library.")
+option(AMONGOC_FIND_DEPENDENCIES "${__help}" ON)
+mark_as_advanced(AMONGOC_FIND_DEPENDENCIES)
+if(AMONGOC_FIND_DEPENDENCIES)
+    include(CMakeFindDependencyMacro)
+    find_dependency(asio)
+    find_dependency(neo-fun)
+    find_dependency(Boost COMPONENTS URL)
+    find_dependency(fmt)
+endif()
+
 # Target exports file that is install alongside this package-config file
 include(amongoc-targets.cmake)

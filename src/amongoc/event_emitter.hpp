@@ -1,7 +1,8 @@
 #pragma once
 
+#include <mlib/invoke.hpp>
+
 #include <concepts>
-#include <functional>
 
 namespace amongoc {
 
@@ -112,7 +113,7 @@ public:
 private:
     [[no_unique_address]] F _func;
 
-    void do_fire(T obj) noexcept override { std::invoke(_func, static_cast<T&&>(obj)); }
+    void do_fire(T obj) noexcept override { mlib::invoke(_func, static_cast<T&&>(obj)); }
 };
 
 template <typename T, typename F>

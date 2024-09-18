@@ -18,12 +18,12 @@ using namespace amongoc;
 emitter amongoc_timeout(amongoc_loop* loop, emitter em, std::timespec tim) noexcept {
     // Create and start a race between the two operations
     std::variant<emitter_result, emitter_result> race
-        = co_await first_completed(NEO_FWD(em).as_unique(),
+        = co_await first_completed(mlib_fwd(em).as_unique(),
                                    amongoc_schedule_later(loop, tim).as_unique());
     // The winner of the race fulfills the variant
     if (race.index() == 0) {
         // The main task completed first.
-        co_return std::get<0>(NEO_MOVE(race));
+        co_return std::get<0>(std::move(race));
     } else {
         // The timeout completed first.
         co_return std::make_error_code(std::errc::timed_out);

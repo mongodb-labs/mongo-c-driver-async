@@ -4,8 +4,6 @@
 #include "./nano.hpp"
 #include "./util.hpp"
 
-#include <neo/attrib.hpp>
-
 namespace amongoc {
 
 struct tie_fn {
@@ -19,17 +17,17 @@ struct tie_fn {
     template <nanosender S, std::assignable_from<sends_t<S>> Dest>
     constexpr nanooperation auto operator()(S&& snd, Dest&& dest) const noexcept {
         struct recv {
-            NEO_NO_UNIQUE_ADDRESS Dest _dst;
+            mlib_no_unique_address Dest _dst;
 
-            void operator()(sends_t<S>&& value) { _dst = NEO_FWD(value); }
+            void operator()(sends_t<S>&& value) { _dst = mlib_fwd(value); }
         };
-        return amongoc::connect(NEO_FWD(snd), recv{NEO_FWD(dest)});
+        return amongoc::connect(mlib_fwd(snd), recv{mlib_fwd(dest)});
     }
 
     // Create a partially-applied tie() that assigns a nanosender's value to the target
     template <typename D>
     auto operator()(D&& d) const noexcept {
-        return make_closure(tie_fn{}, NEO_FWD(d));
+        return make_closure(tie_fn{}, mlib_fwd(d));
     }
 };
 

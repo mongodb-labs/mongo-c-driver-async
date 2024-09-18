@@ -11,7 +11,6 @@
 #include <asio/async_result.hpp>
 #include <asio/bind_cancellation_slot.hpp>
 #include <asio/error_code.hpp>
-#include <neo/unit.hpp>
 
 namespace amongoc {
 
@@ -31,11 +30,11 @@ template <typename Init>
 class asio_nanosender<Init, void()> {
 public:
     Init _init;
-    using sends_type = neo::unit;
+    using sends_type = mlib::unit;
 
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && {
-        return operation<R>{NEO_MOVE(_init), NEO_FWD(recv)};
+        return operation<R>{std::move(_init), mlib_fwd(recv)};
     }
 
     template <typename R>
@@ -44,7 +43,7 @@ public:
         R    _recv;
 
         constexpr void start() noexcept {
-            auto h = [this] { NEO_INVOKE(static_cast<R&&>(_recv), neo::unit{}); };
+            auto h = [this] { mlib::invoke(static_cast<R&&>(_recv), sends_type()); };
             static_cast<Init&&>(_init)(h);
         }
     };
@@ -65,7 +64,7 @@ public:
 
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && {
-        return operation<R>{NEO_MOVE(_init), NEO_FWD(recv)};
+        return operation<R>{std::move(_init), mlib_fwd(recv)};
     }
 
     template <typename R>
@@ -76,13 +75,13 @@ public:
         constexpr void start() noexcept {
             auto h = [this](std::error_code ec, T value) {
                 if (ec) {
-                    NEO_INVOKE(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
                 } else {
-                    NEO_INVOKE(static_cast<R&&>(_recv),
-                               sends_type(amongoc::success(NEO_FWD(value))));
+                    mlib::invoke(static_cast<R&&>(_recv),
+                                 sends_type(amongoc::success(mlib_fwd(value))));
                 }
             };
-            static_cast<Init&&>(_init)(NEO_MOVE(h));
+            static_cast<Init&&>(_init)(std::move(h));
         }
     };
 };
@@ -91,7 +90,7 @@ public:
 struct asio_as_nanosender_t {
     template <typename... Signatures, typename Init>
     static constexpr nanosender auto make_nanosender(Init&& initiator) {
-        return asio_nanosender<Init, Signatures...>(NEO_FWD(initiator));
+        return asio_nanosender<Init, Signatures...>(mlib_fwd(initiator));
     }
 };
 
@@ -121,8 +120,8 @@ struct asio::async_result<amongoc::asio_as_nanosender_t, Signatures...> {
     constexpr static amongoc::nanosender auto
     initiate(Initiator init, amongoc::asio_as_nanosender_t a, Args&&... args) noexcept {
         return a.make_nanosender<Signatures...>(
-            [init = NEO_MOVE(init), ... args = NEO_FWD(args)](auto&& handler) mutable {
-                NEO_MOVE(init)(NEO_FWD(handler), static_cast<Args&&>(args)...);
+            [init = std::move(init), ... args = mlib_fwd(args)](auto&& handler) mutable {
+                std::move(init)(mlib_fwd(handler), static_cast<Args&&>(args)...);
             });
     }
 };

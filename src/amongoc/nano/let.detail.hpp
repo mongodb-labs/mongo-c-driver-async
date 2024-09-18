@@ -6,6 +6,9 @@
 #include "./stop.hpp"
 #include "./util.hpp"
 
+#include <mlib/config.h>
+#include <mlib/object_t.hpp>
+
 #include <concepts>
 #include <optional>
 
@@ -22,8 +25,8 @@ template <typename T, typename Transformer, typename NextReceiver, typename Next
 class let_recv {
 public:
     constexpr explicit let_recv(Transformer&& h, NextReceiver&& r)
-        : _transform(NEO_FWD(h))
-        , _next_recv(NEO_FWD(r)) {}
+        : _transform(mlib_fwd(h))
+        , _next_recv(mlib_fwd(r)) {}
 
     constexpr void operator()(T&& result) noexcept {
         // The let() receiver must be invoked at most once. A well-formed operation will only
@@ -32,10 +35,11 @@ public:
         assert(not _next_operation.has_value() && "let() transformer was invoked multiple times");
         // Invoke the transformer to obtain the next sender in the chained operation
         nanosender auto next_sender
-            = NEO_INVOKE(static_cast<Transformer&&>(_transform), NEO_FWD(result));
+            = mlib::invoke(static_cast<Transformer&&>(_transform), mlib_fwd(result));
         // Construct the operation state from the new sender and our final receiver
         _next_operation.emplace(amongoc::defer_convert([&] {
-            return amongoc::connect(NEO_MOVE(next_sender), static_cast<NextReceiver&&>(_next_recv));
+            return amongoc::connect(std::move(next_sender),
+                                    static_cast<NextReceiver&&>(_next_recv));
         }));
         // Initiate the next operation immediately
         _next_operation->start();
@@ -47,9 +51,9 @@ public:
     }
 
 private:
-    NEO_NO_UNIQUE_ADDRESS Transformer  _transform;
-    std::optional<NextOperation>       _next_operation;
-    NEO_NO_UNIQUE_ADDRESS NextReceiver _next_recv;
+    mlib_no_unique_address Transformer  _transform;
+    std::optional<NextOperation>        _next_operation;
+    mlib_no_unique_address NextReceiver _next_recv;
 };
 
 /**
@@ -62,12 +66,12 @@ template <typename InputSender, typename Transformer>
 class let_sender {
 public:
     constexpr explicit let_sender(InputSender&& in, Transformer&& tr)
-        : _input_sender(NEO_FWD(in))
-        , _transformer(NEO_FWD(tr)) {}
+        : _input_sender(mlib_fwd(in))
+        , _transformer(mlib_fwd(tr)) {}
 
     /// The sender type that is returned by the user's transformer function when fed the result from
     /// the input sender
-    using intermediate_sender_type = neo::invoke_result_t<Transformer, sends_t<InputSender>>;
+    using intermediate_sender_type = mlib::invoke_result_t<Transformer, sends_t<InputSender>>;
     /// The final sent type that comes from the generated intermediate sender
     using sends_type = sends_t<intermediate_sender_type>;
 
@@ -81,7 +85,9 @@ public:
     template <nanoreceiver_of<sends_type> R>
     constexpr nanooperation auto connect(R&& recv) && noexcept {
         // Perfect-forward the sender and transformer
-        return op<R>{_input_sender.forward(), _transformer.forward(), NEO_FWD(recv)};
+        return op<R>{static_cast<InputSender&&>(_input_sender),
+                     static_cast<Transformer&&>(_transformer),
+                     mlib_fwd(recv)};
     }
 
     // Copy-connect the operation
@@ -91,9 +97,9 @@ public:
         and multishot_nanosender<InputSender>
     {
         // Copy the input sender and the transformer
-        return op<R>{decay_copy(_input_sender.get()),
-                     decay_copy(_transformer.get()),
-                     NEO_FWD(recv)};
+        return op<R>{static_cast<InputSender>(_input_sender),
+                     static_cast<Transformer>(_transformer),
+                     mlib_fwd(recv)};
     }
 
     // We are an immediate sender type if:
@@ -103,7 +109,7 @@ public:
     constexpr bool is_immediate() const noexcept
         requires statically_immediate<intermediate_sender_type>
     {
-        return amongoc::is_immediate(_input_sender.get());
+        return amongoc::is_immediate(mlib::unwrap_object(_input_sender));
     }
 
     // We are statically immediate if both sender types are statically immediate
@@ -122,8 +128,8 @@ private:
         constexpr explicit op(InputSender&& snd, Transformer&& hnd, FinalReceiver&& recv) noexcept
             /// Connect the input sender to the intermediate receiver
             : _input_operation(
-                  amongoc::connect(NEO_FWD(snd),
-                                   intermediate_receiver(NEO_FWD(hnd), NEO_FWD(recv)))) {}
+                  amongoc::connect(mlib_fwd(snd),
+                                   intermediate_receiver(mlib_fwd(hnd), mlib_fwd(recv)))) {}
 
         /// The intermediate operation state that will be created after the user's
         /// transformer is invoked and connected to the final receiver
@@ -141,19 +147,19 @@ private:
         constexpr void start() noexcept { _input_operation.start(); }
 
     private:
-        NEO_NO_UNIQUE_ADDRESS input_operation _input_operation;
+        mlib_no_unique_address input_operation _input_operation;
     };
 
     /// The input sender
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<InputSender> _input_sender;
+    mlib_no_unique_address mlib::object_t<InputSender> _input_sender;
     /// The user's transformation function
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<Transformer> _transformer;
+    mlib_no_unique_address mlib::object_t<Transformer> _transformer;
 };
 
 /// Require that the given handler returns a new sender when invoked with the given sender's
 /// result type
 template <typename Handler, typename Sender>
-concept let_handler_returns_sender = nanosender<neo::invoke_result_t<Handler, sends_t<Sender>>>;
+concept let_handler_returns_sender = nanosender<mlib::invoke_result_t<Handler, sends_t<Sender>>>;
 
 /**
  * @brief Match a handler that is invocable with the type for the given sender and
@@ -162,7 +168,7 @@ concept let_handler_returns_sender = nanosender<neo::invoke_result_t<Handler, se
 template <typename Handler, typename Sender>
 concept valid_let_handler                          //
     = nanosender<Sender>                           //
-    and neo::invocable2<Handler, sends_t<Sender>>  //
+    and mlib::invocable<Handler, sends_t<Sender>>  //
     and let_handler_returns_sender<Handler, Sender>;
 
 }  // namespace amongoc::detail

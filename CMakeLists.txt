@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.25)
 project(amongoc VERSION 0.1.0 DESCRIPTION "An Asynchronous MongoDB Library for C")
 
 # Enable testing with CTest
@@ -6,10 +6,12 @@ include(CTest)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 # Pull our deps with PMM+vcpkg
-include(pmm)
-pmm(VCPKG REVISION 2024.08.23)
+option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ON)
+if(AMONGOC_USE_PMM)
+    include(pmm)
+    pmm(VCPKG REVISION 2024.08.23)
+endif()
 
-find_package(Catch2 CONFIG REQUIRED)
 find_package(asio CONFIG REQUIRED)
 find_package(neo-fun CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED URL)
@@ -22,8 +24,8 @@ include(Sanitizers)
 include(Ccache)
 include(LLDLinker)
 
-# Add Catch integrations
-include(Catch)
+# When compiling C++ with GCC, set a deeper diagnostics depth
+add_compile_options($<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>)
 
 # If we generate any DLLs, use a .dll.lib suffix for the importlibs, to distinguish
 # them from actual static libraries
@@ -90,15 +92,21 @@ target_link_libraries(amongoc PUBLIC
     Boost::url
     )
 
-# Add tests
-add_executable(amongoc-test ${test_sources})
-target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
-target_include_directories(amongoc-test PRIVATE src)
-catch_discover_tests(amongoc-test)
+if(BUILD_TESTING)
+    # Add Catch integrations
+    find_package(Catch2 CONFIG REQUIRED)
+    include(Catch)
 
-# Generate URI tests
-include(GenURITests)
-target_sources(amongoc-test PRIVATE ${URITest_SOURCES})
+    # Add tests
+    add_executable(amongoc-test ${test_sources})
+    target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
+    target_include_directories(amongoc-test PRIVATE src)
+    catch_discover_tests(amongoc-test)
+
+    # Generate URI tests
+    include(GenURITests)
+    target_sources(amongoc-test PRIVATE ${URITest_SOURCES})
+endif()
 
 # Compile and link all documentation examples
 file(GLOB_RECURSE examples CONFIGURE_DEPENDS docs/*.example.c docs/*.example.cpp)

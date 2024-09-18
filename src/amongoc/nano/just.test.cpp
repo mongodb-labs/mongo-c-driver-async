@@ -31,12 +31,12 @@ TEST_CASE("just/Multi-shot") {
     auto                       x = amongoc::just(std::string("hey"));
     std::optional<std::string> got;
     {
-        auto op = x.connect([&](auto&& x) { got.emplace(NEO_FWD(x)); });
+        auto op = x.connect([&](auto&& x) { got.emplace(mlib_fwd(x)); });
         op.start();
     }
     CHECK(got == "hey");
     {
-        auto op = x.connect([&](auto&& x) { got.emplace(NEO_FWD(x)); });
+        auto op = x.connect([&](auto&& x) { got.emplace(mlib_fwd(x)); });
         op.start();
     }
     CHECK(got == "hey");

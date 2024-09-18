@@ -52,7 +52,7 @@
 
 #define mlib_extern_c_begin() MLIB_IF_CXX(extern "C" {) mlib_static_assert(1, "")
 #define mlib_extern_c_end() MLIB_IF_CXX(                                       \
-  }) mlib_static_assert(1)
+  }) mlib_static_assert(1, "")
 
 /**
  * @brief Use as the prefix of a braced initializer within C headers, allowing
@@ -73,6 +73,9 @@
 #define MLIB_NOTHING(...)
 #define MLIB_PASTE(A, ...) _mlibPaste1(A, __VA_ARGS__)
 #define _mlibPaste1(A, ...) A##__VA_ARGS__
+
+#define MLIB_STR(...) _mlibStr(__VA_ARGS__)
+#define _mlibStr(...) #__VA_ARGS__
 
 #define MLIB_FIRST_ARG(A, ...) A
 #define MLIB_IS_EMPTY(...) MLIB_FIRST_ARG(__VA_OPT__(0, ) 1, ~)
@@ -127,6 +130,20 @@
 #define mlib_audit_allocator_passing() 0
 #endif // mlib_audit_allocator_passing
 
+#ifdef __GNUC__
+#define mlib_is_gnu_like() true
+#define mlib_is_msvc() false
+#elif _MSC_VER
+#define mlib_is_gnu_like() false
+#define mlib_is_msvc() true
+#endif
+
+#if mlib_is_msvc()
+#define mlib_no_unique_address [[msvc::no_unique_address]]
+#else
+#define mlib_no_unique_address [[no_unique_address]]
+#endif
+
 #if mlib_is_cxx()
 namespace mlib {
 
@@ -143,3 +160,12 @@ static mlib_constexpr bool is_constant_evaluated() noexcept {
 
 } // namespace mlib
 #endif
+
+#define MLIB_RETURNS(...)                                                      \
+  noexcept(noexcept(__VA_ARGS__))                                              \
+      ->decltype(auto)                                                         \
+    requires requires { (__VA_ARGS__); }                                       \
+  {                                                                            \
+    return __VA_ARGS__;                                                        \
+  }                                                                            \
+  static_assert(true)

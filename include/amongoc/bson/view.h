@@ -439,6 +439,7 @@ mlib_constexpr bson_view bson_view_from_data(const bson_byte* const         data
     }
     // Okay!
     else {
+        *error                  = BSON_VIEW_OKAY;
         ret._bson_document_data = data;
     }
     return ret;

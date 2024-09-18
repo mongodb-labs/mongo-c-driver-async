@@ -4,37 +4,25 @@
 
 #include <amongoc/box.h>
 
-#include <neo/attrib.hpp>
-#include <neo/invoke.hpp>
+#include <mlib/invoke.hpp>
+#include <mlib/object_t.hpp>
+
 #include <neo/like.hpp>
-#include <neo/object_box.hpp>
-#include <neo/object_t.hpp>
-#include <neo/type_traits.hpp>
 
 #include <concepts>
-#include <numeric>
 #include <ranges>
 #include <type_traits>
 
 namespace amongoc {
 
-#define AMONGOC_RETURNS(...)                                                                       \
-    noexcept(noexcept(__VA_ARGS__))                                                                \
-        ->decltype(__VA_ARGS__)                                                                    \
-        requires requires { (__VA_ARGS__); }                                                       \
-    {                                                                                              \
-        return __VA_ARGS__;                                                                        \
-    }                                                                                              \
-    static_assert(true)
-
 template <typename F>
 struct deferred_conversion {
-    neo::object_t<F> _func;
+    mlib::object_t<F> _func;
 
-    constexpr operator neo::invoke_result_t<F>() { return NEO_INVOKE(static_cast<F&&>(_func)); }
+    constexpr operator mlib::invoke_result_t<F>() { return mlib::invoke(static_cast<F&&>(_func)); }
 
-    constexpr operator neo::invoke_result_t<const F>() const {
-        return NEO_INVOKE(static_cast<F&&>(_func));
+    constexpr operator mlib::invoke_result_t<const F>() const {
+        return mlib::invoke(static_cast<F const&&>(_func));
     }
 };
 
@@ -54,19 +42,19 @@ constexpr deferred_conversion<F> defer_convert(F&& fn) {
 // Enclose a partially-applied invocable object so that it may be used as the operand to operator|
 template <typename F, typename... Args>
 struct [[nodiscard]] closure {
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<F> _function;
-    NEO_NO_UNIQUE_ADDRESS std::tuple<Args...> _args;
+    mlib_no_unique_address mlib::object_t<F> _function;
+    mlib_no_unique_address std::tuple<Args...> _args;
 
     template <typename Arg, std::size_t... Ns>
     constexpr static auto apply(auto&& self, Arg&& arg, std::index_sequence<Ns...>)
-        AMONGOC_RETURNS(std::invoke(mlib_fwd(self)._function.get(),
-                                    mlib_fwd(arg),
-                                    std::get<Ns>(mlib_fwd(self)._args)...));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._function,
+                                  mlib_fwd(arg),
+                                  std::get<Ns>(mlib_fwd(self)._args)...));
 
     // Handle the closure object appear on the right-hand of a vertical pipe expression
-    template <typename Left, neo::alike<closure> Self>
-        requires neo::invocable2<F, Left, Args...>
-    friend constexpr auto operator|(Left&& lhs, Self&& rhs) AMONGOC_RETURNS(
+    template <typename Left, typename Self>
+        requires std::same_as<std::remove_cvref_t<Self>, closure>
+    friend constexpr auto operator|(Left&& lhs, Self&& rhs) MLIB_RETURNS(
         closure::apply(mlib_fwd(rhs), mlib_fwd(lhs), std::make_index_sequence<sizeof...(Args)>{}));
 };
 
@@ -140,18 +128,18 @@ public:
         enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<F> _f;
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<G> _g;
+    mlib_no_unique_address mlib::object_t<F> _f;
+    mlib_no_unique_address mlib::object_t<G> _g;
 
 public:
     template <typename... Ts>
     static constexpr auto invoke(auto&& self, Ts&&... args)
-        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f.get(),
-                                   NEO_INVOKE(mlib_fwd(self)._g.get(), mlib_fwd(args)...)));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._f,
+                                  mlib::invoke(mlib_fwd(self)._g, mlib_fwd(args)...)));
 
     template <valid_query_for<F> Q>
     constexpr query_t<Q, F> query(Q q) const {
-        return q(_f.get());
+        return q(static_cast<const F&>(_f));
     }
 };
 
@@ -176,18 +164,18 @@ public:
         enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<F> _f;
-    NEO_NO_UNIQUE_ADDRESS neo::object_box<G> _g;
+    mlib_no_unique_address mlib::object_t<F> _f;
+    mlib_no_unique_address mlib::object_t<G> _g;
 
 public:
     template <typename... Ts>
     static constexpr auto invoke(auto&& self, Ts&&... args)
-        AMONGOC_RETURNS(NEO_INVOKE(mlib_fwd(self)._f.get(),
-                                   NEO_INVOKE(mlib_fwd(self)._g.get(), mlib_fwd(args))...));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._f,
+                                  mlib::invoke(mlib_fwd(self)._g, mlib_fwd(args))...));
 
     template <valid_query_for<F> Q>
     constexpr query_t<Q, F> query(Q q) const {
-        return q(_f.get());
+        return q(static_cast<const F&>(_f));
     }
 };
 
@@ -209,7 +197,7 @@ public:
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
 
 private:
-    NEO_NO_UNIQUE_ADDRESS neo::object_t<T> _value;
+    mlib_no_unique_address mlib::object_t<T> _value;
 
 public:
     constexpr T&       operator()(auto&&...) & noexcept { return static_cast<T&>(_value); }
@@ -285,12 +273,8 @@ private:
     [[no_unique_address]] F _func;
 
 public:
-    template <typename Tpl>
-    static constexpr decltype(auto) invoke(auto&& self, Tpl&& tpl)
-        requires requires { std::apply(mlib_fwd(self)._func, mlib_fwd(tpl)); }
-    {
-        return std::apply(mlib_fwd(self)._func, mlib_fwd(tpl));
-    }
+    static constexpr auto invoke(auto&& self, auto&& tpl)
+        MLIB_RETURNS(std::apply(mlib_fwd(self)._func, mlib_fwd(tpl)));
 };
 
 template <typename F>
@@ -321,7 +305,9 @@ private:
 
 public:
     static constexpr auto invoke(auto&& self, auto&& x)
-        AMONGOC_RETURNS(mlib_fwd(self).f(x, mlib_fwd(self).g(x)));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self).f,
+                                  x,  //
+                                  mlib::invoke(mlib_fwd(self).g, x)));
 };
 
 template <typename F, typename G>
@@ -351,10 +337,10 @@ private:
     [[no_unique_address]] G g;
 
 public:
-    template <typename... Args>
-    static constexpr auto invoke(auto&& self, Args&&... args) AMONGOC_RETURNS(  //
-        mlib_fwd(self).h(mlib_fwd(self).f(args...),                             //
-                         mlib_fwd(self).g(args...)));
+    static constexpr auto invoke(auto&& self, auto&&... args)
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self).h,
+                                  mlib::invoke(mlib_fwd(self).f, args...),
+                                  mlib::invoke(mlib_fwd(self).g, args...)));
 };
 
 template <typename H, typename F, typename G>
