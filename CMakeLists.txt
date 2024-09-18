@@ -24,6 +24,8 @@ include(Sanitizers)
 include(Ccache)
 include(LLDLinker)
 
+# When compiling C++ with GCC, set a deeper diagnostics depth
+add_compile_options($<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>)
 
 # If we generate any DLLs, use a .dll.lib suffix for the importlibs, to distinguish
 # them from actual static libraries
