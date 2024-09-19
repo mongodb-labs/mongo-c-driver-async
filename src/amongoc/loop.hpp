@@ -59,6 +59,9 @@ struct tcp_connection_rw_stream {
     // uses this executor since it never tries to construct one?
     using executor_type = amongoc_loop_asio_executor;
 
+    // Obtain an allocator for the stream. Pulls the allocator from the event loop
+    allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
+
     /**
      * @brief Implement reading for Asio AsyncReadStream
      *
@@ -81,7 +84,7 @@ struct tcp_connection_rw_stream {
                             conn,
                             static_cast<char*>(buf.data()),
                             buf.size(),
-                            unique_handler::from(loop->get_allocator(),
+                            unique_handler::from(get_allocator(),
                                                  [cb](emitter_result&& res_nbytes) mutable {
                                                      std::move(
                                                          cb)(res_nbytes.status.as_error_code(),
@@ -104,7 +107,7 @@ struct tcp_connection_rw_stream {
                              conn,
                              static_cast<const char*>(buf.data()),
                              buf.size(),
-                             unique_handler::from(loop->get_allocator(),
+                             unique_handler::from(get_allocator(),
                                                   [cb = mlib_fwd(cb)](
                                                       emitter_result&& res_nbytes) mutable {
                                                       std::move(
