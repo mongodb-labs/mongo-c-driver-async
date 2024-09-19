@@ -565,6 +565,8 @@ public:
         void return_value(U&& u) noexcept {
             _return_value.emplace(mlib_fwd(u));
         }
+
+        void return_value(T&& item) noexcept { _return_value.emplace(mlib_fwd(item)); }
     };
 
 private:
