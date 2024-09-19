@@ -1,28 +1,39 @@
 #pragma once
 
+#include <amongoc/asio/read_write.hpp>
+
 #include <mlib/config.h>
 
 #include <asio/buffer.hpp>
+#include <asio/buffers_iterator.hpp>
+
+#include <cstddef>
+#include <iterator>
+#include <ranges>
 
 namespace amongoc {
 
+// Match a range whose objects are byte-sized
 template <typename T>
-concept contiguous_byte_container
-    = std::ranges::contiguous_range<T> and sizeof(std::ranges::range_value_t<T>) == 1;
+concept byte_range = std::ranges::input_range<T> and sizeof(std::ranges::range_value_t<T>) == 1
+    and requires(std::ranges::range_reference_t<T> b) { static_cast<std::byte>(b); };
+
+template <typename T>
+concept contiguous_byte_range = std::ranges::contiguous_range<T> and byte_range<T>;
 
 /**
  * @brief Provides an Asio DynamicBufferv1 interface over a generic array-like
- * object, but never allocating
+ * object, but never allocating or growing the underlying range
  *
- * @tparam T
- * @param buf
- * @return requires
+ * @tparam T A contiguous range of bytes
  */
-template <contiguous_byte_container T>
+template <contiguous_byte_range T>
 class generic_dynamic_buffer_v1 {
 public:
     using const_buffers_type   = asio::const_buffer;
     using mutable_buffers_type = asio::mutable_buffer;
+
+    generic_dynamic_buffer_v1() = default;
 
     constexpr explicit generic_dynamic_buffer_v1(T&& buf, std::size_t ready_size = 0)
         : _buffer(mlib_fwd(buf))
@@ -56,5 +67,39 @@ private:
 
 template <typename T>
 explicit generic_dynamic_buffer_v1(T&&, std::size_t = 0) -> generic_dynamic_buffer_v1<T>;
+
+/**
+ * @brief Create an byte-wise range that views the bytes of a buffer sequence
+ *
+ * @param bufs the buffers to be viewed
+ */
+template <const_buffer_sequence B>
+constexpr byte_range auto buffers_subrange(const B& bufs) {
+    // Optimize for cases that the object is a single buffer.
+    if constexpr (std::convertible_to<B, asio::mutable_buffer>) {
+        auto mb = asio::mutable_buffer(bufs);
+        auto p  = reinterpret_cast<char*>(mb.data());
+        return std::ranges::subrange(p, p + mb.size());
+    } else if constexpr (std::convertible_to<B, asio::const_buffer>) {
+        auto cb = asio::const_buffer(bufs);
+        auto p  = reinterpret_cast<const char*>(cb.data());
+        return std::ranges::subrange(p, p + cb.size());
+    } else {
+        return std::ranges::subrange(asio::buffers_begin(bufs), asio::buffers_end(bufs));
+    }
+}
+
+/**
+ * @brief Create a byte-wise range from a buffer sequence, without a bounds-checking iterator
+ *
+ * @param bufs The buffers to be viewed
+ *
+ * @note Only use this for operations that are guaranteed to never overrun the buffer range
+ */
+template <const_buffer_sequence B>
+constexpr byte_range auto buffers_unbounded(const B& bufs) {
+    auto it = std::ranges::begin(buffers_subrange(bufs));
+    return std::ranges::subrange(it, std::unreachable_sentinel);
+}
 
 }  // namespace amongoc
