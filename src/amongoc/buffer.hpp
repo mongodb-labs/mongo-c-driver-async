@@ -24,8 +24,9 @@ public:
     using const_buffers_type   = asio::const_buffer;
     using mutable_buffers_type = asio::mutable_buffer;
 
-    constexpr explicit generic_dynamic_buffer_v1(T&& buf)
-        : _buffer(mlib_fwd(buf)) {}
+    constexpr explicit generic_dynamic_buffer_v1(T&& buf, std::size_t ready_size = 0)
+        : _buffer(mlib_fwd(buf))
+        , _output_offset(ready_size) {}
 
     // Get the size of input area
     constexpr std::size_t size() const noexcept { return _output_offset - _input_offset; }
@@ -54,6 +55,6 @@ private:
 };
 
 template <typename T>
-explicit generic_dynamic_buffer_v1(T&&) -> generic_dynamic_buffer_v1<T>;
+explicit generic_dynamic_buffer_v1(T&&, std::size_t = 0) -> generic_dynamic_buffer_v1<T>;
 
 }  // namespace amongoc
