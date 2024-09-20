@@ -1,4 +1,4 @@
-#include "./wire.hpp"
+#include "./proto.hpp"
 
 #include <amongoc/bson/build.h>
 
@@ -6,16 +6,16 @@
 
 using namespace amongoc;
 
-template co_task<mlib::unit>
-wire::send_op_msg_one_section(allocator<> a, tcp_connection_rw_stream&, int req_id, bson_view doc);
+static_assert(wire::message_type<wire::any_op_msg_message>);
+static_assert(wire::message_type<wire::any_message>);
 
 template co_task<wire::any_message> wire::recv_message(allocator<>, tcp_connection_rw_stream&);
 
 bson_view wire::any_message::expect_one_body_section_op_msg() const noexcept {
-    if (not std::holds_alternative<any_op_msg_content>(_content)) {
+    if (not std::holds_alternative<any_op_msg_message>(_content)) {
         throw_protocol_error("Expected a single OP_MSG message");
     }
-    auto& content = std::get<any_op_msg_content>(_content);
+    auto& content = std::get<any_op_msg_message>(_content);
     if (content.sections().size() != 1) {
         throw_protocol_error("Expected a single OP_MSG body section");
     }

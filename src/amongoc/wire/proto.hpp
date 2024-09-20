@@ -1,12 +1,15 @@
 #pragma once
 
+#include "./error.hpp"
+#include "./integer.hpp"
+#include "./stream.hpp"
+
 #include <amongoc/asio/as_sender.hpp>
-#include <amongoc/asio/read_write.hpp>
 #include <amongoc/bson/build.h>
-#include <amongoc/buffer.hpp>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/string.hpp>
 #include <amongoc/vector.hpp>
+#include <amongoc/wire/buffer.hpp>
 
 #include <mlib/alloc.h>
 
@@ -17,7 +20,7 @@
 #include <neo/views/concat.hpp>
 
 #include <ranges>
-#include <system_error>
+#include <utility>
 #include <variant>
 
 namespace amongoc {
@@ -28,104 +31,28 @@ struct tcp_connection_rw_stream;
 
 namespace amongoc::wire {
 
-[[noreturn]]
-inline void throw_protocol_error(const char* msg) {
-    throw std::system_error(std::make_error_code(std::errc::protocol_error), msg);
-}
-
 /**
- * @brief Write a little-endian encoded integer to the given output range
- *
- * @param out The destination for the encoded integer
- * @param value The integral value to be encoded
- * @return O The new position of the output iterator
+ * @brief A type that provides an interface for wire messages
  */
-template <std::integral I, std::ranges::output_range<char> O>
-constexpr std::ranges::iterator_t<O> write_int_le(O&& out_rng, I value) {
-    // Make unsigned (ensures two's-complement for valid bit-shifting)
-    const auto  uv   = static_cast<std::make_unsigned_t<I>>(value);
-    auto        out  = std::ranges::begin(out_rng);
-    const auto  stop = std::ranges::end(out_rng);
-    std::size_t n    = 0;
-    // Copy each byte of the integer in LE-order
-    for (; n < sizeof uv and out != stop; ++n, ++out) {
-        *out = static_cast<char>((uv >> (8 * n)) & 0xff);
-    }
-    if (n < sizeof uv) {
-        throw_protocol_error("truncated buffer");
-    }
-    return out;
-}
-
-/**
- * @brief Write a little-endian encoded integer to the given dynamic buffer output
- *
- * @param dbuf A dynamic buffer which will receive the encoded integer
- * @param value The value to be encoded
- */
-template <std::integral I>
-void write_int_le(dynamic_buffer_v1 auto&& dbuf, I value) {
-    auto out     = dbuf.prepare(sizeof value);
-    auto out_rng = buffers_subrange(out);
-    write_int_le(out_rng, value);
-    dbuf.commit(sizeof value);
-}
-
-/**
- * @brief Result of decoding an integer from an input range
- *
- * @tparam I The integer value type
- * @tparam Iter The iterator type
- */
-template <typename I, typename Iter>
-struct decoded_integer {
-    // The decoded integer value
-    I value;
-    // The input iterator position after decoding is complete
-    Iter in;
+template <typename T>
+concept message_type = requires(const T& req, allocator<> a) {
+    // The object must provide an opcode
+    { req.opcode() } -> std::convertible_to<std::int32_t>;
+    // The object must provide a buffer sequence to be attached to the message
+    { req.buffers(a) } -> const_buffer_sequence;
 };
 
 /**
- * @brief Read a little-endian encoded integer from the given byte range
- *
- * @tparam Int The integer type to be read
- * @param it The input iterator from which we will read
- * @return A pair of the integer value and final iterator position
+ * @brief A type that provides section content for OP_MSG messages
  */
-template <typename Int, byte_range R>
-constexpr decoded_integer<Int, std::ranges::iterator_t<R>> read_int_le(R&& rng) {
-    using U          = std::make_unsigned_t<Int>;
-    U           u    = 0;
-    auto        it   = std::ranges::begin(rng);
-    const auto  stop = std::ranges::end(rng);
-    std::size_t n    = 0;
-    for (; n < sizeof u and it != stop; ++it, ++n) {
-        // Cast to unsigned byte first to prevent a sign-extension
-        U b = static_cast<std::uint8_t>(*it);
-        b <<= (8 * n);
-        u |= b;
-    }
-    if (n < sizeof u) {
-        // We had to stop before reading the full data
-        throw_protocol_error("short read");
-    }
-    return {static_cast<Int>(u), it};
-}
-
-/**
- * @brief Read a little-endian encoded integer from a dynamic buffer.
- *
- * @tparam I The integer type to be read
- * @param dbuf A dynamic buffer to be used. The bytes of the integer will be consumed
- */
-template <typename I>
-I read_int_le(dynamic_buffer_v1 auto&& dbuf) {
-    const_buffer_sequence auto data = dbuf.data();
-    auto                       subr = buffers_subrange(data);
-    I                          v    = read_int_le<I>(subr).value;
-    dbuf.consume(sizeof(I));
-    return v;
-}
+template <typename T>
+concept section_type = requires(const T& sec, allocator<> const a) {
+    // Must provide a kind byte to be attached to the section. This is a reference because it will
+    // be passed by-address through the stream
+    { sec.kind() } noexcept -> std::same_as<std::uint8_t const&>;
+    // Must provide a buffer sequence to attach to the section
+    { sec.buffers(a) } -> const_buffer_sequence;
+};
 
 /**
  * @brief A wire protocol section that includes a single BSON document
@@ -138,34 +65,30 @@ struct body_section {
     BSON body;
 
     // Kind byte for body messages
-    static constexpr char kind_byte = 0;
+    static constexpr std::uint8_t kind_byte = 0;
 
-    const_buffer_sequence auto buffers(allocator<>) const noexcept {
-        // One byte for the kind
-        asio::const_buffer b1 = asio::buffer(&kind_byte, 1);
+    asio::const_buffers_1 buffers(allocator<>) const noexcept {
         // The rest of the message here
-        asio::const_buffer doc = asio::buffer(body.data(), body.byte_size());
-        return std::array{b1, doc};
+        return asio::buffer(body.data(), body.byte_size());
+    }
+
+    std::uint8_t const& kind() const noexcept {
+        return kind_byte;  // Kind has byte value zero
     }
 };
 
 /**
  * @brief Create an OP_MSG message
  *
- * @tparam Sections A range of section objects that must provide buffers
- *
- * The sections must provide a `.buffer(allocator<>)` function to return
- * a buffer sequence to be attached to the outgoing message
+ * @tparam Sections A range of `section_type` objects that provide sections for the message
  */
 template <typename Sections>
     requires std::ranges::forward_range<Sections>
-    and requires(std::ranges::range_reference_t<Sections> sec, allocator<> a) {
-            { sec.buffers(a) } -> const_buffer_sequence;
-        }
-class op_msg_content {
+    and section_type<std::ranges::range_reference_t<Sections>>
+class op_msg_message {
 public:
-    op_msg_content() = default;
-    explicit op_msg_content(Sections&& s)
+    op_msg_message() = default;
+    explicit op_msg_message(Sections&& s)
         : _sections(mlib_fwd(s)) {}
 
 private:
@@ -179,28 +102,52 @@ public:
         return 2013;  // OP_MSG
     }
 
-    vector<asio::const_buffer> buffers(allocator<> a) const noexcept {
-        // XXX: This could be made non-allocating if we know the exact number of buffers we will
-        // generate
+    const_buffer_sequence auto buffers(allocator<> a) const noexcept {
+        return _buffers(a, _sections);
+    }
+
+    Sections&       sections() noexcept { return _sections; }
+    const Sections& sections() const noexcept { return _sections; }
+
+private:
+    const_buffer_sequence auto _buffers(allocator<> a, auto& sections) const noexcept {
         vector<asio::const_buffer> bufs{a};
         auto                       flag_bits_buf = asio::buffer(_flag_bits);
         bufs.push_back(flag_bits_buf);
-        for (auto& sec : _sections) {
+        for (section_type auto& sec : _sections) {
+            auto k = asio::const_buffer(&sec.kind(), 1);
+            bufs.push_back(k);
             auto more = sec.buffers(a);
             bufs.insert(bufs.end(), more.begin(), more.end());
         }
         return bufs;
     }
 
-    Sections&       sections() noexcept { return _sections; }
-    const Sections& sections() const noexcept { return _sections; }
+    // Optimize: We are attaching a fixed number of body sections, so we don't
+    // need to dynamically allocate our buffers
+    template <typename BSON, std::size_t N>
+    const_buffer_sequence auto
+    _buffers(allocator<> a, const std::array<body_section<BSON>, N>& sections) const noexcept {
+        return _buffers_1(a, sections, std::make_index_sequence<N>{});
+    }
+
+    template <typename BSON, std::size_t N, std::size_t... Ns>
+    const_buffer_sequence auto _buffers_1(allocator<>                              a,
+                                          const std::array<body_section<BSON>, N>& sections,
+                                          std::index_sequence<Ns...>) const noexcept {
+        std::array<asio::const_buffer, 1 + (N * 2)> buffers{};
+        buffers[0] = asio::buffer(_flag_bits);
+        ((buffers[1 + (Ns * 2)] = asio::const_buffer(&std::get<Ns>(sections).kind(), 1)), ...);
+        ((buffers[2 + (Ns * 2)] = std::get<Ns>(sections).buffers(a)), ...);
+        return buffers;
+    }
 };
 
 template <typename S>
-explicit op_msg_content(S&&) -> op_msg_content<S>;
+explicit op_msg_message(S&&) -> op_msg_message<S>;
 
 /**
- * @brief Dynamically typed message section type
+ * @brief Dynamically typed OP_MSG section type
  */
 class any_section {
     using var_type = std::variant<body_section<bson::document>>;
@@ -219,11 +166,19 @@ public:
         return std::visit(mlib_fwd(fn), _variant);
     }
 
-    vector<asio::const_buffer> buffers(allocator<> a) {
+    std::uint8_t const& kind() const noexcept {
+        return visit([&](auto&& x) -> decltype(auto) { return x.kind(); });
+    }
+
+    vector<asio::const_buffer> buffers(allocator<> a) const {
         vector<asio::const_buffer> bufs{a};
         this->visit([&](auto&& sec) {
-            const_buffer_sequence auto bs = sec.buffers(a);
-            bufs.insert(bufs.begin(), bs.begin(), bs.end());
+            auto k = asio::const_buffer(&sec.kind(), 1);
+            bufs.push_back(k);
+            auto bs = sec.buffers(a);
+            bufs.insert(bufs.begin(),
+                        asio::buffer_sequence_begin(bs),
+                        asio::buffer_sequence_end(bs));
         });
         return bufs;
     }
@@ -269,13 +224,13 @@ private:
     var_type _variant;
 };
 
-using any_op_msg_content = op_msg_content<vector<any_section>>;
+using any_op_msg_message = op_msg_message<vector<any_section>>;
 
 /**
  * @brief A message with a dynamic content type
  */
 class any_message {
-    using var_type = std::variant<any_op_msg_content>;
+    using var_type = std::variant<any_op_msg_message>;
 
 public:
     explicit any_message(std::int32_t                         request_id,
@@ -287,9 +242,16 @@ public:
 
     const var_type& content() const noexcept { return _content; }
 
-    template <typename F>
-    decltype(auto) visit_content(F&& fn) {
-        return std::visit(mlib_fwd(fn), content());
+    decltype(auto) visit_content(auto&& fn) { return std::visit(mlib_fwd(fn), content()); }
+    decltype(auto) visit_content(auto&& fn) const { return std::visit(mlib_fwd(fn), content()); }
+
+    std::int32_t opcode() const noexcept {
+        return visit_content([&](const auto& c) { return c.opcode(); });
+    }
+
+    const_buffer_sequence auto buffers(allocator<> a) const {
+        return visit_content(
+            [&](const auto& c) -> const_buffer_sequence decltype(auto) { return c.buffers(a); });
     }
 
     bson_view expect_one_body_section_op_msg() const noexcept;
@@ -301,19 +263,15 @@ private:
 };
 
 /**
- * @brief Send a request on a writable stream
+ * @brief Send a request message on a writable stream
  *
  * @param a An allocator for the operation
  * @param strm An Asio writable stream
  * @param req_id The request ID to include
  * @param cont The content spec object
- *
- * The content `cont` must present an `opcode` that specifies the opcode integer, and must
- * have a `buffers(allocator<>)` member function that returns an Asio buffer sequence
- * that represents the message content.
  */
-template <writable_stream Stream, typename Content>
-co_task<mlib::unit> send_request(allocator<> a, Stream& strm, int req_id, Content cont) {
+template <writable_stream Stream, message_type Content>
+co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const Content cont) {
     // Get the buffers for the message
     const_buffer_sequence auto content_buffers = cont.buffers(a);
     const std::size_t          content_size    = asio::buffer_size(content_buffers);
@@ -339,22 +297,6 @@ co_task<mlib::unit> send_request(allocator<> a, Stream& strm, int req_id, Conten
 }
 
 /**
- * @brief Send an OP_MSG on the given stream with a single BSON document body
- *
- * @param a An allocator for the operation
- * @param strm The stream that will send the request
- * @param req_id A request ID
- * @param doc The document to be transmitted
- */
-template <writable_stream Stream>
-co_task<mlib::unit>
-send_op_msg_one_section(allocator<> a, Stream&& strm, int req_id, bson_view doc) {
-    auto one_section = std::array{body_section{doc}};
-    auto op_msg      = op_msg_content{mlib_fwd(one_section)};
-    return send_request(a, strm, req_id, mlib_fwd(op_msg));
-}
-
-/**
  * @brief Receive a wire protocol message from the given readable stream
  *
  * @param a An allocator for the operation
@@ -365,7 +307,8 @@ template <readable_stream Stream>
 co_task<any_message> recv_message(allocator<> a, Stream& strm) {
     std::array<std::uint8_t, 4 * 4> MsgHeader_chars;
     auto                            MsgHeader_dbuf = generic_dynamic_buffer_v1(MsgHeader_chars);
-    std::size_t                     nread          = *co_await asio::async_read(strm,
+
+    std::size_t nread = *co_await asio::async_read(strm,
                                                    asio::buffer(MsgHeader_chars),
                                                    asio::transfer_all(),
                                                    asio_as_nanosender);
@@ -376,7 +319,7 @@ co_task<any_message> recv_message(allocator<> a, Stream& strm) {
     const auto messageLength = read_int_le<std::int32_t>(MsgHeader_dbuf);
     const auto requestID     = read_int_le<std::int32_t>(MsgHeader_dbuf);
     const auto responseTo    = read_int_le<std::int32_t>(MsgHeader_dbuf);
-    const auto opCode        = read_int_le<std::uint32_t>(MsgHeader_dbuf);
+    const auto opCode        = read_int_le<std::int32_t>(MsgHeader_dbuf);
     if (messageLength < sizeof MsgHeader_chars) {
         throw_protocol_error("invalid MsgHeader.messageLength");
     }
@@ -403,7 +346,7 @@ co_task<any_message> recv_message(allocator<> a, Stream& strm) {
             sections.push_back(mlib_fwd(sec));
         }
         // TODO: Checksum validation
-        co_return any_message(requestID, responseTo, op_msg_content(mlib_fwd(sections)));
+        co_return any_message(requestID, responseTo, op_msg_message(mlib_fwd(sections)));
     }
     // OP_MSG
     default:
@@ -411,9 +354,7 @@ co_task<any_message> recv_message(allocator<> a, Stream& strm) {
     }
 }
 
-// Externally compile these specializations
-extern template co_task<mlib::unit>
-send_op_msg_one_section(allocator<> a, tcp_connection_rw_stream&, int req_id, bson_view doc);
+// Externally compile this common specialization
 extern template co_task<any_message> recv_message(allocator<>, tcp_connection_rw_stream&);
 
 }  // namespace amongoc::wire

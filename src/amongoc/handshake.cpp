@@ -9,9 +9,6 @@
 
 using namespace amongoc;
 
-template co_task<handshake_response> amongoc::handshake(tcp_connection_rw_stream&,
-                                                        std::optional<std::string_view>);
-
 amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bson_view msg) {
     handshake_response ret{a};
 #define FIELD(FieldName, Cast)                                                                     \

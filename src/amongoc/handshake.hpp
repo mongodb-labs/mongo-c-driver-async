@@ -1,11 +1,12 @@
 #pragma once
 
-#include <amongoc/asio/read_write.hpp>
 #include <amongoc/bson/build.h>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/string.hpp>
 #include <amongoc/vector.hpp>
-#include <amongoc/wire.hpp>
+#include <amongoc/wire/client.hpp>
+#include <amongoc/wire/proto.hpp>
+#include <amongoc/wire/stream.hpp>
 
 #include <mlib/alloc.h>
 
@@ -86,25 +87,20 @@ bson::document create_handshake_command(allocator<>                     a,
                                         std::optional<std::string_view> application_name);
 
 /**
- * @brief Issue a MongoDB handshake on the given stream
+ * @brief Issue a MongoDB handshake on the given client
  *
  * @param alloc An allocator for the operation
  * @param strm The connection that will be used
  * @return Handshake response data
  */
-template <writable_stream Stream>
-    requires mlib::has_mlib_allocator<Stream>
-co_task<handshake_response> handshake(Stream&&                        strm,
-                                      std::optional<std::string_view> application_name) {
-    const allocator<> a   = mlib::get_allocator(strm);
-    auto              cmd = create_handshake_command(a, application_name);
-    co_await wire::send_op_msg_one_section(a, strm, 0, cmd);
-    wire::any_message resp = co_await wire::recv_message(a, strm);
-    auto              body = resp.expect_one_body_section_op_msg();
+template <wire::client_interface C>
+co_task<handshake_response> handshake(C& cl, std::optional<std::string_view> app_name) {
+    auto a    = cl.get_allocator();
+    auto cmd  = create_handshake_command(a, app_name);
+    auto msg  = wire::op_msg_message{std::array{wire::body_section{bson_view(cmd)}}};
+    auto resp = co_await cl.request(msg);
+    auto body = resp.expect_one_body_section_op_msg();
     co_return handshake_response::parse(a, body);
 }
-
-extern template co_task<handshake_response> handshake(tcp_connection_rw_stream&,
-                                                      std::optional<std::string_view>);
 
 }  // namespace amongoc

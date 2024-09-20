@@ -1,25 +1,75 @@
+/**
+ * @file buffer.hpp
+ * @brief Buffer-oriented operation utilities
+ * @date 2024-09-20
+ *
+ * The utilities in this file are intended for use with Asio buffer operations.
+ */
 #pragma once
-
-#include <amongoc/asio/read_write.hpp>
 
 #include <mlib/config.h>
 
 #include <asio/buffer.hpp>
 #include <asio/buffers_iterator.hpp>
+#include <neo/iterator_facade.hpp>
 
 #include <cstddef>
 #include <iterator>
 #include <ranges>
+#include <utility>
 
-namespace amongoc {
+namespace amongoc::wire {
 
-// Match a range whose objects are byte-sized
+/**
+ * @brief Match a range whose value type is byte-sized and convertible to `std::byte`
+ *
+ * This range is not necessarily contiguous
+ */
 template <typename T>
 concept byte_range = std::ranges::input_range<T> and sizeof(std::ranges::range_value_t<T>) == 1
     and requires(std::ranges::range_reference_t<T> b) { static_cast<std::byte>(b); };
 
+/**
+ * @brief Match a contiguous range of byte-sized objects
+ */
 template <typename T>
 concept contiguous_byte_range = std::ranges::contiguous_range<T> and byte_range<T>;
+
+// Match an iterator that yields `const_buffer` objects
+template <typename T>
+concept const_buffer_iterator = std::forward_iterator<T>
+    and std::convertible_to<std::iter_reference_t<T>, asio::const_buffer>;
+
+// Match an iterator that yields `mutable_buffer` objects
+template <typename T>
+concept mutable_buffer_iterator = const_buffer_iterator<T>
+    and std::convertible_to<std::iter_reference_t<T>, asio::mutable_buffer>;
+
+// Match an Asio ConstBufferSequence
+template <typename T>
+concept const_buffer_sequence = std::copy_constructible<T> and requires(T bufs) {
+    { asio::buffer_sequence_begin(bufs) } -> const_buffer_iterator;
+};
+
+// Match an Asio MutableBufferSequence
+template <typename T>
+concept mutable_buffer_sequence = const_buffer_sequence<T> and requires(T bufs) {
+    { asio::buffer_sequence_begin(bufs) } -> mutable_buffer_iterator;
+};
+
+/**
+ * @brief Match a type for Asio's DynamicBuffer_v1 concept
+ */
+template <typename T>
+concept dynamic_buffer_v1 = requires(T dbuf, const std::size_t sz) {
+    { dbuf.size() } -> std::same_as<std::size_t>;
+    { dbuf.max_size() } -> std::same_as<std::size_t>;
+    { dbuf.capacity() } -> std::same_as<std::size_t>;
+    { dbuf.data() } -> const_buffer_sequence;
+    { dbuf.prepare(sz) } -> mutable_buffer_sequence;
+    { dbuf.commit(sz) };
+    { dbuf.consume(sz) };
+};
 
 /**
  * @brief Provides an Asio DynamicBufferv1 interface over a generic array-like
@@ -69,7 +119,7 @@ template <typename T>
 explicit generic_dynamic_buffer_v1(T&&, std::size_t = 0) -> generic_dynamic_buffer_v1<T>;
 
 /**
- * @brief Create an byte-wise range that views the bytes of a buffer sequence
+ * @brief Create an byte-wise range that views the bytes of an Asio buffer sequence
  *
  * @param bufs the buffers to be viewed
  */
@@ -102,4 +152,4 @@ constexpr byte_range auto buffers_unbounded(const B& bufs) {
     return std::ranges::subrange(it, std::unreachable_sentinel);
 }
 
-}  // namespace amongoc
+}  // namespace amongoc::wire
