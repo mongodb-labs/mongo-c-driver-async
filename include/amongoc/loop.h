@@ -19,6 +19,16 @@ typedef struct amongoc_loop        amongoc_loop;
 
 enum amongoc_event_loop_verison { amongoc_event_loop_v1 = 1 };
 
+struct amongoc_const_buffer {
+    const void* buf;
+    size_t      len;
+};
+
+struct amongoc_mutable_buffer {
+    void*  buf;
+    size_t len;
+};
+
 struct amongoc_loop_vtable {
     // The version of the event loop API implemented by this object.
     enum amongoc_event_loop_verison version;
@@ -40,17 +50,17 @@ struct amongoc_loop_vtable {
                         amongoc_view    addrinfo,
                         amongoc_handler on_connect) mlib_noexcept;
 
-    void (*tcp_write_some)(amongoc_loop*   self,
-                           amongoc_view    tcp_conn,
-                           const char*     data,
-                           size_t          len,
-                           amongoc_handler on_write) mlib_noexcept;
+    void (*tcp_write_some)(amongoc_loop*                      self,
+                           amongoc_view                       tcp_conn,
+                           struct amongoc_const_buffer const* bufs,
+                           size_t                             nbufs,
+                           amongoc_handler                    on_write) mlib_noexcept;
 
-    void (*tcp_read_some)(amongoc_loop*   self,
-                          amongoc_view    tcp_conn,
-                          char*           dest,
-                          size_t          maxlen,
-                          amongoc_handler on_finish) mlib_noexcept;
+    void (*tcp_read_some)(amongoc_loop*                        self,
+                          amongoc_view                         tcp_conn,
+                          struct amongoc_mutable_buffer const* bufs,
+                          size_t                               nbufs,
+                          amongoc_handler                      on_finish) mlib_noexcept;
 
     void* (*allocate)(amongoc_loop* self, size_t sz)mlib_noexcept;
     void (*deallocate)(amongoc_loop* self, void*) mlib_noexcept;

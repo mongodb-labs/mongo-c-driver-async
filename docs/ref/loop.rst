@@ -13,6 +13,17 @@ Type: `amongoc_loop`
   - `amongoc_default_loop_destroy`
   - `amongoc_default_loop_run`
 
+.. struct::
+  amongoc_const_buffer
+  amongoc_mutable_buffer
+
+  Provides sized-buffer types that can be used for scatter/gather I/O.
+  The `buf` member of `amongoc_const_buffer` is a pointer-to-const ``void``.
+
+  .. member::
+    void* buf
+    std::size_t len
+
 .. struct:: amongoc_loop
 
   An event loop for the amongoc library.
@@ -106,33 +117,34 @@ Type: `amongoc_loop`
     may be destroyed at any time via `amongoc_box_destroy`, which should release
     any associated resources and close the connection.
 
-  .. function:: void tcp_write_some(amongoc_loop* self, amongoc_view conn, const char* data, std::size_t len, amongoc_handler on_write)
+  .. function:: void tcp_write_some(amongoc_loop* self, amongoc_view conn, const amongoc_const_buffer* bufs, std::size_t nbufs, amongoc_handler on_write)
 
     Write some data to a TCP connection.
 
     :param conn: The connection object that resulted from `tcp_connect`.
-    :param data: Pointer to the beginning of a data buffer to be written to the socket.
-    :param len: The length of the buffer pointed-to by `data`.
+    :param bufs: Pointer to an array of buffers to be written.
+    :param nbufs: The number of buffers pointer-to by `bufs`.
     :param on_write: The handler for the operation.
 
-    This function should write at-most `len` bytes from `data` into the TCP
-    connection referenced by `conn`. The result value given to
-    `amongoc_handler_complete` must be a `std::size_t` value equal to the number of
-    bytes that were successfully written to the socket.
+    This function should write some data from the given buffesr into the TCP
+    connection referenced by `conn`. It is not required that all data be written
+    in a single call. The result value given to `amongoc_handler_complete` must
+    be a `std::size_t` value equal to the number of bytes that were successfully
+    written to the socket.
 
-  .. function:: void tcp_read_some(amongoc_loop* self, amongoc_view conn, char* data, std::size_t maxlen, amongoc_handler on_read)
+  .. function:: void tcp_read_some(amongoc_loop* self, amongoc_view conn, const amongoc_mutable_buffer* bufs, std::size_t nbufs, amongoc_handler on_read)
 
     Read some data from a TCP connection.
 
     :param conn: The connection object that came from `tcp_connect`.
-    :param data: Pointer to the beginning of a mutable buffer where data can be written.
-    :param maxlen: The maximum number of bytes that can be written to `data`
+    :param bufs: Pointer to an array of buffers that will receive data.
+    :param maxlen: The number of buffers pointed-to by `bufs`.
     :param on_read: A handler for the operation.
 
-    This function should read at-most `maxlen` bytes from the TCP connection
-    `conn` into the buffer `data`. The result given to `amongoc_handler_complete` must
-    be a `std::size_t` value equal to the number of bytes that were read from
-    the socket.
+    This function should read data from the TCP connection `conn` into the
+    buffers of `bufs`. The result given to `amongoc_handler_complete` must be a
+    `std::size_t` value equal to the number of bytes that were read from the
+    socket.
 
   .. function:: mlib_allocator get_allocator(const amongoc_loop* self) [[optional]]
 

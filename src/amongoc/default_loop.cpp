@@ -18,6 +18,7 @@
 #include <asio/steady_timer.hpp>
 #include <asio/system_error.hpp>
 #include <asio/write.hpp>
+#include <neo/iterator_facade.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -110,6 +111,27 @@ private:
 template <typename Tr>
 explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_handler<Tr>;
 
+// Adapt an array of amongoc_iovec objects to an Asio buffer sequence
+template <typename B>
+struct iovec_buffer_sequence {
+    B const*    bufs;
+    std::size_t len;
+
+    struct iterator : neo::iterator_facade<iterator> {
+        B const* buf = nullptr;
+
+        bool operator==(iterator o) const noexcept { return buf == o.buf; }
+        bool operator<=>(iterator o) const noexcept { return buf == o.buf; }
+
+        void           advance(std::ptrdiff_t p) noexcept { buf += p; }
+        std::ptrdiff_t distance_to(iterator o) const noexcept { return o.buf - buf; }
+        auto           dereference() const noexcept { return asio::buffer(buf->buf, buf->len); }
+    };
+
+    iterator begin() const noexcept { return iterator{{}, bufs}; }
+    iterator end() const noexcept { return iterator{{}, bufs + len}; }
+};
+
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
     allocator<> _alloc;
@@ -175,22 +197,25 @@ struct default_loop {
             _cancel_signals.checkout()));
     }
 
-    void tcp_write_some(amongoc_view    sock,
-                        const char*     data,
-                        std::size_t     maxlen,
-                        amongoc_handler on_write) {
+    void tcp_write_some(amongoc_view                  sock,
+                        ::amongoc_const_buffer const* bufs,
+                        std::size_t                   nbufs,
+                        amongoc_handler               on_write) {
         auto a  = on_write.get_allocator();
         auto uh = mlib_fwd(on_write).as_unique();
-        sock.as<tcp::socket>().async_write_some(asio::buffer(data, maxlen),
+        sock.as<tcp::socket>().async_write_some(iovec_buffer_sequence{bufs, nbufs},
                                                 adapt_handler(mlib_fwd(uh),
                                                               as_box(a),
                                                               _cancel_signals.checkout()));
     }
 
-    void tcp_read_some(amongoc_view sock, char* data, std::size_t maxlen, amongoc_handler on_read) {
+    void tcp_read_some(amongoc_view                    sock,
+                       ::amongoc_mutable_buffer const* bufs,
+                       std::size_t                     nbufs,
+                       amongoc_handler                 on_read) {
         auto a  = on_read.get_allocator();
         auto uh = mlib_fwd(on_read).as_unique();
-        sock.as<tcp::socket>().async_read_some(asio::buffer(data, maxlen),
+        sock.as<tcp::socket>().async_read_some(iovec_buffer_sequence{bufs, nbufs},
                                                adapt_handler(mlib_fwd(uh),
                                                              as_box(a),
                                                              _cancel_signals.checkout()));

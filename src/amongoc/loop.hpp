@@ -15,6 +15,7 @@
 #include <amongoc/emitter_result.h>
 #include <amongoc/handler.h>
 #include <amongoc/loop.h>
+#include <amongoc/wire/buffer.hpp>
 
 #include <mlib/object_t.hpp>
 
@@ -62,10 +63,20 @@ struct tcp_connection_rw_stream {
     // Obtain an allocator for the stream. Pulls the allocator from the event loop
     allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
 
+    // A completion handler for a unique_handle that calls an Asio callback
+    template <typename C>
+    struct transfer_completer {
+        C cb;
+
+        void operator()(emitter_result&& res_nbytes) {
+            std::move(cb)(res_nbytes.status.as_error_code(), res_nbytes.value.as<std::size_t>());
+        }
+    };
+
     /**
      * @brief Implement reading for Asio AsyncReadStream
      *
-     * @param buf The mutable buffer destination for data
+     * @param buf The mutable destination buffers
      * @param cb The completion callback
      *
      * NOTE: This doesn't fully conform to the AsyncReadStream, which requires genericity
@@ -78,62 +89,72 @@ struct tcp_connection_rw_stream {
      *
      * Because this is part of a private API, as long as it compiles, it is good enough for us.
      */
-    void async_read_some(asio::mutable_buffer buf, auto cb) {
-        loop->vtable
-            ->tcp_read_some(loop,
-                            conn,
-                            static_cast<char*>(buf.data()),
-                            buf.size(),
-                            unique_handler::from(get_allocator(),
-                                                 [cb](emitter_result&& res_nbytes) mutable {
-                                                     std::move(
-                                                         cb)(res_nbytes.status.as_error_code(),
-                                                             res_nbytes.value.as<std::size_t>());
-                                                 })
-                                .release());
+    template <wire::mutable_buffer_sequence Bufs, typename C>
+    void async_read_some(Bufs&& bufs, C&& cb) {
+        auto [vecs, n_bufs] = _make_vec_array(bufs);
+        loop->vtable->tcp_read_some(loop,
+                                    conn,
+                                    vecs.data(),
+                                    n_bufs,
+                                    unique_handler::from(get_allocator(),
+                                                         transfer_completer<C>{mlib_fwd(cb)})
+                                        .release());
     }
 
     /**
      * @brief Implement writing for Asio AsyncWriteStream
      *
-     * @param buf The buffer to be written to the socket
+     * @param buf The buffers to be written to the socket
      * @param cb The completion callback
      *
      * NOTE: See the NOTE above on async_read_some for caveats
      */
-    void async_write_some(asio::const_buffer buf, auto&& cb) {
-        loop->vtable
-            ->tcp_write_some(loop,
-                             conn,
-                             static_cast<const char*>(buf.data()),
-                             buf.size(),
-                             unique_handler::from(get_allocator(),
-                                                  [cb = mlib_fwd(cb)](
-                                                      emitter_result&& res_nbytes) mutable {
-                                                      std::move(
-                                                          cb)(res_nbytes.status.as_error_code(),
-                                                              res_nbytes.value.as<std::size_t>());
-                                                  })
-                                 .release());
+    template <wire::const_buffer_sequence Bufs, typename C>
+    void async_write_some(Bufs&& bufs, C&& cb) {
+        auto [vecs, n_bufs] = _make_vec_array(bufs);
+        loop->vtable->tcp_write_some(loop,
+                                     conn,
+                                     vecs.data(),
+                                     n_bufs,
+                                     unique_handler::from(get_allocator(),
+                                                          transfer_completer<C>(mlib_fwd(cb)))
+                                         .release());
     }
 
+private:
+    static constexpr std::size_t max_vec_bufs = 16;
+
     /**
-     * @brief Handle writing a range of buffers.
-     *
-     * This template simply finds the first non-empty buffer in the range and
-     * sends that as a single buffer. A fancier version could potentially use
-     * a vector write.
+     * @brief Create a std::array of iovec buffers from a buffer sequence
      */
-    template <std::ranges::input_range Bufs>
-        requires std::convertible_to<std::ranges::range_reference_t<Bufs>, asio::const_buffer>
-    void async_write_some(Bufs&& bufs, auto&& cb) {
-        for (asio::const_buffer buf : bufs) {
-            // Find the first non-empty buffer, and send that one buffer
-            if (buf.size() != 0) {
-                return async_write_some(buf, mlib_fwd(cb));
-            }
-        }
-        return async_write_some(asio::const_buffer(), cb);
+    template <wire::const_buffer_sequence Bufs>
+    static std::pair<std::array<::amongoc_const_buffer, max_vec_bufs>, std::size_t>
+    _make_vec_array(const Bufs& bufs) {
+        std::array<::amongoc_const_buffer, max_vec_bufs> vecs;
+        auto                                             it = asio::buffer_sequence_begin(bufs);
+        const auto stop    = std::ranges::next(it, vecs.size(), asio::buffer_sequence_end(bufs));
+        auto       vec_end = std::transform(it, stop, vecs.begin(), _asio_to_iovec_const);
+        auto       n_bufs  = vec_end - vecs.begin();
+        return std::make_pair(vecs, static_cast<std::size_t>(n_bufs));
+    }
+
+    template <wire::mutable_buffer_sequence Bufs>
+    static std::pair<std::array<::amongoc_mutable_buffer, max_vec_bufs>, std::size_t>
+    _make_vec_array(const Bufs& bufs) {
+        std::array<::amongoc_mutable_buffer, max_vec_bufs> vecs;
+        auto                                               it = asio::buffer_sequence_begin(bufs);
+        const auto stop    = std::ranges::next(it, vecs.size(), asio::buffer_sequence_end(bufs));
+        auto       vec_end = std::transform(it, stop, vecs.begin(), _asio_to_iovec_mut);
+        auto       n_bufs  = vec_end - vecs.begin();
+        return std::make_pair(vecs, static_cast<std::size_t>(n_bufs));
+    }
+
+    static ::amongoc_const_buffer _asio_to_iovec_const(asio::const_buffer cb) noexcept {
+        return ::amongoc_const_buffer{cb.data(), cb.size()};
+    }
+
+    static ::amongoc_mutable_buffer _asio_to_iovec_mut(asio::mutable_buffer mb) noexcept {
+        return ::amongoc_mutable_buffer{mb.data(), mb.size()};
     }
 };
 
