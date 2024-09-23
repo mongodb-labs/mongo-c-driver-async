@@ -63,13 +63,10 @@ struct body_section {
     static constexpr std::uint8_t kind_byte = 0;
 
     asio::const_buffers_1 buffers(allocator<>) const noexcept {
-        // The rest of the message here
         return asio::buffer(body.data(), body.byte_size());
     }
 
-    std::uint8_t const& kind() const noexcept {
-        return kind_byte;  // Kind has byte value zero
-    }
+    std::uint8_t const& kind() const noexcept { return kind_byte; }
 };
 
 /**
@@ -289,7 +286,7 @@ co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const 
     // MsgHeader.opCode
     const auto opcode = cont.opcode();
     write_int_le(MsgHeader_dbuf, static_cast<std::int32_t>(opcode));
-    // Create a bufffer for the message header
+    // Create a buffer for the message header
     auto MsgHeader_buf = asio::buffer(MsgHeader_chars);
     // Join the message header with the buffers for the message content
     const_buffer_sequence auto all_buffers = neo::views::concat(MsgHeader_buf, content_buffers);
