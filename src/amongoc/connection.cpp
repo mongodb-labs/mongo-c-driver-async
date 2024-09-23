@@ -1,77 +1,71 @@
-#include "./connection.hpp"
-
-#include "./string.hpp"
 
 #include <amongoc/box.h>
 #include <amongoc/bson/build.h>
 #include <amongoc/connection.h>
+#include <amongoc/connection_pool.hpp>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/emitter.h>
+#include <amongoc/loop.h>
 #include <amongoc/loop.hpp>
 #include <amongoc/nano/nano.hpp>
+#include <amongoc/uri.hpp>
+#include <amongoc/wire/proto.hpp>
 
-#include <chrono>
-#include <memory>
+#include <mlib/alloc.h>
 
 using namespace amongoc;
 
-struct _amongoc_connection_cxx {
-    explicit _amongoc_connection_cxx(tcp_connection_rw_stream&& conn)
-        : _conn(get_allocator(*conn.loop), std::move(conn)) {}
+struct _amongoc_client_cxx {
+    explicit _amongoc_client_cxx(amongoc_loop& loop, connection_uri&& uri)
+        : _pool(loop, mlib_fwd(uri)) {}
 
-    raw_connection<tcp_connection_rw_stream, allocator<>> _conn;
+    connection_pool _pool;
 };
 
-emitter amongoc_connection::command(const bson_view& doc) noexcept {
-    return amongoc_conn_command(*this, doc);
-}
-
-emitter _connect(amongoc_loop* loop, string name, string svc) noexcept {
-    auto addr   = *co_await async_resolve(*loop, name.data(), svc.data());
-    auto socket = *co_await async_connect(*loop, std::move(addr));
-
-    auto alloc = loop->get_allocator().rebind<_amongoc_connection_cxx>();
-
-    co_return unique_box::from(  //
+emitter _amc_client_connect(amongoc_loop& loop, connection_uri uri) noexcept {
+    auto alloc = loop.get_allocator().rebind<_amongoc_client_cxx>();
+    auto cl    = unique_box::from(  //
         alloc,
-        amongoc_connection{alloc.new_(std::move(socket))},
-        [](amongoc_connection& cl) -> void { amongoc_conn_destroy(cl); });
+        amongoc_client{alloc.new_(loop, mlib_fwd(uri))},
+        just_invokes<&amongoc_client_destroy>{});
+    // Await a connection from the pool, to ensure that the connection is valid
+    co_await cl.as<amongoc_client>()._impl->_pool.checkout();
+    // The connection is okay. Return it now.
+    co_return cl;
 }
 
-emitter amongoc_conn_connect(amongoc_loop* loop, const char* name, const char* svc) noexcept {
-    // Copy the name/svc into a string to outlive the operation state.
-    return _connect(loop, string(name, loop->get_allocator()), string(svc, loop->get_allocator()));
+emitter amongoc_client_new(amongoc_loop* loop, const char* uri_str) noexcept {
+    // Note: We copy the URI here before making the connect operation, because
+    // we want to hold a copy of the URI string.
+    auto uri = connection_uri::parse(uri_str, loop->get_allocator());
+    if (not uri.has_value()) {
+        return amongoc_just(uri.error(), amongoc_nil, ::mlib_terminating_allocator);
+    }
+    return _amc_client_connect(*loop, *mlib_fwd(uri));
 }
 
-static nanosender_of<emitter_result> auto _command(amongoc_connection cl, auto doc) noexcept {
-    return cl._impl->_conn.send_op_msg(doc)
-        | amongoc::then([cl](result<bson::document>&& r) -> emitter_result {
-               if (r.has_value()) {
-                   bson_mut m = std::move(r).value().release();
-                   return emitter_result(  //
-                       0,
-                       unique_box::from(get_allocator(cl), m, [](bson_mut& m) {
-                           bson_mut_delete(m);
-                       }));
-               } else {
-                   return emitter_result(r.error());
-               }
-           });
+static amongoc_emitter _command(amongoc_client cl, auto doc) noexcept {
+    wire::client_interface auto conn = co_await cl._impl->_pool.checkout();
+    auto              msg  = wire::op_msg_message{std::array{wire::body_section(bson_view(doc))}};
+    wire::any_message resp = co_await conn.request(msg);
+    bson::document&&  body = std::move(resp).expect_one_body_section_op_msg();
+    co_return unique_box::from(cl.get_allocator(),
+                               mlib_fwd(body).release(),
+                               just_invokes<&bson_mut_delete>{});
 }
 
-emitter amongoc_conn_command(amongoc_connection cl, bson_view doc) noexcept {
-    return as_emitter(cl.get_allocator(), _command(cl, bson::document(doc, cl.get_allocator())))
-        .release();
+emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
+    return _command(cl, doc);
 }
 
-emitter amongoc_conn_command_nocopy(amongoc_connection cl, bson_view doc) noexcept {
-    return as_emitter(cl.get_allocator(), _command(cl, doc)).release();
+emitter amongoc_client_command_nocopy(amongoc_client cl, bson_view doc) noexcept {
+    return _command(cl, bson::document(doc, cl.get_allocator()));
 }
 
-void amongoc_conn_destroy(amongoc_connection cl) noexcept {
-    cl.get_allocator().rebind<_amongoc_connection_cxx>().delete_(cl._impl);
+void amongoc_client_destroy(amongoc_client cl) noexcept {
+    cl.get_allocator().rebind<_amongoc_client_cxx>().delete_(cl._impl);
 }
 
-amongoc_loop* amongoc_conn_get_event_loop(amongoc_connection cl) noexcept {
-    return cl._impl->_conn.socket().loop;
+amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) noexcept {
+    return &cl._impl->_pool.loop();
 }
