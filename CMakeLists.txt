@@ -14,8 +14,10 @@ endif()
 
 find_package(asio CONFIG REQUIRED)
 find_package(neo-fun CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED URL)
+find_package(Boost CONFIG REQUIRED URL Container)
 find_package(fmt CONFIG REQUIRED)
+
+find_package(Threads REQUIRED)
 
 # Support modules
 include(CMakePackageConfigHelpers)
@@ -90,6 +92,8 @@ target_link_libraries(amongoc PUBLIC
     fmt::fmt
     amongoc::detail::c_platform
     Boost::url
+    Boost::container
+    Threads::Threads
     )
 
 if(BUILD_TESTING)
