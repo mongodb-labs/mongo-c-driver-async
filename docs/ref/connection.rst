@@ -2,8 +2,8 @@
 Type: `amongoc_connection`
 ##########################
 
-.. |this-header| replace:: :header-file:`amongoc/connection.h`
-.. header-file:: amongoc/connection.h
+.. |this-header| replace:: :header-file:`amongoc/client.h`
+.. header-file:: amongoc/client.h
 
   Contains the following:
 

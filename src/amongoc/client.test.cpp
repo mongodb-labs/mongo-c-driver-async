@@ -3,7 +3,7 @@
 #include <amongoc/box.h>
 #include <amongoc/bson/build.h>
 #include <amongoc/bson/view.h>
-#include <amongoc/connection.h>
+#include <amongoc/client.h>
 #include <amongoc/default_loop.h>
 #include <amongoc/emitter.h>
 #include <amongoc/loop.h>

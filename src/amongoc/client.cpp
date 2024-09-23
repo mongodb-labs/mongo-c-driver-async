@@ -1,7 +1,7 @@
 
 #include <amongoc/box.h>
 #include <amongoc/bson/build.h>
-#include <amongoc/connection.h>
+#include <amongoc/client.h>
 #include <amongoc/connection_pool.hpp>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/emitter.h>
