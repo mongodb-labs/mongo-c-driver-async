@@ -16,7 +16,6 @@
 #include <cstddef>
 #include <iterator>
 #include <ranges>
-#include <utility>
 
 namespace amongoc::wire {
 
@@ -56,6 +55,16 @@ template <typename T>
 concept mutable_buffer_sequence = const_buffer_sequence<T> and requires(T bufs) {
     { asio::buffer_sequence_begin(bufs) } -> mutable_buffer_iterator;
 };
+
+// Match an Asio ConstBufferSequence that is actually just a single buffer
+template <typename T>
+concept single_const_buffer
+    = const_buffer_sequence<T> and std::convertible_to<T, asio::const_buffer>;
+
+// Match an Asio MutableBufferSequence that is actually just a single buffer
+template <typename T>
+concept single_mutable_buffer = mutable_buffer_sequence<T> and single_const_buffer<T>
+    and std::convertible_to<T, asio::mutable_buffer>;
 
 /**
  * @brief Match a type for Asio's DynamicBuffer_v1 concept
@@ -119,6 +128,25 @@ template <typename T>
 explicit generic_dynamic_buffer_v1(T&&, std::size_t = 0) -> generic_dynamic_buffer_v1<T>;
 
 /**
+ * @brief Coerce an Asio buffer sequence into a standard C++ range type
+ *
+ * @param bufs A buffer sequence to be converted
+ *
+ * Asio supports buffer sequences that aren't standard ranges, based on the
+ * `buffer_sequence_begin` / `buffer_sequence_end` mechanism. This function will coerce such buffer
+ * sequence to regular ranges using the standard `begin` / `end` idiom.
+ */
+template <const_buffer_sequence B>
+constexpr const_buffer_sequence decltype(auto) buffer_sequence_as_range(B&& bufs) {
+    if constexpr (std::ranges::input_range<B>) {
+        return mlib_fwd(bufs);
+    } else {
+        return std::ranges::subrange(asio::buffer_sequence_begin(bufs),
+                                     asio::buffer_sequence_end(bufs));
+    }
+}
+
+/**
  * @brief Create an byte-wise range that views the bytes of an Asio buffer sequence
  *
  * @param bufs the buffers to be viewed
@@ -126,13 +154,13 @@ explicit generic_dynamic_buffer_v1(T&&, std::size_t = 0) -> generic_dynamic_buff
 template <const_buffer_sequence B>
 constexpr byte_range auto buffers_subrange(const B& bufs) {
     // Optimize for cases that the object is a single buffer.
-    if constexpr (std::convertible_to<B, asio::mutable_buffer>) {
-        auto mb = asio::mutable_buffer(bufs);
-        auto p  = reinterpret_cast<char*>(mb.data());
+    if constexpr (single_mutable_buffer<B>) {
+        asio::mutable_buffer mb = bufs;
+        auto                 p  = reinterpret_cast<char*>(mb.data());
         return std::ranges::subrange(p, p + mb.size());
-    } else if constexpr (std::convertible_to<B, asio::const_buffer>) {
-        auto cb = asio::const_buffer(bufs);
-        auto p  = reinterpret_cast<const char*>(cb.data());
+    } else if constexpr (single_const_buffer<B>) {
+        asio::const_buffer cb = bufs;
+        auto               p  = reinterpret_cast<const char*>(cb.data());
         return std::ranges::subrange(p, p + cb.size());
     } else {
         return std::ranges::subrange(asio::buffers_begin(bufs), asio::buffers_end(bufs));
