@@ -121,6 +121,11 @@ class in_place_stop_source {
 public:
     in_place_stop_source()                       = default;
     in_place_stop_source(in_place_stop_source&&) = delete;
+    ~in_place_stop_source() {
+        assert((_state.load() & state_t::locked) == 0
+               && "in_place_stop_source was destroyed while executing callbacks");
+        assert(_head_callback == nullptr && "in_place_stop_source was destroyed while stop callbacks are still registered. Check the order of object destruction!");
+    }
 
     /**
      * @brief Get a new token for this stop source

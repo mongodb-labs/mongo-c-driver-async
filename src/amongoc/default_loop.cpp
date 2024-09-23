@@ -81,11 +81,18 @@ public:
 
     // Handler for Asio operations that complete with an error code and no value
     void operator()(asio::error_code ec) {
+        // Destroy the stop registration, because completing the handler may destroy the
+        // associated stop state.
+        // XXX: Research why this wasn't needed until the coroutine refactor on 9/22/2024
+        _stop_cookie = amongoc_nil.as_unique();
         _handler.complete(status::from(ec), std::move(_transform)(mlib::unit{}));
     }
 
     // Handler for Asio operations that complete with a value and an error code (most operations)
     void operator()(asio::error_code ec, auto&& res) {
+        // Destroy the stop registration, because completing the handler may destroy the
+        // associated stop state
+        _stop_cookie = amongoc_nil.as_unique();
         _handler.complete(status::from(ec), std::move(_transform)(mlib_fwd(res)));
     }
 
