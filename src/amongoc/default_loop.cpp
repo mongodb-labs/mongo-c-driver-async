@@ -6,7 +6,10 @@
 #include <amongoc/loop.h>
 #include <amongoc/status.h>
 
+#include <mlib/algorithm.hpp>
+
 #include <asio/bind_cancellation_slot.hpp>
+#include <asio/buffer.hpp>
 #include <asio/cancellation_signal.hpp>
 #include <asio/cancellation_type.hpp>
 #include <asio/connect.hpp>
@@ -18,6 +21,7 @@
 #include <asio/steady_timer.hpp>
 #include <asio/system_error.hpp>
 #include <asio/write.hpp>
+#include <boost/container/static_vector.hpp>
 #include <neo/iterator_facade.hpp>
 
 #include <chrono>
@@ -111,27 +115,6 @@ private:
 template <typename Tr>
 explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_handler<Tr>;
 
-// Adapt an array of amongoc_iovec objects to an Asio buffer sequence
-template <typename B>
-struct iovec_buffer_sequence {
-    B const*    bufs;
-    std::size_t len;
-
-    struct iterator : neo::iterator_facade<iterator> {
-        B const* buf = nullptr;
-
-        bool operator==(iterator o) const noexcept { return buf == o.buf; }
-        bool operator<=>(iterator o) const noexcept { return buf == o.buf; }
-
-        void           advance(std::ptrdiff_t p) noexcept { buf += p; }
-        std::ptrdiff_t distance_to(iterator o) const noexcept { return o.buf - buf; }
-        auto           dereference() const noexcept { return asio::buffer(buf->buf, buf->len); }
-    };
-
-    iterator begin() const noexcept { return iterator{{}, bufs}; }
-    iterator end() const noexcept { return iterator{{}, bufs + len}; }
-};
-
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
     allocator<> _alloc;
@@ -201,9 +184,12 @@ struct default_loop {
                         ::amongoc_const_buffer const* bufs,
                         std::size_t                   nbufs,
                         amongoc_handler               on_write) {
+        boost::container::static_vector<asio::const_buffer, 16> buf_vec;
+        mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
+                               buf_vec);
         auto a  = on_write.get_allocator();
         auto uh = mlib_fwd(on_write).as_unique();
-        sock.as<tcp::socket>().async_write_some(iovec_buffer_sequence{bufs, nbufs},
+        sock.as<tcp::socket>().async_write_some(buf_vec,
                                                 adapt_handler(mlib_fwd(uh),
                                                               as_box(a),
                                                               _cancel_signals.checkout()));
@@ -213,13 +199,27 @@ struct default_loop {
                        ::amongoc_mutable_buffer const* bufs,
                        std::size_t                     nbufs,
                        amongoc_handler                 on_read) {
+        boost::container::static_vector<asio::mutable_buffer, 16> buf_vec;
+        mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
+                               buf_vec);
         auto a  = on_read.get_allocator();
         auto uh = mlib_fwd(on_read).as_unique();
-        sock.as<tcp::socket>().async_read_some(iovec_buffer_sequence{bufs, nbufs},
+        sock.as<tcp::socket>().async_read_some(buf_vec,
                                                adapt_handler(mlib_fwd(uh),
                                                              as_box(a),
                                                              _cancel_signals.checkout()));
     }
+
+private:
+    static inline constexpr struct {
+        asio::const_buffer operator()(::amongoc_const_buffer cb) const noexcept {
+            return asio::const_buffer{cb.buf, cb.len};
+        }
+
+        asio::mutable_buffer operator()(::amongoc_mutable_buffer mb) const noexcept {
+            return asio::mutable_buffer{mb.buf, mb.len};
+        }
+    } _amc_buf_to_asio_buf{};
 };
 
 }  // namespace

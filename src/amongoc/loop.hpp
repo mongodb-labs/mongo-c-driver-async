@@ -17,10 +17,12 @@
 #include <amongoc/loop.h>
 #include <amongoc/wire/buffer.hpp>
 
+#include <mlib/algorithm.hpp>
 #include <mlib/object_t.hpp>
 
 #include <asio/awaitable.hpp>
 #include <asio/buffer.hpp>
+#include <boost/container/static_vector.hpp>
 
 #include <cstddef>
 
@@ -91,11 +93,14 @@ struct tcp_connection_rw_stream {
      */
     template <wire::mutable_buffer_sequence Bufs, typename C>
     void async_read_some(Bufs&& bufs, C&& cb) {
-        auto [vecs, n_bufs] = _make_vec_array(bufs);
+        boost::container::static_vector<::amongoc_mutable_buffer, max_vec_bufs> buf_vec;
+        mlib::copy_to_capacity(wire::buffer_sequence_as_range(bufs)
+                                   | std::views::transform(_asio_buf_to_amc_buf),
+                               buf_vec);
         loop->vtable->tcp_read_some(loop,
                                     conn,
-                                    vecs.data(),
-                                    n_bufs,
+                                    buf_vec.data(),
+                                    buf_vec.size(),
                                     unique_handler::from(get_allocator(),
                                                          transfer_completer<C>{mlib_fwd(cb)})
                                         .release());
@@ -111,11 +116,14 @@ struct tcp_connection_rw_stream {
      */
     template <wire::const_buffer_sequence Bufs, typename C>
     void async_write_some(Bufs&& bufs, C&& cb) {
-        auto [vecs, n_bufs] = _make_vec_array(bufs);
+        boost::container::static_vector<::amongoc_const_buffer, max_vec_bufs> buf_vec;
+        mlib::copy_to_capacity(wire::buffer_sequence_as_range(bufs)
+                                   | std::views::transform(_asio_buf_to_amc_buf),
+                               buf_vec);
         loop->vtable->tcp_write_some(loop,
                                      conn,
-                                     vecs.data(),
-                                     n_bufs,
+                                     buf_vec.data(),
+                                     buf_vec.size(),
                                      unique_handler::from(get_allocator(),
                                                           transfer_completer<C>(mlib_fwd(cb)))
                                          .release());
@@ -124,38 +132,15 @@ struct tcp_connection_rw_stream {
 private:
     static constexpr std::size_t max_vec_bufs = 16;
 
-    /**
-     * @brief Create a std::array of iovec buffers from a buffer sequence
-     */
-    template <wire::const_buffer_sequence Bufs>
-    static std::pair<std::array<::amongoc_const_buffer, max_vec_bufs>, std::size_t>
-    _make_vec_array(const Bufs& bufs) {
-        std::array<::amongoc_const_buffer, max_vec_bufs> vecs;
-        auto                                             it = asio::buffer_sequence_begin(bufs);
-        const auto stop    = std::ranges::next(it, vecs.size(), asio::buffer_sequence_end(bufs));
-        auto       vec_end = std::transform(it, stop, vecs.begin(), _asio_to_iovec_const);
-        auto       n_bufs  = vec_end - vecs.begin();
-        return std::make_pair(vecs, static_cast<std::size_t>(n_bufs));
-    }
+    static inline constexpr struct {
+        ::amongoc_const_buffer operator()(asio::const_buffer cb) noexcept {
+            return ::amongoc_const_buffer{cb.data(), cb.size()};
+        }
 
-    template <wire::mutable_buffer_sequence Bufs>
-    static std::pair<std::array<::amongoc_mutable_buffer, max_vec_bufs>, std::size_t>
-    _make_vec_array(const Bufs& bufs) {
-        std::array<::amongoc_mutable_buffer, max_vec_bufs> vecs;
-        auto                                               it = asio::buffer_sequence_begin(bufs);
-        const auto stop    = std::ranges::next(it, vecs.size(), asio::buffer_sequence_end(bufs));
-        auto       vec_end = std::transform(it, stop, vecs.begin(), _asio_to_iovec_mut);
-        auto       n_bufs  = vec_end - vecs.begin();
-        return std::make_pair(vecs, static_cast<std::size_t>(n_bufs));
-    }
-
-    static ::amongoc_const_buffer _asio_to_iovec_const(asio::const_buffer cb) noexcept {
-        return ::amongoc_const_buffer{cb.data(), cb.size()};
-    }
-
-    static ::amongoc_mutable_buffer _asio_to_iovec_mut(asio::mutable_buffer mb) noexcept {
-        return ::amongoc_mutable_buffer{mb.data(), mb.size()};
-    }
+        ::amongoc_mutable_buffer operator()(asio::mutable_buffer mb) noexcept {
+            return ::amongoc_mutable_buffer{mb.data(), mb.size()};
+        }
+    } _asio_buf_to_amc_buf{};
 };
 
 struct address_info {
