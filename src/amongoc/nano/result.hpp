@@ -13,6 +13,7 @@
 #include <neo/like.hpp>
 
 #include <cassert>
+#include <concepts>
 #include <exception>
 #include <new>
 #include <optional>
@@ -97,6 +98,18 @@ public:
     constexpr bool has_value() const noexcept { return _stored.index() == 0; }
     /// Returns `true` iff the result has an error value
     constexpr bool has_error() const noexcept { return _stored.index() == 1; }
+
+    template <typename... Args>
+        requires std::constructible_from<T, Args...>
+    T& emplace_value(Args&&... args) {
+        return _stored.template emplace<0>(mlib_fwd(args)...);
+    }
+
+    template <typename... Args>
+        requires std::constructible_from<E, Args...>
+    E& emplace_error(Args&&... args) {
+        return _stored.template emplace<1>(mlib_fwd(args)...);
+    }
 
     /**
      * @brief Create an error_tag for the error contained by this result, useful

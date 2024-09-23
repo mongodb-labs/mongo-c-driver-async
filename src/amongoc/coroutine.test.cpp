@@ -17,6 +17,8 @@
 
 using namespace amongoc;
 
+static_assert(nanosender<co_task<int>::sender>);
+
 emitter basic_coro(mlib_allocator = mlib_default_allocator) { co_return 0; }
 
 TEST_CASE("Coroutine/Basic") {
@@ -44,7 +46,7 @@ co_task<int> cxx_coro(allocator<> = allocator<>{mlib_default_allocator}) { co_re
 TEST_CASE("Coroutine/co_task") {
     auto co  = cxx_coro();
     int  got = 1729;
-    auto op  = std::move(co).connect([&](int x) { got = x; });
+    auto op  = std::move(co).as_sender().connect([&](auto x) { got = *x; });
     CHECK(got == 1729);
     op.start();
     CHECK(got == 42);
@@ -60,7 +62,7 @@ TEST_CASE("Coroutine/Discard co_task operation") {
     auto co  = cxx_coro();
     int  got = 0;
     {
-        std::move(co).connect([&](int x) { got = x; });
+        std::move(co).as_sender().connect([&](auto x) { got = *x; });
     }
     // Coroutine did not execute
     CHECK(got == 0);
@@ -76,11 +78,10 @@ co_task<std::unique_ptr<int>> nested_returns_unique(allocator<> a) {
 }
 
 TEST_CASE("Coroutine/co_task nested awaiting") {
-    std::unique_ptr<int> iptr;
-    auto op = nested_returns_unique(allocator<>{mlib_default_allocator}) | tie(iptr);
-    CHECK_FALSE(iptr);
+    co_task<std::unique_ptr<int>>::result_type iptr;
+    auto op = nested_returns_unique(allocator<>{mlib_default_allocator}).as_sender() | tie(iptr);
     op.start();
-    CHECK(*iptr == 123);
+    CHECK(**iptr == 123);
 }
 
 struct my_error {
@@ -101,19 +102,19 @@ co_task<int> catches_an_error(allocator<> a) {
 }
 
 TEST_CASE("Coroutine/Exception propagation") {
-    int  got = 0;
-    auto op  = catches_an_error(allocator<>{mlib_default_allocator}) | tie(got);
-    CHECK(got == 0);
+    co_task<int>::result_type got = 0;
+    auto op = catches_an_error(allocator<>{mlib_default_allocator}).as_sender() | tie(got);
+    CHECK(*got == 0);
     op.start();
-    CHECK(got == 1729);
+    CHECK(*got == 1729);
 }
 
 co_task<int> immediate_awaits(allocator<>) { co_return co_await just(42); }
 
 TEST_CASE("Coroutine/immediate await") {
-    int  got = 0;
-    auto op  = immediate_awaits(allocator<>{mlib_default_allocator}) | tie(got);
-    CHECK(got == 0);
+    co_task<int>::result_type got = 0;
+    auto op = immediate_awaits(allocator<>{mlib_default_allocator}).as_sender() | tie(got);
+    CHECK(*got == 0);
     op.start();
-    CHECK(got == 42);
+    CHECK(*got == 42);
 }
