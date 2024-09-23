@@ -7,6 +7,7 @@
 #include <amongoc/asio/as_sender.hpp>
 #include <amongoc/bson/build.h>
 #include <amongoc/coroutine.hpp>
+#include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
 #include <amongoc/vector.hpp>
 #include <amongoc/wire/buffer.hpp>
@@ -22,12 +23,6 @@
 #include <ranges>
 #include <utility>
 #include <variant>
-
-namespace amongoc {
-
-struct tcp_connection_rw_stream;
-
-}  // namespace amongoc
 
 namespace amongoc::wire {
 
@@ -254,7 +249,13 @@ public:
             [&](const auto& c) -> const_buffer_sequence decltype(auto) { return c.buffers(a); });
     }
 
-    bson_view expect_one_body_section_op_msg() const noexcept;
+    const bson::document& expect_one_body_section_op_msg() const& noexcept;
+    bson::document&       expect_one_body_section_op_msg() & noexcept {
+        return const_cast<bson::document&>(std::as_const(*this).expect_one_body_section_op_msg());
+    }
+    bson::document&& expect_one_body_section_op_msg() && noexcept {
+        return std::move(this->expect_one_body_section_op_msg());
+    }
 
 private:
     std::int32_t _req_id;
@@ -294,6 +295,7 @@ co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const 
     const_buffer_sequence auto all_buffers = neo::views::concat(MsgHeader_buf, content_buffers);
     // Perform the write
     *co_await asio::async_write(strm, all_buffers, asio::transfer_all(), asio_as_nanosender);
+    co_return {};
 }
 
 /**

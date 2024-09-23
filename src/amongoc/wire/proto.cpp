@@ -11,7 +11,7 @@ static_assert(wire::message_type<wire::any_message>);
 
 template co_task<wire::any_message> wire::recv_message(allocator<>, tcp_connection_rw_stream&);
 
-bson_view wire::any_message::expect_one_body_section_op_msg() const noexcept {
+const bson::document& wire::any_message::expect_one_body_section_op_msg() const& noexcept {
     if (not std::holds_alternative<any_op_msg_message>(_content)) {
         throw_protocol_error("Expected a single OP_MSG message");
     }
@@ -23,5 +23,5 @@ bson_view wire::any_message::expect_one_body_section_op_msg() const noexcept {
     // XXX: When more section types are supported, the lambda expression below will
     // need to be changed to handle non-body sections (it should throw in those cases)
     return section.visit(
-        [&](body_section<bson::document> const& sec) -> bson_view { return sec.body; });
+        [&](body_section<bson::document> const& sec) -> const bson::document& { return sec.body; });
 }
