@@ -33,9 +33,9 @@ The first action we perform in ``main()`` is checking our arguments:
   :caption: Argument checking
   :lineno-match:
   :start-at: int main
-  :end-at: const port
+  :end-at: const uri
 
-We will use ``argv[1]`` as the hostname and ``argv[2]`` as the port number
+We will use ``argv[1]`` as the connection URI string.
 
 
 Initializing the Loop
@@ -77,22 +77,21 @@ sub-operation in the program. For this reason, we declare the instance in
   :end-at: struct app_state state =
 
 This will zero-initialize the contents of the struct. This is important so that
-the declared `amongoc_connection` object is also null, ensuring that the later
-call to `amongoc_conn_destroy` will be a no-op if that field is never
-initialized.
+the declared `amongoc_client` object is also null, ensuring that the later call
+to `amongoc_conn_destroy` will be a no-op if that field is never initialized.
 
 We will pass the state around by-reference in a box using `amongoc_box_pointer`.
 
 
-Create a Connect with a Timeout
-###############################
+Create a Client with a Timeout
+##############################
 
-We create a connect operation using `amongoc_conn_connect`, and then attach a
+We create a connect operation using `amongoc_client_new`, and then attach a
 timeout using `amongoc_timeout`
 
 .. literalinclude:: connect.example.c
   :lineno-match:
-  :start-at: conn_connect
+  :start-at: client_new
   :end-at: amongoc_timeout
 
 We pass the emitter ``em`` to `amongoc_timeout` on the same line as as
@@ -112,7 +111,7 @@ The `amongoc_let` function will attach a continuation to an operation in a way
 that lets us initiate a subsequent operation. We use
 `amongoc_async_forward_errors` to tell `amongoc_let` that it should call our
 continuation *only* if the input operation resolves with a non-error status. If
-`amongoc_conn_connect` fails with an error (including a timeout), then
+`amongoc_client_new` fails with an error (including a timeout), then
 ``after_connect_say_hello`` will not be called, and the errant result will
 simply be passed to the next step in the chain.
 
@@ -135,8 +134,8 @@ called if the `amongoc_status` would be zero, so there is no need to check it.
 
 .. rubric:: Capture the Client
 
-Upon success, the operation from `amongoc_conn_connect` will resolve with an
-`amongoc_connection` in its boxed result value. We move the connection by-value
+Upon success, the operation from `amongoc_client_new` will resolve with an
+`amongoc_client` in its boxed result value. We move the connection by-value
 from the box and store it in our application state:
 
 .. literalinclude:: connect.example.c
@@ -231,7 +230,7 @@ work has completed, and we destroy the operation with
 operation.
 
 We also now have a copy of the connection that was created with
-`amongoc_conn_connect`. We destroy that with `amongoc_conn_destroy`. If the
+`amongoc_client_new`. We destroy that with `amongoc_conn_destroy`. If the
 connect operation failed, the connection object will have remained
 zero-initialized and the call will be a no-op.
 
