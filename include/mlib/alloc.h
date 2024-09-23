@@ -178,7 +178,7 @@ public:
 
     // Construct the object, injecting this allocator if appropriate
     template <typename... Args>
-    constexpr void construct(pointer p, Args&&... args) {
+    constexpr void construct(pointer p, Args&&... args) const {
         std::uninitialized_construct_using_allocator(p, *this, static_cast<Args&&>(args)...);
     }
 
@@ -313,8 +313,7 @@ struct alloc_deleter {
     template <typename T>
     void operator()(T* ptr) const noexcept {
         auto a = alloc.rebind<T>();
-        std::allocator_traits<allocator<T>>::destroy(a, ptr);
-        std::allocator_traits<allocator<T>>::deallocate(a, ptr, 1);
+        a.delete_(ptr);
     }
 };
 
