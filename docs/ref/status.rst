@@ -9,7 +9,7 @@ Header: ``amongoc/status.h``
 
   An augmented status code object.
 
-  .. note:: This API is inspired by the C++ ``std::error_code`` API
+  .. note:: This API is inspired by the C++ `std__error_code` API
 
   .. member:: const amongoc_status_category_vtable* category
 
@@ -31,12 +31,12 @@ Header: ``amongoc/status.h``
       `amongoc_is_error` to check whether a status represents an error.
 
   .. function::
-    static amongoc_status from(std::error_code) noexcept
-    static amongoc_status from(std::errc) noexcept
-    std::error_code as_error_code() const noexcept
+    static amongoc_status from(std__error_code) noexcept
+    static amongoc_status from(std__errc) noexcept
+    std__error_code as_error_code() const noexcept
 
-    |C++ API| Construct a new `amongoc_status` from a `std::error_code`, or
-    convert an existing `amongoc_status` to a C++ `std::error_code`
+    |C++ API| Construct a new `amongoc_status` from a `std__error_code`, or
+    convert an existing `amongoc_status` to a C++ `std__error_code`
 
     .. warning::
 
@@ -48,7 +48,7 @@ Header: ``amongoc/status.h``
 
       It is recommended to keep to using `amongoc_status` whenever possible.
 
-  .. function:: std::string message() const noexcept
+  .. function:: std__string message() const noexcept
 
     :C API: `amongoc_status_strdup_message`
 

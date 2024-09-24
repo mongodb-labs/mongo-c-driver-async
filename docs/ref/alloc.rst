@@ -37,7 +37,7 @@ Types
 
     Arbitrary pointer to context for the allocator.
 
-  .. function:: void* reallocate(void* userdata, void* prev_ptr, std::size_t requested_size, std::size_t alignment, std::size_t previous_size, std::size_t* [[storage]] out_new_size)
+  .. function:: void* reallocate(void* userdata, void* prev_ptr, size_t requested_size, size_t alignment, size_t previous_size, size_t* [[storage]] out_new_size)
 
     **(Function pointer member)**
 
@@ -144,9 +144,9 @@ Functions
 *********
 
 .. function::
-  void* mlib_allocate(mlib_allocator alloc, std::size_t sz)
-  void mlib_deallocate(mlib_allocator alloc, void* p, std::size_t sz)
-  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, std::size_t sz, std::size_t alignment, std::size_t prev_size, std::size_t* out_new_size)
+  void* mlib_allocate(mlib_allocator alloc, size_t sz)
+  void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz)
+  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
@@ -240,8 +240,8 @@ Types
     Obtain the `mlib_allocator` that is used by this `allocator`
 
   .. function::
-    pointer allocate(std::size_t n) const
-    void deallocate(pointer p, std::size_t n) const
+    pointer allocate(std__size_t n) const
+    void deallocate(pointer p, std__size_t n) const
 
     The allocation/deallocation functions for the C++ allocator interface.
 

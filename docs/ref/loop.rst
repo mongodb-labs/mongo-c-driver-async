@@ -22,7 +22,7 @@ Type: `amongoc_loop`
 
   .. member::
     void* buf
-    std::size_t len
+    size_t len
 
 .. struct:: amongoc_loop
 
@@ -74,7 +74,7 @@ Type: `amongoc_loop`
     :expr:`amongoc_handler_complete(hnd, st, arg)`.
 
 
-  .. function:: void call_later(amongoc_loop* self, std::timespec duration, amongoc_box arg, amongoc_handler hnd)
+  .. function:: void call_later(amongoc_loop* self, timespec duration, amongoc_box arg, amongoc_handler hnd)
 
     Register an `amongoc_handler` to be completed after a set delay.
 
@@ -117,7 +117,7 @@ Type: `amongoc_loop`
     may be destroyed at any time via `amongoc_box_destroy`, which should release
     any associated resources and close the connection.
 
-  .. function:: void tcp_write_some(amongoc_loop* self, amongoc_view conn, const amongoc_const_buffer* bufs, std::size_t nbufs, amongoc_handler on_write)
+  .. function:: void tcp_write_some(amongoc_loop* self, amongoc_view conn, const amongoc_const_buffer* bufs, size_t nbufs, amongoc_handler on_write)
 
     Write some data to a TCP connection.
 
@@ -129,10 +129,10 @@ Type: `amongoc_loop`
     This function should write some data from the given buffesr into the TCP
     connection referenced by `conn`. It is not required that all data be written
     in a single call. The result value given to `amongoc_handler_complete` must
-    be a `std::size_t` value equal to the number of bytes that were successfully
-    written to the socket.
+    be a `size_t` value equal to the number of bytes that were successfully
+    written to the stream.
 
-  .. function:: void tcp_read_some(amongoc_loop* self, amongoc_view conn, const amongoc_mutable_buffer* bufs, std::size_t nbufs, amongoc_handler on_read)
+  .. function:: void tcp_read_some(amongoc_loop* self, amongoc_view conn, const amongoc_mutable_buffer* bufs, size_t nbufs, amongoc_handler on_read)
 
     Read some data from a TCP connection.
 
@@ -143,8 +143,8 @@ Type: `amongoc_loop`
 
     This function should read data from the TCP connection `conn` into the
     buffers of `bufs`. The result given to `amongoc_handler_complete` must be a
-    `std::size_t` value equal to the number of bytes that were read from the
-    socket.
+    `size_t` value equal to the number of bytes that were read from the
+    stream.
 
   .. function:: mlib_allocator get_allocator(const amongoc_loop* self) [[optional]]
 
