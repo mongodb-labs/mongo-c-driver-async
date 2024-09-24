@@ -531,17 +531,17 @@ public:
     template <typename T, typename... Args>
     static unique_box make(allocator<> alloc, Args&&... args)
         noexcept(noexcept(T(mlib_fwd(args)...)) and box_inlinable_type<T>) {
-        amongoc_box ret;
-        T*          ptr;
+        unique_box ret{amongoc_nil};
+        T*         ptr;
         // Conditionally add a destructor to the box based on whether the type
         // actually has a destructor.
         if constexpr (std::is_trivially_destructible_v<T>) {
             // No destructor needed. This gives more space within the box for the small-object
             // optimization
-            ptr = ret.prepare_storage<T>(alloc, nullptr);
+            ptr = ret._box.prepare_storage<T>(alloc, nullptr);
         } else {
             // Add a destructor function that just invokes the destructor on the object
-            ptr = ret.prepare_storage<T>(alloc, indirect_destroy<T>);
+            ptr = ret._box.prepare_storage<T>(alloc, indirect_destroy<T>);
         }
         // Placement-new the object into storage
         if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(mlib_fwd(args)...))) {
@@ -553,11 +553,11 @@ public:
             try {
                 alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
             } catch (...) {
-                amongoc_box_free_storage(ret);
+                amongoc_box_free_storage(ret._box);
                 throw;
             }
         }
-        return mlib_fwd(ret).as_unique();
+        return ret;
     }
 
     /**
