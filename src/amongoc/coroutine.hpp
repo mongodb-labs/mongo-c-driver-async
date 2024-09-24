@@ -326,8 +326,12 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 
     // The final suspend will invoke the final handler with the coroutine's result
     static auto final_suspend() noexcept {
+        // Note: Don't complete the handler within final_suspend directly. We want
+        // to complete the handler after the coroutine suspends.
         return suspends_by([](co_handle co) noexcept {
             emitter_promise& self = co.promise();
+            // This should be the final substantial line of code, because it is possible that the
+            // handler will destroy the coroutine promise during completion.
             self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
         });
     }
@@ -494,9 +498,11 @@ public:
      * @brief The awaiter used for awaiting a `co_task`
      */
     struct awaiter {
-        // Construct an awaitable from a handle to the awaited coroutine
+        // Construct an awaiter from a handle to the awaited coroutine
         awaiter(handle_type self)
             : _self(self) {}
+
+        awaiter(awaiter&&) = delete;
 
         // Implementation of a finisher that will resume the parent coroutine when the child
         // completes
@@ -528,6 +534,11 @@ public:
         struct task_handoff_finisher<Promise> : finisher_base {
             explicit task_handoff_finisher(std::coroutine_handle<Promise> c) noexcept
                 : caller(c) {}
+
+            /// This object does not need a stable address, so we can trivially relocate it.
+            /// This will enable the inline-box optimization for `_handoff`
+            AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+
             // Handle to the parent coroutine
             std::coroutine_handle<Promise> caller;
             // Upon final suspend, resume the caller
@@ -549,7 +560,9 @@ public:
         std::coroutine_handle<> await_suspend(std::coroutine_handle<Promise> parent) {
             // Connect our special resuming finisher with the child
             using fin = task_handoff_finisher<Promise>;
-            _handoff  = unique_box::make<fin>(mlib::get_allocator(parent.promise()), parent);
+            // XXX: We may be able to optimize a dynamic allocation away since we can guarantee
+            // that the finisher object will not be moved after it is constructed.
+            _handoff = unique_box::make<fin>(mlib::get_allocator(parent.promise()), parent);
             _self.promise()._finisher = &_handoff.as<fin>();
             // Tell the runtime to launch the child coroutine immediately
             return _self;
@@ -580,7 +593,7 @@ public:
         // Storage for the final result. Will hold either a value or an exception
         result_type got_result = amongoc::error(std::exception_ptr());
 
-        // Handles the completion of the coroutine. Set by connect()
+        // Handles the completion of the coroutine.
         finisher_base* _finisher = nullptr;
 
         // Final suspend of the co_task
