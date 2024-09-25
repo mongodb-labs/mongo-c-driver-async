@@ -1322,10 +1322,6 @@ namespace bson {
 
 using view      = ::bson_view;
 using utf8_view = ::bson_utf8_view;
-inline constexpr struct undefined_t {
-} undefined;
-inline constexpr struct null_t {
-} null;
 
 /**
  * @brief Presents a mutable BSON document STL-like interface

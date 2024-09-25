@@ -63,6 +63,10 @@ enum {
 typedef struct bson_byte {
     /// The 8-bit value of the byte
     uint8_t v;
+
+#if mlib_is_cxx()
+    constexpr explicit operator std::byte() const noexcept { return std::byte(v); }
+#endif
 } bson_byte;
 
 typedef struct bson_view bson_view;
@@ -1624,6 +1628,17 @@ inline bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_n
 mlib_extern_c_end();
 
 #if mlib_is_cxx()
+namespace bson {
+
+inline constexpr struct undefined_t {
+} undefined;
+inline constexpr struct null_t {
+} null;
+
+using view = ::bson_view;
+
+}  // namespace bson
+
 struct bson_iterator_error : std::runtime_error {
     bson_iterator_error() noexcept
         : std::runtime_error("Invalid element in BSON document data") {}
