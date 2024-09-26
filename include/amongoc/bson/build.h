@@ -642,8 +642,7 @@ mlib_constexpr bson_iterator bson_insert_doc(bson_mut*      doc,
     if (!bson_data(insert_doc)) {
         // There was no document given. Re-call ourself with a view of an empty
         // doc:
-        bson_byte empty_doc[5] = {0};
-        empty_doc[0].v         = 5;
+        const bson_byte empty_doc[5] = {5};
         return bson_insert_doc(doc,
                                pos,
                                key,
@@ -1178,6 +1177,14 @@ mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
 }
 
 /**
+ * @brief A simple type used to store a small string representing the the
+ * integer keys of array elements.
+ */
+struct bson_array_element_integer_keybuf {
+    char buf[12];
+};
+
+/**
  * @brief Generate a UTF-8 string that contains the decimal spelling of the
  * given uint32_t value
  *
@@ -1186,16 +1193,18 @@ mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
  * remain valid only until a subsequent call to bson_tmp_uint_string within the
  * same thread.
  */
-mlib_constexpr bson_utf8_view bson_tmp_uint_string(uint32_t val) mlib_noexcept {
-    char              buf[12];
-    const char* const end = _bson_write_uint(val, buf);
-    return bson_utf8_view_from_data(buf, (size_t)(end - buf));
+mlib_constexpr struct bson_array_element_integer_keybuf
+bson_tmp_uint_string(uint32_t val) mlib_noexcept {
+    struct bson_array_element_integer_keybuf arr = {0};
+    const char* const                        end = _bson_write_uint(val, arr.buf);
+    return arr;
 }
 
 inline void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
     for (; !bson_iterator_done(pos); pos = bson_next(pos)) {
-        pos = bson_set_key(doc, pos, bson_tmp_uint_string(idx));
+        struct bson_array_element_integer_keybuf key = bson_tmp_uint_string(idx);
+        pos = bson_set_key(doc, pos, bson_utf8_view_from_cstring(key.buf));
     }
 }
 
@@ -1350,15 +1359,19 @@ public:
     /**
      * @brief Construct a document object using the given allocator
      */
-    constexpr explicit document(allocator_type alloc) {
-        _mut = bson_mut_new_ex(alloc.c_allocator(), 512);
+    constexpr explicit document(allocator_type alloc)
+        : document(alloc, 512) {}
+
+    /**
+     * @brief Construct a new document with the given allocator, and reserving
+     * the given capacity in the new document.
+     */
+    constexpr explicit document(allocator_type alloc, std::size_t reserve_size) {
+        _mut = bson_mut_new_ex(alloc.c_allocator(), reserve_size);
         if (data() == nullptr) {
             throw std::bad_alloc();
         }
     }
-
-    constexpr explicit document(::mlib_allocator alloc)
-        : document(allocator_type(alloc)) {}
 
     /**
      * @brief Take ownership of a C-style `::bson_mut` object
@@ -1469,6 +1482,9 @@ private:
     }
     bson_mut _mut;
 
+    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_view d) noexcept {
+        return bson_insert_doc(&_mut, pos, key, d);
+    }
     constexpr iterator _do_emplace(iterator pos, utf8_view key, double d) noexcept {
         return bson_insert_double(&_mut, pos, key, d);
     }
@@ -1542,8 +1558,10 @@ public:
     }
 
     inline inserted_subdocument insert_subdoc(iterator pos, std::string_view key);
+    inline inserted_subdocument insert_array(iterator pos, std::string_view key);
 
     inline document push_subdoc(std::string_view key);
+    inline document push_array(std::string_view key);
 
     [[nodiscard]] document child(iterator pos) noexcept {
         return document(subdoc_tag{::bson_mut_subdocument(&_mut, pos)});
@@ -1560,13 +1578,17 @@ struct document::inserted_subdocument {
 };
 
 document::inserted_subdocument document::insert_subdoc(iterator pos, std::string_view key) {
-    bson_byte buf[5] = {{5}};
-    auto      empty  = ::bson_view_from_data(buf, 5, nullptr);
-    auto      it     = ::bson_insert_doc(&_mut, pos, utf8_view::from_str(key), empty);
+    auto it = ::bson_insert_doc(&_mut, pos, utf8_view::from_str(key), BSON_VIEW_NULL);
+    return {it, child(it)};
+}
+
+document::inserted_subdocument document::insert_array(iterator pos, std::string_view key) {
+    auto it = ::bson_insert_array(&_mut, pos, utf8_view::from_str(key));
     return {it, child(it)};
 }
 
 document document::push_subdoc(std::string_view key) { return insert_subdoc(end(), key).mutator; }
+document document::push_array(std::string_view key) { return insert_array(end(), key).mutator; }
 
 }  // namespace bson
 #endif  // C++

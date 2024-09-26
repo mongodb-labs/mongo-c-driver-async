@@ -108,9 +108,10 @@ extern mlib_constexpr bson_iterator bson_insert_minkey(bson_mut*,
                                                        bson_iterator,
                                                        bson_utf8_view) mlib_noexcept;
 
-extern mlib_constexpr char*          _bson_write_uint(uint32_t v, char* at) mlib_noexcept;
-extern mlib_constexpr bson_utf8_view bson_tmp_uint_string(uint32_t idx) mlib_noexcept;
-mlib_thread_local char               _bson_tmp_integer_key_tl_storage[12] = {0};
+extern mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept;
+extern mlib_constexpr struct bson_array_element_integer_keybuf
+                       bson_tmp_uint_string(uint32_t idx) mlib_noexcept;
+mlib_thread_local char _bson_tmp_integer_key_tl_storage[12] = {0};
 extern mlib_constexpr void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept;
 extern mlib_constexpr void          bson_relabel_array_elements(bson_mut* doc) mlib_noexcept;
