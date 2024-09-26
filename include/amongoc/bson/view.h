@@ -25,6 +25,7 @@
 #include <cinttypes>
 #include <cstdlib>
 #include <iterator>
+#include <optional>
 #include <stdexcept>
 #include <string_view>
 #endif
@@ -472,7 +473,9 @@ typedef struct bson_utf8_view {
         return bson_utf8_view{sv.data(), sv.size()};
     }
 
-    constexpr operator std::string_view() const noexcept { return std::string_view(data, len); }
+    constexpr operator std::string_view() const noexcept {
+        return data ? std::string_view(data, len) : "";
+    }
 
     constexpr bool operator==(std::string_view sv) const noexcept {
         return std::string_view(*this) == sv;
@@ -1706,6 +1709,7 @@ public:
     [[nodiscard]] constexpr std::int64_t int64() const noexcept {
         return bson_iterator_int64(_iter);
     }
+    [[nodiscard]] constexpr bson_oid oid() const noexcept { return bson_iterator_oid(_iter); }
 
     // Coerce the referred-to element to a double float value
     [[nodiscard]] constexpr double as_double() const noexcept {
@@ -1720,6 +1724,96 @@ public:
     // Coerce the referred-to element to an int64 value
     [[nodiscard]] constexpr std::int64_t as_int64() const noexcept {
         return bson_iterator_as_int64(_iter);
+    }
+
+    template <typename F>
+    constexpr auto visit(F&& fn) -> decltype(static_cast<F&&>(fn)(std::string_view())) {
+        auto call = [&](auto n) { return static_cast<F&&>(fn)(n); };
+        switch (type()) {
+        case BSON_TYPE_EOD:
+        default:
+            return call(bson::null);  // What should this actually do?
+        case BSON_TYPE_DOUBLE:
+            return call(double_());
+        case BSON_TYPE_UTF8:
+            return call(std::string_view(utf8()));
+        case BSON_TYPE_DOCUMENT:
+        case BSON_TYPE_ARRAY:
+            return call(document());
+        case BSON_TYPE_BINARY:
+            return call(binary());
+        case BSON_TYPE_UNDEFINED:
+            return call(bson::undefined);
+        case BSON_TYPE_OID:
+            return call(oid());
+        case BSON_TYPE_BOOL:
+            return call(bool_());
+        case BSON_TYPE_DATE_TIME:
+            return call(datetime_utc_ms());  // TODO: Ambiguous with int64_t
+        case BSON_TYPE_NULL:
+            return call(bson::null);
+        case BSON_TYPE_REGEX:
+            return call(regex());
+        case BSON_TYPE_DBPOINTER:
+            return call(dbpointer());
+        case BSON_TYPE_CODE:
+            return call(code());  // TODO: Ambiguous with string_view
+        case BSON_TYPE_SYMBOL:
+            return call(symbol());  // TODO: Ambiguous with string_view
+        case BSON_TYPE_CODEWSCOPE:
+            return call(code());  // TODO
+        case BSON_TYPE_INT32:
+            return call(int32());
+        case BSON_TYPE_TIMESTAMP:
+            return call(timestamp());  // TODO: Ambiguous with uint64_t
+        case BSON_TYPE_INT64:
+            return call(int64());
+        case BSON_TYPE_DECIMAL128:
+            return call(oid());  // TODO
+        case BSON_TYPE_MAXKEY:
+        case BSON_TYPE_MINKEY:
+            return call(bson::null);  // TODO
+            break;
+        }
+    }
+
+#define TRY_AS(Type, Getter, TypeTag)                                                              \
+    friend std::optional<Type> bson_value_try_convert(reference const& self, Type* p) noexcept {   \
+        if (self.type() == TypeTag) {                                                              \
+            return Getter;                                                                         \
+        }                                                                                          \
+        return {};                                                                                 \
+    }                                                                                              \
+    static_assert(true, "")
+    TRY_AS(double, self.double_(), BSON_TYPE_DOUBLE);
+    TRY_AS(std::string_view, self.utf8(), BSON_TYPE_UTF8);
+    TRY_AS(bson_binary, self.binary(), BSON_TYPE_BINARY);
+    TRY_AS(bson::undefined_t, bson::undefined, BSON_TYPE_UNDEFINED);
+    TRY_AS(bson_oid, self.oid(), BSON_TYPE_OID);
+    TRY_AS(bool, self.bool_(), BSON_TYPE_BOOL);
+    // TRY_AS(std::int64_t, self.datetime_utc_ms(), BSON_TYPE_BINARY); // TODO
+    TRY_AS(bson::null_t, bson::null, BSON_TYPE_NULL);
+    TRY_AS(bson_regex, self.regex(), BSON_TYPE_REGEX);
+    TRY_AS(::bson_dbpointer, self.dbpointer(), BSON_TYPE_DBPOINTER);
+    // TRY_AS(std::string_view, self.code(), BSON_TYPE_CODE); // TODO
+    // TRY_AS(std::string_view, self.code(), BSON_TYPE_CODEWSCOPE); // TODO
+    TRY_AS(std::int32_t, self.int32(), BSON_TYPE_INT32);
+    // TRY_AS(std::uint64_t, self.timestamp(), BSON_TYPE_TIMESTAMP); // TODO
+    TRY_AS(std::int64_t, self.int64(), BSON_TYPE_INT64);
+    // TRY_AS(bson_decimal128, self.decimal128(), BSON_TYPE_DECIMAL128);  // TODO
+#undef TRY_AS
+
+    friend std::optional<bson_view> bson_value_try_convert(reference const& self,
+                                                           bson_view*) noexcept {
+        if (self.type() != BSON_TYPE_DOCUMENT and self.type() != BSON_TYPE_ARRAY) {
+            return {};
+        }
+        return self.document();
+    }
+
+    template <typename T>
+    [[nodiscard]] constexpr std::optional<T> try_as() const noexcept {
+        return bson_value_try_convert(*this, static_cast<T*>(nullptr));
     }
 };
 
