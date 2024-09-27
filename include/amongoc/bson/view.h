@@ -101,9 +101,9 @@ mlib_constexpr int32_t _bson_read_int32_le(const bson_byte* bytes) mlib_noexcept
  * @return uint64_t The decoded integer value.
  */
 mlib_constexpr int64_t _bson_read_int64_le(const bson_byte* bytes) mlib_noexcept {
-    const uint64_t lo  = (uint64_t)_bson_read_int32_le(bytes);
-    const uint64_t hi  = (uint64_t)_bson_read_int32_le(bytes + 4);
-    const uint64_t u64 = (hi << 32) | lo;
+    const uint64_t lo  = (uint64_t)(uint32_t)_bson_read_int32_le(bytes);
+    const uint64_t hi  = (uint64_t)(uint32_t)_bson_read_int32_le(bytes + 4);
+    const uint64_t u64 = (hi << (uint64_t)32) | lo;
     return (int64_t)u64;
 }
 
