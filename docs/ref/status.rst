@@ -189,6 +189,8 @@ Built-In |amongoc| Categories
     const amongoc_status_category_vtable amongoc_system_category
     const amongoc_status_category_vtable amongoc_netdb_category
     const amongoc_status_category_vtable amongoc_addrinfo_category
+    const amongoc_status_category_vtable amongoc_io_category
+    const amongoc_status_category_vtable amongoc_server_category
     const amongoc_status_category_vtable amongoc_unknown_category
 
   The above `amongoc_status_category_vtable` objects are the built-in status
@@ -223,6 +225,18 @@ Built-In |amongoc| Categories
     values for error codes that arise from name resolution, thus it is required
     that such errors are distinguished by their category to avoid ambiguity.
 
+  .. index:: pair: status category; amongoc.io
+
+  *io*
+    Error codes related to I/O that are not covered in the system or generic
+    category.
+
+  .. index:: pair: status category; amongoc.server
+
+  *server*
+    These error conditions correspond to error codes returned from a MongoDB
+    server. These values are named in :enum:`amongoc_server_errc`.
+
   .. index:: pair: status category; amongoc.unknown
 
   *unknown* (``amongoc.unknown``)
@@ -233,6 +247,21 @@ Built-In |amongoc| Categories
     The message returned from `amongoc_status_strdup_message` will always be
     "``amongoc.unknown:<n>``" where ``<n>`` is the numeric value of the error
     code.
+
+
+.. enum:: amongoc_server_errc
+
+  This enum contains error code values corresponding to their numeric value
+  as returned from a MongoDB server.
+
+  .. seealso::
+
+    `The MongoDB Error Codes Reference`__
+
+    __ https://www.mongodb.com/docs/manual/reference/error-codes/
+
+  .. note:: This enum is not exhaustive, and it is possible for a server to
+    return an error code that does not have a corresponding enumerator.
 
 
 C++ Exception Type
