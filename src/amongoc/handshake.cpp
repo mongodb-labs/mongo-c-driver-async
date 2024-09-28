@@ -1,9 +1,12 @@
 #include "./handshake.hpp"
 
 #include <amongoc/bson/build.h>
+#include <amongoc/bson/make.hpp>
+#include <amongoc/bson/parse.hpp>
 #include <amongoc/bson/view.h>
+#include <amongoc/wire/error.hpp>
 
-#include <chrono>
+#include <cstddef>
 #include <optional>
 #include <string_view>
 
@@ -11,57 +14,69 @@ using namespace amongoc;
 
 amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bson_view msg) {
     handshake_response ret{a};
-#define FIELD(FieldName, Cast)                                                                     \
-    if (1) {                                                                                       \
-        auto iter = msg.find(#FieldName);                                                          \
-        if (iter != msg.end())                                                                     \
-            ret.FieldName = mlib::invoke(Cast, *iter);                                             \
-    } else                                                                                         \
-        ((void)0)
-    using iter_ref     = bson_iterator::reference;
-    auto as_string     = atop(after(construct<string>{}, constant(a)), &iter_ref::utf8);
-    auto as_size       = atop(construct<std::size_t>{}, &iter_ref::as_int64);
-    auto as_int        = atop(construct<int>{}, &iter_ref::as_int32);
-    auto as_string_vec = [&](iter_ref elem) -> vector<string> {
-        vector<string> ret{a};
-        for (auto child : elem.document()) {
-            ret.emplace_back(child.utf8());
-        }
-        return ret;
+
+    using bson::parse::doc;
+    using bson::parse::each;
+    using bson::parse::field;
+    using bson::parse::integral;
+    using bson::parse::must;
+    using bson::parse::store;
+    using bson::parse::type;
+
+    auto store_string = [&](auto& into) {
+        return type<std::string_view>([&](std::string_view sv) -> bson::parse::accepted {
+            into = string(sv, a);
+            return {};
+        });
     };
-    // Common fields
-    FIELD(isWritablePrimary, &iter_ref::as_bool);
-    FIELD(topologyVersion, as_string);
-    FIELD(maxBsonObjectSize, as_size);
-    FIELD(maxMessageSizeBytes, as_size);
-    FIELD(maxWriteBatchSize, as_size);
-    FIELD(localTime,
-          atop(construct<time_point>{},
-               atop(construct<std::chrono::milliseconds>{}, &iter_ref::datetime_utc_ms)));
-    FIELD(logicalSessionTimeoutMinutes, atop(construct<std::chrono::minutes>{}, as_size));
-    FIELD(connectionId, as_string);
-    FIELD(minWireVersion, as_int);
-    FIELD(maxWireVersion, as_int);
-    FIELD(readOnly, &iter_ref::as_bool);
-    FIELD(compression, as_string_vec);
-    FIELD(saslSupportedMechs, as_string_vec);
+    auto store_size = [&](std::size_t& out) {
+        return [&](bson::parse::reference const& el) {
+            out = static_cast<std::size_t>(el.as_int64());
+            return bson::parse::accepted{};
+        };
+    };
+    auto append_strings = [&](vector<string>& vec) {
+        return type<bson::view>(
+            each(type<std::string_view>([&](std::string_view sv) -> bson::parse::accepted {
+                vec.emplace_back(sv);
+                return {};
+            })));
+    };
 
-    // Replication fields
-    FIELD(hosts, as_string_vec);
-    FIELD(setName, as_string);
-    FIELD(setVersion, as_string);
-    FIELD(secondary, &iter_ref::as_bool);
-    FIELD(passives, as_string_vec);
-    FIELD(arbiters, as_string_vec);
-    FIELD(primary, as_string);
-    FIELD(arbiterOnly, &iter_ref::as_bool);
-    FIELD(passive, &iter_ref::as_bool);
-    FIELD(hidden, &iter_ref::as_bool);
-    FIELD(me, as_string);
-    FIELD(electionId, as_string);
-
-    // Sharding fields
-    FIELD(msg, as_string);
+    auto parse = doc{
+        must(field("isWritablePrimary", type<bool>(store(ret.isWritablePrimary)))),
+        must(field("topologyVersion", bson::parse::just_accept{})),  // TODO
+        must(field("maxBsonObjectSize", must(store_size(ret.maxBsonObjectSize)))),
+        must(field("maxMessageSizeBytes", must(store_size(ret.maxMessageSizeBytes)))),
+        must(field("maxWriteBatchSize", must(store_size(ret.maxWriteBatchSize)))),
+        must(field("localTime", bson::parse::just_accept{})),                     // TODO
+        must(field("logicalSessionTimeoutMinutes", bson::parse::just_accept{})),  // TODO
+        must(field("connectionId", must(integral(store(ret.connectionId))))),
+        must(field("minWireVersion", must(integral(store(ret.minWireVersion))))),
+        must(field("maxWireVersion", must(integral(store(ret.maxWireVersion))))),
+        must(field("readOnly", must(integral(store(ret.readOnly))))),
+        field("compression", must(append_strings(ret.compression))),
+        field("saslSupportedMechs", must(append_strings(ret.saslSupportedMechs))),
+        field("hosts", must(append_strings(ret.hosts))),
+        field("setName", must(store_string(ret.setName))),
+        field("setVersion", must(store_string(ret.setVersion))),
+        field("secondary", must(integral(store(ret.setVersion)))),
+        field("passives", must(append_strings(ret.passives))),
+        field("arbiters", must(append_strings(ret.arbiters))),
+        field("primary", must(store_string(ret.primary))),
+        field("arbiterOnly", must(integral(store(ret.arbiterOnly)))),
+        field("passive", must(integral(store(ret.passive)))),
+        field("hidden", must(integral(store(ret.hidden)))),
+        field("me", must(store_string(ret.me))),
+        field("electionId", must(store_string(ret.electionId))),
+        field("msg", must(store_string(ret.msg))),
+        bson::parse::just_accept{},
+    };
+    auto result = parse(msg);
+    if (not bson::parse::did_accept(result)) {
+        auto err = bson::parse::describe_error(result);
+        wire::throw_protocol_error(err);
+    }
 
     // TODO: lastWrite, tags
     return ret;
@@ -69,46 +84,48 @@ amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bs
 
 bson::document amongoc::create_handshake_command(allocator<>                     alloc,
                                                  std::optional<std::string_view> app_name) {
-    bson::document hello{alloc};
-    hello.emplace_back("hello", 1);
-    hello.emplace_back("$db", "admin");
-    {
-        auto client = hello.push_subdoc("client");
-        if (app_name.has_value()) {
-            auto app = hello.push_subdoc("application");
-            app.emplace_back("name", *app_name);
-        }
-        {
-            auto dr = client.push_subdoc("driver");
-            dr.emplace_back("name", "amongoc");
-            dr.emplace_back("version", "experimental-dev");
-        }
-        {
-            auto os = client.push_subdoc("os");
-            switch (neo::operating_system) {
-            case neo::operating_system_t::windows:
-                os.emplace_back("type", "Windows");
-                break;
+    using bson::make::conditional;
+    using bson::make::doc;
+    using std::pair;
 #undef linux
-            case neo::operating_system_t::linux:
-                os.emplace_back("type", "Linux");
-                break;
-            case neo::operating_system_t::macos:
-                os.emplace_back("type", "Darwin");
-                break;
-            case neo::operating_system_t::freebsd:
-                os.emplace_back("type", "FreeBSD");
-                break;
-            case neo::operating_system_t::openbsd:
-                os.emplace_back("type", "OpenBSD");
-                break;
-            case neo::operating_system_t::unknown:
-            default:
-                os.emplace_back("type", "unknown");
-                break;
-            }
+    auto os_type = [] {
+        switch (neo::operating_system) {
+        case neo::operating_system_t::windows:
+            return "Windows";
+            break;
+        case neo::operating_system_t::linux:
+            return "Linux";
+            break;
+        case neo::operating_system_t::macos:
+            return "Darwin";
+            break;
+        case neo::operating_system_t::freebsd:
+            return "FreeBSD";
+            break;
+        case neo::operating_system_t::openbsd:
+            return "OpenBSD";
+            break;
+        case neo::operating_system_t::unknown:
+        default:
+            return "unknown";
+            break;
         }
-        // TODO: Add useful compiler information
-    }
-    return hello;
+    }();
+    auto command = doc(pair("hello", std::int32_t(1)),
+                       pair("$db", "admin"),
+                       pair("client",
+                            doc{
+                                conditional(app_name.transform([](auto name) {
+                                    return pair("application", doc(pair("name", name)));
+                                })),
+                                pair("driver",
+                                     doc{
+                                         pair("name", "amongoc"),
+                                         pair("version", "experimental-dev"),
+                                     }),
+                                pair("os", doc(pair("type", os_type))),
+                                // TODO: Add useful compiler information
+                            }))
+                       .build(alloc);
+    return command;
 }

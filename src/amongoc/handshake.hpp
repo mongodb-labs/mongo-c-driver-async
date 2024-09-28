@@ -47,7 +47,7 @@ struct handshake_response {
     std::size_t          maxWriteBatchSize   = 100'000;
     time_point           localTime;
     std::chrono::minutes logicalSessionTimeoutMinutes{0};
-    string               connectionId{get_allocator()};
+    int                  connectionId;
     int                  minWireVersion{0};
     int                  maxWireVersion{0};
     bool                 readOnly{false};
