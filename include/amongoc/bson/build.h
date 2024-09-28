@@ -375,7 +375,13 @@ mlib_constexpr bson_mut bson_mut_copy(bson_mut other) mlib_noexcept {
 /**
  * @brief Free the resources of the given BSON document
  */
-mlib_constexpr void bson_mut_delete(bson_mut d) mlib_noexcept { _bson_mut_realloc(&d, 0); }
+mlib_constexpr void bson_mut_delete(bson_mut d) mlib_noexcept {
+    if (d._bson_document_data == NULL) {
+        // Object is null
+        return;
+    }
+    _bson_mut_realloc(&d, 0);
+}
 
 /**
  * @internal
