@@ -8,6 +8,8 @@
  */
 #pragma once
 
+#include <sys/param.h>
+
 #ifdef __cplusplus
 #define MLIB_IF_CXX(...) __VA_ARGS__
 #define MLIB_IF_NOT_CXX(...)
@@ -37,6 +39,8 @@
  */
 #define mlib_alignas(T) MLIB_IF_CXX(alignas(T)) MLIB_IF_NOT_CXX(_Alignas(T))
 #define mlib_alignof(T) MLIB_IF_CXX(alignof(T)) MLIB_IF_NOT_CXX(_Alignof(T))
+
+#define mlib_is_little_endian() (__BYTE_ORDER == __LITTLE_ENDIAN)
 
 /**
  * @brief Expands to a `thread_local` specifier for the current language
