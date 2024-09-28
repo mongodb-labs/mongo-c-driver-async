@@ -201,7 +201,6 @@ typedef struct bson_iterator {
     [[nodiscard]] constexpr const bson_byte* data() const noexcept { return _ptr; }
 
     [[nodiscard]] constexpr std::size_t data_size() const noexcept;
-    [[nodiscard]] constexpr bson_type   type() const noexcept;
 #endif
 } bson_iterator;
 
@@ -1510,9 +1509,10 @@ mlib_constexpr int32_t bson_iterator_as_int32(bson_iterator it) mlib_noexcept {
     }
 }
 
-mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept {
+mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it, bool* okay) mlib_noexcept {
     switch (bson_iterator_type(it)) {
     case BSON_TYPE_DOUBLE:
+        (okay && (*okay = true));
         return (int64_t)bson_iterator_as_double(it);
     case BSON_TYPE_EOD:
     case BSON_TYPE_UTF8:
@@ -1521,8 +1521,10 @@ mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept {
     case BSON_TYPE_BINARY:
     case BSON_TYPE_UNDEFINED:
     case BSON_TYPE_OID:
+        (okay && (*okay = false));
         return 0;
     case BSON_TYPE_BOOL:
+        (okay && (*okay = true));
         return bson_iterator_bool(it) ? 1 : 0;
     case BSON_TYPE_DATE_TIME:
     case BSON_TYPE_NULL:
@@ -1531,12 +1533,16 @@ mlib_constexpr int64_t bson_iterator_as_int64(bson_iterator it) mlib_noexcept {
     case BSON_TYPE_CODE:
     case BSON_TYPE_SYMBOL:
     case BSON_TYPE_CODEWSCOPE:
+        (okay && (*okay = false));
         return 0;
     case BSON_TYPE_INT32:
+        (okay && (*okay = true));
         return bson_iterator_int32(it);
     case BSON_TYPE_TIMESTAMP:
+        (okay && (*okay = true));
         return (int64_t)bson_iterator_timestamp(it);
     case BSON_TYPE_INT64:
+        (okay && (*okay = true));
         return bson_iterator_int64(it);
     case BSON_TYPE_DECIMAL128:
     case BSON_TYPE_MAXKEY:
@@ -1722,12 +1728,12 @@ public:
         return bson_iterator_as_int32(_iter);
     }
     // Coerce the referred-to element to an int64 value
-    [[nodiscard]] constexpr std::int64_t as_int64() const noexcept {
-        return bson_iterator_as_int64(_iter);
+    [[nodiscard]] constexpr std::int64_t as_int64(bool* okay = nullptr) const noexcept {
+        return bson_iterator_as_int64(_iter, okay);
     }
 
     template <typename F>
-    constexpr auto visit(F&& fn) -> decltype(static_cast<F&&>(fn)(std::string_view())) {
+    constexpr auto visit(F&& fn) const -> decltype(static_cast<F&&>(fn)(std::string_view())) {
         auto call = [&](auto n) { return static_cast<F&&>(fn)(n); };
         switch (type()) {
         case BSON_TYPE_EOD:
