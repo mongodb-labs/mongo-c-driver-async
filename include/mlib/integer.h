@@ -726,7 +726,7 @@ mlib_constexpr mlib_integer _mlib_math_strnlen(const char* string, mlib_integer 
         return r;
     }
     int64_t ret = 0;
-    while (string[ret] && ret < maxlen.i64) {
+    while (ret < maxlen.i64 && string[ret]) {
         ++ret;
     }
     mlib_integer r = {ret, mlib_integer_okay};

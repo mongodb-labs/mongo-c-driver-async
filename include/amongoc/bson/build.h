@@ -41,11 +41,15 @@ mlib_extern_c_begin();
  * @param v The value to write
  */
 mlib_constexpr bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mlib_noexcept {
-    uint32_t v = (uint32_t)i32;
-    bytes[0].v = (v >> 0) & 0xff;
-    bytes[1].v = (v >> 8) & 0xff;
-    bytes[2].v = (v >> 16) & 0xff;
-    bytes[3].v = (v >> 24) & 0xff;
+    if (mlib_is_consteval() || !mlib_is_little_endian()) {
+        uint32_t v = (uint32_t)i32;
+        bytes[0].v = (v >> 0) & 0xff;
+        bytes[1].v = (v >> 8) & 0xff;
+        bytes[2].v = (v >> 16) & 0xff;
+        bytes[3].v = (v >> 24) & 0xff;
+    } else {
+        memcpy(bytes, &i32, sizeof i32);
+    }
     return bytes + 4;
 }
 
@@ -58,9 +62,14 @@ mlib_constexpr bson_byte* _bson_write_int32le(bson_byte* bytes, int32_t i32) mli
  * @param v  The value to write
  */
 mlib_constexpr bson_byte* _bson_write_int64le(bson_byte* out, int64_t i64) mlib_noexcept {
-    const uint64_t u64 = (uint64_t)i64;
-    out                = _bson_write_int32le(out, (int32_t)u64);
-    out                = _bson_write_int32le(out, (int32_t)(u64 >> 32));
+    if (mlib_is_consteval() || !mlib_is_little_endian()) {
+        const uint64_t u64 = (uint64_t)i64;
+        out                = _bson_write_int32le(out, (int32_t)u64);
+        out                = _bson_write_int32le(out, (int32_t)(u64 >> 32));
+    } else {
+        memcpy(out, &i64, sizeof i64);
+        out += sizeof i64;
+    }
     return out;
 }
 
