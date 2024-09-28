@@ -1583,6 +1583,8 @@ public:
     inline document push_subdoc(std::string_view key);
     inline document push_array(std::string_view key);
 
+    iterator erase(iterator pos) noexcept { return ::bson_erase(&_mut, pos); }
+
     [[nodiscard]] document child(iterator pos) noexcept {
         return document(subdoc_tag{::bson_mut_subdocument(&_mut, pos)});
     }
