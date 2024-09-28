@@ -208,6 +208,11 @@ typedef struct bson_mut {
      * element's address and the address of the document data within the element.
      */
     int32_t _capacity_or_negative_offset_within_parent_data;
+
+#if mlib_is_cxx()
+    friend constexpr ::bson_iterator begin(const bson_mut& m) noexcept { return bson_begin(m); }
+    friend constexpr ::bson_iterator end(const bson_mut& m) noexcept { return bson_end(m); }
+#endif  // C++
 } bson_mut;
 
 /**
