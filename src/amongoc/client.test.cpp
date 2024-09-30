@@ -10,7 +10,8 @@
 #include <amongoc/nano/just.hpp>
 #include <amongoc/operation.h>
 
-#include <bson/build.h>
+#include <bson/doc.h>
+#include <bson/mut.h>
 #include <bson/view.h>
 
 #include <mlib/alloc.h>
@@ -84,8 +85,8 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Simple request") {
         if (!r.status.is_error()) {
             client_box = std::move(r).value;
             bson::document doc{mlib_default_allocator};
-            doc.emplace_back("hello", 1.0);
-            doc.emplace_back("$db", "test");
+            bson::mutator(doc).emplace_back("hello", 1.0);
+            bson::mutator(doc).emplace_back("$db", "test");
             auto s1 = amongoc_client_command(client_box->as<amongoc_client>(), doc).as_unique();
             req_op  = std::move(s1).bind_allocator_connect(  //
                 mlib::allocator<>{mlib_default_allocator},

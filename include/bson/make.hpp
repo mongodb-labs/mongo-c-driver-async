@@ -1,6 +1,7 @@
 #pragma once
 
-#include <bson/build.h>
+#include <bson/doc.h>
+#include <bson/mut.h>
 
 #include <concepts>
 #include <ranges>
@@ -15,7 +16,7 @@ namespace bson::make {
  * Checks against document's `emplace_back` method
  */
 template <typename T>
-concept value_type = requires(const T& obj, bson::document doc) { doc.emplace_back("", obj); };
+concept value_type = requires(const T& obj, bson::mutator doc) { doc.emplace_back("", obj); };
 
 /**
  * @brief Match a type that exposes its own method of appending itself as an element
@@ -23,22 +24,22 @@ concept value_type = requires(const T& obj, bson::document doc) { doc.emplace_ba
  */
 template <typename T>
 concept indirect_appendable_value
-    = requires(const T& obj, bson::document& doc, std::string_view key) {
+    = requires(const T& obj, bson::mutator& doc, std::string_view key) {
           // The vlaue must declare a byte size
-          { obj.byte_size() } -> std::same_as<std::size_t>;
+          { obj.byte_size() } -> std::convertible_to<std::size_t>;
           // The element must have a method to append to an existing document with the given key
           obj.append_to(doc, key);
       };
 
 // Append a value to an existing document diretly
 template <value_type V>
-void append_value(document& doc, std::string_view key, const V& v) {
+void append_value(mutator& doc, std::string_view key, const V& v) {
     doc.emplace_back(key, v);
 }
 
 // Append a value to an existing document using that object's append_to method
 template <indirect_appendable_value V>
-void append_value(document& doc, std::string_view key, const V& v) {
+void append_value(mutator& doc, std::string_view key, const V& v) {
     v.append_to(doc, key);
 }
 
@@ -64,13 +65,13 @@ inline constexpr struct value_byte_size_fn {
 
 // Match an object that can be appending to a document as the value of some element
 template <typename T>
-concept appendable_value = requires(document& doc, std::string_view key, const T& obj) {
+concept appendable_value = requires(mutator& doc, std::string_view key, const T& obj) {
     append_value(doc, key, obj);
     value_byte_size(obj);
 };
 
 // Append a value to a document with an integer key
-void append_value(document& doc, std::size_t nth, const appendable_value auto& value) {
+void append_value(mutator& doc, std::size_t nth, const appendable_value auto& value) {
     auto buf = ::bson_tmp_uint_string(static_cast<std::uint32_t>(nth));
     append_value(doc, std::string_view(buf.buf), value);
 }
@@ -91,14 +92,14 @@ concept pairlike_element = requires(const T& obj) {
  * `byte_size()`
  */
 template <typename T>
-concept indirect_appendable_element = requires(document& out, const T& obj) {
+concept indirect_appendable_element = requires(mutator& out, const T& obj) {
     obj.append_to(out);
     { obj.byte_size() };
 };
 
 // Append a pair directly to a document
 template <pairlike_element T>
-void append_element(document& out, const T& pair) {
+void append_element(mutator& out, const T& pair) {
     decltype(auto) key   = std::get<0>(pair);
     decltype(auto) value = std::get<1>(pair);
     append_value(out, key, value);
@@ -106,7 +107,7 @@ void append_element(document& out, const T& pair) {
 
 // Append an element to a document in using its custom append_to method
 template <indirect_appendable_element T>
-void append_element(document& out, const T& elem) {
+void append_element(mutator& out, const T& elem) {
     elem.append_to(out);
 }
 
@@ -129,7 +130,7 @@ inline constexpr struct element_byte_size_fn {
 
 // Match a type that can be appended to a document, providing its own element key
 template <typename T>
-concept appendable_element = requires(document& doc, const T& obj) {
+concept appendable_element = requires(mutator& doc, const T& obj) {
     append_element(doc, obj);
     element_byte_size(obj);
 };
@@ -156,7 +157,7 @@ struct conditional {
         return element_byte_size(*_opt);
     }
 
-    void append_to(document& doc) const {
+    void append_to(mutator& doc) const {
         if (_opt) {
             append_element(doc, *_opt);
         }
@@ -193,7 +194,7 @@ struct array {
 
     constexpr std::size_t byte_size() const noexcept { return this->_size(iseq{}); }
 
-    void append_to(document& out, std::string_view key) const {
+    void append_to(mutator& out, std::string_view key) const {
         auto child = out.push_array(key);
         _append_each(child, iseq{});
     }
@@ -208,7 +209,7 @@ private:
     }
 
     template <std::size_t... Ns>
-    void _append_each(document& out, std::index_sequence<Ns...>) const {
+    void _append_each(mutator& out, std::index_sequence<Ns...>) const {
         (append_value(out, Ns, std::get<Ns>(_elements)), ...);
     }
 };
@@ -239,7 +240,7 @@ public:
         return acc;
     }
 
-    void append_to(document& out, std::string_view key) const {
+    void append_to(mutator& out, std::string_view key) const {
         auto        child = out.push_array(key);
         std::size_t nth   = 0;
         for (appendable_value auto const& el : _range) {
@@ -269,11 +270,12 @@ struct doc {
 
     bson::document build(mlib::allocator<> a) const {
         bson::document ret{a, this->byte_size()};
-        this->_build(ret, iseq{});
+        bson::mutator  mut{ret};
+        this->_build(mut, iseq{});
         return ret;
     }
 
-    void append_to(document& into, std::string_view key) const {
+    void append_to(mutator& into, std::string_view key) const {
         auto child = into.push_subdoc(key);
         this->_build(child, iseq{});
     }
@@ -289,7 +291,7 @@ private:
         return (element_byte_size(std::get<Ns>(tpl)) + ... + 0);
     }
     template <std::size_t... Ns>
-    void _build(document& out, std::index_sequence<Ns...>) const {
+    void _build(mutator& out, std::index_sequence<Ns...>) const {
         (append_element(out, std::get<Ns>(tpl)), ...);
     }
 

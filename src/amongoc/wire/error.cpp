@@ -3,7 +3,7 @@
 #include <amongoc/wire/message.hpp>
 #include <amongoc/wire/proto.hpp>
 
-#include <bson/build.h>
+#include <bson/doc.h>
 
 #include <system_error>
 

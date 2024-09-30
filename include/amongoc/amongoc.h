@@ -3,7 +3,7 @@
 #include "./alloc.h"
 #include "./async.h"
 #include "./box.h"
-#include "./bson/build.h"
+#include "./bson/doc.h"
 #include "./client.h"
 #include "./default_loop.h"
 #include "./emitter.h"

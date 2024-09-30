@@ -7,7 +7,7 @@
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/client.hpp>
 
-#include <bson/build.h>
+#include <bson/doc.h>
 #include <bson/make.hpp>
 
 #include <mlib/alloc.h>

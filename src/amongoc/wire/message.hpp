@@ -5,7 +5,7 @@
 #include <amongoc/wire/buffer.hpp>
 #include <amongoc/wire/integer.hpp>
 
-#include <bson/build.h>
+#include <bson/doc.h>
 #include <bson/view.h>
 
 #include <asio/buffer.hpp>

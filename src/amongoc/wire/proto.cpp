@@ -1,10 +1,12 @@
 #include "./proto.hpp"
 
-#include <bson/build.h>
+#include <bson/doc.h>
 #include <bson/view.h>
 
 #include <fmt/base.h>
+#include <fmt/chrono.h>
 
+#include <chrono>
 #include <exception>
 #include <variant>
 
@@ -73,14 +75,28 @@ struct _bson_printer {
         }
         write("\n");
         for (auto ref : doc) {
-            write("{}  {}: ", indent, ref.key());
+            write("{}  {:?}: ", indent, ref.key());
             ref.visit([this](auto x) { this->print_value(x); });
             write(",\n");
         }
         write("{}}}", indent);
     }
 
-    void print_value(std::string_view s) { write("\"{}\"", s); }
+    void print_value(std::string_view s) { write("{:?}", s); }
+    void print_value(bson_symbol s) { write("Symbol({:?})", std::string_view(s.utf8)); }
+
+    void print_value(::bson_datetime dt) {
+        auto tp = std::chrono::utc_clock::time_point(std::chrono::milliseconds(dt.utc_ms_offset));
+        write("Datetime⟨{:%c}⟩", tp);
+    }
+
+    void print_value(::bson_timestamp ts) {
+        auto tp = std::chrono::utc_clock::time_point(std::chrono::seconds(ts.utc_sec_offset));
+        write("Timestamp(⟨{:%c}⟩ : {})", tp, ts.increment);
+    }
+    void print_value(::bson_code c) { write("Code({:?})", std::string_view(c.utf8)); }
+
+    void print_value(::bson_decimal128) { write("[[Unimplemented: Decimal128 printing]]"); }
 
     void print_value(std::int32_t i) { write("{}:i32", i); }
     void print_value(std::int64_t i) { write("{}:i64", i); }
@@ -88,6 +104,8 @@ struct _bson_printer {
     void print_value(double i) { write("{}:f64", i); }
     void print_value(bson::null_t) { write("null"); }
     void print_value(bson::undefined_t) { write("undefined"); }
+    void print_value(bson::minkey_t) { write("[[min key]]"); }
+    void print_value(bson::maxkey_t) { write("[[max key]]"); }
     void print_value(bson_view subdoc) { _bson_printer{indent + "  "}.print(subdoc); }
     void print_value(bson_dbpointer dbp) {
         write("DBPointer(\"{}\", ", dbp.collection);

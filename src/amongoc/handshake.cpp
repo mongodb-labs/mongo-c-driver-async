@@ -2,7 +2,7 @@
 
 #include <amongoc/wire/error.hpp>
 
-#include <bson/build.h>
+#include <bson/doc.h>
 #include <bson/make.hpp>
 #include <bson/parse.hpp>
 #include <bson/view.h>

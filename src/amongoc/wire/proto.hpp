@@ -12,7 +12,7 @@
 #include <amongoc/wire/buffer.hpp>
 #include <amongoc/wire/message.hpp>
 
-#include <bson/build.h>
+#include <bson/doc.h>
 
 #include <mlib/alloc.h>
 

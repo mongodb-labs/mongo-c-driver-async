@@ -1,4 +1,5 @@
-#include <bson/build.h>
+#include <bson/doc.h>
+#include <bson/mut.h>
 #include <bson/types.h>
 
 #include <mlib/alloc.h>
@@ -25,7 +26,7 @@ TEST_CASE("bson/allocator propagation") {
 
 TEST_CASE("bson/build/insert") {
     document doc{mlib_default_allocator};
-    doc.emplace_back("foo", "bar");
+    bson::mutator(doc).emplace_back("foo", "bar");
     auto it = doc.begin();
     REQUIRE(it != doc.end());
     CHECK(it->key() == "foo");
@@ -34,10 +35,11 @@ TEST_CASE("bson/build/insert") {
 
 TEST_CASE("bson/build/subdoc") {
     document doc{::mlib_default_allocator};
-    auto     child = doc.push_subdoc("foo");
+    auto     m1    = bson::mutator(doc);
+    auto     child = m1.push_subdoc("foo");
     child.emplace_back("bar", "baz");
     auto it = doc.begin();
-    REQUIRE(it->type() == BSON_TYPE_DOCUMENT);
+    REQUIRE(it->type() == bson_type_document);
     auto s     = it->document();
     auto subit = s.begin();
     CHECK(subit->key() == "bar");
