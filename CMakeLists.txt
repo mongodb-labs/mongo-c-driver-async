@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.25)
 project(amongoc VERSION 0.1.0 DESCRIPTION "An Asynchronous MongoDB Library for C")
 
-# Enable testing with CTest
-include(CTest)
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
+
 # Pull our deps with PMM+vcpkg
-option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ON)
+option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ${PROJECT_IS_TOP_LEVEL})
 if(AMONGOC_USE_PMM)
     include(pmm)
     pmm(VCPKG REVISION 2024.08.23)
@@ -19,12 +17,41 @@ find_package(fmt CONFIG REQUIRED)
 
 find_package(Threads REQUIRED)
 
+# Enable testing with CTest
+# Note: We respect the BUILD_TESTING option from CTest.cmake
+include(CTest)
+
 # Support modules
 include(CMakePackageConfigHelpers)
+
+# Platform bits
+include(MongoSettings)
+include(MongoPlatform)
 # Developer aides
 include(Sanitizers)
 include(Ccache)
 include(LLDLinker)
+include(MongoWarnings)
+
+if(PROJECT_IS_TOP_LEVEL)
+    # Set compile warnings to be errors
+    set(CMAKE_COMPILE_WARNING_AS_ERROR TRUE)
+    mongo_add_warning_options(
+        gnu-like:-Wall
+        # False-positive in GCC with coroutines and a custom allocator:
+        gnu-like:lang-cxx:-Wno-mismatched-new-delete
+        gnu-like:-Wextra
+        # gnu-like:-Wconversion
+        gnu-like:-Wsign-conversion
+        gnu-like:-Wsign-compare
+    )
+endif()
+
+# Tweak some options if we are added as a subdirectory project
+if(NOT PROJECT_IS_TOP_LEVEL)
+    # We aren't the top-level project. Don't define test cases
+    set(BUILD_TESTING FALSE)
+endif()
 
 # When compiling C++ with GCC, set a deeper diagnostics depth
 add_compile_options($<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>)
