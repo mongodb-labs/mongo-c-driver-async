@@ -10,16 +10,22 @@
 #include <amongoc/loop.h>
 #include <amongoc/operation.h>
 
+#include <mlib/alloc.h>
+
 #include <catch2/catch_test_macros.hpp>
 
 #include <chrono>
 #include <memory>
+#include <system_error>
 
 using namespace amongoc;
 
 static_assert(nanosender<co_task<int>::sender>);
 
-emitter basic_coro(mlib_allocator = mlib_default_allocator) { co_return 0; }
+emitter basic_coro(mlib_allocator = mlib_default_allocator) {
+    co_await ramp_end;
+    co_return 0;
+}
 
 TEST_CASE("Coroutine/Basic") {
     auto em      = basic_coro().as_unique();
@@ -117,4 +123,17 @@ TEST_CASE("Coroutine/immediate await") {
     CHECK(*got == 0);
     op.start();
     CHECK(*got == 42);
+}
+
+emitter throws_early(allocator<>) {
+    throw std::system_error(std::make_error_code(std::errc::address_in_use));
+    co_await ramp_end;
+}
+
+TEST_CASE("Coroutine/Throw before suspend") {
+    auto   em = throws_early(::mlib_default_allocator);
+    status st;
+    auto   op = ::amongoc_tie(em, &st, nullptr, ::mlib_default_allocator).as_unique();
+    op.start();
+    CHECK(st.as_error_code() == std::errc::address_in_use);
 }

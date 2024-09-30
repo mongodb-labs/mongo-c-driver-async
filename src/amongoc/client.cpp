@@ -45,6 +45,7 @@ emitter amongoc_client_new(amongoc_loop* loop, const char* uri_str) noexcept {
 }
 
 static amongoc_emitter _command(amongoc_client cl, auto doc) noexcept {
+    co_await ramp_end;
     wire::client_interface auto conn = co_await cl._impl->_pool.checkout();
     auto              msg  = wire::op_msg_message{std::array{wire::body_section(bson_view(doc))}};
     wire::any_message resp = co_await conn.request(msg);

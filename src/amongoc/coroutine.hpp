@@ -115,6 +115,13 @@ template <typename P>
 explicit unique_co_handle(std::coroutine_handle<P>) -> unique_co_handle<P>;
 
 /**
+ * @brief A special awaiter that just suspends immediately. Use this to mark the end of
+ * an explicit coroutine setup ramp.
+ */
+inline constexpr struct ramp_end_t : std::suspend_always {
+} ramp_end;
+
+/**
  * @brief A basic awaitable that performs the given action during await_suspend.
  *
  * await_resume() returns `void`. await_ready() always returns `false`
@@ -330,13 +337,16 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
         // to complete the handler after the coroutine suspends.
         return suspends_by([](co_handle co) noexcept {
             emitter_promise& self = co.promise();
-            // This should be the final substantial line of code, because it is possible that the
-            // handler will destroy the coroutine promise during completion.
-            self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
+            if (self.fin_handler.has_value()) {
+                // This should be the final substantial line of code, because it is possible that
+                // the handler will destroy the coroutine promise during completion.
+                self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
+            }
         });
     }
-    // Always start suspended
-    static std::suspend_always initial_suspend() noexcept { return {}; }
+
+    // Start eagerly.
+    static std::suspend_never initial_suspend() noexcept { return {}; }
 
     // Starter function object for the amongoc_operation
     struct starter {
@@ -345,8 +355,15 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 
         void operator()(amongoc_handler& h) const {
             // Move the handler from the operation to the coroutine
-            _co.promise().fin_handler = std::move(h).as_unique();
-            _co.resume();
+            emitter_promise& pr = _co.promise();
+            if (_co.done()) {
+                // The coroutine already returned. Fulfill the handler now
+                h.complete(pr.fin_result.status, std::move(pr.fin_result.value));
+            } else {
+                // The coroutine is still pending. Attach the handler and resume
+                _co.promise().fin_handler = std::move(h).as_unique();
+                _co.resume();
+            }
         }
     };
 

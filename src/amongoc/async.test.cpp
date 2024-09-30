@@ -85,6 +85,7 @@ TEST_CASE("Async/then_just") {
 // Write an emitter type that forcibly allocates, to test that let() destroys the objects
 // at the appropriate time
 emitter waits(amongoc_loop& loop) {
+    co_await ramp_end;
     co_await amongoc_schedule_later(&loop, timespec{0, 1000 * 5}).as_unique();
     co_return amongoc_nil.as_unique();
 }
