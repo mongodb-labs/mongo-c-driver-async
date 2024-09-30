@@ -2,7 +2,6 @@
 #include "./client.impl.hpp"
 
 #include <amongoc/box.h>
-#include <amongoc/bson/build.h>
 #include <amongoc/client.h>
 #include <amongoc/connection_pool.hpp>
 #include <amongoc/coroutine.hpp>
@@ -12,6 +11,8 @@
 #include <amongoc/nano/nano.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/proto.hpp>
+
+#include <bson/build.h>
 
 #include <mlib/alloc.h>
 

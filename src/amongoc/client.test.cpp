@@ -1,8 +1,6 @@
 #include <amongoc/alloc.h>
 #include <amongoc/async.h>
 #include <amongoc/box.h>
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/view.h>
 #include <amongoc/client.h>
 #include <amongoc/default_loop.h>
 #include <amongoc/emitter.h>
@@ -11,6 +9,9 @@
 #include <amongoc/nano/concepts.hpp>
 #include <amongoc/nano/just.hpp>
 #include <amongoc/operation.h>
+
+#include <bson/build.h>
+#include <bson/view.h>
 
 #include <mlib/alloc.h>
 

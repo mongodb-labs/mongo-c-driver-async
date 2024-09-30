@@ -1,4 +1,4 @@
-#include <amongoc/bson/build.h>
+#include <bson/build.h>
 
 extern mlib_constexpr bson_byte* _bson_write_u32le(bson_byte*, uint32_t) mlib_noexcept;
 extern mlib_constexpr bson_byte* _bson_write_u64le(bson_byte*, uint64_t) mlib_noexcept;

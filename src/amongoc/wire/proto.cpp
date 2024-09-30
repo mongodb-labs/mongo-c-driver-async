@@ -1,7 +1,7 @@
 #include "./proto.hpp"
 
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/view.h>
+#include <bson/build.h>
+#include <bson/view.h>
 
 #include <fmt/base.h>
 

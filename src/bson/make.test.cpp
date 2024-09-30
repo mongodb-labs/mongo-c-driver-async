@@ -1,7 +1,7 @@
 #include "./build.test.hpp"
 
-#include <amongoc/bson/make.hpp>
-#include <amongoc/bson/types.h>
+#include <bson/make.hpp>
+#include <bson/types.h>
 
 #include <mlib/alloc.h>
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <amongoc/bson/view.h>
+#include <bson/view.h>
 
 #include <array>
 #include <cstddef>

@@ -1,6 +1,6 @@
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/make.hpp>
-#include <amongoc/bson/parse.hpp>
+#include <bson/build.h>
+#include <bson/make.hpp>
+#include <bson/parse.hpp>
 
 #include <mlib/alloc.h>
 

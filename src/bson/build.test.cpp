@@ -1,5 +1,5 @@
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/types.h>
+#include <bson/build.h>
+#include <bson/types.h>
 
 #include <mlib/alloc.h>
 

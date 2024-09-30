@@ -1,7 +1,7 @@
 #include "./build.test.hpp"
 
-#include <amongoc/bson/types.h>
-#include <amongoc/bson/view.h>
+#include <bson/types.h>
+#include <bson/view.h>
 
 #include <catch2/catch_test_macros.hpp>
 

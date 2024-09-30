@@ -69,6 +69,8 @@ IncludeCategories:
     Priority: 10
   - Regex: '<amongoc/|"amongoc/' # amongoc headers first
     Priority: 20
+  - Regex: '<bson/|"bson/' # bson headers next
+    Priority: 25
   - Regex: '<mlib/|"mlib/' # mlib headers next
     Priority: 30
   - Regex: '<.*/.*\.h>|<.*/.*\.hpp>' # Other non-standard headres
