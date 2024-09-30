@@ -133,11 +133,52 @@ if(BUILD_TESTING)
     add_executable(amongoc-test ${test_sources})
     target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
     target_include_directories(amongoc-test PRIVATE src)
-    catch_discover_tests(amongoc-test)
+    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST)
 
     # Generate URI tests
     include(GenURITests)
     target_sources(amongoc-test PRIVATE ${URITest_SOURCES})
+
+    # Don't add the testproject tests if we are already building as a test project
+    if(NOT DEFINED HOST_PROJECT_CMAKE_SOURCE_DIR)
+        include(TestProject)
+        # Pass through some variables that point to our dependency packages. The
+        # tests will use these same packages when importing amongoc.
+        # TODO: Add test cases that don't share dependencies with the parent build
+        set(passthru_args
+            PASSTHRU_VARS neo-fun_DIR asio_DIR fmt_DIR
+            # Boost has a lot of variables that need to be forwarded:
+            PASSTHRU_VARS_REGEX "[bB]oost.*(_DIR|_PATH)"
+        )
+        add_test_cmake_project(
+            "CMake/Consume/Import with find_package" ./tests/consume/simple
+            INSTALL_PARENT
+            SETTINGS
+                TEST_IMPORT_MODE=find_package
+            # Debug issues with find_package():
+            CONFIGURE_ARGS --debug-find
+            ${passthru_args}
+            )
+        add_test_cmake_project(
+            "CMake/Consume/Import with FetchContent" ./tests/consume/simple
+            SETTINGS
+                TEST_IMPORT_MODE=FetchContent
+            ${passthru_args}
+            )
+        add_test_cmake_project(
+            "CMake/Consume/Import with add_subdirectory" ./tests/consume/simple
+            SETTINGS
+                TEST_IMPORT_MODE=add_subdirectory
+            ${passthru_args}
+            )
+        add_test_cmake_project(
+            "CMake/Consume/Import with add_subdirectory - EXCLUDE_FROM_ALL" ./tests/consume/simple
+            SETTINGS
+                TEST_IMPORT_MODE=add_subdirectory
+                TEST_ADD_SUBDIR_EXCLUDE_FROM_ALL=EXCLUDE_FROM_ALL
+            ${passthru_args}
+            )
+    endif()
 endif()
 
 # Compile and link all documentation examples
@@ -151,42 +192,48 @@ foreach(filepath IN LISTS examples)
     target_link_libraries(${exe} amongoc::amongoc)
 endforeach()
 
-# Generate the package-config files. Use camelCaseFileNames to enforce case sensitive find_package()
-configure_package_config_file(
-    etc/amongocConfig.cmake.in
-    amongocConfig.cmake
-    INSTALL_DESTINATION lib/cmake
-)
-write_basic_package_version_file(
-    amongocConfig-version.cmake
-    COMPATIBILITY SameMajorVersion
-)
+if(PROJECT_IS_TOP_LEVEL OR AMONGOC_GENERATE_INSTALL_RULES)
+    # We base our install paths on the GNU style
+    include(GNUInstallDirs)
 
-# We base our install paths on the GNU style
-include(GNUInstallDirs)
+    set(AMONGOC_INSTALL_CMAKEDIR
+        ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION}
+        CACHE STRING "Installation directory where CMake package files will be written"
+    )
 
-set(AMONGOC_INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake CACHE STRING "Installation directory where CMake package files will be written")
-install(
-    TARGETS amongoc
-    EXPORT amongoc-targets
-    RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    FILE_SET HEADERS DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-    INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-)
-install(
-    FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig-version.cmake
-    DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
-)
-install(
-    EXPORT amongoc-targets
-    DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
-    NAMESPACE amongoc::
-)
+    # Generate the package-config files. Use camelCaseFileNames to enforce case sensitive find_package()
+    configure_package_config_file(
+        etc/amongocConfig.cmake.in
+        amongocConfig.cmake
+        INSTALL_DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
+    )
+    write_basic_package_version_file(
+        amongocConfig-version.cmake
+        COMPATIBILITY SameMajorVersion
+    )
 
-string(TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
-string(APPEND CPACK_SYSTEM_NAME "-${CMAKE_SYSTEM_PROCESSOR}")
-include(CPack)
+    install(
+        TARGETS amongoc
+        EXPORT amongoc-targets
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        FILE_SET HEADERS DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    )
+    install(
+        FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig.cmake
+            ${CMAKE_CURRENT_BINARY_DIR}/amongocConfig-version.cmake
+        DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
+    )
+    install(
+        EXPORT amongoc-targets
+        DESTINATION "${AMONGOC_INSTALL_CMAKEDIR}"
+        NAMESPACE amongoc::
+    )
+
+    string(TOLOWER "${CMAKE_SYSTEM_NAME}" CPACK_SYSTEM_NAME)
+    string(APPEND CPACK_SYSTEM_NAME "-${CMAKE_SYSTEM_PROCESSOR}")
+    include(CPack)
+endif()
