@@ -1,7 +1,6 @@
 #pragma once
 
 #include <amongoc/wire/buffer.hpp>
-#include <amongoc/wire/error.hpp>
 
 namespace amongoc::wire {
 
@@ -38,7 +37,7 @@ constexpr std::ranges::iterator_t<O> write_int_le(O&& out_rng, I value) {
         *out = static_cast<char>((uv >> (8 * n)) & 0xff);
     }
     if (n < sizeof uv) {
-        throw_protocol_error("truncated buffer");
+        throw std::system_error(std::make_error_code(std::errc::protocol_error), "short read");
     }
     return out;
 }
@@ -79,7 +78,7 @@ constexpr decoded_integer<Int, std::ranges::iterator_t<R>> read_int_le(R&& rng) 
     }
     if (n < sizeof u) {
         // We had to stop before reading the full data
-        throw_protocol_error("short read");
+        throw std::system_error(std::make_error_code(std::errc::protocol_error), "short read");
     }
     return {static_cast<Int>(u), it};
 }
