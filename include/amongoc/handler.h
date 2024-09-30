@@ -199,6 +199,9 @@ public:
         h        = {};
     }
 
+    // Test whether this handler has a value
+    constexpr bool has_value() const noexcept { return _handler.vtable != nullptr; }
+
     // Move-construct
     unique_handler(unique_handler&& o) noexcept
         : _handler(mlib_fwd(o).release()) {}
