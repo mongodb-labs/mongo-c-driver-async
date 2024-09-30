@@ -1685,7 +1685,7 @@ inline bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_n
 }
 
 #define bson_foreach(IterName, Viewable)                                                           \
-    _bsonForEach(IterName, bson_as_view(Viewable), _bsonForEachOnlyOnce, _bsonForEachView)
+    _bsonForEach(IterName, bson_view_of(Viewable), _bsonForEachOnlyOnce, _bsonForEachView)
 #define bson_foreach_subrange(IterName, First, Last)                                               \
     _bsonForeachSubrange(IterName,                                                                 \
                          First,                                                                    \
@@ -1700,16 +1700,21 @@ inline bson_iterator _bson_find(bson_view v, const char* key, int keylen) mlib_n
    /* OuterOnce ensures the whole foreach operation only runs one time */ \
    for (int OuterOnce = 1; OuterOnce;) \
    /* Grab the sentinel once for the whole loop: */ \
-   for (const bson_iterator Sentinel = LastInit; OuterOnce; ) \
+   for (const bson_iterator Sentinel = (LastInit); OuterOnce; ) \
    /* Keep a 'DidBreak' variable that detects if the loop body executed a 'break' statement' */ \
    for (bool DidBreak = false; OuterOnce; \
         /* If we hit this loopstep statement, the whole foreach is finished: */ \
         OuterOnce = 0) \
    /* Create the actual iterator (whose name is private). */ \
-   for (bson_iterator Iterator = FirstInit; \
+   for (bson_iterator Iterator = (FirstInit); \
         /* Continually advance until we hit the sentinel, or 'DidBreak' is true */ \
         !DidBreak && !bson_iterator_eq(Iterator, Sentinel); \
-        Iterator = bson_next(Iterator)) \
+        /* Check if the current iterator has an error condition */ \
+        Iterator = bson_iterator_get_error(Iterator) == bson_iter_errc_okay \
+            /* If not, advance to the next iterator. This *may* produce an errant iterator */ \
+            ? bson_next(Iterator) \
+            /* The current iterator is bad. Immediately jump to the end so we stop the loop */ \
+            : Sentinel) \
    /* An inner-scope loop for a generating the visible name of the iterator. Also only runs once: */ \
    for (int InnerOnce = 1; InnerOnce;) \
    /* Declare the iterator variable that is visible in the loop body: */ \

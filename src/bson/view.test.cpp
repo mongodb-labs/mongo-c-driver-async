@@ -117,3 +117,92 @@ TEST_CASE("bson/view/regex/Extra null") {
     ++it;
     CHECK(it.error() == bson_iter_errc_invalid_type);
 }
+
+/**
+ * @brief Test that the `break` keyword in a `bson_foreach` loop will stop the
+ * loop properly.
+ */
+TEST_CASE("bson/view/foreach/break") {
+    // clang-format off
+    bson_byte dat[] = {
+        38, 0, 0, 0,
+        // String
+        bson_type_utf8, 'r', 0,
+        4, 0, 0, 0, 'f', 'o', 'o', 0,
+        // int64
+        bson_type_int64, 'b', 0,
+        42, 0, 0, 0, 0, 0, 0, 0,
+        // Subdocument
+        bson_type_document, 'c', 0,
+        8, 0, 0, 0, 'l', 'o', 'l', 0,
+        0,
+    };
+    // clang-format on
+    auto          v = bson::view::from_data(dat, sizeof dat);
+    bson_iterator last_seen;
+    int           nth = 0;
+    // There are three elements, but we stop at two
+    bson_foreach(iter, v) {
+        last_seen = iter;
+        ++nth;
+        if (nth == 2) {
+            break;
+        }
+    }
+    // We broke out on the second iteration
+    CHECK(nth == 2);
+    CHECK(last_seen->key() == "b");
+}
+
+/**
+ * @brief Test that `bson_foreach` over a document will continue up-to and including
+ * an iterator pointing to an errant element. It should stop on that element
+ * and not try to continue
+ */
+TEST_CASE("bson/view/foreach/error iterator") {
+    // clang-format off
+    bson_byte dat[] = {
+        38, 0, 0, 0,
+        // String
+        bson_type_utf8, 'r', 0,
+        4, 0, 0, 0, 'f', 'o', 'o', 0,
+        // int64
+        bson_type_int64, 'b', 0,
+        42, 0, 0, 0, 0, 0, 0, 0,
+        // Malformed
+        bson_type_document, 'c', 0,
+        64, 0, 0, 0, 'l', 'o', 'l', 0,
+        0,
+    };
+    // clang-format on
+    auto v  = bson::view::from_data(dat, sizeof dat);
+    auto it = v.begin();
+    CHECK(it->key() == "r");
+    CHECK(it->utf8() == "foo");
+    ++it;
+    CHECK(it->key() == "b");
+    CHECK(it->int64() == 42);
+    ++it;
+    CHECK(it.has_error());
+
+    int  nth       = 0;
+    bool got_error = false;
+    bson_foreach(iter, v) {
+        switch (nth++) {
+        case 0:
+            CHECK(iter->key() == "r");
+            continue;
+        case 1:
+            CHECK(iter->key() == "b");
+            continue;
+        case 2:
+            CHECK(iter.error() == bson_iter_errc::bson_iter_errc_invalid_length);
+            got_error = true;
+            continue;
+        case 3:
+            FAIL_CHECK("Should have stopped");
+        }
+    }
+    CHECK(got_error);
+    CHECK(nth == 3);
+}
