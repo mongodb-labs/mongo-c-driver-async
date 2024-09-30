@@ -21,7 +21,14 @@ mlib_constexpr size_t mlib_strnlen(const char* s, size_t maxlen) mlib_noexcept {
 }
 
 mlib_constexpr size_t mlib_strlen(const char* s) mlib_noexcept {
-    return mlib_strnlen(s, SSIZE_MAX);
+    if (mlib_is_consteval()) {
+        size_t n = 0;
+        while (s[n] != 0)
+            ++n;
+        return n;
+    } else {
+        return strlen(s);
+    }
 }
 
 mlib_extern_c_end();

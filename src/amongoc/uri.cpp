@@ -352,5 +352,6 @@ result<connection_uri> connection_uri::parse(std::string_view                   
         std::terminate();
         break;
     }
+    ret.hosts.push_back(mlib_fwd(h));
     return mlib_fwd(ret);
 }

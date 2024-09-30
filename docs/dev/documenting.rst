@@ -66,6 +66,27 @@ Consider the following when writing documentation for |amongoc|:
     text unless using an admonition would seriously break the flow of the text.
 
 
+External ``cppreference`` Links
+###############################
+
+We use a custom-generated Sphinx inventory for objects documented on
+cppreference, because at time of writing, ``cppreference`` does not have a
+Sphinx inventory of its own. This inventory is generated with code in
+``docs/conf.py`` on-the-fly when documentation is buidt. Linking to external
+items requires that they are present in the custom inventory. If a link fails to
+generate, ensure it is present in the custom inventory.
+
+For objects that live in the C++ ``std`` namespace, use a ``std__`` prefix
+instead of the ``std::`` namespace. This works around a limitation in the Sphinx
+C++ domain that refuses to generate hyperlinks for the ``std`` namespace. The
+generated link text will use the ``std::`` prefix as long as the link's display
+name is set correctly in the generated inventory:
+
+.. code-block:: rst
+
+   .. cpp:function:: std__nullptr_t my_func(std__size_t sz)
+
+
 Supplements
 ###########
 

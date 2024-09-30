@@ -28,7 +28,7 @@ TEST_CASE("Async/Transform with the C API") {
                       // inlinable
                       mlib_terminating_allocator,
                       amongoc_nil,
-                      [](box, status* st, box value) noexcept {
+                      [](box, status*, box value) noexcept {
                           amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
                           return value;
                       })
@@ -46,7 +46,9 @@ TEST_CASE("Async/Timeout") {
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
     // One minute delay (too slow)
-    emitter big_delay = amongoc_schedule_later(&loop, timespec{30});
+    auto dur          = timespec{};
+    dur.tv_sec        = 60;
+    emitter big_delay = amongoc_schedule_later(&loop, dur);
     // Half second timeout:
     auto   timed = amongoc_timeout(&loop, big_delay, timespec{0, 500'000'000}).as_unique();
     status got;
@@ -83,6 +85,7 @@ TEST_CASE("Async/then_just") {
 // Write an emitter type that forcibly allocates, to test that let() destroys the objects
 // at the appropriate time
 emitter waits(amongoc_loop& loop) {
+    co_await ramp_end;
     co_await amongoc_schedule_later(&loop, timespec{0, 1000 * 5}).as_unique();
     co_return amongoc_nil.as_unique();
 }

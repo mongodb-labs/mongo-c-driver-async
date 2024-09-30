@@ -24,8 +24,8 @@ TEST_CASE("mlib/integer/add+overflow") {
 
 TEST_CASE("mlib/integer/catch") {
     mlib_math_try();
-    auto i   = mlibMath(I(412));
     auto i64 = mlibMathInt32(mul(I(54), mul(512, mul(512, mul(512, mul(512, mul(512, 512)))))));
+    (void)i64;
     mlib_math_catch (e) {
         CHECK(e.flags == mlib_integer_bounds);
         return;

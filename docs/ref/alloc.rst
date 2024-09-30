@@ -25,11 +25,11 @@ Types
   associated allocator, and therefore any object associated with an event loop
   will also use that same allocator).
 
-  .. member:: mlib_allactor_impl const* impl
+  .. member:: mlib_allocator_impl const* impl
 
     Pointer to the allocator implementation.
 
-.. struct:: mlib_allactor_impl
+.. struct:: mlib_allocator_impl
 
   Provides the backing implementation for an `mlib_allocator`
 
@@ -37,7 +37,7 @@ Types
 
     Arbitrary pointer to context for the allocator.
 
-  .. function:: void* reallocate(void* userdata, void* prev_ptr, std::size_t requested_size, std::size_t alignment, std::size_t previous_size, std::size_t* [[storage]] out_new_size)
+  .. function:: void* reallocate(void* userdata, void* prev_ptr, size_t requested_size, size_t alignment, size_t previous_size, size_t* [[storage]] out_new_size)
 
     **(Function pointer member)**
 
@@ -144,9 +144,9 @@ Functions
 *********
 
 .. function::
-  void* mlib_allocate(mlib_allocator alloc, std::size_t sz)
-  void mlib_deallocate(mlib_allocator alloc, void* p, std::size_t sz)
-  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, std::size_t sz, std::size_t alignment, std::size_t prev_size, std::size_t* out_new_size)
+  void* mlib_allocate(mlib_allocator alloc, size_t sz)
+  void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz)
+  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
@@ -163,7 +163,7 @@ Functions
   :header: |this-header|
 
   The `mlib_reallocate` function is a wrapper around the
-  `mlib_allactor_impl::reallocate` function.
+  `mlib_allocator_impl::reallocate` function.
 
 
 Constants
@@ -221,7 +221,7 @@ Types
   .. function::
     allocator(mlib_allocator a)
 
-    Construct from an `mlib_allocator` `a`.
+    Convert from an `mlib_allocator` `a`.
 
   .. function::
     template <typename U> allocator(allocator<U>)
@@ -240,8 +240,8 @@ Types
     Obtain the `mlib_allocator` that is used by this `allocator`
 
   .. function::
-    pointer allocate(std::size_t n) const
-    void deallocate(pointer p, std::size_t n) const
+    pointer allocate(std__size_t n) const
+    void deallocate(pointer p, std__size_t n) const
 
     The allocation/deallocation functions for the C++ allocator interface.
 
@@ -249,6 +249,44 @@ Types
     :param p: Pointer to a previous region obtained from an equivalent `allocator`
 
     Calls `mlib_allocate`/`mlib_deallocate` to perform the allocation.
+
+  .. function::
+    template <typename... Args> \
+    pointer new_(Args&&...) const
+    void delete_(pointer p) const
+
+    New/delete individual objects using the allocator.
+
+  .. function::
+    template <typename U> allocator<U> rebind() const
+
+    Rebind the type parameter for the allocator.
+
+  .. function::
+    template <typename... Args> \
+    void construct(pointer p, Args&&... args) const
+
+    Construct an object at `p` with `uses-allocator construction`__. This will
+    "inject" the allocator into objects that support construction using the same
+    memory allocator. This allows the following to work properly::
+
+      // An allocator to be used
+      mlib::allocator<> a = get_some_allocator();
+      // A string type that uses an mlib allocator
+      using string = std::basic_string<char, std::char_traits<char>, mlib::allocator<char>>
+      // Construct a vector with our allocator
+      std::vector<string, mlib::allocator<string>> strings{a};
+      // Append a new string
+      strings.emplace_back("hello, world!");  // [note]
+
+    On the line marked ``[note]`` we are emplace-constructing a string from a
+    character array. This would not work if the `construct` method was not
+    available, as the vector would try to default-construct a new
+    `mlib::allocator`, which is not allowed. In this example, `emplace_back`
+    will end up calling `allocator::construct` for the string, which will
+    inject the parent allocator into the string during construction.
+
+    __ https://en.cppreference.com/w/cpp/memory/uses_allocator
 
 
 .. class::
@@ -284,6 +322,36 @@ Types
     auto query(auto q) const
 
     Apply a query to the underlying object. (See: :doc:`/dev/queries`)
+
+
+.. struct:: alloc_deleter
+
+  A deleter type for use with `std::unique_ptr` that deletes an object using an
+  `mlib::allocator`
+
+  :header: |this-header|
+
+.. type::
+  template <typename T> unique_ptr = std::unique_ptr<T, alloc_deleter>
+
+  A `std::unique_ptr` type that uses an `mlib::allocator`.
+
+  :header: |this-header|
+
+  .. seealso:: `allocate_unique`
+
+
+Functions
+*********
+
+.. function::
+  template <typename T> \
+  unique_ptr<T> allocate_unique(allocator<> a, auto&&... args)
+
+  Construct an `mlib::unique_ptr\<T>` using the given allocator to manage the
+  object.
+
+  :header: |this-header|
 
 
 Constants

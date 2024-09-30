@@ -59,7 +59,7 @@ int main(int argc, char const* const* argv) {
         return 2;
     }
     int delay = atoi(argv[1]);
-    if (delay == 0 && strcmp(argv[1], "0") || delay < 0) {
+    if (((delay == 0) && strcmp(argv[1], "0")) || delay < 0) {
         fprintf(stderr, "Expected <delay> to be a positive integer\n");
         return 2;
     }
@@ -69,8 +69,7 @@ int main(int argc, char const* const* argv) {
     amongoc_default_loop_init(&loop);
 
     // Seed the initial sum
-    state app_state = {delay, &loop};
-    app_state.b     = 1;
+    state app_state = {.countdown = delay, .loop = &loop, .a = 0, .b = 1};
 
     // Start the loop
     amongoc_emitter em = loop_step(amongoc_box_pointer(&app_state), amongoc_okay, amongoc_nil);

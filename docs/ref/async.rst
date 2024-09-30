@@ -138,7 +138,7 @@ Functions
   `amongoc_loop_vtable::call_soon`.
 
 
-.. function:: amongoc_emitter [[type(nil)]] amongoc_schedule_later(amongoc_loop* loop, std::timespec duration)
+.. function:: amongoc_emitter [[type(nil)]] amongoc_schedule_later(amongoc_loop* loop, timespec duration)
 
   Schedule a completion after `duration` has elapsed.
 
@@ -152,7 +152,7 @@ Functions
 
 
 .. function::
-  amongoc_emitter amongoc_timeout(amongoc_loop* loop, amongoc_emitter [[transfer]] em, std::timespec duration)
+  amongoc_emitter amongoc_timeout(amongoc_loop* loop, amongoc_emitter [[transfer]] em, timespec duration)
 
   Attach a timeout to the asynchronous operation `em`.
 

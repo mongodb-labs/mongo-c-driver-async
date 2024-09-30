@@ -17,7 +17,7 @@ Reference
   operation
   async
   alloc
-  connection
+  client
   loop
   handler
 

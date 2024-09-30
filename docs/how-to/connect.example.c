@@ -6,7 +6,7 @@
  */
 typedef struct app_state {
     // The connection to a server
-    amongoc_connection conn;
+    amongoc_client client;
 } app_state;
 
 /**
@@ -22,6 +22,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent);
  * @return amongoc_box Returns `amongoc_nil`
  */
 amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
+    (void)state_ptr;
     bson_view resp = bson_view_of(amongoc_box_cast(bson_mut)(resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
@@ -36,14 +37,13 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
  * @brief Handle the connection to a server. Sends a "hello" message
  *
  * @param state_ptr Pointer to the `app_state`
- * @param conn_box An `amongoc_connection`
+ * @param cl_box An `amongoc_client`
  * @return amongoc_emitter
  */
-amongoc_emitter
-after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box conn_box) {
+amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box cl_box) {
     printf("Connected to server\n");
     // Store the connection in our app state
-    amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->conn, conn_box);
+    amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->client, cl_box);
 
     // Create a "hello" command
     bson_mut doc = bson_mut_new();
@@ -55,8 +55,8 @@ after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box conn_
                      bson_end(doc),
                      bson_utf8_view_from_cstring("$db"),
                      bson_utf8_view_from_cstring("test"));
-    amongoc_emitter em
-        = amongoc_conn_command(amongoc_box_cast(app_state*)(state_ptr)->conn, bson_view_of(doc));
+    amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*)(state_ptr)->client,
+                                                bson_view_of(doc));
     bson_mut_delete(doc);
 
     em = amongoc_then(em,
@@ -69,20 +69,22 @@ after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box conn_
 // end.
 
 int main(int argc, char const* const* argv) {
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s <host> <port>\n", argv[0]);
+    if (argc != 2) {
+        fprintf(stderr, "Usage: %s <uri>\n", argv[0]);
         return 1;
     }
-    const char* const host = argv[1];
-    const char* const port = argv[2];
+    const char* const uri = argv[1];
 
     amongoc_loop loop;
     amongoc_default_loop_init(&loop);
 
     struct app_state state = {0};
 
-    amongoc_emitter em = amongoc_conn_connect(&loop, argv[1], argv[2]);
-    em                 = amongoc_timeout(&loop, em, (struct timespec){5});
+    amongoc_emitter em = amongoc_client_new(&loop, uri);
+    struct timespec dur;
+    dur.tv_sec  = 5;
+    dur.tv_nsec = 0;
+    em          = amongoc_timeout(&loop, em, dur);
 
     em = amongoc_let(em,
                      amongoc_async_forward_errors,
@@ -97,7 +99,7 @@ int main(int argc, char const* const* argv) {
     amongoc_operation_destroy(op);
 
     // Destroy the connection since we are done with it (this is a no-op for a null connection)
-    amongoc_conn_destroy(state.conn);
+    amongoc_client_destroy(state.client);
     amongoc_default_loop_destroy(&loop);
 
     if (amongoc_is_error(fin_status)) {

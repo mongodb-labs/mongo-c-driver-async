@@ -22,7 +22,7 @@ struct compressed_box {
     std::array<char, Nbytes> buffer;
 
     [[nodiscard]] unique_box recover() && noexcept {
-        box ret{0};
+        box ret{};
         memcpy(ret._storage.u.trivial_inline.bytes + 0, buffer.data(), Nbytes);
         ret._storage.inline_size = Nbytes;
         return mlib_fwd(ret).as_unique();
@@ -44,8 +44,8 @@ struct compressed_box<Nbytes, true> {
     std::array<char, Nbytes> buffer;
 
     compressed_box(compressed_box&& other)
-        : buffer(other.buffer)
-        , dtor(other.dtor) {
+        : dtor(other.dtor)
+        , buffer(other.buffer) {
         other.dtor = nullptr;
     }
 

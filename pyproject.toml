@@ -20,3 +20,9 @@ sphinxcontrib-moderncmakedomain = "^3.29.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 120
+
+[tool.black]
+line-length = 120

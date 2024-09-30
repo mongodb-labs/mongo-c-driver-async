@@ -5,7 +5,8 @@
     "asio",
     "boost-url",
     "catch2",
+    "fmt",
     "neo-fun",
-    "fmt"
+    "boost-container"
   ]
 }

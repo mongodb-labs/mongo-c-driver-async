@@ -15,6 +15,9 @@ lead to duplicate definitions of mongo::detail::c_platform for downstream
 users).
 
 ]]
+if(TARGET _amongoc-platform)
+    return()
+endif()
 
 add_library(_amongoc-platform INTERFACE)
 add_library(amongoc::detail::c_platform ALIAS _amongoc-platform)

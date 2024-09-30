@@ -131,6 +131,11 @@ struct cxx_recv_as_c_handler {
                               void (*callback)(void*)) noexcept {
                         auto&                self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
                         stoppable_token auto tk   = get_stop_token(self._recv);
+                        if (not tk.stop_possible()) {
+                            // Optimize: No stop is possible with this token. Don't bother
+                            // constructing a stop callback
+                            return amongoc_nil;
+                        }
                         return unique_box::make<stop_callback>(allocator<>{hnd->get_allocator()},
                                                                tk,
                                                                stopper{userdata, callback})
@@ -208,7 +213,7 @@ unique_emitter as_emitter(allocator<> alloc, S&& sender) noexcept {
                 };
                 return mlib_fwd(oper).as_unique();
             });
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_alloc_failure().as_unique();
     }
 }

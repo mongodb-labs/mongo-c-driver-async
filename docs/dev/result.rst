@@ -111,10 +111,10 @@
 
   The following specializations are provided for `E`:
 
-  `std::error_code`
-    Throws a `std::system_error`
+  `std__error_code`
+    Throws a `std__system_error`
 
-  `std::exception_ptr`
+  `std__exception_ptr`
     Calls `std::rethrow_exception`
 
   Any type derived from `std::exception`

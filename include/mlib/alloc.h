@@ -178,7 +178,7 @@ public:
 
     // Construct the object, injecting this allocator if appropriate
     template <typename... Args>
-    constexpr void construct(pointer p, Args&&... args) {
+    constexpr void construct(pointer p, Args&&... args) const {
         std::uninitialized_construct_using_allocator(p, *this, static_cast<Args&&>(args)...);
     }
 
@@ -305,6 +305,36 @@ concept has_mlib_allocator
  */
 template <typename T>
 using get_allocator_t = decltype(get_allocator(*(const T*)nullptr));
+
+// A deleter type that uses an `mlib::allocator<>` to destroy an object
+struct alloc_deleter {
+    mlib::allocator<> alloc;
+
+    template <typename T>
+    void operator()(T* ptr) const noexcept {
+        auto a = alloc.rebind<T>();
+        a.delete_(ptr);
+    }
+};
+
+// A `unique_ptr` that uses an `mlib::allocator` to deallocate objects
+template <typename T>
+using unique_ptr = std::unique_ptr<T, alloc_deleter>;
+
+/**
+ * @brief Create a `unique_ptr` that uses the given `mlib::allocator<>` for memory management
+ *
+ * @tparam T The type to be constructed
+ * @param a The allocator to be used
+ * @param args The constructor arguments
+ *
+ * @note This does not yet handle arrays, only single objects. Use a `std::array` if you need it.
+ */
+template <typename T>
+constexpr unique_ptr<T> allocate_unique(allocator<> a, auto&&... args) {
+    T* p = a.rebind<T>().new_(mlib_fwd(args)...);
+    return unique_ptr<T>(p, alloc_deleter{a});
+}
 
 }  // namespace mlib
 

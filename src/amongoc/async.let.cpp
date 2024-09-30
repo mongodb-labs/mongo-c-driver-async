@@ -58,7 +58,7 @@ struct let_forward_errors<false> {
 
         // Mimic the constructor that takes the get_alloc object. We don't need it, so just throw it
         // away
-        continuation_(amongoc_let_transformer tr, CompressedUserdata&& ud, auto get_alloc)
+        continuation_(amongoc_let_transformer tr, CompressedUserdata&& ud, auto /* get_alloc */)
             : transform(tr)
             , userdata(mlib_fwd(ud)) {}
 

@@ -32,12 +32,11 @@ Traits & Types
 
     Connects a nanosender `s` to a nanoreceiver `r`.
 
-    - Overload #1 calls :expr:`std::move(s).connect(std::forward<R>(r))` (Move-connects)
+    - Overload #1 calls :expr:`std__move(s).connect(std::forward<R>(r))` (Move-connects)
     - Overload #2 calls :expr:`s.connect(std::forward<R>(r))` (Copy-connects)
 
     Both overloads are constrained on whether their associated expression is
     valid. This call will return a `nanooperation`.
-
 
 .. type:: template <typename S> sends_t
 

@@ -95,7 +95,7 @@ Header: :header-file:`amongoc/box.h`
     Construct a new `unique_box` by decay-copying from the given value. This
     should be the preferred way to create box objects within C++ code.
 
-    :throw std::bad_alloc: If memory allocation fails. This will never throw
+    :throw std__bad_alloc: If memory allocation fails. This will never throw
       if the box is :ref:`small <box.small>`.
     :postcondition: The returned box object is :ref:`active <box.active>` for
       the decayed type of `T`.
@@ -114,7 +114,7 @@ Header: :header-file:`amongoc/box.h`
     destroys the object. Using anything else (e.g. a function pointer) will
     not work.
 
-    :throw std::bad_alloc: If memory allocation fails. This will never throw
+    :throw std__bad_alloc: If memory allocation fails. This will never throw
       if the box is :ref:`small <box.small>`.
     :postcondition: The returned box object is :ref:`active <box.active>` for
       the type `T`.
@@ -411,16 +411,16 @@ Other
   amongoc_box amongoc_box_ulong(unsigned long x)
   amongoc_box amongoc_box_longlong(long long x)
   amongoc_box amongoc_box_ulonglong(unsigned long long x)
-  amongoc_box amongoc_box_size(std::size_t x)
-  amongoc_box amongoc_box_ptrdiff(std::ptrdiff_t x)
-  amongoc_box amongoc_box_int8(std::int8_t x)
-  amongoc_box amongoc_box_uint8(std::uint8_t x)
-  amongoc_box amongoc_box_int16(std::int16_t x)
-  amongoc_box amongoc_box_uint16(std::uint16_t x)
-  amongoc_box amongoc_box_int32(std::int32_t x)
-  amongoc_box amongoc_box_uint32(std::uint32_t x)
-  amongoc_box amongoc_box_int64(std::int64_t x)
-  amongoc_box amongoc_box_uint64(std::uint64_t x)
+  amongoc_box amongoc_box_size(size_t x)
+  amongoc_box amongoc_box_ptrdiff(ptrdiff_t x)
+  amongoc_box amongoc_box_int8(int8_t x)
+  amongoc_box amongoc_box_uint8(uint8_t x)
+  amongoc_box amongoc_box_int16(int16_t x)
+  amongoc_box amongoc_box_uint16(uint16_t x)
+  amongoc_box amongoc_box_int32(int32_t x)
+  amongoc_box amongoc_box_uint32(uint32_t x)
+  amongoc_box amongoc_box_int64(int64_t x)
+  amongoc_box amongoc_box_uint64(uint64_t x)
 
   Convenience functions that initialize a new `amongoc_box` with the type and
   value of the given argument.

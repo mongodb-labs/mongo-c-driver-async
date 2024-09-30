@@ -426,6 +426,17 @@ template <typename T>
 explicit assign(T&&) -> assign<T>;
 
 /**
+ * @brief An invocable object that holds a compile-time constant invocable
+ *
+ * @tparam Fn The underlying invocable object.
+ */
+template <auto Fn>
+struct just_invokes {
+    template <typename... Args>
+    constexpr auto operator()(Args&&... args) const MLIB_RETURNS(Fn(mlib_fwd(args)...));
+};
+
+/**
  * @brief Convert a function `T -> U` to a function `optional<T> -> optional<U>`
  */
 template <typename F>

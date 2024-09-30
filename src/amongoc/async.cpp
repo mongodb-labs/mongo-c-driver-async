@@ -17,6 +17,7 @@ using namespace amongoc;
 
 emitter amongoc_timeout(amongoc_loop* loop, emitter em, std::timespec tim) noexcept {
     // Create and start a race between the two operations
+    co_await ramp_end;
     std::variant<emitter_result, emitter_result> race
         = co_await first_completed(mlib_fwd(em).as_unique(),
                                    amongoc_schedule_later(loop, tim).as_unique());
@@ -46,7 +47,7 @@ emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
                            });
                    })
             .release();
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_alloc_failure();
     }
 }

@@ -67,8 +67,8 @@ operation finishes. In |amongoc|, a resolving emitter *emits* two objects: an
 meaning of the result value depends on the asynchronous operation of the emitter
 and the value of the result status.
 
-For example, the `amongoc_conn_connect` function returns an `amongoc_emitter`
-that resolves with an `amongoc_connection` upon success (this is represented in
+For example, the `amongoc_client_new` function returns an `amongoc_emitter`
+that resolves with an `amongoc_client` upon success (this is represented in
 the documentation with the |attr.type| attribute).
 
 

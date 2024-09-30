@@ -7,13 +7,13 @@ build-alpine:
     DO +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-debian:
-    FROM debian:bookworm
+    FROM debian:12
     RUN apt-get update && \
         apt-get -y install build-essential cmake git curl zip unzip tar ninja-build pkg-config
     DO +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-rl:
-    FROM rockylinux:9
+    FROM rockylinux:8
     RUN dnf -y install zip unzip git gcc-toolset-12
     LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
     RUN curl "$cmake_url" -Lo cmake.sh && \

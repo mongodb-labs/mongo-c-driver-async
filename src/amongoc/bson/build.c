@@ -1,17 +1,16 @@
 #include <amongoc/bson/build.h>
 
-extern mlib_constexpr bson_byte* _bson_write_int32le(bson_byte*, int32_t) mlib_noexcept;
-extern mlib_constexpr bson_byte* _bson_write_int64le(bson_byte*, int64_t) mlib_noexcept;
+extern mlib_constexpr bson_byte* _bson_write_u32le(bson_byte*, uint32_t) mlib_noexcept;
+extern mlib_constexpr bson_byte* _bson_write_u64le(bson_byte*, uint64_t) mlib_noexcept;
 
 extern mlib_constexpr bson_byte*
-_bson_memcpy(bson_byte*, const bson_byte* src, uint32_t) mlib_noexcept;
+_bson_memcpy(bson_byte*, const bson_byte* src, size_t) mlib_noexcept;
 extern mlib_constexpr bson_byte*
-_bson_memcpy_chr(bson_byte*, const char* src, uint32_t) mlib_noexcept;
+_bson_memcpy_chr(bson_byte*, const char* src, size_t) mlib_noexcept;
 extern mlib_constexpr bson_byte*
-_bson_memcpy_u8(bson_byte*, const uint8_t* src, uint32_t) mlib_noexcept;
-extern mlib_constexpr bson_byte*
-_bson_memmove(bson_byte*, const bson_byte*, uint32_t) mlib_noexcept;
-extern mlib_constexpr bson_byte* _bson_memset(bson_byte*, char v, uint32_t) mlib_noexcept;
+_bson_memcpy_u8(bson_byte*, const uint8_t* src, size_t) mlib_noexcept;
+extern mlib_constexpr bson_byte* _bson_memmove(bson_byte*, const bson_byte*, size_t) mlib_noexcept;
+extern mlib_constexpr bson_byte* _bson_memset(bson_byte*, char v, size_t) mlib_noexcept;
 
 extern mlib_constexpr uint32_t bson_capacity(bson_mut) mlib_noexcept;
 
@@ -29,7 +28,7 @@ extern mlib_constexpr void bson_mut_delete(bson_mut) mlib_noexcept;
 extern mlib_constexpr bson_byte* _bson_mut_data_at(bson_mut doc, bson_iterator pos) mlib_noexcept;
 
 extern mlib_constexpr bson_byte*
-_bson_splice_region(bson_mut* doc, bson_byte*, uint32_t, uint32_t, const bson_byte*) mlib_noexcept;
+_bson_splice_region(bson_mut* doc, bson_byte*, size_t, size_t, const bson_byte*) mlib_noexcept;
 
 extern mlib_constexpr bson_byte* _bson_prep_element_region(bson_mut* const      d,
                                                            bson_iterator* const pos,
@@ -108,9 +107,10 @@ extern mlib_constexpr bson_iterator bson_insert_minkey(bson_mut*,
                                                        bson_iterator,
                                                        bson_utf8_view) mlib_noexcept;
 
-extern mlib_constexpr char*          _bson_write_uint(uint32_t v, char* at) mlib_noexcept;
-extern mlib_constexpr bson_utf8_view bson_tmp_uint_string(uint32_t idx) mlib_noexcept;
-mlib_thread_local char               _bson_tmp_integer_key_tl_storage[12] = {0};
+extern mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept;
+extern mlib_constexpr struct bson_array_element_integer_keybuf
+                       bson_tmp_uint_string(uint32_t idx) mlib_noexcept;
+mlib_thread_local char _bson_tmp_integer_key_tl_storage[12] = {0};
 extern mlib_constexpr void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept;
 extern mlib_constexpr void          bson_relabel_array_elements(bson_mut* doc) mlib_noexcept;
@@ -129,7 +129,7 @@ extern mlib_constexpr bson_iterator bson_set_key(bson_mut*      doc,
                                                  bson_utf8_view newkey) mlib_noexcept;
 
 extern mlib_constexpr bson_utf8_view bson_utf8_view_from_data(const char* s,
-                                                              size_t      len) mlib_noexcept;
+                                                              uint32_t    len) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_utf8_view_from_cstring(const char* s) mlib_noexcept;
 extern mlib_constexpr bson_utf8_view bson_utf8_view_autolen(const char* s,
                                                             ssize_t     len) mlib_noexcept;

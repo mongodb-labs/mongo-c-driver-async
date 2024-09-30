@@ -726,7 +726,7 @@ mlib_constexpr mlib_integer _mlib_math_strnlen(const char* string, mlib_integer 
         return r;
     }
     int64_t ret = 0;
-    while (string[ret] && ret < maxlen.i64) {
+    while (ret < maxlen.i64 && string[ret]) {
         ++ret;
     }
     mlib_integer r = {ret, mlib_integer_okay};
@@ -800,7 +800,8 @@ mlib_constexpr mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_f
 #define mlibMathUInt32(X) mlibMath(castUInt32(X))
 #define mlibMathPositiveUInt32(X) mlibMath(castPositiveUInt32(X))
 
-#define mlib_math_try() struct mlib_math_fail_info _mlibMathScopeErrorInfo = {0}
+#define mlib_math_try()                                                                            \
+    struct mlib_math_fail_info _mlibMathScopeErrorInfo = {0, mlib_integer_okay, 0, 0}
 
 #define mlib_math_catch(E)                                                                         \
     if (!_mlibMathScopeErrorInfo.flags) {                                                          \

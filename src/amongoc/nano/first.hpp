@@ -139,7 +139,7 @@ private:
     // Impl for connect(). Perfect-forwards the senders from the given tuple
     template <typename Tpl, typename P, typename Recv, std::size_t... Ns>
     constexpr static nanooperation auto
-    _connect(Tpl&& tpl, P&& p, Recv&& recv, std::index_sequence<Ns...> is) noexcept {
+    _connect(Tpl&& tpl, P&& p, Recv&& recv, std::index_sequence<Ns...>) noexcept {
         return amongoc::create_simultaneous_operation<
             handler<Recv, P>>(defer_convert(
                                   [&] { return handler<Recv, P>(mlib_fwd(recv), mlib_fwd(p)); }),

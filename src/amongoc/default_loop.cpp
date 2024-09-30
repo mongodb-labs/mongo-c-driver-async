@@ -6,7 +6,10 @@
 #include <amongoc/loop.h>
 #include <amongoc/status.h>
 
+#include <mlib/algorithm.hpp>
+
 #include <asio/bind_cancellation_slot.hpp>
+#include <asio/buffer.hpp>
 #include <asio/cancellation_signal.hpp>
 #include <asio/cancellation_type.hpp>
 #include <asio/connect.hpp>
@@ -18,6 +21,8 @@
 #include <asio/steady_timer.hpp>
 #include <asio/system_error.hpp>
 #include <asio/write.hpp>
+#include <boost/container/static_vector.hpp>
+#include <neo/iterator_facade.hpp>
 
 #include <chrono>
 #include <cstddef>
@@ -76,11 +81,18 @@ public:
 
     // Handler for Asio operations that complete with an error code and no value
     void operator()(asio::error_code ec) {
+        // Destroy the stop registration, because completing the handler may destroy the
+        // associated stop state.
+        // XXX: Research why this wasn't needed until the coroutine refactor on 9/22/2024
+        _stop_cookie = amongoc_nil.as_unique();
         _handler.complete(status::from(ec), std::move(_transform)(mlib::unit{}));
     }
 
     // Handler for Asio operations that complete with a value and an error code (most operations)
     void operator()(asio::error_code ec, auto&& res) {
+        // Destroy the stop registration, because completing the handler may destroy the
+        // associated stop state
+        _stop_cookie = amongoc_nil.as_unique();
         _handler.complete(status::from(ec), std::move(_transform)(mlib_fwd(res)));
     }
 
@@ -175,26 +187,46 @@ struct default_loop {
             _cancel_signals.checkout()));
     }
 
-    void tcp_write_some(amongoc_view    sock,
-                        const char*     data,
-                        std::size_t     maxlen,
-                        amongoc_handler on_write) {
+    void tcp_write_some(amongoc_view                  sock,
+                        ::amongoc_const_buffer const* bufs,
+                        std::size_t                   nbufs,
+                        amongoc_handler               on_write) {
+        boost::container::static_vector<asio::const_buffer, 16> buf_vec;
+        mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
+                               buf_vec);
         auto a  = on_write.get_allocator();
         auto uh = mlib_fwd(on_write).as_unique();
-        sock.as<tcp::socket>().async_write_some(asio::buffer(data, maxlen),
+        sock.as<tcp::socket>().async_write_some(buf_vec,
                                                 adapt_handler(mlib_fwd(uh),
                                                               as_box(a),
                                                               _cancel_signals.checkout()));
     }
 
-    void tcp_read_some(amongoc_view sock, char* data, std::size_t maxlen, amongoc_handler on_read) {
+    void tcp_read_some(amongoc_view                    sock,
+                       ::amongoc_mutable_buffer const* bufs,
+                       std::size_t                     nbufs,
+                       amongoc_handler                 on_read) {
+        boost::container::static_vector<asio::mutable_buffer, 16> buf_vec;
+        mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
+                               buf_vec);
         auto a  = on_read.get_allocator();
         auto uh = mlib_fwd(on_read).as_unique();
-        sock.as<tcp::socket>().async_read_some(asio::buffer(data, maxlen),
+        sock.as<tcp::socket>().async_read_some(buf_vec,
                                                adapt_handler(mlib_fwd(uh),
                                                              as_box(a),
                                                              _cancel_signals.checkout()));
     }
+
+private:
+    static inline constexpr struct {
+        asio::const_buffer operator()(::amongoc_const_buffer cb) const noexcept {
+            return asio::const_buffer{cb.buf, cb.len};
+        }
+
+        asio::mutable_buffer operator()(::amongoc_mutable_buffer mb) const noexcept {
+            return asio::mutable_buffer{mb.buf, mb.len};
+        }
+    } _amc_buf_to_asio_buf{};
 };
 
 }  // namespace
@@ -217,6 +249,7 @@ constexpr auto adapt_memfun = &adapt_memfun_x<F>::ap;
 
 // The vtable for the default event loop
 static constexpr amongoc_loop_vtable default_loop_vtable = {
+    .version        = amongoc_event_loop_v0,
     .call_soon      = adapt_memfun<&default_loop::call_soon>,
     .call_later     = adapt_memfun<&default_loop::call_later>,
     .getaddrinfo    = adapt_memfun<&default_loop::getaddrinfo>,
@@ -236,7 +269,7 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
             = unique_box::make<default_loop>(allocator<>{alloc}, allocator<>{alloc}).release();
         loop->vtable = &default_loop_vtable;
         return amongoc_okay;
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_status(&amongoc_generic_category, ENOMEM);
     }
 }

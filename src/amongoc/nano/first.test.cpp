@@ -44,7 +44,7 @@ TEST_CASE("first_completed/With variant branch") {
 
 TEST_CASE("first_completed/No operands") {
     auto none = first_completed();
-    auto op   = std::move(none).connect([](auto&& x) {});
+    auto op   = std::move(none).connect([](auto&&) {});
     if (0) {
         // Will not be called, but this verifies that it can compile.
         // (Executing this would terminate)
