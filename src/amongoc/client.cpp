@@ -1,4 +1,6 @@
 
+#include "./client.impl.hpp"
+
 #include <amongoc/box.h>
 #include <amongoc/bson/build.h>
 #include <amongoc/client.h>
@@ -15,33 +17,23 @@
 
 using namespace amongoc;
 
-struct _amongoc_client_cxx {
-    explicit _amongoc_client_cxx(amongoc_loop& loop, connection_uri&& uri)
-        : _pool(loop, mlib_fwd(uri)) {}
-
-    connection_pool _pool;
-};
-
-emitter _amc_client_connect(amongoc_loop& loop, connection_uri uri) noexcept {
-    auto alloc = loop.get_allocator().rebind<_amongoc_client_cxx>();
+emitter amongoc_client_new(amongoc_loop* loop, const char* uri_str) noexcept {
+    // Note: We copy the URI here before making the connect operation, because
+    // we want to hold a copy of the URI string.
+    auto uri = connection_uri::parse(uri_str, loop->get_allocator());
+    co_await ramp_end;
+    if (not uri.has_value()) {
+        co_return uri.error();
+    }
+    auto alloc = loop->get_allocator().rebind<_amongoc_client_impl>();
     auto cl    = unique_box::from(  //
         alloc,
-        amongoc_client{alloc.new_(loop, mlib_fwd(uri))},
+        amongoc_client{alloc.new_(*loop, *mlib_fwd(uri))},
         just_invokes<&amongoc_client_destroy>{});
     // Await a connection from the pool, to ensure that the connection is valid
     co_await cl.as<amongoc_client>()._impl->_pool.checkout();
     // The connection is okay. Return it now.
     co_return cl;
-}
-
-emitter amongoc_client_new(amongoc_loop* loop, const char* uri_str) noexcept {
-    // Note: We copy the URI here before making the connect operation, because
-    // we want to hold a copy of the URI string.
-    auto uri = connection_uri::parse(uri_str, loop->get_allocator());
-    if (not uri.has_value()) {
-        return amongoc_just(uri.error(), amongoc_nil, ::mlib_terminating_allocator);
-    }
-    return _amc_client_connect(*loop, *mlib_fwd(uri));
 }
 
 static amongoc_emitter _command(amongoc_client cl, auto doc) noexcept {
@@ -64,7 +56,7 @@ emitter amongoc_client_command_nocopy(amongoc_client cl, bson_view doc) noexcept
 }
 
 void amongoc_client_destroy(amongoc_client cl) noexcept {
-    cl.get_allocator().rebind<_amongoc_client_cxx>().delete_(cl._impl);
+    cl.get_allocator().rebind<_amongoc_client_impl>().delete_(cl._impl);
 }
 
 amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl) noexcept {

@@ -6,7 +6,7 @@
 
 #include <mlib/config.h>
 
-struct _amongoc_client_cxx;
+struct _amongoc_client_impl;
 struct bson_view;
 
 typedef struct amongoc_client amongoc_client;
@@ -51,7 +51,7 @@ mlib_extern_c_end();
  * @brief An encapsulated amongoc_client object. This object is pointer-like
  */
 struct amongoc_client {
-    struct _amongoc_client_cxx* _impl;
+    struct _amongoc_client_impl* _impl;
 
 #if mlib_is_cxx()
     // Get the event loop associated with this client

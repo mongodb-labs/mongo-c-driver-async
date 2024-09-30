@@ -9,8 +9,10 @@
 #include <amongoc/wire/proto.hpp>
 
 #include <mlib/alloc.h>
+#include <mlib/utility.hpp>
 
 #include <forward_list>
+#include <system_error>
 
 namespace amongoc {
 
@@ -77,9 +79,18 @@ public:
 
         wire::client<tcp_connection_rw_stream>& _wire_client() noexcept;
 
+        member_impl*       _impl() noexcept;
+        const member_impl* _impl() const noexcept;
+        void               _perish() noexcept;
+
         static co_task<wire::any_message>
         _request(member& self, wire::client_interface auto& cl, wire::message_type auto msg) {
-            return cl.request(mlib_fwd(msg));
+            try {
+                co_return co_await cl.request(mlib_fwd(msg));
+            } catch (...) {
+                self._perish();
+                throw;
+            }
         }
     };
 
@@ -88,6 +99,43 @@ public:
 private:
     // Pointer-to-impl for connection pools
     mlib::unique_ptr<pool_impl> _impl;
+};
+
+/**
+ * @brief A wire-protocol client that will automatically check out a connection
+ * from the given connection pool when it is used.
+ *
+ * The checkout happens lazily when a request is issues. If the request generates
+ * an exception, the error will be re-thrown and the held connection will be discarded.
+ * Attempting to use the client again after an error will cause it to check out another
+ * connection from the pool.
+ */
+class pool_client {
+public:
+    explicit pool_client(connection_pool& pool) noexcept
+        : _pool(&pool) {}
+
+    allocator<> get_allocator() const noexcept { return _pool->get_allocator(); }
+
+    co_task<wire::any_message> request(wire::message_type auto&& msg) {
+        return _request(*this, mlib_fwd(msg));
+    }
+
+private:
+    connection_pool* _pool;
+
+    std::optional<connection_pool::member> _pool_member;
+
+    static co_task<wire::any_message> _request(pool_client& self, wire::message_type auto msg) {
+        // If an exception is thrown, reset our checked out pool member
+        mlib::scope_fail on_exc = [&] { self._pool_member.reset(); };
+        // Lazily check out a new connection from the pool if we haven't already
+        if (not self._pool_member.has_value()) {
+            self._pool_member.emplace(co_await self._pool->checkout());
+        }
+        // Issue a request on our checked-out connection
+        co_return co_await self._pool_member->request(mlib_fwd(msg));
+    }
 };
 
 }  // namespace amongoc

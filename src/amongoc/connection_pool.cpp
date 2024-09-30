@@ -65,8 +65,7 @@ struct connection_pool::pool_impl {
 
         auto socket = *co_await async_connect(self.loop, std::move(addr));
         wire::client<tcp_connection_rw_stream> client{mlib_fwd(socket), self.get_allocator()};
-        auto hs     = co_await amongoc::handshake(client, self.uri.params.appname);
-        auto new_id = self._conn_ids.fetch_add(1);
+        auto hs = co_await amongoc::handshake(client, self.uri.params.appname);
         ret_one.emplace_front(&self, mlib_fwd(client), mlib_fwd(hs));
         co_return member(mlib_fwd(ret_one));
     }
@@ -77,6 +76,26 @@ struct connection_pool::pool_impl {
     }
 };
 
+connection_pool::connection_pool(amongoc_loop& loop, connection_uri uri)
+    : _impl(mlib::allocate_unique<pool_impl>(loop.get_allocator(), loop, uri)) {}
+
+connection_pool::~connection_pool() = default;
+
+amongoc_loop& connection_pool::loop() const noexcept { return _impl->loop; }
+
+connection_pool::member::member(connection_pool::member_impl_list&& impl) noexcept
+    : _single_impl(mlib_fwd(impl)) {}
+connection_pool::member::member(member&&)                             = default;
+connection_pool::member& connection_pool::member::operator=(member&&) = default;
+
+co_task<connection_pool::member> connection_pool::checkout() {
+    // XXX: GCC 14 bug: GCC does not properly call the coroutine promise
+    // `operator new` and constructors for non-static coroutine member
+    // functions. Implement as a static function so that the coroutine
+    // gets our allocator.
+    return pool_impl::checkout(*_impl);
+}
+
 struct connection_pool::member_impl {
     // The connection pool that owns this object
     pool_impl* _owner;
@@ -85,41 +104,38 @@ struct connection_pool::member_impl {
     // The handshake response from when this connection was initialized
     handshake_response handshake;
 
-    int _id         = _owner->_conn_ids.fetch_add(1);
-    int _generation = _owner->_generation.load();
+    int  _id         = _owner->_conn_ids.fetch_add(1);
+    int  _generation = _owner->_generation.load();
+    bool _perished   = false;
 };
 
-connection_pool::connection_pool(amongoc_loop& loop, connection_uri uri)
-    : _impl(mlib::allocate_unique<pool_impl>(loop.get_allocator(), loop, uri)) {}
-
-connection_pool::~connection_pool() = default;
-
-amongoc_loop& connection_pool::loop() const noexcept { return _impl->loop; }
-
-connection_pool::member::~member() {
-    if (not _single_impl.empty()) {
-        auto& pool = *_single_impl.front()._owner;
-        pool.return_(std::move(_single_impl));
+connection_pool::member_impl* connection_pool::member::_impl() noexcept {
+    if (_single_impl.empty()) {
+        return nullptr;
     }
+    return &_single_impl.front();
 }
 
-connection_pool::member::member(connection_pool::member_impl_list&& impl) noexcept
-    : _single_impl(mlib_fwd(impl)) {}
-connection_pool::member::member(member&&)                             = default;
-connection_pool::member& connection_pool::member::operator=(member&&) = default;
+const connection_pool::member_impl* connection_pool::member::_impl() const noexcept {
+    if (_single_impl.empty()) {
+        return nullptr;
+    }
+    return &_single_impl.front();
+}
 
 wire::client<tcp_connection_rw_stream>& connection_pool::member::_wire_client() noexcept {
     return _single_impl.front()._client;
 }
 
 allocator<> connection_pool::member::get_allocator() const noexcept {
-    return _single_impl.front().handshake.get_allocator();
+    return _impl()->handshake.get_allocator();
 }
 
-co_task<connection_pool::member> connection_pool::checkout() {
-    // XXX: GCC 14 bug: GCC does not properly call the coroutine promise
-    // `operator new` and constructors for non-static coroutine member
-    // functions. Implement as a static function so that the coroutine
-    // gets our allocator.
-    return pool_impl::checkout(*_impl);
+void connection_pool::member::_perish() noexcept { _impl()->_perished = true; }
+
+connection_pool::member::~member() {
+    if (_impl() and not _impl()->_perished) {
+        auto& pool = *_impl()->_owner;
+        pool.return_(std::move(_single_impl));
+    }
 }
