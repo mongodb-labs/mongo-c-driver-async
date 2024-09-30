@@ -7,6 +7,7 @@
 #include <amongoc/default_loop.h>
 #include <amongoc/emitter.h>
 #include <amongoc/loop.h>
+#include <amongoc/loop_fixture.test.hpp>
 #include <amongoc/nano/concepts.hpp>
 #include <amongoc/nano/just.hpp>
 #include <amongoc/operation.h>
@@ -19,19 +20,19 @@
 #include <asio/ip/tcp.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+#include <test_params.test.hpp>
+
 using namespace amongoc;
 
-TEST_CASE("Client/Good") {
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+TEST_CASE_METHOD(testing::loop_fixture, "Client/Good") {
     unique_emitter em
         = amongoc_just(amongoc_okay, amongoc_nil, ::mlib_terminating_allocator).as_unique();
     SECTION("Static URI string") {
-        em = amongoc_client_new(&loop, "mongodb://localhost:27017").as_unique();
+        em = amongoc_client_new(&loop.get(), testing::parameters.require_uri().data()).as_unique();
     }
     SECTION("Dynamic URI string") {
-        std::string s = "mongodb://localhost:27017";
-        em            = amongoc_client_new(&loop, s.data()).as_unique();
+        std::string s = testing::parameters.require_uri();
+        em            = amongoc_client_new(&loop.get(), s.data()).as_unique();
     }
     status got_ec;
     bool   did_run = false;
@@ -41,47 +42,39 @@ TEST_CASE("Client/Good") {
             did_run = true;
         }));
     op.start();
-    amongoc_default_loop_run(&loop);
+    loop.run();
     CHECK(got_ec.code == 0);
     CHECK(did_run);
-    amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("Client/Invalid hostname") {
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+TEST_CASE_METHOD(testing::loop_fixture, "Client/Invalid hostname") {
     // Connecting to an invalid TLD will fail
-    auto   s = amongoc_client_new(&loop, "mongodb://asdfasdfaczxv.invalidtld:27017").as_unique();
+    auto s
+        = amongoc_client_new(&loop.get(), "mongodb://asdfasdfaczxv.invalidtld:27017").as_unique();
     status got_ec;
     auto   op = std::move(s).connect(
         unique_handler::from(mlib::terminating_allocator,
                              [&](emitter_result&& r) { got_ec = r.status; }));
     op.start();
-    amongoc_default_loop_run(&loop);
+    loop.run();
     REQUIRE(got_ec.code == asio::error::netdb_errors::host_not_found);
-    amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("Client/Timeout") {
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+TEST_CASE_METHOD(testing::loop_fixture, "Client/Timeout") {
     // Connecting to a host that will drop our TCP request. Timeout after 500ms
-    auto   conn = amongoc_client_new(&loop, "mongodb://example.com:27017");
-    auto   s    = amongoc_timeout(&loop, conn, timespec{0, 500'000'000}).as_unique();
+    auto   conn = amongoc_client_new(&loop.get(), "mongodb://example.com:27017");
+    auto   s    = amongoc_timeout(&loop.get(), conn, timespec{0, 500'000'000}).as_unique();
     status got_ec;
     auto   op = std::move(s).bind_allocator_connect(mlib::terminating_allocator,
                                                   [&](emitter_result&& r) { got_ec = r.status; });
     op.start();
-    amongoc_default_loop_run(&loop);
+    loop.run();
     INFO(got_ec.message());
     REQUIRE(got_ec.code == (int)std::errc::timed_out);
-    amongoc_default_loop_destroy(&loop);
 }
 
-TEST_CASE("Client/Simple request") {
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
-    auto s = amongoc_client_new(&loop, "mongodb://localhost:27017").as_unique();
+TEST_CASE_METHOD(testing::loop_fixture, "Client/Simple request") {
+    auto s = amongoc_client_new(&loop.get(), testing::parameters.require_uri().data()).as_unique();
     std::optional<unique_box> client_box;
     status                    req_ec;
     unique_operation          req_op;
@@ -109,8 +102,7 @@ TEST_CASE("Client/Simple request") {
         }
     });
     op.start();
-    amongoc_default_loop_run(&loop);
+    loop.run();
     CHECK(did_run);
     client_box.reset();
-    amongoc_default_loop_destroy(&loop);
 }
