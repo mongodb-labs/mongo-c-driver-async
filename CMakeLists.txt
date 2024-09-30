@@ -166,6 +166,12 @@ if(BUILD_TESTING)
             ${passthru_args}
             )
         add_test_cmake_project(
+            "CMake/Consume/Import with FetchContent (Git)" ./tests/consume/simple
+            SETTINGS
+                TEST_IMPORT_MODE=FetchContent-Git
+            ${passthru_args}
+            )
+        add_test_cmake_project(
             "CMake/Consume/Import with add_subdirectory" ./tests/consume/simple
             SETTINGS
                 TEST_IMPORT_MODE=add_subdirectory
