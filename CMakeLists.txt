@@ -131,7 +131,7 @@ if(BUILD_TESTING)
 
     # Add tests
     add_executable(amongoc-test ${test_sources})
-    target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2WithMain)
+    target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2)
     target_include_directories(amongoc-test PRIVATE src)
     catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST)
 
