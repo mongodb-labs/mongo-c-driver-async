@@ -46,7 +46,7 @@ emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
                            });
                    })
             .release();
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_alloc_failure();
     }
 }

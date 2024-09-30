@@ -281,9 +281,10 @@ struct any<std::index_sequence<Ns...>, Rs...> {
     result<T> operator()(const T& obj) {
         result<T> ret;
         // Invoke each sub-parser in order until one does not accepts or errors
-        (((std::get<Ns>(ret.child_results).emplace(std::get<Ns>(rules)(obj))).state()
-          != pstate::reject)
-         or ...);
+        static_cast<void>(
+            (((std::get<Ns>(ret.child_results).emplace(std::get<Ns>(rules)(obj))).state()
+              != pstate::reject)
+             or ...));
         return ret;
     }
 };

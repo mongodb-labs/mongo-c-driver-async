@@ -17,7 +17,7 @@
 typedef struct amongoc_loop_vtable amongoc_loop_vtable;
 typedef struct amongoc_loop        amongoc_loop;
 
-enum amongoc_event_loop_verison { amongoc_event_loop_v1 = 1 };
+enum amongoc_event_loop_verison { amongoc_event_loop_v0 = 1 };
 
 struct amongoc_const_buffer {
     const void* buf;
@@ -61,9 +61,6 @@ struct amongoc_loop_vtable {
                           struct amongoc_mutable_buffer const* bufs,
                           size_t                               nbufs,
                           amongoc_handler                      on_finish) mlib_noexcept;
-
-    void* (*allocate)(amongoc_loop* self, size_t sz)mlib_noexcept;
-    void (*deallocate)(amongoc_loop* self, void*) mlib_noexcept;
 
     mlib_allocator (*get_allocator)(const amongoc_loop* self) mlib_noexcept;
 };

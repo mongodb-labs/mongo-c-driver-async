@@ -300,6 +300,7 @@ private:
 
         static constexpr amongoc_handler_vtable vtable = {
             .complete      = &_complete,
+            .register_stop = nullptr,
             .get_allocator = &_get_allocator,
         };
     };

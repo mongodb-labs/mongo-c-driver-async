@@ -37,7 +37,7 @@ TEST_CASE("event_emitter/Destruction") {
     {
         auto l1 = ev.listen(assign(got));
         {
-            auto l2 = ev.listen([&](int a) { FAIL_CHECK("This should never fire"); });
+            auto l2 = ev.listen([&](int) { FAIL_CHECK("This should never fire"); });
         }
         ev.fire(42);
     }

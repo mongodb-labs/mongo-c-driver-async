@@ -256,7 +256,7 @@ public:
         char* storage;
         try {
             storage = alloc.allocate(n + sizeof(alloc_state));
-        } catch (std::bad_alloc) {
+        } catch (std::bad_alloc const&) {
             // Allocation failure. Signal to the runtime that allocation failed
             // by returning a null pointer
             return nullptr;
@@ -303,7 +303,7 @@ private:
 
     struct alloc_state {
         allocator<char> alloc;
-        alignas(std::max_align_t) char tail[1];
+        alignas(std::max_align_t) char tail[1] = {0};
     };
 };
 
@@ -380,7 +380,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
             return_value(err.code());
         } catch (amongoc::exception const& err) {
             return_value(err.status());
-        } catch (std::bad_alloc) {
+        } catch (std::bad_alloc const&) {
             return_value(emitter_result(amongoc_status(&amongoc_generic_category, ENOMEM)));
         }
     }

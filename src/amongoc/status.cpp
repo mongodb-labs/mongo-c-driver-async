@@ -756,10 +756,13 @@ struct server_category_cls : std::error_category {
             return "OutOfDiskSpace";
         case amongoc_server_errc_ClientMarkedKilled:
             return "ClientMarkedKilled";
-
-            // Added manually, not documented by the server reference:
-        case (amongoc_server_errc)40571:
-            return "OP_MSG requests require a $db argument";
+        default: {
+            switch (ec) {
+                // Added manually, not documented by the server reference:
+            case 40571:
+                return "OP_MSG requests require a $db argument";
+            }
+        }
         }
         return "";
     }
@@ -776,6 +779,7 @@ const std::error_category& amongoc::server_category() noexcept { return server_c
 constexpr amongoc_status_category_vtable amongoc_generic_category = {
     .name            = [] { return "amongoc.generic"; },
     .strdup_message  = [](int c) { return strdup(std::generic_category().message(c).data()); },
+    .is_error        = nullptr,
     .is_cancellation = [](int c) { return c == ECANCELED; },
     .is_timeout      = [](int c) { return c == ETIMEDOUT; },
 };
@@ -784,6 +788,7 @@ constexpr amongoc_status_category_vtable amongoc_system_category = {
     .name           = [] { return "amongoc.system"; },
     .strdup_message = [](int c) { return strdup(std::system_category().message(c).data()); },
     // TODO: On Windows, this will not be sufficient
+    .is_error        = nullptr,
     .is_cancellation = [](int c) { return c == ECANCELED; },
     .is_timeout      = [](int c) { return c == ETIMEDOUT; },
 };
@@ -792,27 +797,42 @@ constexpr amongoc_status_category_vtable amongoc_netdb_category = {
     .name = [] { return "amongoc.netdb"; },
     .strdup_message
     = [](int c) { return strdup(asio::error::get_netdb_category().message(c).data()); },
+    .is_error        = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
 };
 
 constexpr amongoc_status_category_vtable amongoc_addrinfo_category = {
     .name = [] { return "amongoc.addrinfo"; },
     .strdup_message
     = [](int c) { return strdup(asio::error::get_addrinfo_category().message(c).data()); },
+    .is_error        = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
 };
 
 constexpr amongoc_status_category_vtable amongoc_io_category = {
-    .name           = [] { return io_category_inst.name(); },
-    .strdup_message = [](int c) { return strdup(amongoc::io_category().message(c).data()); },
+    .name            = [] { return io_category_inst.name(); },
+    .strdup_message  = [](int c) { return strdup(amongoc::io_category().message(c).data()); },
+    .is_error        = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
 };
 
 constexpr amongoc_status_category_vtable amongoc_server_category = {
-    .name           = [] { return server_category_inst.name(); },
-    .strdup_message = [](int c) { return strdup(server_category_inst.message(c).data()); },
+    .name            = [] { return server_category_inst.name(); },
+    .strdup_message  = [](int c) { return strdup(server_category_inst.message(c).data()); },
+    .is_error        = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
 };
 
 constexpr amongoc_status_category_vtable amongoc_unknown_category = {
     .name           = [] { return "amongoc.unknown"; },
     .strdup_message = [](int c) { return strdup(("amongoc.unknown:" + std::to_string(c)).data()); },
+    .is_error       = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
 };
 
 std::error_code status::as_error_code() const noexcept {

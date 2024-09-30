@@ -249,6 +249,7 @@ constexpr auto adapt_memfun = &adapt_memfun_x<F>::ap;
 
 // The vtable for the default event loop
 static constexpr amongoc_loop_vtable default_loop_vtable = {
+    .version        = amongoc_event_loop_v0,
     .call_soon      = adapt_memfun<&default_loop::call_soon>,
     .call_later     = adapt_memfun<&default_loop::call_later>,
     .getaddrinfo    = adapt_memfun<&default_loop::getaddrinfo>,
@@ -268,7 +269,7 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
             = unique_box::make<default_loop>(allocator<>{alloc}, allocator<>{alloc}).release();
         loop->vtable = &default_loop_vtable;
         return amongoc_okay;
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_status(&amongoc_generic_category, ENOMEM);
     }
 }

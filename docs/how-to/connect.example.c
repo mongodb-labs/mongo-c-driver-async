@@ -22,6 +22,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent);
  * @return amongoc_box Returns `amongoc_nil`
  */
 amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
+    (void)state_ptr;
     bson_view resp = bson_view_of(amongoc_box_cast(bson_mut)(resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
@@ -80,7 +81,10 @@ int main(int argc, char const* const* argv) {
     struct app_state state = {0};
 
     amongoc_emitter em = amongoc_client_new(&loop, uri);
-    em                 = amongoc_timeout(&loop, em, (struct timespec){5});
+    struct timespec dur;
+    dur.tv_sec  = 5;
+    dur.tv_nsec = 0;
+    em          = amongoc_timeout(&loop, em, dur);
 
     em = amongoc_let(em,
                      amongoc_async_forward_errors,

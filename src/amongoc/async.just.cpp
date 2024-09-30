@@ -46,7 +46,7 @@ emitter amongoc_just(status st, box value, mlib_allocator alloc_) noexcept {
         } else {
             return just_1([st] { return st; }).release();
         }
-    } catch (std::bad_alloc) {
+    } catch (std::bad_alloc const&) {
         return amongoc_alloc_failure();
     }
 }

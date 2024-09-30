@@ -203,14 +203,14 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
         // Store as a trivial object with no destructor
         box->_storage.is_dynamic  = 0;
         box->_storage.has_dtor    = 0;
-        box->_storage.inline_size = size;
+        box->_storage.inline_size = (uint8_t)(size & 0x3f);
         memset(&box->_storage.u.trivial_inline, 0, sizeof box->_storage.u.trivial_inline);
         return &box->_storage.u.trivial_inline;
     } else if (allow_inline && dtor && size <= AMONGOC_BOX_SMALL_SIZE_WITH_DTOR) {
         // Store as a non-trivial inline object with a destructor
         box->_storage.is_dynamic  = 0;
         box->_storage.has_dtor    = 1;
-        box->_storage.inline_size = size;
+        box->_storage.inline_size = (uint8_t)(size & 0x3f);
         memset(&box->_storage.u.nontrivial_inline.bytes,
                0,
                sizeof box->_storage.u.nontrivial_inline.bytes);

@@ -32,7 +32,7 @@ struct connection_pool::pool_impl {
     // Pool generate number
     std::atomic_int _generation{1};
 
-    std::mutex _checkout_mutex;
+    std::mutex _checkout_mutex{};
 
     member_impl_list _idle_connections{loop.get_allocator()};
 

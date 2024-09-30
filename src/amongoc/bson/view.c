@@ -4,9 +4,9 @@
 
 #include <string.h>
 
-extern mlib_constexpr int32_t _bson_read_int32_le(const bson_byte* bytes) mlib_noexcept;
+extern mlib_constexpr uint32_t _bson_read_u32le(const bson_byte* bytes) mlib_noexcept;
 
-extern mlib_constexpr int64_t _bson_read_int64_le(const bson_byte* bytes) mlib_noexcept;
+extern mlib_constexpr uint64_t _bson_read_u64le(const bson_byte* bytes) mlib_noexcept;
 
 extern mlib_constexpr uint32_t _bson_byte_size(const bson_byte*) mlib_noexcept;
 
@@ -32,7 +32,7 @@ extern mlib_constexpr const bson_byte* _bson_iterator_value_ptr(bson_iterator it
 
 extern mlib_constexpr const bson_byte* bson_iterator_data(const bson_iterator) mlib_noexcept;
 
-extern mlib_constexpr int32_t bson_iterator_data_size(const bson_iterator) mlib_noexcept;
+extern mlib_constexpr uint32_t bson_iterator_data_size(const bson_iterator) mlib_noexcept;
 
 extern mlib_constexpr bson_iterator _bson_begin(bson_view v) mlib_noexcept;
 

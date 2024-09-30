@@ -43,7 +43,6 @@ emitter amongoc_then(emitter                  in,
                      mlib_allocator           alloc_,
                      box                      userdata_,
                      amongoc_then_transformer tr) noexcept {
-    auto vtab  = in.vtable;
     auto alloc = allocator<>{alloc_};
     return mlib_fwd(in)
         .as_unique()

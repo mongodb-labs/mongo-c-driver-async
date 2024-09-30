@@ -61,7 +61,7 @@ struct nanosender_traits<archetype_nanosender<T>> {
  */
 template <typename T>
 struct archetype_nanoreceiver {
-    void operator()(T&& arg) {}
+    void operator()(T&&) {}
 };
 
 /**
