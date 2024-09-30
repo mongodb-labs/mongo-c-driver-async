@@ -121,6 +121,7 @@ target_link_libraries(amongoc PUBLIC
     Boost::url
     Boost::container
     Threads::Threads
+    fmt::fmt
     )
 
 if(BUILD_TESTING)
