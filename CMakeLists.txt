@@ -35,7 +35,9 @@ include(MongoWarnings)
 
 if(PROJECT_IS_TOP_LEVEL)
     # Set compile warnings to be errors
-    set(CMAKE_COMPILE_WARNING_AS_ERROR TRUE)
+    if(MONGODB_DEVELOPER)
+        set(CMAKE_COMPILE_WARNING_AS_ERROR TRUE)
+    endif()
     mongo_add_warning_options(
         gnu-like:-Wall
         # False-positive in GCC with coroutines and a custom allocator:
