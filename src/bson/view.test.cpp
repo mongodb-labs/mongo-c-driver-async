@@ -1,7 +1,10 @@
 #include "./build.test.hpp"
 
+#include <bson/doc.h>
 #include <bson/types.h>
 #include <bson/view.h>
+
+#include <mlib/alloc.h>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -205,4 +208,23 @@ TEST_CASE("bson/view/foreach/error iterator") {
     }
     CHECK(got_error);
     CHECK(nth == 3);
+}
+
+/**
+ * @brief Check that the view initializer of the bson_foreach is only evaluated once
+ */
+TEST_CASE("bson/view/foreach/Once evaluation") {
+    bson::document doc{::mlib_default_allocator};
+
+    bool once = false;
+    auto get  = [&] -> bson_view {
+        CHECK_FALSE(once);
+        once = true;
+        return doc;
+    };
+
+    bson_foreach(it, get()) {
+        (void)it;
+        // Empty
+    }
 }
