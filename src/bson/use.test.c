@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
     bson_byte      bytes[512] = {{0}};
     bson_view      view       = BSON_VIEW_NULL;
-    bson_doc       doc        = BSON_DOC_NULL;
+    bson_doc       doc        = bson_new();
     bson_mut       mut        = BSON_MUT_v2_NULL;
     bson_utf8_view u8         = BSON_UTF8_NULL;
     bson_iterator  iter       = BSON_ITERATOR_NULL;
@@ -39,13 +39,13 @@ int main(int argc, char** argv) {
     bson_utf8_view_from_cstring("foo");
     bson_utf8_view_autolen("foo", 3);
     bson_utf8_view_chopnulls(u8);
-    bson_done(iter);
+    bson_stop(iter);
     bson_iterator_get_error(iter);
     bson_key(iter);
     bson_iterator_type(iter);
     bson_iterator_data(iter);
     bson_iterator_data_size(iter);
-    bson_view_of(mut);
+    bson_as_view(mut);
     bson_begin(doc);
     bson_end(doc);
     bson_iterator_eq(iter, iter);
@@ -68,16 +68,16 @@ int main(int argc, char** argv) {
     bson_iterator_as_bool(iter);
     bson_iterator_as_int32(iter, NULL);
     bson_iterator_as_int64(iter, NULL);
-    bson_key_eq(iter, "foo", 3);
+    bson_key_eq(iter, u8);
 
     // Document APIs
     bson_doc_capacity(doc);
     bson_doc_get_allocator(doc);
-    bson_reserve(&doc, 42);
+    bson_doc_reserve(&doc, 42);
     bson_new_ex(mlib_default_allocator, 42);
     bson_new();
     bson_copy_view(view, mlib_default_allocator);
-    bson_doc_copy(doc);
+    bson_copy(doc);
     bson_delete(doc);
 
     // Mutator

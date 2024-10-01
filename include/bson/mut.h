@@ -1,22 +1,10 @@
 #pragma once
 
+#include <bson/detail/assert.h>
 #include <bson/doc.h>
 #include <bson/view.h>
 
 #include <mlib/config.h>
-
-/**
- * @brief Assert the truth of the given expression. In checked mode, this is a
- * runtime assertion. In unchecked mode, this becomes an optimization hint only.
- */
-#define BV_ASSERT(Cond)                                                                            \
-    if (BSON_VIEW_CHECKED && !(Cond)) {                                                            \
-        _bson_assert_fail(#Cond, __FILE__, __LINE__);                                              \
-        abort();                                                                                   \
-    } else if (!(Cond)) {                                                                          \
-        __builtin_unreachable();                                                                   \
-    } else                                                                                         \
-        ((void)0)
 
 /**
  * @brief A BSON document mutator
@@ -115,7 +103,7 @@ mlib_constexpr uint32_t bson_mut_capacity(bson_mut d) mlib_noexcept {
         mlibMath(assertNot(mlib_integer_allbits, V(bytes_remaining)));
         return (uint32_t)bytes_remaining.i64;
     }
-    return (uint32_t)d._doc->_capacity;
+    return bson_doc_capacity(*d._doc);
 }
 
 /**
@@ -206,13 +194,13 @@ mlib_constexpr bson_byte* _bson_splice_region(bson_mut* const        mut,
             // We need to grow larger. Add some extra to prevent repeated
             // allocations:
             const uint32_t new_capacity
-                = (uint32_t)mlibMathNonNegativeInt32(add(I(new_doc_size), 1024));
+                = (uint32_t)mlibMathNonNegativeInt32(add(I(new_doc_size), 512));
             mlib_math_catch (_unused) {
                 (void)_unused;
                 return NULL;
             }
             // Resize:
-            if (bson_reserve(doc, (uint32_t)new_capacity) < 0) {
+            if (bson_doc_reserve(doc, (uint32_t)new_capacity) < 0) {
                 // Allocation failed...
                 return NULL;
             }
@@ -839,7 +827,7 @@ mlib_constexpr bson_iterator bson_insert_minkey(bson_mut*      doc,
 inline bson_iterator
 bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
     mlib_math_try();
-    BV_ASSERT(!bson_done(pos));
+    BV_ASSERT(!bson_stop(pos));
     // Truncate the key to not contain an null bytes:
     newkey = bson_utf8_view_chopnulls(newkey);
     // The current key:
@@ -914,7 +902,7 @@ bson_tmp_uint_string(uint32_t val) mlib_noexcept {
 
 inline void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
-    for (; !bson_done(pos); pos = bson_next(pos)) {
+    for (; !bson_stop(pos); pos = bson_next(pos)) {
         struct bson_array_element_integer_keybuf key = bson_tmp_uint_string(idx);
         pos = bson_set_key(doc, pos, bson_utf8_view_from_cstring(key.buf));
     }
@@ -1270,5 +1258,3 @@ mutator mutator::push_array(std::string_view key) { return insert_array(end(), k
 }  // namespace bson
 
 #endif  // C++
-
-#undef BV_ASSERT

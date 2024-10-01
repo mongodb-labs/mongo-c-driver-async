@@ -24,6 +24,21 @@ TEST_CASE("bson/allocator propagation") {
     CHECK(vec.back().get_allocator() == vec.get_allocator());
 }
 
+/**
+ * @brief Ensure copying an empty document works.
+ *
+ * This will hit the odd code path where it will need to copy data from the
+ * global empty instance. We don't want it to attempt to write any data in that
+ * case.
+ */
+TEST_CASE("bson/doc/copy empty") {
+    ::bson_doc empty = bson_new();
+    ::bson_doc dup   = bson_copy(empty);
+    (void)dup;
+    // Do not delete the objects. They are guaranteed to not allocate, so there
+    // is no memory to leak. If LeakSanitizer fails this test, that's a bug.
+}
+
 TEST_CASE("bson/build/insert") {
     document doc{mlib_default_allocator};
     bson::mutator(doc).emplace_back("foo", "bar");
