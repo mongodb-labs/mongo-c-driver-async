@@ -174,21 +174,6 @@ inline bson_doc bson_new_ex(mlib_allocator allocator, uint32_t reserve) mlib_noe
  */
 inline bson_doc bson_new(void) mlib_noexcept { return bson_new_ex(mlib_default_allocator, 5); }
 
-inline bson_doc bson_copy_view(bson_view view, mlib_allocator alloc) mlib_noexcept {
-    bson_doc ret = bson_new_ex(alloc, bson_size(view));
-    // If we copied an empty doc, then we did not allocate memory, and we point to
-    // the global empty instance. We should not attempt to write anything there.
-    // It is already statically initialized.
-    if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
-        _bson_memcpy(bson_mut_data(ret), bson_data(view), bson_size(view));
-    }
-    return ret;
-}
-
-inline bson_doc bson_copy(bson_doc other) mlib_noexcept {
-    return bson_copy_view(bson_as_view(other), bson_doc_get_allocator(other));
-}
-
 /**
  * @brief Free the resources of the given BSON document
  */
@@ -199,6 +184,33 @@ inline void bson_delete(bson_doc d) mlib_noexcept {
         return;
     }
     mlib_reallocate(d._allocator, _bson_doc_buffer_ptr(d), 0, 1, bson_doc_capacity(d) + 4, NULL);
+}
+
+/**
+ * @brief Copy a BSON document
+ *
+ * If called with one argument, it must be a `bson_doc` to be copied.
+ *
+ * If called with two arguments, the first may be any bson-viewbale object, and
+ * the second argument must be an allocator for the copy
+ */
+#define bson_copy(...) MLIB_PASTE(_bsonCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define _bsonCopyArgc_1(Doc) _bson_copy_doc(Doc)
+#define _bsonCopyArgc_2(Doc, Alloc) _bson_copy_with_allocator(bson_as_view((Doc)), (Alloc))
+
+inline bson_doc _bson_copy_with_allocator(bson_view view, mlib_allocator alloc) mlib_noexcept {
+    bson_doc ret = bson_new_ex(alloc, bson_size(view));
+    // If we copied an empty doc, then we did not allocate memory, and we point to
+    // the global empty instance. We should not attempt to write anything there.
+    // It is already statically initialized.
+    if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
+        _bson_memcpy(bson_mut_data(ret), bson_data(view), bson_size(view));
+    }
+    return ret;
+}
+
+inline bson_doc _bson_copy_doc(bson_doc other) mlib_noexcept {
+    return bson_copy(other, bson_doc_get_allocator(other));
 }
 
 mlib_extern_c_end();
@@ -263,7 +275,7 @@ public:
      * @param alloc An allocator for the operation
      */
     constexpr explicit document(bson_view v, allocator_type alloc)
-        : _doc(bson_copy_view(v, alloc.c_allocator())) {
+        : _doc(bson_copy(v, alloc.c_allocator())) {
         if (data() == nullptr)
             throw std::bad_alloc();
     }

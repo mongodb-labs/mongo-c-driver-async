@@ -76,8 +76,8 @@ int main(int argc, char** argv) {
     bson_doc_reserve(&doc, 42);
     bson_new_ex(mlib_default_allocator, 42);
     bson_new();
-    bson_copy_view(view, mlib_default_allocator);
     bson_copy(doc);
+    bson_copy(doc, mlib_default_allocator);
     bson_delete(doc);
 
     // Mutator
