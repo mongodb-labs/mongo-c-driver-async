@@ -26,7 +26,7 @@ static inline void* default_reallocate(void*,
         // Object is not over-aligned, so we can defer to realloc() which will
         // use the default max alignment for new objects.
         auto p = std::realloc(ptr, req_size);
-        if (p) {
+        if (p and out_new_size) {
             *out_new_size = req_size;
         }
         return p;
@@ -43,12 +43,12 @@ static inline void* default_reallocate(void*,
             std::memcpy(new_ptr, ptr, (std::min)(req_size, prev_size));
             // Release the prior region
             std::free(ptr);
-            *out_new_size = req_size;
+            (out_new_size and (*out_new_size = req_size));
             return new_ptr;
         } else {
             // Allocated a new over-aligned region
             int err = posix_memalign(&ptr, alignment, req_size);
-            if (err == 0) {
+            if (err == 0 and out_new_size) {
                 *out_new_size = req_size;
             }
             return ptr;

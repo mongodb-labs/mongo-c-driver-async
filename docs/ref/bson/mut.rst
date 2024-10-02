@@ -74,7 +74,7 @@ Inserting Data
   :param pos: A position at which to perform the insertion. For version ``[[1]]``,
     the default position is :expr:`bson_end(*m)`, which will append the value to
     the end of the document.
-  :param key: The new element key. Will be passed through `bson_as_utf8`.
+  :param key: The new element key. Will be passed through `mlib_as_str_view`.
   :param value: A value to be inserted. Must be one of the supported value types.
   :return: Upon success, returns an iterator that refers to the inserted element.
     If there is an allocation failure, returns :expr:`bson_end(*m)`.
@@ -87,7 +87,7 @@ Inserting Data
 
   - `int32_t` and `int64_t`
   - ``double`` and ``float``
-  - ``const char*`` and `bson_utf8_view`
+  - ``const char*`` and `mlib_str_view`
   - `bson_view`, `bson_doc`, and `bson_mut` (will insert as a sub-document).
   - `bson_binary`
   - `bson_oid`
@@ -131,7 +131,7 @@ Inserting Data
   :param p: A `bson_iterator` that refers to some position. The new element will
     be inserted at the position `p`. If `p` points to an existing element, then
     the new element will appear *before* the element at `p`.
-  :param key: The new element key. Passed through `bson_as_utf8`
+  :param key: The new element key. Passed through `mlib_as_str_view`
 
 
 .. function::

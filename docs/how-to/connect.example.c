@@ -50,14 +50,8 @@ amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, a
     // Create a "hello" command
     bson_doc doc = bson_new();
     bson_mut mut = bson_mutate(&doc);
-    bson_insert_utf8(&mut,
-                     bson_begin(mut),
-                     bson_utf8_view_from_cstring("hello"),
-                     bson_utf8_view_from_cstring("1"));
-    bson_insert_utf8(&mut,
-                     bson_end(mut),
-                     bson_utf8_view_from_cstring("$db"),
-                     bson_utf8_view_from_cstring("test"));
+    bson_insert(&mut, "hello", "1");
+    bson_insert(&mut, "$db", "test");
     amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*)(state_ptr)->client,
                                                 bson_as_view(mut));
     bson_delete(doc);
@@ -129,7 +123,7 @@ static char* astrcat(const char* a, const char* b) {
 static void print_bson(FILE* into, bson_view doc, const char* indent) {
     fprintf(into, "{\n");
     bson_foreach(it, doc) {
-        bson_utf8_view str = bson_key(it);
+        mlib_str_view str = bson_key(it);
         fprintf(into, "%s  \"%s\": ", indent, str.data);
         switch (bson_iterator_type(it)) {
         case bson_type_eod:

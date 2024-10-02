@@ -4,10 +4,10 @@
 #include <bson/detail/assert.h>
 #include <bson/detail/mem.h>
 #include <bson/types.h>
-#include <bson/utf8.h>
 
 #include <mlib/config.h>
 #include <mlib/integer.h>
+#include <mlib/str.h>
 
 #include <math.h>
 
@@ -701,21 +701,21 @@ mlib_constexpr enum bson_iter_errc bson_iterator_get_error(bson_iterator it) mli
 }
 
 /**
- * @brief Obtain a bson_utf8_view referring to the key string of the BSON
+ * @brief Obtain a string view referring to the key string of the BSON
  * document element referred-to by the given iterator.
  */
-inline bson_utf8_view bson_key(bson_iterator it) mlib_noexcept {
+inline mlib_str_view bson_key(bson_iterator it) mlib_noexcept {
     BV_ASSERT(it._rlen >= it._keylen + 1);
     BV_ASSERT(it._ptr);
-    return (bson_utf8_view){.data = (const char*)it._ptr + 1, .len = (uint32_t)it._keylen};
+    return mlib_str_view_data((const char*)it._ptr + 1, (uint32_t)it._keylen);
 }
 
 /**
  * @brief Compare a bson_iterator's key with a string
  */
-#define bson_key_eq(Iterator, Key) _bson_key_eq((Iterator), bson_as_utf8((Key)))
-mlib_constexpr bool _bson_key_eq(const bson_iterator it, bson_utf8_view key) mlib_noexcept {
-    const bson_utf8_view it_key = bson_key(it);
+#define bson_key_eq(Iterator, Key) _bson_key_eq((Iterator), mlib_as_str_view((Key)))
+mlib_constexpr bool _bson_key_eq(const bson_iterator it, mlib_str_view key) mlib_noexcept {
+    const mlib_str_view it_key = bson_key(it);
     BV_ASSERT(it._keylen >= 0);
     if (it_key.len != key.len) {
         return false;
@@ -784,8 +784,8 @@ mlib_constexpr bool _bson_key_eq(const bson_iterator it, bson_utf8_view key) mli
 /**
  * @brief Find the first element within a document that has the given key
  */
-#define bson_find(Doc, Key) _bson_find(bson_data((Doc)), bson_as_utf8((Key)))
-mlib_constexpr bson_iterator _bson_find(const bson_byte* v, bson_utf8_view key) mlib_noexcept {
+#define bson_find(Doc, Key) _bson_find(bson_data((Doc)), mlib_as_str_view((Key)))
+mlib_constexpr bson_iterator _bson_find(const bson_byte* v, mlib_str_view key) mlib_noexcept {
     bson_foreach_subrange(iter, _bson_begin(v), _bson_end(v)) {
         if (!bson_iterator_get_error(iter) && bson_key_eq(iter, key)) {
             return iter;
@@ -794,16 +794,16 @@ mlib_constexpr bson_iterator _bson_find(const bson_byte* v, bson_utf8_view key) 
     return _bson_end(v);
 }
 
-inline bson_utf8_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept {
+inline mlib_str_view _bson_read_stringlike_at(const bson_byte* p) mlib_noexcept {
     const int32_t len = (int32_t)_bson_read_u32le(p);
     // String length checks were already performed by our callers
     BV_ASSERT(len >= 1);
-    return mlib_init(bson_utf8_view){(const char*)(p + sizeof len), (uint32_t)len - 1};
+    return mlib_str_view_data((const char*)(p + sizeof len), (uint32_t)len - 1);
 }
 
-inline bson_utf8_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept {
+inline mlib_str_view _bson_iterator_stringlike(bson_iterator it) mlib_noexcept {
     const bson_byte* after_key = _bson_iterator_value_ptr(it);
-    bson_utf8_view   r         = _bson_read_stringlike_at(after_key);
+    mlib_str_view    r         = _bson_read_stringlike_at(after_key);
     BV_ASSERT(r.len > 0);
     BV_ASSERT(r.len < (size_t)it._rlen);
     return r;
@@ -835,9 +835,9 @@ mlib_constexpr double bson_iterator_double(bson_iterator it) mlib_noexcept {
  * sequence. Extra validation is required.
  * @note The `char` array may contain null characters.
  */
-inline bson_utf8_view bson_iterator_utf8(bson_iterator it) mlib_noexcept {
+inline mlib_str_view bson_iterator_utf8(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != bson_type_utf8) {
-        return mlib_init(bson_utf8_view){NULL, 0};
+        return mlib_str_view_null;
     }
     return _bson_iterator_stringlike(it);
 }
@@ -951,11 +951,11 @@ mlib_constexpr bson_dbpointer bson_iterator_dbpointer(bson_iterator it) mlib_noe
 }
 
 typedef struct bson_code {
-    bson_utf8_view utf8;
+    mlib_str_view utf8;
 } bson_code;
 
 inline bson_code bson_iterator_code(bson_iterator it) mlib_noexcept {
-    bson_code ret = {BSON_UTF8_NULL};
+    bson_code ret = {mlib_str_view_null};
     if (bson_iterator_type(it) != bson_type_code) {
         return ret;
     }
@@ -964,11 +964,11 @@ inline bson_code bson_iterator_code(bson_iterator it) mlib_noexcept {
 }
 
 typedef struct bson_symbol {
-    bson_utf8_view utf8;
+    mlib_str_view utf8;
 } bson_symbol;
 
 inline bson_symbol bson_iterator_symbol(bson_iterator it) mlib_noexcept {
-    bson_symbol ret = {BSON_UTF8_NULL};
+    bson_symbol ret = {mlib_str_view_null};
     if (bson_iterator_type(it) != bson_type_symbol) {
         return ret;
     }

@@ -259,7 +259,7 @@ Document Iteration
   the key ``Key``
 
   :param B: A BSON document object, passed through `bson_as_view`.
-  :param Key: A key to search for. Passed through `bson_as_utf8`.
+  :param Key: A key to search for. Passed through `mlib_as_str_view`.
   :return: A `bson_iterator`. If the expected key was found, returns an
     iterator referring to that element.
 
@@ -311,7 +311,7 @@ Element Properties
 ******************
 
 .. function::
-  bson_utf8_view bson_key(bson_iterator it)
+  mlib_str_view bson_key(bson_iterator it)
 
   Obtain a string that views the key of the element referred-to by `it`
 
@@ -324,7 +324,7 @@ Element Properties
   Test whether the `it` element key is equal to the given string.
 
   :param it: The element to inspect.
-  :param K: A string to compare against. Passed through `bson_as_utf8`
+  :param K: A string to compare against. Passed through `mlib_as_str_view`
 
   .. note:: |macro-impl|
 
@@ -357,7 +357,7 @@ Element Value Access
 
 .. function::
   double bson_iterator_double(bson_iterator it)
-  bson_utf8_view bson_iterator_utf8(bson_iterator it)
+  mlib_str_view bson_iterator_utf8(bson_iterator it)
   bson_view bson_iterator_document(bson_iterator it, bson_view_errc* doc_errc)
   bson_binary bson_iterator_binary(bson_iterator it)
   bson_oid bson_iterator_oid(bson_iterator it)

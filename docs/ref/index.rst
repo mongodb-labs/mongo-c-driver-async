@@ -22,3 +22,4 @@ Reference
   handler
 
   bson/index
+  str

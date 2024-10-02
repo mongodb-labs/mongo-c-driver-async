@@ -16,4 +16,3 @@ The BSON library is divided into three main components:
   iter
   doc
   mut
-  utf8

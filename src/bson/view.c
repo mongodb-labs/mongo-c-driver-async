@@ -1,4 +1,3 @@
-#include <bson/utf8.h>
 #include <bson/view.h>
 
 #include <mlib/config.h>
@@ -26,9 +25,4 @@ void _bson_assert_fail(const char* expr, const char* file, int line) {
             line,
             expr);
     abort();
-}
-
-static inline void _test_generic_find(bson_view v, bson_utf8_view key) {
-    bson_find(v, "key");
-    bson_find(v, key);
 }

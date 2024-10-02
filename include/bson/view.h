@@ -6,7 +6,6 @@
 #include <bson/detail/assert.h>
 #include <bson/detail/mem.h>
 #include <bson/iterator.h>
-#include <bson/utf8.h>
 
 #include <mlib/config.h>
 #include <mlib/cstring.h>
@@ -193,6 +192,9 @@ mlib_constexpr bson_view bson_view_from_data(const bson_byte* const data,
  */
 #define bson_as_view(...) _bson_view_from_ptr(bson_data(__VA_ARGS__))
 mlib_constexpr bson_view _bson_view_from_ptr(const bson_byte* p) mlib_noexcept {
+    if (!p) {
+        return BSON_VIEW_NULL;
+    }
     int32_t len = (int32_t)_bson_read_u32le(p);
     BV_ASSERT(len >= 0);
     return bson_view_from_data(p, (uint32_t)len, NULL);
@@ -235,8 +237,7 @@ inline constexpr struct minkey_t {
 inline constexpr struct maxkey_t {
 } maxkey;
 
-using view      = ::bson_view;
-using utf8_view = ::bson_utf8_view;
+using view = ::bson_view;
 
 }  // namespace bson
 

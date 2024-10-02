@@ -3,10 +3,10 @@
 #include <bson/detail/assert.h>
 #include <bson/doc.h>
 #include <bson/iterator.h>
-#include <bson/utf8.h>
 #include <bson/view.h>
 
 #include <mlib/config.h>
+#include <mlib/str.h>
 
 mlib_extern_c_begin();
 
@@ -208,10 +208,10 @@ mlib_constexpr bson_byte* _bson_splice_region(bson_mut* const        mut,
 mlib_constexpr bson_byte* _bson_prep_element_region(bson_mut* const      d,
                                                     bson_iterator* const pos,
                                                     const bson_type      type,
-                                                    bson_utf8_view       key,
+                                                    mlib_str_view        key,
                                                     const uint32_t       datasize) mlib_noexcept {
     // Prevent embedded nulls within document keys:
-    key = bson_utf8_view_chopnulls(key);
+    key = mlib_str_view_chopnulls(key);
     // The total size of the element (add two: for the tag and the key's null):
     mlib_math_try();
     const uint32_t elem_size
@@ -256,11 +256,11 @@ mlib_constexpr bson_byte* _bson_prep_element_region(bson_mut* const      d,
  * @return bson_iterator Iterator to the inserted element, or the end iterator
  * on failure
  */
-mlib_constexpr bson_iterator _bson_insert_stringlike(bson_mut*      doc,
-                                                     bson_iterator  pos,
-                                                     bson_utf8_view key,
-                                                     bson_type      realtype,
-                                                     bson_utf8_view string) mlib_noexcept {
+mlib_constexpr bson_iterator _bson_insert_stringlike(bson_mut*     doc,
+                                                     bson_iterator pos,
+                                                     mlib_str_view key,
+                                                     bson_type     realtype,
+                                                     mlib_str_view string) mlib_noexcept {
     mlib_math_try();
     const uint32_t string_size = (uint32_t)mlibMathPositiveInt32(add(U(string.len), 1));
     const uint32_t elem_size   = (uint32_t)mlibMathPositiveInt32(add(I(string_size), 4));
@@ -288,11 +288,11 @@ mlib_constexpr bson_iterator _bson_insert_stringlike(bson_mut*      doc,
  * @brief Insert a double value into the document
  */
 #define bson_insert_double(Mut, Pos, Key, D)                                                       \
-    _bson_insert_double((Mut), (Pos), bson_as_utf8(Key), (D))
-mlib_constexpr bson_iterator _bson_insert_double(bson_mut*      doc,
-                                                 bson_iterator  pos,
-                                                 bson_utf8_view key,
-                                                 double         d) mlib_noexcept {
+    _bson_insert_double((Mut), (Pos), mlib_as_str_view(Key), (D))
+mlib_constexpr bson_iterator _bson_insert_double(bson_mut*     doc,
+                                                 bson_iterator pos,
+                                                 mlib_str_view key,
+                                                 double        d) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_double, key, sizeof(double));
     if (out) {
         uint64_t tmp;
@@ -306,11 +306,11 @@ mlib_constexpr bson_iterator _bson_insert_double(bson_mut*      doc,
  * @brief Insert a UTF-8 element into a document
  */
 #define bson_insert_utf8(Mut, Position, Key, String)                                               \
-    _bson_insert_utf8((Mut), (Position), bson_as_utf8(Key), bson_as_utf8(String))
-mlib_constexpr bson_iterator _bson_insert_utf8(bson_mut*      doc,
-                                               bson_iterator  pos,
-                                               bson_utf8_view key,
-                                               bson_utf8_view utf8) mlib_noexcept {
+    _bson_insert_utf8((Mut), (Position), mlib_as_str_view(Key), mlib_as_str_view(String))
+mlib_constexpr bson_iterator _bson_insert_utf8(bson_mut*     doc,
+                                               bson_iterator pos,
+                                               mlib_str_view key,
+                                               mlib_str_view utf8) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, bson_type_utf8, utf8);
 }
 
@@ -324,11 +324,11 @@ mlib_constexpr bson_iterator _bson_insert_utf8(bson_mut*      doc,
  * returned iterator to obtain a bson_mut that modifies the subdocument.
  */
 #define bson_insert_doc(Mut, Pos, Key, Doc)                                                        \
-    _bson_insert_doc((Mut), (Pos), bson_as_utf8(Key), bson_as_view(Doc))
-mlib_constexpr bson_iterator _bson_insert_doc(bson_mut*      doc,
-                                              bson_iterator  pos,
-                                              bson_utf8_view key,
-                                              bson_view      insert_doc) mlib_noexcept {
+    _bson_insert_doc((Mut), (Pos), mlib_as_str_view(Key), bson_as_view(Doc))
+mlib_constexpr bson_iterator _bson_insert_doc(bson_mut*     doc,
+                                              bson_iterator pos,
+                                              mlib_str_view key,
+                                              bson_view     insert_doc) mlib_noexcept {
     if (!bson_data(insert_doc)) {
         // There was no document given. Re-call ourself with a view of an empty
         // doc:
@@ -359,10 +359,10 @@ mlib_constexpr bson_iterator _bson_insert_doc(bson_mut*      doc,
  * integers starting from zero "0". It is up to the caller to use such keys for
  * array elements. Use @ref bson_tmp_uint_string() to easily create array keys.
  */
-#define bson_insert_array(Mut, Pos, Key) _bson_insert_array((Mut), (Pos), bson_as_utf8(Key))
-mlib_constexpr bson_iterator _bson_insert_array(bson_mut*      doc,
-                                                bson_iterator  pos,
-                                                bson_utf8_view key) mlib_noexcept {
+#define bson_insert_array(Mut, Pos, Key) _bson_insert_array((Mut), (Pos), mlib_as_str_view(Key))
+mlib_constexpr bson_iterator _bson_insert_array(bson_mut*     doc,
+                                                bson_iterator pos,
+                                                mlib_str_view key) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_array, key, 5);
     if (out) {
         _bson_memset(out, 0, 5);
@@ -375,11 +375,11 @@ mlib_constexpr bson_iterator _bson_insert_array(bson_mut*      doc,
  * @brief Insert a binary object into the document
  */
 #define bson_insert_binary(Mut, Pos, Key, Bin)                                                     \
-    _bson_insert_binary((Mut), (Pos), bson_as_utf8(Key), (Bin))
-mlib_constexpr bson_iterator _bson_insert_binary(bson_mut*      doc,
-                                                 bson_iterator  pos,
-                                                 bson_utf8_view key,
-                                                 bson_binary    bin) mlib_noexcept {
+    _bson_insert_binary((Mut), (Pos), mlib_as_str_view(Key), (Bin))
+mlib_constexpr bson_iterator _bson_insert_binary(bson_mut*     doc,
+                                                 bson_iterator pos,
+                                                 mlib_str_view key,
+                                                 bson_binary   bin) mlib_noexcept {
     mlib_math_try();
     const uint32_t bin_size  = (uint32_t)mlibMathNonNegativeInt32(I(bin.data_len));
     const uint32_t elem_size = (uint32_t)mlibMathPositiveInt32(add(I(bin_size), 5));
@@ -400,10 +400,11 @@ mlib_constexpr bson_iterator _bson_insert_binary(bson_mut*      doc,
 /**
  * @brief Insert an "undefined" value into the document
  */
-#define bson_insert_undefined(Mut, Pos, Key) _bson_insert_undefined((Mut), (Pos), bson_as_utf8(Key))
-mlib_constexpr bson_iterator _bson_insert_undefined(bson_mut*      doc,
-                                                    bson_iterator  pos,
-                                                    bson_utf8_view key) mlib_noexcept {
+#define bson_insert_undefined(Mut, Pos, Key)                                                       \
+    _bson_insert_undefined((Mut), (Pos), mlib_as_str_view(Key))
+mlib_constexpr bson_iterator _bson_insert_undefined(bson_mut*     doc,
+                                                    bson_iterator pos,
+                                                    mlib_str_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, bson_type_undefined, key, 0);
     return pos;
 }
@@ -411,11 +412,12 @@ mlib_constexpr bson_iterator _bson_insert_undefined(bson_mut*      doc,
 /**
  * @brief Insert an object ID into the document
  */
-#define bson_insert_oid(Mut, Pos, Key, OID) _bson_insert_oid((Mut), (Pos), bson_as_utf8(Key), OID)
-mlib_constexpr bson_iterator _bson_insert_oid(bson_mut*      doc,
-                                              bson_iterator  pos,
-                                              bson_utf8_view key,
-                                              bson_oid       oid) mlib_noexcept {
+#define bson_insert_oid(Mut, Pos, Key, OID)                                                        \
+    _bson_insert_oid((Mut), (Pos), mlib_as_str_view(Key), OID)
+mlib_constexpr bson_iterator _bson_insert_oid(bson_mut*     doc,
+                                              bson_iterator pos,
+                                              mlib_str_view key,
+                                              bson_oid      oid) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_oid, key, sizeof oid);
     if (out) {
         memcpy(out, &oid, sizeof oid);
@@ -426,11 +428,11 @@ mlib_constexpr bson_iterator _bson_insert_oid(bson_mut*      doc,
 /**
  * @brief Insert a boolean true/false value into the document
  */
-#define bson_insert_bool(Mut, Pos, Key, B) _bson_insert_bool((Mut), (Pos), bson_as_utf8(Key), B)
-mlib_constexpr bson_iterator _bson_insert_bool(bson_mut*      doc,
-                                               bson_iterator  pos,
-                                               bson_utf8_view key,
-                                               bool           b) mlib_noexcept {
+#define bson_insert_bool(Mut, Pos, Key, B) _bson_insert_bool((Mut), (Pos), mlib_as_str_view(Key), B)
+mlib_constexpr bson_iterator _bson_insert_bool(bson_mut*     doc,
+                                               bson_iterator pos,
+                                               mlib_str_view key,
+                                               bool          b) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_bool, key, 1);
     if (out) {
         out[0].v = b ? 1 : 0;
@@ -442,11 +444,11 @@ mlib_constexpr bson_iterator _bson_insert_bool(bson_mut*      doc,
  * @brief Insert a datetime value into the document
  */
 #define bson_insert_datetime(Mut, Pos, Key, Dt)                                                    \
-    _bson_insert_datetime((Mut), (Pos), bson_as_utf8(Key), Dt)
-mlib_constexpr bson_iterator _bson_insert_datetime(bson_mut*      doc,
-                                                   bson_iterator  pos,
-                                                   bson_utf8_view key,
-                                                   bson_datetime  dt) mlib_noexcept {
+    _bson_insert_datetime((Mut), (Pos), mlib_as_str_view(Key), Dt)
+mlib_constexpr bson_iterator _bson_insert_datetime(bson_mut*     doc,
+                                                   bson_iterator pos,
+                                                   mlib_str_view key,
+                                                   bson_datetime dt) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_date_time, key, sizeof dt);
     if (out) {
         _bson_write_u64le(out, (uint64_t)dt.utc_ms_offset);
@@ -457,10 +459,10 @@ mlib_constexpr bson_iterator _bson_insert_datetime(bson_mut*      doc,
 /**
  * @brief Insert a null into the document
  */
-#define bson_insert_null(Mut, Pos, Key) _bson_insert_null((Mut), (Pos), bson_as_utf8(Key))
-mlib_constexpr bson_iterator _bson_insert_null(bson_mut*      doc,
-                                               bson_iterator  pos,
-                                               bson_utf8_view key) mlib_noexcept {
+#define bson_insert_null(Mut, Pos, Key) _bson_insert_null((Mut), (Pos), mlib_as_str_view(Key))
+mlib_constexpr bson_iterator _bson_insert_null(bson_mut*     doc,
+                                               bson_iterator pos,
+                                               mlib_str_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, bson_type_null, key, 0);
     return pos;
 }
@@ -468,11 +470,12 @@ mlib_constexpr bson_iterator _bson_insert_null(bson_mut*      doc,
 /**
  * @brief Insert a regular expression value into the document
  */
-#define bson_insert_regex(Mut, Pos, Key, RE) _bson_insert_regex((Mut), (Pos), bson_as_utf8(Key), RE)
-mlib_constexpr bson_iterator _bson_insert_regex(bson_mut*      doc,
-                                                bson_iterator  pos,
-                                                bson_utf8_view key,
-                                                bson_regex     rx) mlib_noexcept {
+#define bson_insert_regex(Mut, Pos, Key, RE)                                                       \
+    _bson_insert_regex((Mut), (Pos), mlib_as_str_view(Key), RE)
+mlib_constexpr bson_iterator _bson_insert_regex(bson_mut*     doc,
+                                                bson_iterator pos,
+                                                mlib_str_view key,
+                                                bson_regex    rx) mlib_noexcept {
     mlib_math_try();
     // Neither regex nor options may contain embedded nulls, so we cannot trust
     // the caller giving us the correct length:
@@ -503,10 +506,10 @@ mlib_constexpr bson_iterator _bson_insert_regex(bson_mut*      doc,
  * @brief Insert a DBPointer  into the document
  */
 #define bson_insert_dbpointer(Mut, Pos, Key, P)                                                    \
-    _bson_insert_dbpointer((Mut), (Pos), bson_as_utf8(Key), P)
+    _bson_insert_dbpointer((Mut), (Pos), mlib_as_str_view(Key), P)
 mlib_constexpr bson_iterator _bson_insert_dbpointer(bson_mut*      doc,
                                                     bson_iterator  pos,
-                                                    bson_utf8_view key,
+                                                    mlib_str_view  key,
                                                     bson_dbpointer dbp) mlib_noexcept {
     mlib_math_try();
     const uint32_t collname_string_size
@@ -532,30 +535,31 @@ mlib_constexpr bson_iterator _bson_insert_dbpointer(bson_mut*      doc,
  * @brief Insert a code string into the document
  */
 #define bson_insert_code(Mut, Pos, Key, Code)                                                      \
-    _bson_insert_code((Mut), (Pos), bson_as_utf8(Key), Code)
-static mlib_constexpr bson_iterator _bson_insert_code(bson_mut*      doc,
-                                                      bson_iterator  pos,
-                                                      bson_utf8_view key,
-                                                      bson_code      code) mlib_noexcept {
+    _bson_insert_code((Mut), (Pos), mlib_as_str_view(Key), Code)
+static mlib_constexpr bson_iterator _bson_insert_code(bson_mut*     doc,
+                                                      bson_iterator pos,
+                                                      mlib_str_view key,
+                                                      bson_code     code) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, bson_type_code, code.utf8);
 }
 
 /**
  * @brief Insert a symbol string into the document
  */
-#define bson_insert_symbol(Mut, Pos, Key, S) _bson_insert_symbol((Mut), (Pos), bson_as_utf8(Key), S)
-static mlib_constexpr bson_iterator _bson_insert_symbol(bson_mut*      doc,
-                                                        bson_iterator  pos,
-                                                        bson_utf8_view key,
-                                                        bson_symbol    sym) mlib_noexcept {
+#define bson_insert_symbol(Mut, Pos, Key, S)                                                       \
+    _bson_insert_symbol((Mut), (Pos), mlib_as_str_view(Key), S)
+static mlib_constexpr bson_iterator _bson_insert_symbol(bson_mut*     doc,
+                                                        bson_iterator pos,
+                                                        mlib_str_view key,
+                                                        bson_symbol   sym) mlib_noexcept {
     return _bson_insert_stringlike(doc, pos, key, bson_type_symbol, sym.utf8);
 }
 
-mlib_constexpr bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
-                                                         bson_iterator  pos,
-                                                         bson_utf8_view key,
-                                                         bson_code      code,
-                                                         bson_view      scope) mlib_noexcept {
+mlib_constexpr bson_iterator bson_insert_code_with_scope(bson_mut*     doc,
+                                                         bson_iterator pos,
+                                                         mlib_str_view key,
+                                                         bson_code     code,
+                                                         bson_view     scope) mlib_noexcept {
     mlib_math_try();
     const uint32_t code_size = (uint32_t)mlibMathPositiveInt32(add(1, U(code.utf8.len)));
     const uint32_t elem_size
@@ -578,11 +582,12 @@ mlib_constexpr bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
 /**
  * @brief Insert an Int32 value into the document
  */
-#define bson_insert_int32(Mut, Pos, Key, I) _bson_insert_int32((Mut), (Pos), bson_as_utf8(Key), I)
-mlib_constexpr bson_iterator _bson_insert_int32(bson_mut*      doc,
-                                                bson_iterator  pos,
-                                                bson_utf8_view key,
-                                                int32_t        value) mlib_noexcept {
+#define bson_insert_int32(Mut, Pos, Key, I)                                                        \
+    _bson_insert_int32((Mut), (Pos), mlib_as_str_view(Key), I)
+mlib_constexpr bson_iterator _bson_insert_int32(bson_mut*     doc,
+                                                bson_iterator pos,
+                                                mlib_str_view key,
+                                                int32_t       value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_int32, key, sizeof(int32_t));
     if (out) {
         out = _bson_write_u32le(out, (uint32_t)value);
@@ -594,10 +599,10 @@ mlib_constexpr bson_iterator _bson_insert_int32(bson_mut*      doc,
  * @brief Insert a timestamp value into the document
  */
 #define bson_insert_timestamp(Mut, Pos, Key, Ts)                                                   \
-    _bson_insert_timestamp((Mut), (Pos), bson_as_utf8(Key), Ts)
+    _bson_insert_timestamp((Mut), (Pos), mlib_as_str_view(Key), Ts)
 mlib_constexpr bson_iterator _bson_insert_timestamp(bson_mut*      doc,
                                                     bson_iterator  pos,
-                                                    bson_utf8_view key,
+                                                    mlib_str_view  key,
                                                     bson_timestamp ts) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_timestamp, key, sizeof ts);
     if (out) {
@@ -617,11 +622,12 @@ mlib_constexpr bson_iterator _bson_insert_timestamp(bson_mut*      doc,
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-#define bson_insert_int64(Mut, Pos, Key, I) _bson_insert_int64((Mut), (Pos), bson_as_utf8(Key), I)
-mlib_constexpr bson_iterator _bson_insert_int64(bson_mut*      doc,
-                                                bson_iterator  pos,
-                                                bson_utf8_view key,
-                                                int64_t        value) mlib_noexcept {
+#define bson_insert_int64(Mut, Pos, Key, I)                                                        \
+    _bson_insert_int64((Mut), (Pos), mlib_as_str_view(Key), I)
+mlib_constexpr bson_iterator _bson_insert_int64(bson_mut*     doc,
+                                                bson_iterator pos,
+                                                mlib_str_view key,
+                                                int64_t       value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_int64, key, sizeof value);
     if (out) {
         out = _bson_write_u64le(out, (uint64_t)value);
@@ -640,10 +646,10 @@ mlib_constexpr bson_iterator _bson_insert_int64(bson_mut*      doc,
  * iterator
  */
 #define bson_insert_decimal128(Mut, Pos, Key, D)                                                   \
-    _bson_insert_decimal128((Mut), (Pos), bson_as_utf8(Key), D)
+    _bson_insert_decimal128((Mut), (Pos), mlib_as_str_view(Key), D)
 mlib_constexpr bson_iterator _bson_insert_decimal128(bson_mut*              doc,
                                                      bson_iterator          pos,
-                                                     bson_utf8_view         key,
+                                                     mlib_str_view          key,
                                                      struct bson_decimal128 value) mlib_noexcept {
     bson_byte* out = _bson_prep_element_region(doc, &pos, bson_type_decimal128, key, sizeof value);
     if (out) {
@@ -661,10 +667,10 @@ mlib_constexpr bson_iterator _bson_insert_decimal128(bson_mut*              doc,
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-#define bson_insert_maxkey(Mut, Pos, Key) _bson_insert_maxkey((Mut), (Pos), bson_as_utf8(Key))
-mlib_constexpr bson_iterator _bson_insert_maxkey(bson_mut*      doc,
-                                                 bson_iterator  pos,
-                                                 bson_utf8_view key) mlib_noexcept {
+#define bson_insert_maxkey(Mut, Pos, Key) _bson_insert_maxkey((Mut), (Pos), mlib_as_str_view(Key))
+mlib_constexpr bson_iterator _bson_insert_maxkey(bson_mut*     doc,
+                                                 bson_iterator pos,
+                                                 mlib_str_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, bson_type_maxkey, key, 0);
     return pos;
 }
@@ -678,10 +684,10 @@ mlib_constexpr bson_iterator _bson_insert_maxkey(bson_mut*      doc,
  * @return bson_iterator An iterator to the inserted element, or the end
  * iterator
  */
-#define bson_insert_minkey(Mut, Pos, Key) _bson_insert_minkey((Mut), (Pos), bson_as_utf8(Key))
-mlib_constexpr bson_iterator _bson_insert_minkey(bson_mut*      doc,
-                                                 bson_iterator  pos,
-                                                 bson_utf8_view key) mlib_noexcept {
+#define bson_insert_minkey(Mut, Pos, Key) _bson_insert_minkey((Mut), (Pos), mlib_as_str_view(Key))
+mlib_constexpr bson_iterator _bson_insert_minkey(bson_mut*     doc,
+                                                 bson_iterator pos,
+                                                 mlib_str_view key) mlib_noexcept {
     _bson_prep_element_region(doc, &pos, bson_type_minkey, key, 0);
     return pos;
 }
@@ -699,7 +705,7 @@ mlib_constexpr bson_iterator _bson_insert_minkey(bson_mut*      doc,
     _Generic((Value),                                                                              \
         double: _bson_insert_double,                                                               \
         float: _bson_insert_double,                                                                \
-        bson_utf8_view: _bson_insert_utf8,                                                         \
+        mlib_str_view: _bson_insert_utf8,                                                          \
         char*: _bson_insert_cstring,                                                               \
         const char*: _bson_insert_cstring,                                                         \
         bson_view: _bson_insert_doc,                                                               \
@@ -716,22 +722,22 @@ mlib_constexpr bson_iterator _bson_insert_minkey(bson_mut*      doc,
         int32_t: _bson_insert_int32,                                                               \
         bson_timestamp: _bson_insert_timestamp,                                                    \
         struct bson_decimal128: _bson_insert_decimal128,                                           \
-        int64_t: _bson_insert_int64)((Mut), (Position), bson_as_utf8(Key), (Value))
+        int64_t: _bson_insert_int64)((Mut), (Position), mlib_as_str_view(Key), (Value))
 #endif
 
-inline bson_iterator _bson_insert_cstring(bson_mut*      m,
-                                          bson_iterator  pos,
-                                          bson_utf8_view key,
-                                          const char*    s) mlib_noexcept {
-    return _bson_insert_utf8(m, pos, key, bson_as_utf8(s));
+inline bson_iterator _bson_insert_cstring(bson_mut*     m,
+                                          bson_iterator pos,
+                                          mlib_str_view key,
+                                          const char*   s) mlib_noexcept {
+    return _bson_insert_utf8(m, pos, key, mlib_as_str_view(s));
 }
 
 inline bson_iterator
-_bson_insert_doc_doc(bson_mut* m, bson_iterator pos, bson_utf8_view key, bson_doc d) mlib_noexcept {
+_bson_insert_doc_doc(bson_mut* m, bson_iterator pos, mlib_str_view key, bson_doc d) mlib_noexcept {
     return _bson_insert_doc(m, pos, key, bson_as_view(d));
 }
 inline bson_iterator
-_bson_insert_doc_mut(bson_mut* m, bson_iterator pos, bson_utf8_view key, bson_mut d) mlib_noexcept {
+_bson_insert_doc_mut(bson_mut* m, bson_iterator pos, mlib_str_view key, bson_mut d) mlib_noexcept {
     return _bson_insert_doc(m, pos, key, bson_as_view(d));
 }
 
@@ -745,13 +751,13 @@ _bson_insert_doc_mut(bson_mut* m, bson_iterator pos, bson_utf8_view key, bson_mu
  * updated.
  */
 inline bson_iterator
-bson_set_key(bson_mut* doc, bson_iterator pos, bson_utf8_view newkey) mlib_noexcept {
+bson_set_key(bson_mut* doc, bson_iterator pos, mlib_str_view newkey) mlib_noexcept {
     mlib_math_try();
     BV_ASSERT(!bson_stop(pos));
     // Truncate the key to not contain an null bytes:
-    newkey = bson_utf8_view_chopnulls(newkey);
+    newkey = mlib_str_view_chopnulls(newkey);
     // The current key:
-    const bson_utf8_view curkey = bson_key(pos);
+    const mlib_str_view curkey = bson_key(pos);
     // The number of bytes added for the new key (or possible negative)
     const ptrdiff_t size_diff = (ptrdiff_t)newkey.len - (ptrdiff_t)curkey.len;
     // The new remaining len following the adjusted key size
@@ -809,7 +815,7 @@ struct bson_array_element_integer_keybuf {
  * given uint32_t value
  *
  * @param val The value to be represented
- * @return bson_utf8_view A view of the generated string. NOTE: This view will
+ * @return mlib_str_view A view of the generated string. NOTE: This view will
  * remain valid only until a subsequent call to bson_tmp_uint_string within the
  * same thread.
  */
@@ -824,7 +830,7 @@ inline void
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
     for (; !bson_stop(pos); pos = bson_next(pos)) {
         struct bson_array_element_integer_keybuf key = bson_tmp_uint_string(idx);
-        pos = bson_set_key(doc, pos, bson_utf8_view_from_cstring(key.buf));
+        pos = bson_set_key(doc, pos, mlib_as_str_view(key.buf));
     }
 }
 
@@ -1002,70 +1008,70 @@ mlib_extern_c_end();
 #if mlib_is_cxx()
 
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, double v) {
-    return _bson_insert_double(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_double(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator
-_bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_utf8_view v) {
-    return _bson_insert_utf8(m, pos, bson_as_utf8(key), v);
+_bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, mlib_str_view v) {
+    return _bson_insert_utf8(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, char* v) {
-    return _bson_insert_cstring(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_cstring(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, const char* v) {
-    return _bson_insert_cstring(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_cstring(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_view v) {
-    return _bson_insert_doc(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_doc(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_doc v) {
-    return _bson_insert_doc(m, pos, bson_as_utf8(key), bson_as_view(v));
+    return _bson_insert_doc(m, pos, mlib_as_str_view(key), bson_as_view(v));
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_mut v) {
-    return _bson_insert_doc(m, pos, bson_as_utf8(key), bson_as_view(v));
+    return _bson_insert_doc(m, pos, mlib_as_str_view(key), bson_as_view(v));
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_binary v) {
-    return _bson_insert_binary(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_binary(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_oid v) {
-    return _bson_insert_oid(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_oid(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bool v) {
-    return _bson_insert_bool(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_bool(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator
 _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_datetime v) {
-    return _bson_insert_datetime(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_datetime(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_regex v) {
-    return _bson_insert_regex(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_regex(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator
 _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_dbpointer v) {
-    return _bson_insert_dbpointer(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_dbpointer(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_code v) {
-    return _bson_insert_code(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_code(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_symbol v) {
-    return _bson_insert_symbol(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_symbol(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, int32_t v) {
-    return _bson_insert_int32(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_int32(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator
 _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_timestamp v) {
-    return _bson_insert_timestamp(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_timestamp(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator
 _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, bson_decimal128 v) {
-    return _bson_insert_decimal128(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_decimal128(m, pos, mlib_as_str_view(key), v);
 }
 inline bson_iterator _bson_insert_generic(bson_mut* m, bson_iterator pos, auto key, int64_t v) {
-    return _bson_insert_int64(m, pos, bson_as_utf8(key), v);
+    return _bson_insert_int64(m, pos, mlib_as_str_view(key), v);
 }
 inline auto _bson_insert_generic(bson_mut* m, auto key, auto value)
-    -> decltype(_bson_insert_generic(m, bson_end(*m), bson_as_utf8(key), value)) {
-    return _bson_insert_generic(m, bson_end(*m), bson_as_utf8(key), value);
+    -> decltype(_bson_insert_generic(m, bson_end(*m), mlib_as_str_view(key), value)) {
+    return _bson_insert_generic(m, bson_end(*m), mlib_as_str_view(key), value);
 }
 
 namespace bson {
@@ -1105,74 +1111,74 @@ public:
 private:
     ::bson_mut _mut;
 
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_view d) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_view d) noexcept {
         return ::bson_insert_doc(&_mut, pos, key, d);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, double d) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, double d) noexcept {
         return ::bson_insert_double(&_mut, pos, key, d);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, float d) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, float d) noexcept {
         return ::bson_insert_double(&_mut, pos, key, d);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::int32_t d) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, std::int32_t d) noexcept {
         return ::bson_insert_int32(&_mut, pos, key, d);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::int64_t d) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, std::int64_t d) noexcept {
         return ::bson_insert_int64(&_mut, pos, key, d);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, std::string_view d) noexcept {
-        return ::bson_insert_utf8(&_mut, pos, key, utf8_view::from_str(d));
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, std::string_view d) noexcept {
+        return ::bson_insert_utf8(&_mut, pos, key, mlib_str_view::from(d));
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, null_t) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, null_t) noexcept {
         return ::bson_insert_null(&_mut, pos, key);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, undefined_t) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, undefined_t) noexcept {
         return ::bson_insert_undefined(&_mut, pos, key);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, minkey_t) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, minkey_t) noexcept {
         return ::bson_insert_minkey(&_mut, pos, key);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, maxkey_t) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, maxkey_t) noexcept {
         return ::bson_insert_maxkey(&_mut, pos, key);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_code c) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_code c) noexcept {
         return ::bson_insert_code(&_mut, pos, key, c);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_symbol s) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_symbol s) noexcept {
         return ::bson_insert_symbol(&_mut, pos, key, s);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_datetime dt) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_datetime dt) noexcept {
         return ::bson_insert_datetime(&_mut, pos, key, dt);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_timestamp ts) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_timestamp ts) noexcept {
         return ::bson_insert_timestamp(&_mut, pos, key, ts);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_decimal128 dec) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_decimal128 dec) noexcept {
         return ::bson_insert_decimal128(&_mut, pos, key, dec);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_oid oid) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_oid oid) noexcept {
         return ::bson_insert_oid(&_mut, pos, key, oid);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_dbpointer dbp) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_dbpointer dbp) noexcept {
         return ::bson_insert_dbpointer(&_mut, pos, key, dbp);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_regex rx) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_regex rx) noexcept {
         return ::bson_insert_regex(&_mut, pos, key, rx);
     }
-    constexpr iterator _do_emplace(iterator pos, utf8_view key, bson_binary bin) noexcept {
+    constexpr iterator _do_emplace(iterator pos, mlib_str_view key, bson_binary bin) noexcept {
         return ::bson_insert_binary(&_mut, pos, key, bin);
     }
     // Constrain to exactly handle `bool` (no conversions)
     constexpr iterator
-    _do_emplace(iterator pos, utf8_view key, std::same_as<bool> auto b) noexcept {
+    _do_emplace(iterator pos, mlib_str_view key, std::same_as<bool> auto b) noexcept {
         return bson_insert_bool(&_mut, pos, key, b);
     }
 
     constexpr iterator _emplace(iterator pos, std::string_view key_, auto const& val)
-        requires requires(utf8_view key) { _do_emplace(pos, key, val); }
+        requires requires(mlib_str_view key) { _do_emplace(pos, key, val); }
     {
-        const utf8_view key = utf8_view::from_str(key_);
-        const iterator  ret = _do_emplace(pos, key, val);
+        const mlib_str_view key = mlib_str_view::from(key_);
+        const iterator      ret = _do_emplace(pos, key, val);
         if (ret == end()) {
             // This will only occur if there was an allocation failure
             throw std::bad_alloc();
@@ -1229,12 +1235,12 @@ struct mutator::inserted_subdocument {
 };
 
 mutator::inserted_subdocument mutator::insert_subdoc(iterator pos, std::string_view key) {
-    auto it = ::bson_insert_doc(&_mut, pos, utf8_view::from_str(key), BSON_VIEW_NULL);
+    auto it = ::bson_insert_doc(&_mut, pos, mlib_str_view::from(key), BSON_VIEW_NULL);
     return {it, child(it)};
 }
 
 mutator::inserted_subdocument mutator::insert_array(iterator pos, std::string_view key) {
-    auto it = ::bson_insert_array(&_mut, pos, utf8_view::from_str(key));
+    auto it = ::bson_insert_array(&_mut, pos, mlib_str_view::from(key));
     return {it, child(it)};
 }
 

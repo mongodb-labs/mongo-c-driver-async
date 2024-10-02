@@ -137,7 +137,7 @@ The following custom struct types are defined for decoding certain element value
 
   :header: :header-file:`bson/view.h`
 
-  .. member:: bson_utf8_view utf8
+  .. member:: mlib_str_view utf8
 
     The code string
 
@@ -145,7 +145,7 @@ The following custom struct types are defined for decoding certain element value
 
   :header: :header-file:`bson/view.h`
 
-  .. member:: bson_utf8_view utf8
+  .. member:: mlib_str_view utf8
 
     The symbol spelling string
 

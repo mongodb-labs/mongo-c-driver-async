@@ -5,6 +5,7 @@
 #include <bson/types.h>
 #include <bson/view.h>
 
+#include "mlib/str.h"
 #include <mlib/alloc.h>
 
 #include <stdio.h>
@@ -22,7 +23,7 @@ int main(int argc, char** argv) {
     bson_view              view       = BSON_VIEW_NULL;
     bson_doc               doc        = bson_new();
     bson_mut               mut        = BSON_MUT_v2_NULL;
-    bson_utf8_view         u8         = BSON_UTF8_NULL;
+    mlib_str_view          u8         = mlib_str_view_null;
     bson_iterator          iter       = BSON_ITERATOR_NULL;
     bson_code              code;
     bson_symbol            sym;
@@ -41,10 +42,6 @@ int main(int argc, char** argv) {
     bson_size(view);
     bson_ssize(view);
     bson_view_from_data(bytes, sizeof bytes, NULL);
-    bson_utf8_view_from_data("foo", 3);
-    bson_utf8_view_from_cstring("foo");
-    bson_utf8_view_autolen("foo", 3);
-    bson_utf8_view_chopnulls(u8);
     bson_stop(iter);
     bson_iterator_get_error(iter);
     bson_key(iter);
