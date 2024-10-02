@@ -20,7 +20,7 @@ static inline void* default_reallocate(void*,
                                        size_t* out_new_size) noexcept {
     if (req_size == 0) {
         std::free(ptr);
-        *out_new_size = 0;
+        (out_new_size && (*out_new_size = 0));
         return nullptr;
     } else if (alignment <= alignof(std::max_align_t)) {
         // Object is not over-aligned, so we can defer to realloc() which will
