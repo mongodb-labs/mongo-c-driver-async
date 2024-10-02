@@ -36,10 +36,11 @@ class InvItem(NamedTuple):
     "One or more names that are valid as link refs for the object"
     role: Literal[
         "cpp:class",
-        "cpp:function",
-        "cpp:type",
-        "cpp:member",
+        "cpp:concept",
         "cpp:enum",
+        "cpp:function",
+        "cpp:member",
+        "cpp:type",
         "c:macro",
         "std:term",
         "std:label",
@@ -80,6 +81,8 @@ CPPREF_INVENTORY: list[InvItem] = [
     InvItem(["std__size_t"], "cpp:type", "cpp/types/size_t", "std::size_t"),
     InvItem(["ptrdiff_t"], "cpp:type", "c/types/ptrdiff_t"),
     InvItem(["std__ptrdiff_t"], "cpp:type", "cpp/types/ptrdiff_t", "std::ptrdiff_t"),
+    InvItem(["std__byte"], "cpp:type", "cpp/types/byte", "std::byte"),
+    InvItem(["std__forward_iterator"], "cpp:concept", "cpp/iterator/forward_iterator", "std::forward_iterator"),
     InvItem(["timespec"], "cpp:class", "c/chrono/timespec"),
     *itertools.chain.from_iterable(
         (
@@ -193,8 +196,11 @@ rst_prolog = """
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
+.. |D| replace:: :math:`D`
+.. |D'| replace:: :math:`D'`
 .. |E| replace:: :math:`E`
 .. |H| replace:: :math:`H`
+.. |I| replace:: :math:`I`
 .. |Q| replace:: :math:`Q`
 .. |R| replace:: :math:`R`
 .. |S| replace:: :math:`S`
@@ -205,6 +211,8 @@ rst_prolog = """
 .. |O'| replace:: :math:`O'`
 .. |S_ret| replace:: :math:`S_{\\tt ret}`
 .. |x| replace:: :math:`x`
+
+.. |macro-impl| replace:: This is implemented as a function-like preprocessor macro
 
 """
 

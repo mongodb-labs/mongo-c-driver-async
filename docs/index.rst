@@ -10,9 +10,10 @@ amongoc documentation
    :maxdepth: 2
    :caption: Contents:
 
-   explain/index
+   learn/index
    how-to/index
    ref/index
+   explain/index
 
 .. toctree::
    :maxdepth: 1

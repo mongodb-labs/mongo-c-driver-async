@@ -153,7 +153,7 @@ object that was owned by the box is now owned by the storage destination.
 .. literalinclude:: connect.example.c
   :lineno-match:
   :start-at: Create a "hello" command
-  :end-at: bson_mut_delete
+  :end-at: bson_delete
 
 We build a MongoDB command ``{ hello: "1", $db: "test" }`` and prepare to send
 it as a command with `amongoc_conn_command`. We can delete the prepared BSON
