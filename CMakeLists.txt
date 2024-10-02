@@ -89,6 +89,7 @@ file(
 file(
     GLOB_RECURSE test_sources
     CONFIGURE_DEPENDS
+    src/*.test.c
     src/*.test.cpp
 )
 # Remove the test sources from the list of library sources:
@@ -125,6 +126,9 @@ target_link_libraries(amongoc PUBLIC
     Threads::Threads
     fmt::fmt
     )
+
+add_executable(bson-use-test tests/use-bson.test.c)
+target_link_libraries(bson-use-test PRIVATE amongoc::amongoc)
 
 if(BUILD_TESTING)
     # Add Catch integrations
