@@ -33,10 +33,28 @@ TEST_CASE("bson/allocator propagation") {
  */
 TEST_CASE("bson/doc/copy empty") {
     ::bson_doc empty = bson_new();
-    ::bson_doc dup   = bson_copy(empty);
+    ::bson_doc dup   = bson_new(empty);
     (void)dup;
     // Do not delete the objects. They are guaranteed to not allocate, so there
     // is no memory to leak. If LeakSanitizer fails this test, that's a bug.
+}
+
+TEST_CASE("bson/doc/copy generic") {
+    auto doc  = ::bson_new();
+    auto view = ::bson_as_view(doc);
+    auto mut  = ::bson_mutate(&doc);
+    ::bson_new();
+    ::bson_new(5);
+    ::bson_new(5, mlib_default_allocator);
+    ::bson_new(mlib_default_allocator);
+    ::bson_new(doc);
+    ::bson_new(view);
+    ::bson_new(mut);
+    ::bson_new(view, mlib_default_allocator);
+    ::bson_new(doc, mlib_default_allocator);
+    ::bson_new(mut, mlib_default_allocator);
+    // All of the above APIs are guaranteed to not allocate because the docs are
+    // empty.
 }
 
 TEST_CASE("bson/build/insert") {

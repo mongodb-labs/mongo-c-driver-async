@@ -139,14 +139,98 @@ mlib_constexpr int32_t bson_doc_reserve(bson_doc* d, uint32_t size) mlib_noexcep
 }
 
 /**
- * @brief Create a new bson_doc with an allocator and reserved size
+ * @brief A BSON document mutator
  *
- * @param allocator A custom allocator, or NULL for the default allocator
- * @param reserve The size to reserve within the new document
- * @return bson_doc A new mutator. Must be deleted with bson_mut_delete()
+ * This type is trivial.
  */
-inline bson_doc bson_new_ex(mlib_allocator allocator, uint32_t reserve) mlib_noexcept {
-    // Create the object:
+typedef struct bson_mut {
+    /**
+     * @brief Points to the beginning of the document data.
+     *
+     * @internal
+     *
+     * In CHILD MODE, this is a non-owning pointer. It should not be freed or
+     * reallocated.
+     *
+     * In ROOT MODE, this is an owning pointer and can be freed or reallocated.
+     */
+    bson_byte* _bson_document_data;
+    union {
+        /**
+         * @internal
+         * @brief In CHILD MODE, this points to the bson_mut that manages the parent document
+         */
+        struct bson_mut* _parent_mut;
+        /**
+         * @internal
+         * @brief In ROOT MODE, this is the allocator for the document data.
+         */
+        struct bson_doc* _doc;
+    };
+    /**
+     * @internal
+     * @brief The offset of this mutator within the parent document (CHILD MODE).
+     * If zero, then this mutator is manipulating the parent document directly (ROOT MODE)
+     *
+     * In CHILD MODE, this is the the byte-offset of the document /element/
+     * within the parent document. This is used to quickly recover a
+     * bson_iterator that refers to the document element within the
+     * parent, since iterators point to the element data. This is also necessary
+     * to quickly compute the element key length without a call to strlen(),
+     * since we can compute the key length based on the difference between the
+     * element's address and the address of the document data within the element.
+     */
+    uint32_t _offset_within_parent_data;
+
+#if mlib_is_cxx()
+    friend constexpr ::bson_iterator begin(const bson_mut& m) noexcept { return bson_begin(m); }
+    friend constexpr ::bson_iterator end(const bson_mut& m) noexcept { return bson_end(m); }
+#endif  // C++
+} bson_mut;
+
+#define BSON_MUT_v2_NULL (mlib_init(bson_mut){NULL, {NULL}, 0})
+
+/**
+ * @brief Create a new BSON document or copy an existing one.
+ *
+ * Callable with several signatures:
+ *
+ * - `bson_new()`
+ * - `bson_new(uint32_t reserve)`
+ * - `bson_new(uint32_t reserve, mlib_allocator)`
+ * - `bson_new(mlib_allocator)`
+ * - `bson_new(bson_doc)`
+ * - `bson_new(bson-viewable)`
+ * - `bson_new(bson-viewable, mlib_allocator)`
+ */
+#define bson_new(...) _bsonNew(__VA_ARGS__)
+#if mlib_is_cxx()
+#define _bsonNew(...) _bson_new_generic(__VA_ARGS__)
+#else
+#define _bsonNew(...) MLIB_PASTE(_bsonNewArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#endif
+#define _bsonNewArgc_0() _bson_new(5, mlib_default_allocator)
+#define _bsonNewArgc_1(X)                                                                          \
+    _Generic(X,                                                                                    \
+        mlib_allocator: _bson_new_with_alloc,                                                      \
+        bson_doc: _bson_copy_doc,                                                                  \
+        bson_view: _bson_copy_view_with_default_allocator,                                         \
+        struct bson_mut: _bson_copy_mut_with_default_allocator,                                    \
+        default: _bson_new_reserve_with_default_alloc)(X)
+#define _bsonNewArgc_2(ReserveOrDoc, Alloc)                                                        \
+    _Generic((ReserveOrDoc),                                                                       \
+        bson_doc: _bson_copy_doc_with_allocator,                                                   \
+        bson_view: _bson_copy_view_with_allocator,                                                 \
+        struct bson_mut: _bson_copy_mut_with_allocator,                                            \
+        default: _bson_new)((ReserveOrDoc), (Alloc))
+
+/**
+ * @internal
+ * @brief Base implementation of creating a new document with a reservation
+ *
+ * [[3]]
+ */
+inline bson_doc _bson_new(uint32_t reserve, mlib_allocator allocator) mlib_noexcept {
     bson_doc ret;
     ret._allocator = allocator;
     // We're starting out empty. We can use the global empty document for now.
@@ -166,13 +250,93 @@ inline bson_doc bson_new_ex(mlib_allocator allocator, uint32_t reserve) mlib_noe
 }
 
 /**
- * @brief Create a new empty document for later manipulation
+ * @internal
+ * @brief Base implementation of copying an existing document with an allocator
  *
- * @note The return value must later be deleted using bson_doc_delete
- *
- * @note Not `constexpr` because the default allocator is not `constexpr`
+ * [[7]]
  */
-inline bson_doc bson_new(void) mlib_noexcept { return bson_new_ex(mlib_default_allocator, 5); }
+inline bson_doc _bson_copy_view_with_allocator(bson_view      other,
+                                               mlib_allocator alloc) mlib_noexcept {
+    bson_doc ret = _bson_new(bson_size(other), alloc);
+    // If we copied an empty doc, then we did not allocate memory, and we point to
+    // the global empty instance. We should not attempt to write anything there.
+    // It is already statically initialized.
+    if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
+        _bson_memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
+    }
+    return ret;
+}
+inline bson_doc _bson_copy_mut_with_allocator(struct bson_mut other,
+                                              mlib_allocator  alloc) mlib_noexcept {
+    bson_doc ret = _bson_new(bson_size(other), alloc);
+    // If we copied an empty doc, then we did not allocate memory, and we point to
+    // the global empty instance. We should not attempt to write anything there.
+    // It is already statically initialized.
+    if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
+        _bson_memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
+    }
+    return ret;
+}
+inline bson_doc _bson_copy_doc_with_allocator(bson_doc other, mlib_allocator alloc) mlib_noexcept {
+    return _bson_copy_view_with_allocator(bson_as_view(other), alloc);
+}
+
+// [[2]]
+inline bson_doc _bson_new_reserve_with_default_alloc(uint32_t n) mlib_noexcept {
+    return _bson_new(n, mlib_default_allocator);
+}
+// [[4]]
+inline bson_doc _bson_new_with_alloc(mlib_allocator a) mlib_noexcept { return _bson_new(5, a); }
+
+// [[6]]
+inline bson_doc _bson_copy_view_with_default_allocator(bson_view view) mlib_noexcept {
+    return _bson_copy_view_with_allocator(view, mlib_default_allocator);
+}
+
+inline bson_doc _bson_copy_mut_with_default_allocator(struct bson_mut other) mlib_noexcept {
+    return _bson_copy_mut_with_allocator(other, mlib_default_allocator);
+}
+
+// [[6]]
+inline bson_doc _bson_copy_doc(bson_doc other) mlib_noexcept {
+    return _bson_copy_view_with_allocator(bson_as_view(other), bson_doc_get_allocator(other));
+}
+
+mlib_extern_c_end();
+
+#if mlib_is_cxx()
+// Base reserve impl
+inline bson_doc _bson_new_generic(std::uint32_t reserve, ::mlib_allocator alloc) noexcept {
+    return ::_bson_new(reserve, alloc);
+}
+// Base copy impl
+inline bson_doc _bson_new_generic(bson_view doc, ::mlib_allocator alloc) noexcept {
+    return ::_bson_copy_view_with_allocator(doc, alloc);
+}
+inline bson_doc _bson_new_generic(bson_doc doc, ::mlib_allocator alloc) noexcept {
+    return ::_bson_copy_view_with_allocator(bson_as_view(doc), alloc);
+}
+inline bson_doc _bson_new_generic(struct bson_mut doc, ::mlib_allocator alloc) noexcept {
+    return ::_bson_copy_view_with_allocator(bson_as_view(doc), alloc);
+}
+
+inline bson_doc _bson_new_generic(::mlib_allocator alloc) noexcept { return ::bson_new(5, alloc); }
+inline bson_doc _bson_new_generic(std::uint32_t reserve) noexcept {
+    return ::bson_new(reserve, ::mlib_default_allocator);
+}
+inline bson_doc _bson_new_generic() noexcept { return ::bson_new(5, ::mlib_default_allocator); }
+inline bson_doc _bson_new_generic(bson_doc doc) noexcept {
+    return ::bson_new(bson_as_view(doc), bson_doc_get_allocator(doc));
+}
+inline bson_doc _bson_new_generic(bson_view doc) noexcept {
+    return ::bson_new(bson_as_view(doc), ::mlib_default_allocator);
+}
+inline bson_doc _bson_new_generic(bson_mut doc) noexcept {
+    return ::bson_new(bson_as_view(doc), ::mlib_default_allocator);
+}
+#endif  // C++
+
+mlib_extern_c_begin();
 
 /**
  * @brief Free the resources of the given BSON document
@@ -184,33 +348,6 @@ inline void bson_delete(bson_doc d) mlib_noexcept {
         return;
     }
     mlib_reallocate(d._allocator, _bson_doc_buffer_ptr(d), 0, 1, bson_doc_capacity(d) + 4, NULL);
-}
-
-/**
- * @brief Copy a BSON document
- *
- * If called with one argument, it must be a `bson_doc` to be copied.
- *
- * If called with two arguments, the first may be any bson-viewbale object, and
- * the second argument must be an allocator for the copy
- */
-#define bson_copy(...) MLIB_PASTE(_bsonCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _bsonCopyArgc_1(Doc) _bson_copy_doc(Doc)
-#define _bsonCopyArgc_2(Doc, Alloc) _bson_copy_with_allocator(bson_as_view((Doc)), (Alloc))
-
-inline bson_doc _bson_copy_with_allocator(bson_view view, mlib_allocator alloc) mlib_noexcept {
-    bson_doc ret = bson_new_ex(alloc, bson_size(view));
-    // If we copied an empty doc, then we did not allocate memory, and we point to
-    // the global empty instance. We should not attempt to write anything there.
-    // It is already statically initialized.
-    if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
-        _bson_memcpy(bson_mut_data(ret), bson_data(view), bson_size(view));
-    }
-    return ret;
-}
-
-inline bson_doc _bson_copy_doc(bson_doc other) mlib_noexcept {
-    return bson_copy(other, bson_doc_get_allocator(other));
 }
 
 mlib_extern_c_end();
@@ -254,7 +391,7 @@ public:
      * the given capacity in the new document.
      */
     constexpr explicit document(allocator_type alloc, std::size_t reserve_size) {
-        _doc = bson_new_ex(alloc.c_allocator(), static_cast<std::uint32_t>(reserve_size));
+        _doc = bson_new(static_cast<std::uint32_t>(reserve_size), alloc.c_allocator());
         if (data() == nullptr) {
             throw std::bad_alloc();
         }
@@ -275,18 +412,18 @@ public:
      * @param alloc An allocator for the operation
      */
     constexpr explicit document(bson_view v, allocator_type alloc)
-        : _doc(bson_copy(v, alloc.c_allocator())) {
+        : _doc(bson_new(v, alloc.c_allocator())) {
         if (data() == nullptr)
             throw std::bad_alloc();
     }
 
-    constexpr document(document const& other) { _doc = bson_copy(other._doc); }
+    constexpr document(document const& other) { _doc = bson_new(other._doc); }
     constexpr document(document&& other) noexcept
         : _doc(((document&&)other).release()) {}
 
     constexpr document& operator=(const document& other) {
         _del();
-        _doc = bson_copy(other._doc);
+        _doc = bson_new(other._doc);
         if (data() == nullptr) {
             throw std::bad_alloc();
         }

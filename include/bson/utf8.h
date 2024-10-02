@@ -60,7 +60,10 @@ mlib_constexpr bson_utf8_view _bson_already_utf8_view(bson_utf8_view u8) mlib_no
 #define _bsonAsUTF8View(S) ::bson_utf8_view::from_str(S)
 #else
 #define _bsonAsUTF8View(S)                                                                         \
-    _Generic((S), bson_utf8_view: _bson_already_utf8_view, char*: bson_utf8_view_from_cstring)((S))
+    _Generic((S),                                                                                  \
+        bson_utf8_view: _bson_already_utf8_view,                                                   \
+        char*: bson_utf8_view_from_cstring,                                                        \
+        const char*: bson_utf8_view_from_cstring)((S))
 #endif
 
 mlib_extern_c_begin();

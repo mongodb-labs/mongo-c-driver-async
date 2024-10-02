@@ -1,5 +1,7 @@
 #include <amongoc/amongoc.h>
 
+#include <bson/mut.h>
+
 /**
  * @brief Shared state for the application. This is passed through the app as pointer stored
  * in a box
@@ -23,7 +25,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent);
  */
 amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
     (void)state_ptr;
-    bson_view resp = bson_view_of(amongoc_box_cast(bson_mut)(resp_data));
+    bson_view resp = bson_as_view(amongoc_box_cast(bson_doc)(resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
     print_bson(stdout, resp, "");
@@ -46,18 +48,19 @@ amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, a
     amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->client, cl_box);
 
     // Create a "hello" command
-    bson_mut doc = bson_mut_new();
-    bson_insert_utf8(&doc,
-                     bson_begin(doc),
+    bson_doc doc = bson_new();
+    bson_mut mut = bson_mutate(&doc);
+    bson_insert_utf8(&mut,
+                     bson_begin(mut),
                      bson_utf8_view_from_cstring("hello"),
                      bson_utf8_view_from_cstring("1"));
-    bson_insert_utf8(&doc,
-                     bson_end(doc),
+    bson_insert_utf8(&mut,
+                     bson_end(mut),
                      bson_utf8_view_from_cstring("$db"),
                      bson_utf8_view_from_cstring("test"));
     amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*)(state_ptr)->client,
-                                                bson_view_of(doc));
-    bson_mut_delete(doc);
+                                                bson_as_view(mut));
+    bson_delete(doc);
 
     em = amongoc_then(em,
                       amongoc_async_forward_errors,
@@ -124,21 +127,20 @@ static char* astrcat(const char* a, const char* b) {
 }
 
 static void print_bson(FILE* into, bson_view doc, const char* indent) {
-    bson_iterator it = bson_begin(doc);
     fprintf(into, "{\n");
-    for (; !bson_iterator_done(it); it = bson_next(it)) {
-        bson_utf8_view str = bson_iterator_key(it);
+    bson_foreach(it, doc) {
+        bson_utf8_view str = bson_key(it);
         fprintf(into, "%s  \"%s\": ", indent, str.data);
         switch (bson_iterator_type(it)) {
-        case BSON_TYPE_EOD:
-        case BSON_TYPE_DOUBLE:
+        case bson_type_eod:
+        case bson_type_double:
             fprintf(into, "%f,\n", bson_iterator_double(it));
             break;
-        case BSON_TYPE_UTF8:
+        case bson_type_utf8:
             fprintf(into, "\"%s\",\n", bson_iterator_utf8(it).data);
             break;
-        case BSON_TYPE_DOCUMENT:
-        case BSON_TYPE_ARRAY: {
+        case bson_type_document:
+        case bson_type_array: {
             char*     i2     = astrcat(indent, "  ");
             bson_view subdoc = bson_iterator_document(it, NULL);
             print_bson(into, subdoc, "  ");
@@ -146,33 +148,33 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
             fprintf(into, ",\n");
             break;
         }
-        case BSON_TYPE_UNDEFINED:
+        case bson_type_undefined:
             fprintf(into, "[undefined],\n");
             break;
-        case BSON_TYPE_BOOL:
+        case bson_type_bool:
             fprintf(into, bson_iterator_bool(it) ? "true,\n" : "false,\n");
             break;
-        case BSON_TYPE_NULL:
+        case bson_type_null:
             fprintf(into, "null,\n");
             break;
-        case BSON_TYPE_INT32:
+        case bson_type_int32:
             fprintf(into, "%d,\n", bson_iterator_int32(it));
             break;
-        case BSON_TYPE_INT64:
+        case bson_type_int64:
             fprintf(into, "%ld,\n", bson_iterator_int64(it));
             break;
-        case BSON_TYPE_TIMESTAMP:
-        case BSON_TYPE_DECIMAL128:
-        case BSON_TYPE_MAXKEY:
-        case BSON_TYPE_MINKEY:
-        case BSON_TYPE_OID:
-        case BSON_TYPE_BINARY:
-        case BSON_TYPE_DATE_TIME:
-        case BSON_TYPE_REGEX:
-        case BSON_TYPE_DBPOINTER:
-        case BSON_TYPE_CODE:
-        case BSON_TYPE_SYMBOL:
-        case BSON_TYPE_CODEWSCOPE:
+        case bson_type_timestamp:
+        case bson_type_decimal128:
+        case bson_type_maxkey:
+        case bson_type_minkey:
+        case bson_type_oid:
+        case bson_type_binary:
+        case bson_type_date_time:
+        case bson_type_regex:
+        case bson_type_dbpointer:
+        case bson_type_code:
+        case bson_type_symbol:
+        case bson_type_codewscope:
             fprintf(into, "[[printing unimplemented for this type]],\n");
             break;
         }
