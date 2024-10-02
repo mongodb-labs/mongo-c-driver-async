@@ -116,15 +116,17 @@ target_sources(amongoc
 target_compile_features(amongoc PUBLIC cxx_std_23)
 
 # Link deps and platform libs.
-target_link_libraries(amongoc PUBLIC
-    neo::fun
-    asio::asio
-    fmt::fmt
-    amongoc::detail::c_platform
-    Boost::url
-    Boost::container
-    Threads::Threads
-    fmt::fmt
+target_link_libraries(amongoc
+    PUBLIC
+        asio::asio
+        fmt::fmt
+        amongoc::detail::c_platform
+        Boost::url
+        Boost::container
+        Threads::Threads
+        fmt::fmt
+    PRIVATE
+        $<BUILD_INTERFACE:neo::fun>
     )
 
 add_executable(bson-use-test tests/use-bson.test.c)
