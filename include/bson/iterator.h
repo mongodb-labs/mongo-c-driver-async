@@ -144,10 +144,6 @@ mlib_constexpr bson_byte* _bson_data_as_mut(bson_byte* p) mlib_noexcept { return
 /**
  * @brief Obtain the byte-size of the BSON document referred to by the given
  * bson_view.
- *
- * @param x A BSON object to inspect
- * @return uint32_t The size (in bytes) of the viewed document, or zero if `v`
- * is null
  */
 #define bson_size(...) _bson_byte_size(bson_data((__VA_ARGS__)))
 mlib_constexpr uint32_t _bson_byte_size(const bson_byte* p) mlib_noexcept {
@@ -599,24 +595,6 @@ mlib_constexpr bson_iterator _bson_iterator_at(const bson_byte* const data,
 
 /**
  * @brief Obtain a bson_iterator referring to the first position within `v`.
- *
- * @param v A non-null bson_view
- * @return bson_iterator A new iterator `It` referring to the first valid
- * position of `v`, or an errant `It` if there is no valid first element.
- *
- * If `v` is empty, the returned iterator `It` will be a valid past-the-end
- * iterator, @ref bson_iterator_done() will return `true` for `It`, and `It`
- * will be equivalent to `bson_end(v)`.
- *
- * Otherwise, if the first element within `v` is well-formed, the returned `It`
- * will refer to that element.
- *
- * Otherwise, the returned `It` will indicate an error that can be obtained with
- * @ref bson_iterator_get_error, and @ref bson_iterator_done() will return
- * `true`.
- *
- * The returned iterator (as well as any iterator derived from it) is valid for
- * as long as `v` would be valid.
  */
 #define bson_begin(...) _bson_begin(bson_data(__VA_ARGS__))
 mlib_constexpr bson_iterator _bson_begin(const bson_byte* data) mlib_noexcept {
@@ -630,13 +608,6 @@ mlib_constexpr bson_iterator _bson_begin(const bson_byte* data) mlib_noexcept {
 
 /**
  * @brief Obtain a past-the-end "done" iterator for the given document `v`
- *
- * @param v A non-null BSON object
- * @return bson_iterator A new iterator referring to the end of `v`.
- *
- * The returned iterator does not refer to any element of the document. The
- * returned iterator will be considered "done" by @ref bson_iterator_done(). The
- * returned iterator is valid for as long as `v` would be valid.
  */
 #define bson_end(...) _bson_end(bson_data(__VA_ARGS__))
 mlib_constexpr bson_iterator _bson_end(const bson_byte* v) mlib_noexcept {
@@ -648,15 +619,6 @@ mlib_constexpr bson_iterator _bson_end(const bson_byte* v) mlib_noexcept {
 /**
  * @brief Determine whether two non-error iterators are equivalent (i.e. refer
  * to the same position in the same document)
- *
- * @param left A valid iterator
- * @param right A valid iterator
- * @return true If the two iterators refer to the same position, including the
- * past-the-end iterator as a valid position.
- * @return false Otherwise.
- *
- * At least one of the two iterators must not indicate an error. If both
- * iterators represent an error, the result is unspecified.
  */
 mlib_constexpr bool bson_iterator_eq(bson_iterator left, bson_iterator right) mlib_noexcept {
     return left._ptr == right._ptr;
@@ -665,12 +627,6 @@ mlib_constexpr bool bson_iterator_eq(bson_iterator left, bson_iterator right) ml
 /**
  * @brief Determine whether the given iterator is at the end OR has encountered
  * an error.
- *
- * @param it A valid iterator derived from a bson_view or other valid iterator.
- * @retval true If advancing `it` with @ref bson_next would be illegal.
- * @retval false If `bson_next(it)` would provide a well-defined value.
- *
- * To determine whether there is an error, use @ref bson_iterator_get_error
  */
 mlib_constexpr bool bson_stop(bson_iterator it) mlib_noexcept { return it._rlen <= 1; }
 
@@ -682,12 +638,6 @@ mlib_constexpr const bson_byte* _bson_iterator_value_ptr(bson_iterator iter) mli
 
 /**
  * @brief Obtain a pointer to the beginning of the element data in memory
- *
- * @param it An iterator pointing to an element, or pointing to the end of the
- * document
- * @return const bson_byte* A pointer to the beginning of the element data if
- * `it` is not an end iterator. Otherwise, contains a pointer to the null
- * terminator at the end of the document.
  */
 mlib_constexpr const bson_byte* bson_iterator_data(const bson_iterator it) mlib_noexcept {
     return it._ptr;
@@ -734,22 +684,6 @@ mlib_constexpr uint32_t bson_iterator_data_size(const bson_iterator it) mlib_noe
  * @param it A valid iterator to a bson `V` element. Must not be a
  * stopped/errored iterator (i.e. @ref bson_iterator_done must return `false`)
  * @return bson_iterator A new iterator `Next`.
- *
- * If `it` referred to the final element in `V`, then the returned `Next` will
- * refer to the past-the-end position of `V`, and @ref bson_iterator_done(Next)
- * will return `true`.
- *
- * Otherwise, if the next element in `V` is in-bounds, then `Next` will refer to
- * that element (see below).
- *
- * Otherwise, `Next` will indicate an error that can be obtained with @ref
- * bson_iterator_error, and @ref bson_iterator_done will return `true`.
- *
- * @note This function will do basic validation on the next element to ensure
- * that it is "in-bounds", i.e. does not overrun the byte array referred to by
- * `V`. The pointed-to element may require additional validation based on its
- * type. The "in-bounds" check is here to ensure that a subsequent call to
- * `bson_next` or any iterator-dereferrencing functions will not overrun `V`.
  */
 mlib_constexpr bson_iterator bson_next(const bson_iterator it) mlib_noexcept {
     const int32_t          skip   = (int32_t)bson_iterator_data_size(it);
@@ -761,10 +695,6 @@ mlib_constexpr bson_iterator bson_next(const bson_iterator it) mlib_noexcept {
 
 /**
  * @brief Obtain the error associated with the given iterator.
- *
- * @param it An iterator that may or may not have encountered an error
- * @return enum bson_iterator_error_cond The error that occurred while creating
- * `it`. Returns BSON_ITER_NO_ERROR if there was no error.
  */
 mlib_constexpr enum bson_iter_errc bson_iterator_get_error(bson_iterator it) mlib_noexcept {
     return it._rlen < 0 ? (enum bson_iter_errc) - it._rlen : bson_iter_errc_okay;
@@ -773,11 +703,6 @@ mlib_constexpr enum bson_iter_errc bson_iterator_get_error(bson_iterator it) mli
 /**
  * @brief Obtain a bson_utf8_view referring to the key string of the BSON
  * document element referred-to by the given iterator.
- *
- * @param it The iterator under inspection.
- * @return const char* A pointer to the beginning of a null-terminated string
- *
- * @pre bson_iterator_done(it) == false
  */
 inline bson_utf8_view bson_key(bson_iterator it) mlib_noexcept {
     BV_ASSERT(it._rlen >= it._keylen + 1);
@@ -858,12 +783,6 @@ mlib_constexpr bool _bson_key_eq(const bson_iterator it, bson_utf8_view key) mli
 
 /**
  * @brief Find the first element within a document that has the given key
- *
- * @param v A document to inspect
- * @param key The key to search for
- * @return bson_iterator An iterator pointing to the found element, OR the
- * done-iterator if no element was found, OR an errant iterator if a parsing
- * error occured.
  */
 #define bson_find(Doc, Key) _bson_find(bson_data((Doc)), bson_as_utf8((Key)))
 mlib_constexpr bson_iterator _bson_find(const bson_byte* v, bson_utf8_view key) mlib_noexcept {
@@ -912,10 +831,6 @@ mlib_constexpr double bson_iterator_double(bson_iterator it) mlib_noexcept {
  * @brief Obtain the range of UTF-8 encoded bytes referred-to by the given
  * iterator
  *
- * @param it A non-error iterator
- * @return bson_utf8_view If the element is of type UTF-8, returns a view to the
- * UTF-8 string it contains, otherwise returns a null view.
- *
  * @note The null-terminated `char` array might not be a valid UTF-8 code unit
  * sequence. Extra validation is required.
  * @note The `char` array may contain null characters.
@@ -963,13 +878,6 @@ mlib_constexpr bson_oid bson_iterator_oid(bson_iterator it) mlib_noexcept {
 
 /**
  * @brief Obtain the boolean value of the referred-to element.
- *
- * If the element is not a boolean value, returns false.
- *
- * @param it A non-error iterator
- * @retval true If the element contains a true value
- * @retval false IF the element contains a false value, or the element is not a
- * bool value.
  */
 mlib_constexpr bool bson_iterator_bool(bson_iterator it) mlib_noexcept {
     if (bson_iterator_type(it) != bson_type_bool) {
