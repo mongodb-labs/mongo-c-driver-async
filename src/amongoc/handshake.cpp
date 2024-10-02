@@ -1,10 +1,11 @@
 #include "./handshake.hpp"
 
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/make.hpp>
-#include <amongoc/bson/parse.hpp>
-#include <amongoc/bson/view.h>
 #include <amongoc/wire/error.hpp>
+
+#include <bson/doc.h>
+#include <bson/make.hpp>
+#include <bson/parse.hpp>
+#include <bson/view.h>
 
 #include <cstddef>
 #include <optional>

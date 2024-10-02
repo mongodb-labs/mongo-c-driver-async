@@ -1,12 +1,13 @@
 #include "./connection_pool.hpp"
 
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/view.h>
 #include <amongoc/handshake.hpp>
 #include <amongoc/loop.h>
 #include <amongoc/loop.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/client.hpp>
+
+#include <bson/doc.h>
+#include <bson/view.h>
 
 #include <mlib/config.h>
 

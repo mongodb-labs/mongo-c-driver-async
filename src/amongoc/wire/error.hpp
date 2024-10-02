@@ -2,7 +2,7 @@
 
 #include "./message.hpp"
 
-#include <amongoc/bson/build.h>
+#include <bson/doc.h>
 
 #include <string_view>
 

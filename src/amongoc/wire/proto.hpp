@@ -5,13 +5,14 @@
 #include "./stream.hpp"
 
 #include <amongoc/asio/as_sender.hpp>
-#include <amongoc/bson/build.h>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
 #include <amongoc/vector.hpp>
 #include <amongoc/wire/buffer.hpp>
 #include <amongoc/wire/message.hpp>
+
+#include <bson/doc.h>
 
 #include <mlib/alloc.h>
 

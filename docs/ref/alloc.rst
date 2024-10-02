@@ -169,7 +169,7 @@ Functions
 Constants
 *********
 
-.. cpp:var:: const mlib_allocator amongoc_default_allocator
+.. cpp:var:: const mlib_allocator mlib_default_allocator
 
   A reasonable default `mlib_allocator`.
 
@@ -179,7 +179,7 @@ Constants
   :cpp:`realloc()` and :cpp:`free()` functions.
 
 
-.. cpp:var:: const mlib_allocator amongoc_terminating_allocator
+.. cpp:var:: const mlib_allocator mlib_terminating_allocator
 
   A special `mlib_allocator` that terminates the program if there is any
   attempt to allocate memory through it.
@@ -357,8 +357,8 @@ Functions
 Constants
 *********
 
-.. var:: const allocator<> terminating_allocator{::amongoc_terminating_allocator}
+.. var:: const allocator<> terminating_allocator{::mlib_terminating_allocator}
 
-  A C++ version of the `amongoc_terminating_allocator`
+  A C++ version of the `mlib_terminating_allocator`
 
   :header: |this-header|

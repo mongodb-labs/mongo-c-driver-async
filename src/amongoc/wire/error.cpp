@@ -1,8 +1,9 @@
-#include <amongoc/bson/build.h>
 #include <amongoc/status.h>
 #include <amongoc/wire/error.hpp>
 #include <amongoc/wire/message.hpp>
 #include <amongoc/wire/proto.hpp>
+
+#include <bson/doc.h>
 
 #include <system_error>
 

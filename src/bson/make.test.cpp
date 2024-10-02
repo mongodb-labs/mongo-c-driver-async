@@ -1,7 +1,7 @@
 #include "./build.test.hpp"
 
-#include <amongoc/bson/make.hpp>
-#include <amongoc/bson/types.h>
+#include <bson/make.hpp>
+#include <bson/types.h>
 
 #include <mlib/alloc.h>
 
@@ -20,7 +20,7 @@ TEST_CASE("bson/make/simple-string") {
     // clang-format off
     CHECK_BSON_BYTES_EQ(d, chars{
         18, 0, 0, 0,
-        BSON_TYPE_UTF8, 'f', 'o', 'o', '\0',
+        bson_type_utf8, 'f', 'o', 'o', '\0',
         4, 0, 0, 0, 'b', 'a', 'r', '\0',
         0,
     });
@@ -33,7 +33,7 @@ TEST_CASE("bson/make/optional-pair") {
     // clang-format off
     CHECK_BSON_BYTES_EQ(d, chars{
         18, 0, 0, 0,
-        BSON_TYPE_UTF8, 'f', 'o', 'o', '\0',
+        bson_type_utf8, 'f', 'o', 'o', '\0',
         4, 0, 0, 0, 'b', 'a', 'r', '\0',
         0,
     });

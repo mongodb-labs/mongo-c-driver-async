@@ -1,5 +1,3 @@
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/make.hpp>
 #include <amongoc/connection_pool.hpp>
 #include <amongoc/default_loop.h>
 #include <amongoc/handshake.hpp>
@@ -8,6 +6,9 @@
 #include <amongoc/nano/tie.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/client.hpp>
+
+#include <bson/doc.h>
+#include <bson/make.hpp>
 
 #include <mlib/alloc.h>
 

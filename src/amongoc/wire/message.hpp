@@ -1,11 +1,12 @@
 #pragma once
 
 #include <amongoc/alloc.h>
-#include <amongoc/bson/build.h>
-#include <amongoc/bson/view.h>
 #include <amongoc/vector.hpp>
 #include <amongoc/wire/buffer.hpp>
 #include <amongoc/wire/integer.hpp>
+
+#include <bson/doc.h>
+#include <bson/view.h>
 
 #include <asio/buffer.hpp>
 

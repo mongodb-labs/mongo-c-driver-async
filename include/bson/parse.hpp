@@ -7,8 +7,8 @@
  */
 #pragma once
 
-#include <amongoc/bson/types.h>
-#include <amongoc/bson/view.h>
+#include <bson/types.h>
+#include <bson/view.h>
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>

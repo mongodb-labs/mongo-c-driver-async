@@ -8,6 +8,14 @@
   color: var(--pst-color-muted);
 }
 
+.cpp-expr.sig-inline {
+  background-color: var(--pst-color-surface);
+  border: 1px solid var(--pst-color-border);
+  border-radius: .25rem;
+  padding: .1rem .25rem;
+  white-space: nowrap;
+}
+
 dl[class].cpp {
   /* Book theme adds a massive margin below most API items. Shrink it down a bit */
   margin-bottom: 2rem;

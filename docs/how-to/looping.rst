@@ -37,7 +37,7 @@ application state for the program:
 
 .. literalinclude:: looping.example.c
   :start-at: default loop
-  :end-at: app_state.b
+  :end-at: app_state =
   :lineno-match:
 
 In the sample program, the looping operation is initiated here:

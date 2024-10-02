@@ -2,7 +2,6 @@
 #include "./client.impl.hpp"
 
 #include <amongoc/box.h>
-#include <amongoc/bson/build.h>
 #include <amongoc/client.h>
 #include <amongoc/connection_pool.hpp>
 #include <amongoc/coroutine.hpp>
@@ -12,6 +11,8 @@
 #include <amongoc/nano/nano.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/proto.hpp>
+
+#include <bson/doc.h>
 
 #include <mlib/alloc.h>
 
@@ -44,15 +45,15 @@ static amongoc_emitter _command(amongoc_client cl, auto doc) noexcept {
     bson::document&&  body = std::move(resp).expect_one_body_section_op_msg();
     co_return unique_box::from(cl.get_allocator(),
                                mlib_fwd(body).release(),
-                               just_invokes<&bson_mut_delete>{});
+                               just_invokes<&bson_delete>{});
 }
 
 emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {
-    return _command(cl, doc);
+    return _command(cl, bson::document(doc, cl.get_allocator()));
 }
 
 emitter amongoc_client_command_nocopy(amongoc_client cl, bson_view doc) noexcept {
-    return _command(cl, bson::document(doc, cl.get_allocator()));
+    return _command(cl, doc);
 }
 
 void amongoc_client_destroy(amongoc_client cl) noexcept {
