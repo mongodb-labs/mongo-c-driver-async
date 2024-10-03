@@ -31,6 +31,7 @@
 #include <amongoc/nano/result.hpp>
 #include <amongoc/operation.h>
 #include <amongoc/status.h>
+#include <amongoc/wire/error.hpp>
 
 #include <cstddef>
 #include <cstdio>
@@ -393,6 +394,10 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     void unhandled_exception() noexcept {
         try {
             throw;
+        } catch (const wire::server_error& err) {
+            return_value(emitter_result(status::from(err.code()),
+                                        unique_box::from(this->get_allocator(),
+                                                         bson::document(err.body()))));
         } catch (std::system_error const& err) {
             return_value(err.code());
         } catch (amongoc::exception const& err) {

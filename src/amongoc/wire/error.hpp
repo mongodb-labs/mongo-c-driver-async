@@ -5,8 +5,19 @@
 #include <bson/doc.h>
 
 #include <string_view>
+#include <system_error>
 
 namespace amongoc::wire {
+
+class server_error : public std::system_error {
+public:
+    explicit server_error(bson::document body);
+
+    bson::view body() const noexcept { return _body; }
+
+private:
+    bson::document _body;
+};
 
 [[noreturn]]
 void throw_protocol_error(std::string_view msg);
