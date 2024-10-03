@@ -50,8 +50,13 @@ typedef struct mlib_str_view {
         return mlib_str_view{sv.data(), sv.length()};
     }
 
-    bool operator==(std::string_view sv) const noexcept { return sv == std::string_view(*this); }
-    constexpr operator std::string_view() const noexcept { return std::string_view(data, len); }
+    constexpr bool operator==(std::string_view sv) const noexcept {
+        return data and sv == std::string_view(*this);
+    }
+    constexpr operator std::string_view() const noexcept {
+        return data ? std::string_view(data, len) : "";
+    }
+    constexpr explicit operator bool() const noexcept { return data != nullptr; }
 #endif
 } mlib_str_view;
 
