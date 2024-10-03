@@ -86,11 +86,19 @@ TEST_CASE("bson/parse/doc rejects with optional field that generates a hard erro
     CHECK(describe_error(r) == "errors: [in field ‘foo’: element has incorrect type]");
 }
 
-TEST_CASE("bson/parse/doc rejects with an extra field") {
-    rule<bson::view> auto p = parse::doc(field("foo", type<std::int32_t>()));
+TEST_CASE("bson/parse/doc accepts with an extra field") {
+    rule<bson::view> auto p = parse::doc(require("foo", type<std::int32_t>()));
     // The "foo" element is will not match, and no rule will match it
-    auto doc = buildit(make::doc(pair("foo", "string")));
+    auto doc = buildit(make::doc(pair("foo", 42), pair("bar", 42)));
+    auto r   = p(doc);
+    CHECK(did_accept(r));
+}
+
+TEST_CASE("bson/parse/doc rejects with an extra field when requested") {
+    rule<bson::view> auto p = parse::doc(field("foo", type<std::int32_t>()), reject_others{});
+    // The "foo" element is will not match, and no rule will match it
+    auto doc = buildit(make::doc(pair("foo", 42), pair("bar", 1729)));
     auto r   = p(doc);
     CHECK_FALSE(did_accept(r));
-    CHECK(describe_error(r) == "errors: [unexpected element ‘foo’]");
+    CHECK(describe_error(r) == "errors: [unexpected element ‘bar’]");
 }

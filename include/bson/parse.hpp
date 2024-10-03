@@ -15,6 +15,7 @@
 
 #include <iterator>
 #include <string>
+#include <system_error>
 #include <type_traits>
 #include <utility>
 
@@ -59,6 +60,20 @@ constexpr O write_str(O out, std::string_view s) {
 struct accepted {
     constexpr static pstate state() noexcept { return pstate::accept; }
     static constexpr auto   format_to(auto out) { return write_str(out, "[accepted]"); }
+};
+
+// A parse result type that represents unconditional rejection
+struct rejected {
+    std::string             message = "[rejected]";
+    constexpr static pstate state() noexcept { return pstate::reject; }
+    auto                    format_to(auto out) const { return write_str(out, message); }
+};
+
+// A parse result type that represents unconditional rejection
+struct errored {
+    std::string             message = "[error]";
+    constexpr static pstate state() noexcept { return pstate::error; }
+    auto                    format_to(auto out) const { return write_str(out, "[error]"); }
 };
 
 /**
@@ -124,6 +139,11 @@ struct store {
     {
         dest = mlib_fwd(arg);
         return {};
+    }
+
+    // Try to convert the value before assigning:
+    constexpr auto operator()(const reference& elem) {
+        return type<std::remove_cvref_t<T>>(store(dest))(elem);
     }
 };
 
@@ -198,6 +218,12 @@ struct field {
 
 template <rule<reference> P>
 explicit field(std::string_view, P&&) -> field<P>;
+
+// Require a "must<field<...>>" parsing rule
+template <rule<reference> R>
+constexpr must<field<R>> require(std::string_view key, R&& rule) noexcept {
+    return must(field(key, mlib_fwd(rule)));
+}
 
 /**
  * @brief A parser combinator that tries each rule in sequence until one accepts or errors
@@ -297,6 +323,20 @@ struct just_accept {
     accepted operator()(auto const&) const noexcept { return {}; }
     accepted finish() const noexcept { return {}; }
 };
+
+// A parser combinator that immediatly accepts any input
+struct just_reject {
+    rejected operator()(auto const&) const noexcept { return {}; }
+    rejected finish() const noexcept { return {}; }
+};
+
+/**
+ * @brief A special rule for use with parse::doc that rejects the whole document
+ * if an unhandled element is found
+ *
+ * This is implemented in a specialization of doc_part<> below
+ */
+struct reject_others : just_reject {};
 
 /**
  * @brief A parser combinator that attempts to convert a BSON value into the target
@@ -416,13 +456,11 @@ struct each {
     };
 
     result operator()(view doc) {
-        std::size_t nth = 0;
         for (const reference& el : doc) {
             result_type auto r = subparser(el);
             if (r.state() == pstate::accept) {
                 return result{el.key(), mlib_fwd(r)};
             }
-            ++nth;
         }
         return result{};
     }
@@ -500,16 +538,13 @@ struct _doc_impl {
         }
 
         constexpr pstate handle(const reference& elem) {
-            if (subresult.has_value()) {
-                // We've already matched/errored on an element.
-                return pstate::reject;
-            }
             auto subres = this->parser(elem);
-            if (subres.state() != pstate::reject) {
+            auto st     = subres.state();
+            if (st != pstate::reject) {
                 // We accepted or errored on this element.
                 subresult.emplace(mlib_fwd(subres));
             }
-            return subresult->state();
+            return st;
         }
     };
 
@@ -576,6 +611,51 @@ struct _doc_impl {
     };
 };
 
+// Special doc parsing part that generates a full rejection when an unexpected key is found
+template <>
+struct _doc_impl::part_state<reject_others> {
+    // Required for constructor uniformity
+    reject_others unused{};
+
+    // The key of the element that we didn't expect to see
+    std::optional<std::string_view> got_key{};
+
+    struct result_part {
+        std::optional<std::string_view> got_key;
+
+        pstate state() const noexcept {
+            if (got_key.has_value()) {
+                // We found an element that we didn't want
+                return pstate::reject;
+            }
+            return pstate::accept;
+        }
+
+        auto format_part(auto out, int& n_rejs) const {
+            if (not got_key.has_value()) {
+                return out;
+            }
+            out = write_str(out, "unexpected element ‘");
+            out = write_str(out, *got_key);
+            out = write_str(out, "’");
+            if (--n_rejs) {
+                out = write_str(out, ", ");
+            }
+            return out;
+        }
+    };
+
+    result_part finish() { return result_part{got_key}; }
+
+    // The element parser should stop if we found a rejected key
+    constexpr bool halt() const noexcept { return got_key.has_value(); }
+
+    constexpr pstate handle(const reference& elem) {
+        got_key = elem.key();
+        return pstate::reject;
+    }
+};
+
 // The actual doc parser implementation, with the index sequence given as the first template
 // argument.
 template <std::size_t... Ns, rule<reference>... Ps>
@@ -587,20 +667,19 @@ struct doc<std::index_sequence<Ns...>, Ps...>
         : _doc_impl::part<Ns, Ps>(mlib_fwd(ps))... {}
 
     struct result {
-        std::tuple<typename _doc_impl::part_state<Ps>::result_part...> subresults;
-
-        std::optional<std::string_view> unexpected_element;
+        std::optional<std::tuple<typename _doc_impl::part_state<Ps>::result_part...>> subresults;
 
         pstate state() const noexcept {
-            // Error if any elements error
-            if (((std::get<Ns>(subresults).state() == pstate::error) or ...)) {
-                return pstate::error;
-            }
-            if (unexpected_element.has_value()) {
+            if (not subresults.has_value()) {
+                // The input element is not a document
                 return pstate::reject;
             }
+            // Error if any elements error
+            if (((std::get<Ns>(*subresults).state() == pstate::error) or ...)) {
+                return pstate::error;
+            }
             // Accept if all elements accept
-            if (((std::get<Ns>(subresults).state() == pstate::accept) and ...)) {
+            if (((std::get<Ns>(*subresults).state() == pstate::accept) and ...)) {
                 return pstate::accept;
             }
             // Reject otherwise
@@ -608,20 +687,17 @@ struct doc<std::index_sequence<Ns...>, Ps...>
         }
 
         auto format_to(auto o) const {
+            if (not subresults.has_value()) {
+                return write_str(o, "element is not a document/array");
+            }
             // Count number of non-accepted rules:
-            auto n_rejs = (0 + ... + (std::get<Ns>(subresults).state() != pstate::accept))
-                + unexpected_element.has_value();
+            auto n_rejs = (0 + ... + (std::get<Ns>(*subresults).state() != pstate::accept));
             if (n_rejs == 0) {
                 return accepted{}.format_to(o);
             }
             // Format each failing rule:
             o = write_str(o, "errors: [");
-            ((o = std::get<Ns>(subresults).format_part(o, n_rejs)), ...);
-            if (unexpected_element.has_value()) {
-                o = write_str(o, "unexpected element ‘");
-                o = write_str(o, *unexpected_element);
-                o = write_str(o, "’");
-            }
+            ((o = std::get<Ns>(*subresults).format_part(o, n_rejs)), ...);
             o = write_str(o, "]");
             return o;
         }
@@ -631,7 +707,6 @@ struct doc<std::index_sequence<Ns...>, Ps...>
     // references to internals that will almost certainly be needed to generate the error message
     result operator()(const bson::view doc) & {
         auto state_parts = std::tuple(this->_doc_impl::part<Ns, Ps>::state_part()...);
-        std::optional<std::string_view> unexpected_element;
         for (const reference& elem : doc) {
             // Invoke each sub-parser on this element until one accepts or errors
             pstate stop_state{};
@@ -640,13 +715,16 @@ struct doc<std::index_sequence<Ns...>, Ps...>
             if (((std::get<Ns>(state_parts).halt()) or ...)) {
                 break;
             }
-            if (stop_state == pstate::reject) {
-                // No part accepted this element.
-                unexpected_element = elem.key();
-                break;
-            }
         }
-        return result{std::tuple(std::get<Ns>(state_parts).finish()...), unexpected_element};
+        return result{std::tuple(std::get<Ns>(state_parts).finish()...)};
+    }
+
+    result operator()(const reference& elem) & {
+        auto doc = elem.document();
+        if (doc.data() == nullptr) {
+            return result{};  // Not a document
+        }
+        return (*this)(doc);
     }
 };
 
@@ -665,6 +743,25 @@ constexpr std::string describe_error(const R& res) {
     std::string ret;
     describe_error(std::back_inserter(ret), res);
     return ret;
+}
+
+/**
+ * @brief Parse the given value according to the given rule, throwing an exception
+ * if the parse fails
+ *
+ * @param value The value to be parsed
+ * @param rule The rule to be matched
+ *
+ * If the given rule does not match, throw std::system_error(std::errc::protocol_error).
+ * The error message string describes the reason the parse failed.
+ */
+template <typename T, rule<T> R>
+void must_parse(const T& value, R&& rule) {
+    result_type auto res = rule(value);
+    if (res.state() != pstate::accept) {
+        auto e = describe_error(res);
+        throw std::system_error(std::make_error_code(std::errc::protocol_error), e);
+    }
 }
 
 }  // namespace bson::parse
