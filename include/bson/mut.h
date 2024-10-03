@@ -994,7 +994,7 @@ mlib_constexpr bson_iterator bson_mut_parent_iterator(bson_mut doc) mlib_noexcep
     bson_mut      par = *doc._parent_mut;
     bson_iterator ret = BSON_ITERATOR_NULL;
     // Recover the address of the element:
-    ret._ptr         = bson_mut_data(par) + -doc._offset_within_parent_data;
+    ret._ptr         = bson_mut_data(par) + doc._offset_within_parent_data;
     ptrdiff_t offset = ret._ptr - bson_mut_data(par);
     ret._keylen      = (int32_t)mlibMath(assertNot(mlib_integer_allbits,
                                               sub(I(doc._bson_document_data - ret._ptr), 2)))

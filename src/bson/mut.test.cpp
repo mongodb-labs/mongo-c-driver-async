@@ -77,4 +77,7 @@ TEST_CASE("bson/build/subdoc") {
     auto subit = s.begin();
     CHECK(subit->key() == "bar");
     CHECK(subit->utf8() == "baz");
+    it = child.position_in_parent();
+    CHECK(it->type() == bson_type_document);
+    CHECK(it->key() == "foo");
 }
