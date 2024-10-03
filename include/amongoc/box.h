@@ -452,6 +452,11 @@ public:
         return amongoc_box_cast(T)(_box);
     }
 
+    template <typename T>
+    const T& as() const noexcept {
+        return amongoc_box_cast(T)(const_cast<amongoc_box&>(_box));
+    }
+
     operator amongoc_view() const noexcept { return _box.view; }
 
     /**
