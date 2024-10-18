@@ -33,8 +33,8 @@ TEST_CASE("Async/Transform with the C API") {
                           return value;
                       })
              .as_unique();
-    unique_box       got{amongoc_nil};
-    unique_operation op = std::move(em).bind_allocator_connect(allocator<>(mlib_default_allocator),
+    unique_box       got = amongoc::nil();
+    unique_operation op  = std::move(em).bind_allocator_connect(allocator<>(mlib_default_allocator),
                                                                [&](emitter_result&& b) {
                                                                    got = std::move(b).value;
                                                                });
@@ -87,7 +87,7 @@ TEST_CASE("Async/then_just") {
 emitter waits(amongoc_loop& loop) {
     co_await ramp_end;
     co_await amongoc_schedule_later(&loop, timespec{0, 1000 * 5}).as_unique();
-    co_return amongoc_nil.as_unique();
+    co_return 0;
 }
 
 TEST_CASE("Async/let") {

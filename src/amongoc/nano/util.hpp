@@ -2,7 +2,7 @@
 
 #include "./query.hpp"
 
-#include <amongoc/box.h>
+#include <amongoc/relocation.hpp>
 
 #include <mlib/invoke.hpp>
 #include <mlib/object_t.hpp>
@@ -125,7 +125,8 @@ public:
         , _g(mlib_fwd(g)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
-        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>,
+        atop);
 
 private:
     mlib_no_unique_address mlib::object_t<F> _f;
@@ -161,7 +162,8 @@ public:
         , _g(mlib_fwd(g)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
-        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>,
+        over);
 
 private:
     mlib_no_unique_address mlib::object_t<F> _f;
@@ -194,7 +196,7 @@ public:
     constexpr explicit constant(T&& t)
         : _value(mlib_fwd(t)) {}
 
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>, constant);
 
 private:
     mlib_no_unique_address mlib::object_t<T> _value;
@@ -234,7 +236,7 @@ struct ct_constant {
 template <typename T>
 class pair_append : public invocable_cvr_helper<pair_append<T>> {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<T>, pair_append);
 
     constexpr explicit pair_append(T&& t)
         : _object(mlib_fwd(t)) {}
@@ -267,7 +269,7 @@ public:
     explicit constexpr unpack_args(F&& fn)
         : _func(mlib_fwd(fn)) {}
 
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>, unpack_args);
 
 private:
     [[no_unique_address]] F _func;
@@ -297,7 +299,8 @@ public:
         , g(mlib_fwd(g)) {}
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
-        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>);
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<G>,
+        after);
 
 private:
     [[no_unique_address]] F f;
@@ -325,6 +328,11 @@ explicit after(F&&, G&&) -> after<F, G>;
 template <typename H, typename F, typename G>
 struct phi : invocable_cvr_helper<phi<H, F, G>> {
 public:
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
+        enable_trivially_relocatable_v<H>and enable_trivially_relocatable_v<F>and
+                                             enable_trivially_relocatable_v<G>,
+        phi);
+
     phi() = default;
     constexpr explicit phi(H&& h, F&& f, G&& g)
         : h(mlib_fwd(h))
@@ -400,6 +408,8 @@ constexpr std::size_t effective_sizeof_v = std::is_empty_v<T> ? 0 : sizeof(T);
 template <typename T>
 class assign {
 public:
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<T>, assign);
+
     assign() = default;
     constexpr explicit assign(T&& x)
         : _dest(mlib_fwd(x)) {}
@@ -425,6 +435,23 @@ private:
 template <typename T>
 explicit assign(T&&) -> assign<T>;
 
+template <typename F>
+struct sink {
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<F>, sink);
+
+    mlib::object_t<F> _func;
+
+    template <typename U>
+    constexpr void operator=(U&& arg)
+        requires requires { static_cast<F&>(_func)(mlib_fwd(arg)); }
+    {
+        _func(mlib_fwd(arg));
+    }
+};
+
+template <typename F>
+explicit sink(F&&) -> sink<F>;
+
 /**
  * @brief An invocable object that holds a compile-time constant invocable
  *
@@ -444,7 +471,8 @@ struct opt_fmap {
     [[no_unique_address]] F _func;
 
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(
-        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<F>);
+        enable_trivially_relocatable_v<F>and enable_trivially_relocatable_v<F>,
+        opt_fmap);
 
     template <typename Opt,
               typename Result = decltype(std::declval<const F&>()(*std::declval<Opt>()))>

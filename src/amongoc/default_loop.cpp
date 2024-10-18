@@ -84,7 +84,7 @@ public:
         // Destroy the stop registration, because completing the handler may destroy the
         // associated stop state.
         // XXX: Research why this wasn't needed until the coroutine refactor on 9/22/2024
-        _stop_cookie = amongoc_nil.as_unique();
+        _stop_cookie = nil();
         _handler.complete(status::from(ec), std::move(_transform)(mlib::unit{}));
     }
 
@@ -92,7 +92,7 @@ public:
     void operator()(asio::error_code ec, auto&& res) {
         // Destroy the stop registration, because completing the handler may destroy the
         // associated stop state
-        _stop_cookie = amongoc_nil.as_unique();
+        _stop_cookie = nil();
         _handler.complete(status::from(ec), std::move(_transform)(mlib_fwd(res)));
     }
 
@@ -116,7 +116,7 @@ private:
     asio::cancellation_slot _slot = _signal->slot();
 
     // The cookie for the registration of our stop callback.
-    unique_box _stop_cookie = amongoc_nil.as_unique();
+    unique_box _stop_cookie = nil();
 };
 
 template <typename Tr>

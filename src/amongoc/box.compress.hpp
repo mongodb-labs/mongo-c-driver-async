@@ -32,7 +32,7 @@ struct compressed_box {
 // Specialize for an empty box with no destructor (e.g. nil)
 template <>
 struct compressed_box<0, false> {
-    [[nodiscard]] unique_box recover() && noexcept { return amongoc_nil.as_unique(); }
+    [[nodiscard]] unique_box recover() && noexcept { return nil(); }
 };
 
 // Specialize for non-empty boxes that have destructors

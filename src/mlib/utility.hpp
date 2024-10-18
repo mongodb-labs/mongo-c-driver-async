@@ -65,4 +65,14 @@ constexpr T take(T& object) noexcept(noexcept(T(static_cast<T&&>(object))) and n
     return std::exchange(object, T());
 }
 
+/**
+ * @brief An invocable object that simply returns its argument unchanged
+ */
+struct identity {
+    template <typename T>
+    mlib_always_inline constexpr T&& operator()(T&& arg) const noexcept {
+        return arg;
+    }
+};
+
 }  // namespace mlib

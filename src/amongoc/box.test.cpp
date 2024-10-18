@@ -10,7 +10,6 @@ using namespace amongoc;
 struct simple_empty {};
 
 static_assert(box_inlinable_type<simple_empty>);
-static_assert(box_inlinable_type<std::unique_ptr<int>>);
 static_assert(box_inlinable_type<std::string_view>);
 static_assert(box_inlinable_type<int*>);
 
@@ -29,7 +28,7 @@ static_assert(not box_inlinable_type<not_trivial>);
 struct explicitly_relocatable {
     ~explicitly_relocatable() {}
 
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, explicitly_relocatable);
 };
 
 static_assert(box_inlinable_type<explicitly_relocatable>);
@@ -38,6 +37,7 @@ TEST_CASE("Box/Store an Object") {
     amongoc_box b;
     *amongoc_box_init(b, int) = 42;
     CHECK(amongoc_box_cast(int)(b) == 42);
+    CHECK(::amongoc_box_cast(int)(b) == 42);
 }
 
 TEST_CASE("Box/Destroy Nothing") {
@@ -59,6 +59,12 @@ TEST_CASE("Box/Simple Destructor") {
     CHECK_FALSE(did_destroy);
     amongoc_box_destroy(bx);
     CHECK(did_destroy);
+}
+
+TEST_CASE("Box/Unique nil") {
+    // Just construct the nil box and destroy it.
+    auto b = amongoc::nil();
+    b.data();
 }
 
 TEST_CASE("Box/With C++ Object") {

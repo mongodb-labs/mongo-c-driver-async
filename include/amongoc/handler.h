@@ -188,9 +188,9 @@ private:
 /**
  * @brief Unique ownership wrapper for an `::amongoc_handler`
  */
-struct unique_handler {
+class unique_handler {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_handler);
     // Default-contsruct to nothing
     unique_handler() = default;
     // Take ownership of a handler object

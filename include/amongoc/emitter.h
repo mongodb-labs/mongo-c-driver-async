@@ -80,7 +80,7 @@ using emitter = ::amongoc_emitter;
  */
 class unique_emitter {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_emitter);
     explicit unique_emitter(emitter&& em)
         : _emitter(em) {
         em = {};
@@ -118,7 +118,7 @@ public:
         noexcept(box_inlinable_type<F>) {
         // Wrap the connector in an object, preserving reference semantics
         struct wrapped {
-            AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>);
+            AMONGOC_TRIVIALLY_RELOCATABLE_THIS(enable_trivially_relocatable_v<F>, wrapped);
             F _fn;
         };
 

@@ -63,7 +63,7 @@ namespace amongoc {
  */
 class unique_operation {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_operation);
     unique_operation() = default;
 
     // Take ownership of the given operation
