@@ -348,15 +348,11 @@ mlib_extern_c mlib_always_inline const amongoc_box* _amongocBoxGetNil() mlib_noe
     return &box;
 }
 
-MLIB_IF_CXX(mlib_always_inline const amongoc_box& _amongocBoxGetNilRef() noexcept {
-    return *_amongocBoxGetNil();
-})
-
 /**
  * @brief A special amongoc_box value that represents no value. It is safe to
  * discard this value.
  */
-#define amongoc_nil MLIB_IF_NOT_CXX(*_amongocBoxGetNil()) MLIB_IF_CXX(_amongocBoxGetNilRef())
+#define amongoc_nil mlib_parenthesized_expression(*_amongocBoxGetNil())
 
 static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
     memcpy(dst, _amongocBoxDataPtr(&box->_storage), sz);
@@ -375,15 +371,7 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
  *
  * @note DO NOT use this for C++ types! Use `unique_box::take`
  */
-#define amongoc_box_take(Dest, Box) (_amongoc_box_take_impl(&(Dest), (sizeof(Dest)), &(Box)))
-
-/**
- * @brief Declare an amongoc_box destructor function that invokes an underlying destructor function
- * on the value owned by the amongoc_box
- */
-#define amongoc_box_declare_dtor_shim(FuncName, Type, RealName)                                    \
-    static inline void FuncName(amongoc_box a) { RealName(amongoc_box_cast(Type)(a)); }            \
-    static_assert(1, "");
+#define amongoc_box_take(Dest, Box) _amongoc_box_take_impl(&(Dest), (sizeof(Dest)), &(Box))
 
 #define DECLARE_BOX_EZ(Name, Type)                                                                 \
     static inline amongoc_box amongoc_box_##Name(Type val) mlib_noexcept {                         \

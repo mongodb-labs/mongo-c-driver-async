@@ -221,3 +221,26 @@ static mlib_constexpr bool is_constant_evaluated() noexcept {
 #define mlib_gnu_warning_disable(Warning)                                      \
   MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                \
   mlib_static_assert(true, "")
+
+#define mlib_extern_c MLIB_IF_CXX(extern "C") MLIB_IF_NOT_CXX(extern)
+
+#if mlib_is_cxx()
+
+namespace mlib {
+
+/**
+ * @brief An invocable object that simply returns its argument unchanged
+ */
+struct identity {
+  template <typename T>
+  mlib_always_inline constexpr T &&operator()(T &&arg) const noexcept {
+    return arg;
+  }
+};
+
+} // namespace mlib
+
+#endif // C++
+
+#define mlib_parenthesized_expression(...)                                     \
+  MLIB_IF_CXX(mlib::identity{})(__VA_ARGS__)

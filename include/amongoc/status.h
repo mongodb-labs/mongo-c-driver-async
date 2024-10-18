@@ -479,14 +479,9 @@ mlib_always_inline amongoc_status const* _amongocStatusGetOkayStatus(void) mlib_
 
 mlib_extern_c_end();
 
-#define amongoc_okay                                                                               \
-    MLIB_IF_CXX(_amongocStatusGetOkayStatusRef()) MLIB_IF_NOT_CXX(*_amongocStatusGetOkayStatus())
+#define amongoc_okay mlib_parenthesized_expression(*_amongocStatusGetOkayStatus())
 
 #if mlib_is_cxx()
-
-mlib_always_inline const amongoc_status& _amongocStatusGetOkayStatusRef() noexcept {
-    return *_amongocStatusGetOkayStatus();
-}
 
 namespace amongoc {
 
