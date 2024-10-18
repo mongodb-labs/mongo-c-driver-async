@@ -36,11 +36,21 @@ extern const struct amongoc_status_category_vtable amongoc_netdb_category;
 extern const struct amongoc_status_category_vtable amongoc_addrinfo_category;
 extern const struct amongoc_status_category_vtable amongoc_io_category;
 extern const struct amongoc_status_category_vtable amongoc_server_category;
+extern const struct amongoc_status_category_vtable amongoc_client_category;
 extern const struct amongoc_status_category_vtable amongoc_unknown_category;
 
 enum amongoc_io_errc {
     amongoc_errc_connection_closed = 1,
     amongoc_errc_short_read        = 2,
+};
+
+enum amongoc_client_errc {
+    amongoc_client_errc_okay = 0,
+    /**
+     * @brief Indicates that the update document given for an update operation is
+     * invalid.
+     */
+    amongoc_client_errc_invalid_update_document = 1,
 };
 
 enum amongoc_server_errc {
@@ -485,6 +495,7 @@ private:
 
 const std::error_category& io_category() noexcept;
 const std::error_category& server_category() noexcept;
+const std::error_category& client_category() noexcept;
 
 }  // namespace amongoc
 

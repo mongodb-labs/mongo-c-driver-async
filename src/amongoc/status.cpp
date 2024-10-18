@@ -1,6 +1,7 @@
 #include <amongoc/status.h>
 
 #include <asio/error.hpp>
+#include <fmt/format.h>
 
 #include <cerrno>
 #include <cstring>
@@ -22,6 +23,8 @@ status status::from(const std::error_code& ec) noexcept {
         return {&amongoc_io_category, ec.value()};
     } else if (ec.category() == server_category()) {
         return {&amongoc_server_category, ec.value()};
+    } else if (ec.category() == client_category()) {
+        return {&amongoc_client_category, ec.value()};
     } else if (ec.category() == asio::error::get_misc_category()) {
         // TODO: Convert these to more comprehensible errors.
         switch (static_cast<asio::error::misc_errors>(ec.value())) {
@@ -51,7 +54,7 @@ namespace {
 class unknown_error_category : public std::error_category {
     const char* name() const noexcept override { return "amongoc.unknown"; }
     std::string message(int ec) const noexcept override {
-        return "amongoc.unknown:" + std::to_string(ec);
+        return fmt::format("amongoc.unknown:{}", ec);
     }
 };
 
@@ -66,7 +69,7 @@ struct io_category_cls : std::error_category {
         case amongoc_errc_short_read:
             return "short read";
         default:
-            return "amongoc.io:" + std::to_string(ec);
+            return fmt::format("amongoc.io:{}", ec);
         }
     }
 };
@@ -77,7 +80,7 @@ struct server_category_cls : std::error_category {
         std::string_view sv = _message_cstr(ec);
         if (sv.empty()) {
             // Unknown error code
-            return "amongoc.server:" + std::to_string(ec);
+            return fmt::format("amongoc.server:{}", ec);
         }
         return std::string(sv);
     }
@@ -768,13 +771,28 @@ struct server_category_cls : std::error_category {
     }
 };
 
+struct client_category_cls : std::error_category {
+    const char* name() const noexcept override { return "amongoc.client"; }
+    std::string message(int ec) const noexcept override {
+        switch (static_cast<::amongoc_client_errc>(ec)) {
+        case amongoc_client_errc_okay:
+            return "no error";
+        case amongoc_client_errc_invalid_update_document:
+            return "invalid document for an update() operation";
+        }
+        return fmt::format("amongoc.client:{}", ec);
+    }
+};
+
 io_category_cls     io_category_inst;
 server_category_cls server_category_inst;
+client_category_cls client_category_inst;
 
 }  // namespace
 
 const std::error_category& amongoc::io_category() noexcept { return io_category_inst; }
 const std::error_category& amongoc::server_category() noexcept { return server_category_inst; }
+const std::error_category& amongoc::client_category() noexcept { return client_category_inst; }
 
 constexpr amongoc_status_category_vtable amongoc_generic_category = {
     .name            = [] { return "amongoc.generic"; },
@@ -827,6 +845,14 @@ constexpr amongoc_status_category_vtable amongoc_server_category = {
     .is_timeout      = nullptr,
 };
 
+constexpr amongoc_status_category_vtable amongoc_client_category = {
+    .name            = [] { return client_category_inst.name(); },
+    .strdup_message  = [](int c) { return strdup(client_category_inst.message(c).data()); },
+    .is_error        = nullptr,
+    .is_cancellation = nullptr,
+    .is_timeout      = nullptr,
+};
+
 constexpr amongoc_status_category_vtable amongoc_unknown_category = {
     .name           = [] { return "amongoc.unknown"; },
     .strdup_message = [](int c) { return strdup(("amongoc.unknown:" + std::to_string(c)).data()); },
@@ -848,6 +874,8 @@ std::error_code status::as_error_code() const noexcept {
         return std::error_code(code, io_category());
     } else if (category == &amongoc_server_category) {
         return std::error_code(code, server_category());
+    } else if (category == &amongoc_client_category) {
+        return std::error_code(code, client_category());
     } else {
         return std::error_code(this->code, unknown_category_inst);
     }
