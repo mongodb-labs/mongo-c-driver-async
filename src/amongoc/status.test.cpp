@@ -10,6 +10,12 @@ TEST_CASE("Status/Okay") {
     CHECK(st.category == &amongoc_generic_category);
 }
 
+TEST_CASE("Status/Default C++ init") {
+    amongoc_status st{};
+    CHECK(st.code == 0);
+    CHECK(st.category == &amongoc_generic_category);
+}
+
 TEST_CASE("Status/From an Error") {
     auto st = amongoc_status::from(std::make_error_code(std::errc::io_error));
     CHECK(st.category == &amongoc_generic_category);
