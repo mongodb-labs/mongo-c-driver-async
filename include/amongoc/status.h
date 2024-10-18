@@ -433,6 +433,8 @@ struct amongoc_status {
 #endif
 };
 
+mlib_extern_c_begin();
+
 /**
  * @brief Test whether the given status code represents an error condition.
  */
@@ -470,9 +472,22 @@ static inline char* amongoc_status_strdup_message(amongoc_status s) {
     return s.category->strdup_message(s.code);
 }
 
-#define amongoc_okay (mlib_init(amongoc_status){&amongoc_generic_category, 0})
+mlib_always_inline amongoc_status const* _amongocStatusGetOkayStatus(void) mlib_noexcept {
+    static const amongoc_status ret = {&amongoc_generic_category, 0};
+    return &ret;
+}
+
+mlib_extern_c_end();
+
+#define amongoc_okay                                                                               \
+    MLIB_IF_CXX(_amongocStatusGetOkayStatusRef()) MLIB_IF_NOT_CXX(*_amongocStatusGetOkayStatus())
 
 #if mlib_is_cxx()
+
+mlib_always_inline const amongoc_status& _amongocStatusGetOkayStatusRef() noexcept {
+    return *_amongocStatusGetOkayStatus();
+}
+
 namespace amongoc {
 
 using status = ::amongoc_status;

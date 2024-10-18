@@ -76,6 +76,11 @@
 
 #define MLIB_NOTHING(...)
 #define MLIB_PASTE(A, ...) _mlibPaste1(A, __VA_ARGS__)
+#define MLIB_PASTE_3(A, B, ...) MLIB_PASTE(A, MLIB_PASTE(B, __VA_ARGS__))
+#define MLIB_PASTE_4(A, B, C, ...)                                             \
+  MLIB_PASTE(A, MLIB_PASTE_3(B, C, __VA_ARGS__))
+#define MLIB_PASTE_5(A, B, C, D, ...)                                          \
+  MLIB_PASTE(A, MLIB_PASTE_4(B, C, D, __VA_ARGS__))
 #define _mlibPaste1(A, ...) A##__VA_ARGS__
 
 #define MLIB_STR(...) _mlibStr(__VA_ARGS__)
@@ -165,6 +170,8 @@ static mlib_constexpr bool is_constant_evaluated() noexcept {
 } // namespace mlib
 #endif
 
+#define mlib_nodiscard(Msg) MLIB_IF_CXX([[nodiscard(Msg)]])
+
 #define MLIB_RETURNS(...)                                                      \
   noexcept(noexcept(__VA_ARGS__))                                              \
       ->decltype(auto)                                                         \
@@ -173,3 +180,44 @@ static mlib_constexpr bool is_constant_evaluated() noexcept {
     return __VA_ARGS__;                                                        \
   }                                                                            \
   static_assert(true)
+
+#define MLIB_IF_CLANG(...)
+#define MLIB_IF_GCC(...)
+#define MLIB_IF_MSVC(...)
+#if __clang__
+#undef MLIB_IF_CLANG
+#define MLIB_IF_CLANG(...) __VA_ARGS__
+#elif __GNUC__
+#undef MLIB_IF_GCC
+#define MLIB_IF_GCC(...) __VA_ARGS__
+#elif _MSC_VER
+#undef MLIB_IF_MSVC
+#define MLIB_IF_MSVC(...) __VA_ARGS__
+#endif
+
+#define MLIB_IF_GNU_LIKE(...)                                                  \
+  MLIB_IF_GCC(__VA_ARGS__) MLIB_IF_CLANG(__VA_ARGS__)
+
+#define mlib_always_inline                                                     \
+  MLIB_IF_GNU_LIKE(__attribute__((always_inline)))                             \
+  MLIB_IF_MSVC(__forceinline) inline
+
+#define mlib_pragma(...) _Pragma(#__VA_ARGS__)
+
+#define mlib_diagnostic_push()                                                 \
+  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic push))                           \
+  MLIB_IF_MSVC(mlib_pragma(warning(push)))                                     \
+  mlib_static_assert(true, "")
+
+#define mlib_diagnostic_pop()                                                  \
+  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic pop))                            \
+  MLIB_IF_MSVC(mlib_pragma(warning(pop)))                                      \
+  mlib_static_assert(true, "")
+
+#define mlib_gcc_warning_disable(Warning)                                      \
+  MLIB_IF_GCC(mlib_pragma(GCC diagnostic ignored Warning))                     \
+  mlib_static_assert(true, "")
+
+#define mlib_gnu_warning_disable(Warning)                                      \
+  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                \
+  mlib_static_assert(true, "")

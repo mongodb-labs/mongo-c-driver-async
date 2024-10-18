@@ -107,22 +107,18 @@ Header: ``amongoc/status.h``
   :C++ API: `amongoc_status::message`
 
 
-.. var:: amongoc_status amongoc_okay
+.. var:: const amongoc_status amongoc_okay
 
   A generic status with a code zero. This represents a generic non-error status.
 
-  .. note:: This is implemented as a macro for C compatibility, and is therefore an r-value expression.
+  .. note:: |macro-impl|.
 
 C++ APIs
 ********
 
-.. rubric:: Namespace: ``amongoc``
-.. namespace:: amongoc
-.. type:: status = ::amongoc_status
+.. type:: amongoc::status = ::amongoc_status
 
   Alias of `::amongoc_status`
-
-.. namespace:: 0
 
 
 Status Categories

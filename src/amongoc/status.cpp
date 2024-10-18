@@ -9,6 +9,8 @@
 
 using namespace amongoc;
 
+extern inline amongoc_status const* _amongocStatusGetOkayStatus(void) noexcept;
+
 status status::from(const std::error_code& ec) noexcept {
     if (ec.category() == std::generic_category()) {
         return {&amongoc_generic_category, ec.value()};
