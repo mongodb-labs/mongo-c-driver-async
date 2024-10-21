@@ -2,7 +2,6 @@
 
 #include "./invoke.hpp"
 
-#include <memory>
 #include <type_traits>
 
 namespace mlib {

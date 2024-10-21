@@ -10,6 +10,8 @@
 
 #include <asio/buffer.hpp>
 
+#include <variant>
+
 namespace amongoc::wire {
 
 /**
@@ -55,6 +57,10 @@ struct body_section {
     std::uint8_t const& kind() const noexcept { return kind_byte; }
 };
 
+// Common body section type:
+extern template struct body_section<bson_view>;
+using bson_view_body_section = body_section<bson_view>;
+
 /**
  * @brief Create an OP_MSG message
  *
@@ -88,7 +94,7 @@ public:
     const Sections& sections() const noexcept { return _sections; }
 
 private:
-    const_buffer_sequence auto _buffers(allocator<> a, auto& sections) const noexcept {
+    vector<asio::const_buffer> _buffers(allocator<> a, auto& sections) const noexcept {
         vector<asio::const_buffer> bufs{a};
         auto                       flag_bits_buf = asio::buffer(_flag_bits);
         bufs.push_back(flag_bits_buf);
@@ -104,15 +110,16 @@ private:
     // Optimize: We are attaching a fixed number of body sections, so we don't
     // need to dynamically allocate our buffers
     template <typename BSON, std::size_t N>
-    const_buffer_sequence auto
+    std::array<asio::const_buffer, 1 + (N * 2)>
     _buffers(allocator<> a, const std::array<body_section<BSON>, N>& sections) const noexcept {
         return _buffers_1(a, sections, std::make_index_sequence<N>{});
     }
 
     template <typename BSON, std::size_t N, std::size_t... Ns>
-    const_buffer_sequence auto _buffers_1(allocator<>                              a,
-                                          const std::array<body_section<BSON>, N>& sections,
-                                          std::index_sequence<Ns...>) const noexcept {
+    std::array<asio::const_buffer, 1 + (N * 2)>
+    _buffers_1(allocator<>                              a,
+               const std::array<body_section<BSON>, N>& sections,
+               std::index_sequence<Ns...>) const noexcept {
         std::array<asio::const_buffer, 1 + (N * 2)> buffers{};
         buffers[0] = asio::buffer(_flag_bits);
         ((buffers[1 + (Ns * 2)] = asio::const_buffer(&std::get<Ns>(sections).kind(), 1)), ...);
@@ -123,6 +130,10 @@ private:
 
 template <typename S>
 explicit op_msg_message(S&&) -> op_msg_message<S>;
+
+// Common case: An OP_MSG with a single BSON document body
+// extern template class op_msg_message<std::array<bson_view_body_section, 1>>;
+using one_bson_view_op_msg = op_msg_message<std::array<bson_view_body_section, 1>>;
 
 /**
  * @brief Dynamically typed OP_MSG section type
@@ -148,18 +159,7 @@ public:
         return visit([&](auto&& x) -> decltype(auto) { return x.kind(); });
     }
 
-    vector<asio::const_buffer> buffers(allocator<> a) const {
-        vector<asio::const_buffer> bufs{a};
-        this->visit([&](auto&& sec) {
-            auto k = asio::const_buffer(&sec.kind(), 1);
-            bufs.push_back(k);
-            auto bs = sec.buffers(a);
-            bufs.insert(bufs.begin(),
-                        asio::buffer_sequence_begin(bs),
-                        asio::buffer_sequence_end(bs));
-        });
-        return bufs;
-    }
+    vector<asio::const_buffer> buffers(allocator<> a) const;
 
     /**
      * @brief Read an unknown-typed message section from a dynamic buffer
@@ -183,7 +183,7 @@ public:
                 throw std::system_error(std::make_error_code(std::errc::protocol_error),
                                         "short read");
             }
-            const auto bson_len = wire::read_int_le<std::uint32_t>(buffers_unbounded(data)).value;
+            const auto bson_len = mlib::read_int_le<std::uint32_t>(buffers_unbounded(data)).value;
             if (asio::buffer_size(data) < bson_len) {
                 throw std::system_error(std::make_error_code(std::errc::protocol_error),
                                         "short read");
@@ -226,14 +226,9 @@ public:
     decltype(auto) visit_content(auto&& fn) { return std::visit(mlib_fwd(fn), content()); }
     decltype(auto) visit_content(auto&& fn) const { return std::visit(mlib_fwd(fn), content()); }
 
-    std::int32_t opcode() const noexcept {
-        return visit_content([&](const auto& c) { return c.opcode(); });
-    }
+    std::int32_t opcode() const noexcept;
 
-    const_buffer_sequence auto buffers(allocator<> a) const {
-        return visit_content(
-            [&](const auto& c) -> const_buffer_sequence decltype(auto) { return c.buffers(a); });
-    }
+    vector<asio::const_buffer> buffers(allocator<> a) const;
 
     const bson::document& expect_one_body_section_op_msg() const& noexcept;
     bson::document&       expect_one_body_section_op_msg() & noexcept {

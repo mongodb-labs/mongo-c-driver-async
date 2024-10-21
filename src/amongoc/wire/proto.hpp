@@ -1,7 +1,9 @@
 #pragma once
 
+#include "./buffer.hpp"
 #include "./error.hpp"
 #include "./integer.hpp"
+#include "./message.hpp"
 #include "./stream.hpp"
 
 #include <amongoc/asio/as_sender.hpp>
@@ -9,8 +11,6 @@
 #include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
 #include <amongoc/vector.hpp>
-#include <amongoc/wire/buffer.hpp>
-#include <amongoc/wire/message.hpp>
 
 #include <bson/doc.h>
 
@@ -30,7 +30,7 @@ namespace amongoc::wire {
 namespace trace {
 
 // Global toggle for enabling message tracing
-constexpr bool enabled = false;
+constexpr bool enabled = true;
 
 // Print information for a message header
 void message_header(std::string_view prefix,
@@ -126,6 +126,10 @@ co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const 
     co_return {};
 }
 
+// Common send-message case
+extern template co_task<mlib::unit>
+send_message(allocator<>, tcp_connection_rw_stream&, int, const one_bson_view_op_msg);
+
 /**
  * @brief Receive a wire protocol message from the given readable stream
  *
@@ -193,7 +197,7 @@ co_task<any_message> recv_message(allocator<> a, Stream& strm) try {
     throw;
 }
 
-// Externally compile this common specialization
+// Common recv-message case
 extern template co_task<any_message> recv_message(allocator<>, tcp_connection_rw_stream&);
 
 }  // namespace amongoc::wire

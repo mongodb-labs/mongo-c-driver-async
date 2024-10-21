@@ -7,6 +7,7 @@
  */
 #pragma once
 
+#include <mlib/bytes.hpp>
 #include <mlib/config.h>
 
 #include <asio/buffer.hpp>
@@ -20,19 +21,10 @@
 namespace amongoc::wire {
 
 /**
- * @brief Match a range whose value type is byte-sized and convertible to `std::byte`
- *
- * This range is not necessarily contiguous
- */
-template <typename T>
-concept byte_range = std::ranges::input_range<T> and sizeof(std::ranges::range_value_t<T>) == 1
-    and requires(std::ranges::range_reference_t<T> b) { static_cast<std::byte>(b); };
-
-/**
  * @brief Match a contiguous range of byte-sized objects
  */
 template <typename T>
-concept contiguous_byte_range = std::ranges::contiguous_range<T> and byte_range<T>;
+concept contiguous_byte_range = std::ranges::contiguous_range<T> and mlib::byte_range<T>;
 
 // Match an iterator that yields `const_buffer` objects
 template <typename T>
@@ -152,7 +144,7 @@ constexpr const_buffer_sequence decltype(auto) buffer_sequence_as_range(B&& bufs
  * @param bufs the buffers to be viewed
  */
 template <const_buffer_sequence B>
-constexpr byte_range auto buffers_subrange(const B& bufs) {
+constexpr mlib::byte_range auto buffers_subrange(const B& bufs) {
     // Optimize for cases that the object is a single buffer.
     if constexpr (single_mutable_buffer<B>) {
         asio::mutable_buffer mb = bufs;
@@ -175,7 +167,7 @@ constexpr byte_range auto buffers_subrange(const B& bufs) {
  * @note Only use this for operations that are guaranteed to never overrun the buffer range
  */
 template <const_buffer_sequence B>
-constexpr byte_range auto buffers_unbounded(const B& bufs) {
+constexpr mlib::byte_range auto buffers_unbounded(const B& bufs) {
     auto it = std::ranges::begin(buffers_subrange(bufs));
     return std::ranges::subrange(it, std::unreachable_sentinel);
 }

@@ -2,7 +2,6 @@
 
 #include <mlib/config.h>
 
-#include <functional>
 #include <utility>
 
 namespace mlib {
@@ -19,13 +18,20 @@ struct invoke_fn {
         return mlib_fwd(fn)(mlib_fwd(args)...);
     }
 
-    // Other invocables: We'll fall back on std::invoke to handle these
-    template <typename F, typename... Args>
-        requires(not plain_invocable<F, Args...>) and std::invocable<F, Args...>
-    constexpr auto operator()(F&& fn, Args&&... args) const
-        noexcept(std::is_nothrow_invocable_v<F, Args...>)
-            -> decltype(std::invoke(mlib_fwd(fn), mlib_fwd(args)...)) {
-        return std::invoke(mlib_fwd(fn), mlib_fwd(args)...);
+    // Member pointers
+    template <typename ObjPtr, typename Object, typename... Args>
+    constexpr auto operator()(ObjPtr ptr, Object&& obj, Args&&... args) const
+        noexcept(noexcept(mlib_fwd(obj).*ptr(mlib_fwd(args)...)))
+            -> decltype(mlib_fwd(obj).*ptr(mlib_fwd(args)...)) {
+        return mlib_fwd(obj).*ptr(mlib_fwd(args)...);
+    }
+
+    // Member pointers
+    template <typename ObjPtr, typename Object>
+    constexpr auto operator()(ObjPtr   ptr,
+                              Object&& obj) const noexcept  //
+        -> decltype(mlib_fwd(obj).*ptr) {
+        return mlib_fwd(obj).*ptr;
     }
 };
 

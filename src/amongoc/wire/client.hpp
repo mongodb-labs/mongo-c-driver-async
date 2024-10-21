@@ -1,7 +1,9 @@
 #pragma once
 
+#include <amongoc/loop.hpp>
 #include <amongoc/status.h>
 #include <amongoc/wire/error.hpp>
+#include <amongoc/wire/message.hpp>
 #include <amongoc/wire/proto.hpp>
 #include <amongoc/wire/stream.hpp>
 
@@ -55,10 +57,15 @@ private:
 template <writable_stream S>
 explicit client(S&&, auto&&...) -> client<S>;
 
+extern template class client<tcp_connection_rw_stream&>;
+
+extern template co_task<any_message>
+client<tcp_connection_rw_stream&>::request(one_bson_view_op_msg&&);
+
 /**
  * @brief Pass a wire client by reference
  */
-template <client_interface C>
+template <typename C>
 struct client_ref {
     C& _client;
 
@@ -69,7 +76,7 @@ struct client_ref {
     mlib::allocator<> get_allocator() const noexcept { return mlib::get_allocator(_client); }
 };
 
-template <client_interface C>
+template <typename C>
 explicit client_ref(const C&) -> client_ref<C>;
 
 /**
@@ -89,7 +96,7 @@ co_task<bson::document> simple_request(client_interface auto cl, auto body) {
  *
  * @tparam Client The wrapped client
  */
-template <client_interface Client>
+template <typename Client>
 class retrying_client {
 public:
     retrying_client() = default;
@@ -122,7 +129,7 @@ private:
     }
 };
 
-template <client_interface C>
+template <typename C>
 explicit retrying_client(C&&, int = 0) -> retrying_client<C>;
 
 /**
@@ -131,7 +138,7 @@ explicit retrying_client(C&&, int = 0) -> retrying_client<C>;
  *
  * If the response contains an error, raises `std::system_error` with the `amongoc::server_category`
  */
-template <client_interface C>
+template <typename C>
 struct checking_client {
     C _client;
 
@@ -149,7 +156,7 @@ private:
     }
 };
 
-template <client_interface C>
+template <typename C>
 explicit checking_client(C&&) -> checking_client<C>;
 
 }  // namespace amongoc::wire

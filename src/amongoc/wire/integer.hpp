@@ -2,21 +2,9 @@
 
 #include <amongoc/wire/buffer.hpp>
 
-namespace amongoc::wire {
+#include <mlib/bytes.hpp>
 
-/**
- * @brief Result of decoding an integer from an input range
- *
- * @tparam I The integer value type
- * @tparam Iter The iterator type
- */
-template <typename I, typename Iter>
-struct decoded_integer {
-    // The decoded integer value
-    I value;
-    // The input iterator position after decoding is complete
-    Iter in;
-};
+namespace amongoc::wire {
 
 /**
  * @brief Write a little-endian encoded integer to the given output range
@@ -57,33 +45,6 @@ void write_int_le(dynamic_buffer_v1 auto&& dbuf, I value) {
 }
 
 /**
- * @brief Read a little-endian encoded integer from the given byte range
- *
- * @tparam Int The integer type to be read
- * @param it The input iterator from which we will read
- * @return A pair of the integer value and final iterator position
- */
-template <typename Int, byte_range R>
-constexpr decoded_integer<Int, std::ranges::iterator_t<R>> read_int_le(R&& rng) {
-    using U          = std::make_unsigned_t<Int>;
-    U           u    = 0;
-    auto        it   = std::ranges::begin(rng);
-    const auto  stop = std::ranges::end(rng);
-    std::size_t n    = 0;
-    for (; n < sizeof u and it != stop; ++it, ++n) {
-        // Cast to unsigned byte first to prevent a sign-extension
-        U b = static_cast<std::uint8_t>(*it);
-        b <<= (8 * n);
-        u |= b;
-    }
-    if (n < sizeof u) {
-        // We had to stop before reading the full data
-        throw std::system_error(std::make_error_code(std::errc::protocol_error), "short read");
-    }
-    return {static_cast<Int>(u), it};
-}
-
-/**
  * @brief Read a little-endian encoded integer from a dynamic buffer.
  *
  * @tparam I The integer type to be read
@@ -93,7 +54,7 @@ template <typename I>
 I read_int_le(dynamic_buffer_v1 auto&& dbuf) {
     const_buffer_sequence auto data = dbuf.data();
     auto                       subr = buffers_subrange(data);
-    I                          v    = read_int_le<I>(subr).value;
+    I                          v    = mlib::read_int_le<I>(subr).value;
     dbuf.consume(sizeof(I));
     return v;
 }
