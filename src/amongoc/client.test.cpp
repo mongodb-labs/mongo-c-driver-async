@@ -96,7 +96,7 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Simple request") {
                         req_ec         = res.status;
                         bson_view resp = res.value.as<bson::document>();
                         auto      ok   = resp.find("ok");
-                        CHECK(ok->as_bool());
+                        CHECK(ok->value().as_bool());
                         did_run = true;
                     }
                 });
