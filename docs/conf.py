@@ -211,8 +211,10 @@ rst_prolog = """
 .. |O'| replace:: :math:`O'`
 .. |S_ret| replace:: :math:`S_{\\tt ret}`
 .. |x| replace:: :math:`x`
+.. |true| replace:: :cpp:`true`
+.. |false| replace:: :cpp:`false`
 
-.. |macro-impl| replace:: This is implemented as a function-like preprocessor macro
+.. |macro-impl| replace:: This is implemented as a C preprocessor macro
 
 """
 
