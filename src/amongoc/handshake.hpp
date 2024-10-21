@@ -18,7 +18,7 @@
 
 namespace amongoc {
 
-class tcp_connection_rw_stream;
+struct tcp_connection_rw_stream;
 
 /**
  * @brief A parsed handshake response message.
@@ -48,9 +48,9 @@ struct handshake_response {
     std::size_t          maxWriteBatchSize   = 100'000;
     time_point           localTime;
     std::chrono::minutes logicalSessionTimeoutMinutes{0};
-    int                  connectionId;
-    int                  minWireVersion{0};
-    int                  maxWireVersion{0};
+    std::int32_t         connectionId;
+    std::int32_t         minWireVersion{0};
+    std::int32_t         maxWireVersion{0};
     bool                 readOnly{false};
     vector<string>       compression{get_allocator()};
     vector<string>       saslSupportedMechs{get_allocator()};
