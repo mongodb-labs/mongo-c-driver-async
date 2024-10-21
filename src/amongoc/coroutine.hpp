@@ -11,7 +11,6 @@
 #include <coroutine>
 
 // C++ internal headers
-#include "./loop.hpp"
 #include "./nano/concepts.hpp"
 #include "./nano/nano.hpp"
 #include "./nano/stop.hpp"
@@ -29,7 +28,9 @@
 #include <amongoc/loop.h>
 #include <amongoc/nano/query.hpp>
 #include <amongoc/nano/result.hpp>
+#include <amongoc/nano/simple.hpp>  // Required for as_handler used by emitter.h
 #include <amongoc/operation.h>
+#include <amongoc/relocation.hpp>
 #include <amongoc/status.h>
 #include <amongoc/wire/error.hpp>
 
@@ -54,7 +55,7 @@ class co_task;
 template <typename P>
 class unique_co_handle {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_co_handle);
     // The associated coroutine handle type
     using coroutine_handle_type = std::coroutine_handle<P>;
 
@@ -201,7 +202,7 @@ private:
     };
 
     // A type-erased box that holds the operation state.
-    unique_box _operation_state = amongoc_nil.as_unique();
+    unique_box _operation_state = nil();
 
 public:
     constexpr bool await_ready() const noexcept {
@@ -332,88 +333,109 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
     // We have a stop token based on the stop functionality on the associated handler
     handler_stop_token get_stop_token() const noexcept { return fin_handler.get_stop_token(); }
 
-    // The final suspend will invoke the final handler with the coroutine's result
-    static auto final_suspend() noexcept {
-        // Note: Don't complete the handler within final_suspend directly. We want
-        // to complete the handler after the coroutine suspends.
-        return suspends_by([](co_handle co) noexcept {
+    struct handler_completer_awaiter {
+        static constexpr bool await_ready() noexcept { return false; }
+        static constexpr void await_resume() noexcept {}
+
+        static void await_suspend(co_handle co) noexcept {
             emitter_promise& self = co.promise();
             if (self.fin_handler.has_value()) {
                 // This should be the final substantial line of code, because it is possible that
                 // the handler will destroy the coroutine promise during completion.
                 self.fin_handler.complete(self.fin_result.status, std::move(self.fin_result.value));
             }
-        });
+        }
+    };
+
+    // The final suspend will invoke the final handler with the coroutine's result
+    static handler_completer_awaiter final_suspend() noexcept {
+        // Note: We cannot complete the handler within final_suspend directly. We want
+        // to complete the handler after the coroutine suspends.
+        return {};
     }
 
     // Start eagerly.
     static std::suspend_never initial_suspend() noexcept { return {}; }
 
-    // Starter function object for the amongoc_operation
-    struct starter {
-        AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
-        unique_co_handle<emitter_promise> _co;
-
-        void operator()(amongoc_handler& h) const {
-            // Move the handler from the operation to the coroutine
-            emitter_promise& pr = _co.promise();
-            if (_co.done()) {
-                // The coroutine already returned. Fulfill the handler now
-                h.complete(pr.fin_result.status, std::move(pr.fin_result.value));
-            } else {
-                // The coroutine is still pending. Attach the handler and resume
-                _co.promise().fin_handler = std::move(h).as_unique();
-                _co.resume();
-            }
-        }
-    };
-
-    // Connector function object for the amongoc_emitter
-    struct connector {
-        AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
-        unique_co_handle<emitter_promise> _co;
-
-        unique_operation operator()(unique_handler&& hnd) noexcept {
-            return unique_operation::from_starter(mlib_fwd(hnd), starter{std::move(_co)});
-        }
-    };
-
     // Create an amongoc_emitter from the coroutine handle and promise
-    amongoc_emitter get_return_object() noexcept {
-        auto co = co_handle::from_promise(*this);
-        static_assert(box_inlinable_type<connector>);
-        return unique_emitter::from_connector(mlib::terminating_allocator,
-                                              connector{unique_co_handle(std::move(co))})
-            .release();
-    }
+    amongoc_emitter get_return_object() noexcept;
 
+    // Simply returns an emitter that resolves with ENOMEM
     static amongoc_emitter get_return_object_on_allocation_failure() noexcept {
         return amongoc_alloc_failure();
     }
 
-    void unhandled_exception() noexcept {
-        try {
-            throw;
-        } catch (const wire::server_error& err) {
-            return_value(emitter_result(status::from(err.code()),
-                                        unique_box::from(this->get_allocator(),
-                                                         bson::document(err.body()))));
-        } catch (std::system_error const& err) {
-            return_value(err.code());
-        } catch (amongoc::exception const& err) {
-            return_value(err.status());
-        } catch (std::bad_alloc const&) {
-            return_value(emitter_result(amongoc_status(&amongoc_generic_category, ENOMEM)));
-        }
-    }
+    // Convert a supported C++ exception into an amongoc_status result
+    void unhandled_exception() noexcept;
 
+    // All returning a literal zero
     void return_value(std::nullptr_t) noexcept { return_value(emitter_result()); }
-
+    // Returning a box returns that as a success value
     void return_value(unique_box&& b) noexcept { return_value(emitter_result(0, std::move(b))); }
+    // Returning a status returns just that status with a nil value
     void return_value(status st) noexcept { return_value(emitter_result(st)); }
+    // Convert an error code:
     void return_value(std::error_code ec) noexcept { return_value(status::from(ec)); }
-    void return_value(emitter_result r) noexcept { fin_result = std::move(r); }
+    // Return an emitter result directly:
+    void return_value(emitter_result r) noexcept { fin_result = mlib_fwd(r); }
 };
+
+namespace co_detail {
+
+// Abstract base that defines the continuation behavior of the coroutine
+struct finisher_base {
+    // Callback during final coroutine suspension
+    virtual std::coroutine_handle<> on_final_suspend() noexcept = 0;
+    // Get the stop token for the coroutine
+    virtual in_place_stop_token stop_token() const noexcept = 0;
+};
+
+struct handoff_finisher_common : finisher_base {
+    explicit handoff_finisher_common(std::coroutine_handle<> co) noexcept
+        : _co(co) {}
+    std::coroutine_handle<> _co;
+    // Upon final suspend, resume the caller
+    std::coroutine_handle<> on_final_suspend() noexcept override { return _co; }
+};
+
+template <stoppable_token Tk>
+struct handoff_finisher_with_stop_token : handoff_finisher_common {
+    explicit handoff_finisher_with_stop_token(Tk stop, std::coroutine_handle<> co) noexcept
+        : handoff_finisher_common(co)
+        , _callback(stop, stop_requester<in_place_stop_source&>(_stop_src)) {}
+    // A stop source for this coroutine
+    in_place_stop_source _stop_src;
+    // A callback that will forward the stop request
+    stop_callback_t<Tk, stop_requester<in_place_stop_source&>> _callback;
+    // Forward our stop token
+    in_place_stop_token stop_token() const noexcept override { return _stop_src.get_token(); }
+};
+
+extern template struct handoff_finisher_with_stop_token<amongoc::handler_stop_token>;
+
+template <>
+struct handoff_finisher_with_stop_token<in_place_stop_token> : handoff_finisher_common {
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, handoff_finisher_with_stop_token);
+    explicit handoff_finisher_with_stop_token(in_place_stop_token     stop,
+                                              std::coroutine_handle<> co) noexcept
+        : handoff_finisher_common(co)
+        , _stok{stop} {}
+    // We take a copy of the stop token
+    in_place_stop_token _stok;
+    // Forward our stop token
+    in_place_stop_token stop_token() const noexcept override { return _stok; }
+};
+
+template <>
+struct handoff_finisher_with_stop_token<null_stop_token> : handoff_finisher_common {
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, handoff_finisher_with_stop_token);
+    explicit handoff_finisher_with_stop_token(null_stop_token, std::coroutine_handle<> co) noexcept
+        : handoff_finisher_common(co) {}
+    // We are never active
+    in_place_stop_token stop_token() const noexcept override { return {}; }
+};
+
+}  // namespace co_detail
 
 /**
  * @brief A generic coroutine return type that works with stop tokens an our
@@ -424,7 +446,7 @@ struct emitter_promise : coroutine_promise_allocator_mixin {
 template <typename T>
 class co_task {
 public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, co_task);
 
     /**
      * @brief The variant result type of the coroutine. Represents either a
@@ -436,19 +458,11 @@ public:
      */
     using result_type = amongoc::result<T, std::exception_ptr>;
 
-private:
-    // Abstract base that defines the continuation behavior of the coroutine
-    struct finisher_base {
-        // Callback during final coroutine suspension
-        virtual std::coroutine_handle<> on_final_suspend() noexcept = 0;
-        // Get the stop token for the coroutine
-        virtual in_place_stop_token stop_token() const noexcept = 0;
-    };
-
-public:
     struct promise_type;
     using handle_type = std::coroutine_handle<promise_type>;
 
+private:
+public:
     /**
      * @brief Nanosender type for a coroutine.
      *
@@ -464,9 +478,11 @@ public:
             return operation<R>{mlib_fwd(recv), std::move(_co)};
         }
 
+        bool is_immediate() const noexcept { return this->_co.promise()._result.index() != 0; }
+
     private:
         template <typename R>
-        class operation : public finisher_base {
+        class operation : public co_detail::finisher_base {
         public:
             explicit operation(R&& r, unique_co_handle<promise_type>&& co)
                 : _recv(mlib_fwd(r))
@@ -487,8 +503,21 @@ public:
 
             std::coroutine_handle<> on_final_suspend() noexcept override {
                 // Pass the final result to the receiver
-                mlib::invoke(static_cast<R&&>(_recv),
-                             static_cast<result_type&&>(_coroutine.promise().got_result));
+                promise_type& self = _coroutine.promise();
+                if (self._result.index() == 1) {
+                    mlib::invoke(static_cast<R&&>(_recv),
+                                 static_cast<result_type&&>(amongoc::success(
+                                     static_cast<T&&>(std::get<1>(self._result)))));
+                } else if (self._result.index() == 2) {
+                    mlib::invoke(static_cast<R&&>(_recv),
+                                 static_cast<result_type&&>(
+                                     amongoc::error(std::get<2>(self._result))));
+                } else {
+                    std::fprintf(stderr,
+                                 "co_task<T> coroutine reached final suspension without returning "
+                                 "or throwing!\n");
+                    std::abort();
+                }
                 // Do not resume another coroutine
                 return std::noop_coroutine();
             }
@@ -514,7 +543,9 @@ public:
      * @brief Convert co_task to a `nanosender` that sends the result of
      * executing the coroutine.
      */
-    sender as_sender() && noexcept { return sender{std::move(_co)}; }
+    sender as_sender() && noexcept {
+        return sender{unique_co_handle<promise_type>(std::move(_co))};
+    }
 
     /**
      * @brief The awaiter used for awaiting a `co_task`
@@ -526,78 +557,37 @@ public:
 
         awaiter(awaiter&&) = delete;
 
-        // Implementation of a finisher that will resume the parent coroutine when the child
-        // completes
-        template <typename Promise>
-        struct task_handoff_finisher : finisher_base {
-            explicit task_handoff_finisher(std::coroutine_handle<Promise> c) noexcept
-                : caller(c) {}
-            // Handle to the parent coroutine
-            std::coroutine_handle<Promise> caller;
-            // A stop source for this coroutine
-            in_place_stop_source _stop_src;
-            // Forward stop requests from the parent coroutine
-            stop_forwarder<Promise&, in_place_stop_source> _stop_fwd{caller.promise(), _stop_src};
-            // Upon final suspend, resume the caller
-            std::coroutine_handle<> on_final_suspend() noexcept override { return caller; }
-            // Forward our stop token
-            in_place_stop_token stop_token() const noexcept override {
-                if constexpr (has_stop_token<Promise>) {
-                    return _stop_src.get_token();
-                }
-                return {};
-            }
-        };
-
-        // Optimize: If the promise type exposes an in-place stop token directly, don't
-        // use a stop_forwarder.
-        template <typename Promise>
-            requires std::convertible_to<get_stop_token_t<Promise>, in_place_stop_token>
-        struct task_handoff_finisher<Promise> : finisher_base {
-            explicit task_handoff_finisher(std::coroutine_handle<Promise> c) noexcept
-                : caller(c) {}
-
-            /// This object does not need a stable address, so we can trivially relocate it.
-            /// This will enable the inline-box optimization for `_handoff`
-            AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
-
-            // Handle to the parent coroutine
-            std::coroutine_handle<Promise> caller;
-            // Upon final suspend, resume the caller
-            std::coroutine_handle<> on_final_suspend() noexcept override { return caller; }
-            // Forward the stop token directly from the promise
-            in_place_stop_token stop_token() const noexcept override {
-                return amongoc::get_stop_token(caller.promise());
-            }
-        };
-
         // Handle to the coroutine that is being awaited
         handle_type _self;
         // The finisher that will resume us when the other coroutine finishes. This is type-erased
         // because we the finisher is templated on the awaiting promise type.
-        unique_box _handoff = amongoc_nil.as_unique();
+        unique_box _handoff = nil();
 
         template <typename Promise>
             requires mlib::has_mlib_allocator<Promise>
         std::coroutine_handle<> await_suspend(std::coroutine_handle<Promise> parent) {
             // Connect our special resuming finisher with the child
-            using fin = task_handoff_finisher<Promise>;
+            using stop_token_type = effective_stop_token_t<Promise>;
+            using fin             = co_detail::handoff_finisher_with_stop_token<stop_token_type>;
             // XXX: We may be able to optimize a dynamic allocation away since we can guarantee
             // that the finisher object will not be moved after it is constructed.
-            _handoff = unique_box::make<fin>(mlib::get_allocator(parent.promise()), parent);
+            _handoff = unique_box::make<fin>(mlib::get_allocator(parent.promise()),
+                                             amongoc::effective_stop_token(parent.promise()),
+                                             parent);
+            // Tell the child how to handle completion
             _self.promise()._finisher = &_handoff.as<fin>();
             // Tell the runtime to launch the child coroutine immediately
             return _self;
         }
 
         T await_resume() const {
-            result_type& r = _self.promise().got_result;
-            if (r.has_error()) {
+            promise_type& self = _self.promise();
+            if (self._result.index() == 2) {
                 // The child threw an exception. Re-throw it now
-                std::rethrow_exception(r.error());
+                std::rethrow_exception(std::get<2>(self._result));
             } else {
                 // Perfect-forward from the child's return value
-                return static_cast<T&&>(r.value());
+                return static_cast<T&&>(std::get<1>(self._result));
             }
         }
 
@@ -613,10 +603,10 @@ public:
         using coroutine_promise_allocator_mixin::coroutine_promise_allocator_mixin;
 
         // Storage for the final result. Will hold either a value or an exception
-        result_type got_result = amongoc::error(std::exception_ptr());
+        std::variant<std::monostate, mlib::object_t<T>, std::exception_ptr> _result;
 
         // Handles the completion of the coroutine.
-        finisher_base* _finisher = nullptr;
+        co_detail::finisher_base* _finisher = nullptr;
 
         // Final suspend of the co_task
         static auto final_suspend() noexcept {
@@ -650,21 +640,21 @@ public:
         }
 
         void unhandled_exception() noexcept {
-            this->got_result.emplace_error(std::current_exception());
+            this->_result.template emplace<2>(std::current_exception());
         }
 
         // Emplace the return value in the return storage
         template <std::convertible_to<T> U>
         void return_value(U&& u) noexcept {
-            this->got_result.emplace_value(mlib_fwd(u));
+            this->_result.template emplace<1>(mlib_fwd(u));
         }
 
-        void return_value(T&& item) noexcept { this->got_result.emplace_value(mlib_fwd(item)); }
+        void return_value(T&& item) noexcept { this->_result.template emplace<1>(mlib_fwd(item)); }
     };
 
 private:
     explicit co_task(handle_type&& co) noexcept
-        : _co(std::move(co)) {}
+        : _co(mlib_fwd(co)) {}
 
     unique_co_handle<promise_type> _co;
 };
