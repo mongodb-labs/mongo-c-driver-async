@@ -809,4 +809,15 @@ mlib_constexpr mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_f
         for (int once = 1; once; once = 0)                                                         \
             for (struct mlib_math_fail_info E = _mlibMathScopeErrorInfo; once; once = 0)
 
+static mlib_constexpr int64_t mlib_clamp_i64(int64_t value,
+                                             int64_t min,
+                                             int64_t max) mlib_noexcept {
+    if (value < min) {
+        return min;
+    } else if (value > max) {
+        return max;
+    }
+    return value;
+}
+
 mlib_extern_c_end();
