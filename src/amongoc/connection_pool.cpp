@@ -9,6 +9,7 @@
 #include <bson/doc.h>
 #include <bson/view.h>
 
+#include <mlib/allocate_unique.hpp>
 #include <mlib/config.h>
 
 #include <neo/platform.hpp>
@@ -21,6 +22,15 @@
 using namespace amongoc;
 
 static_assert(wire::client_interface<connection_pool::member>);
+
+template co_task<wire::any_message> pool_client::request(wire::one_bson_view_op_msg);
+
+template struct wire::checking_client<amongoc::pool_client>;
+template co_task<wire::any_message>
+wire::checking_client<amongoc::pool_client>::request(one_bson_view_op_msg&&);
+template co_task<bson::document> wire::simple_request(amongoc::pool_client, bson_view);
+template co_task<bson::document> wire::simple_request(wire::checking_client<amongoc::pool_client>,
+                                                      bson_view);
 
 // TODO: Pool options: minPoolSize, maxPoolSize, maxIdleTimeMS, maxConnecting
 struct connection_pool::pool_impl {
