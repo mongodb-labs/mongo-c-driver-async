@@ -8,8 +8,8 @@
 #include <system_error>
 
 amongoc::wire::server_error::server_error(bson::document msg)
-    : system_error(std::error_code(msg.find("code")->as_int32(), server_category()),
-                   std::string(msg.find("errmsg")->utf8()))
+    : system_error(std::error_code(msg.find("code")->value().as_int32(), server_category()),
+                   std::string(std::string_view(msg.find("errmsg")->value().utf8)))
     , _body(mlib_fwd(msg)) {}
 
 void amongoc::wire::throw_protocol_error(std::string_view msg) {
@@ -22,7 +22,7 @@ void amongoc::wire::throw_if_section_error(amongoc::wire::body_section<bson::doc
         // No "ok" field, no error to check
         return;
     }
-    if (ok->as_bool()) {
+    if (ok->value().as_bool()) {
         // The message is okay
         return;
     }
