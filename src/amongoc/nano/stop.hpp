@@ -249,7 +249,7 @@ private:
     }
 
 public:
-    struct stop_callback_base;
+    class stop_callback_base;
 
 private:
     /// Head of linked-list of registered stop callbacks
@@ -543,7 +543,7 @@ public:
 
     /// Invoke the underlying object.
     static constexpr auto invoke(auto&& self, auto&&... args)
-        MLIB_RETURNS(std::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
+        MLIB_RETURNS(mlib::invoke(mlib_fwd(self)._wrapped, mlib_fwd(args)...));
 };
 
 template <typename Token, typename Wrapped>
