@@ -1,5 +1,6 @@
 
 #include "bson/iterator.h"
+#include "bson/value.h"
 #include <bson/doc.h>
 #include <bson/mut.h>
 #include <bson/types.h>
@@ -23,17 +24,21 @@ int main(int argc, char** argv) {
     bson_view              view       = BSON_VIEW_NULL;
     bson_doc               doc        = bson_new();
     bson_mut               mut        = BSON_MUT_v2_NULL;
-    mlib_str_view          u8         = mlib_str_view_null;
+    mlib_str               u8str      = mlib_str_null;
+    mlib_str_view          u8view     = mlib_str_view_null;
     bson_iterator          iter       = BSON_ITERATOR_NULL;
-    bson_code              code;
-    bson_symbol            sym;
+    bson_code_view         code;
+    bson_symbol_view       sym;
     bson_datetime          dt;
     bson_timestamp         ts;
-    bson_binary            bin;
+    bson_binary_view       bin;
     bson_oid               oid;
-    bson_regex             rx;
+    bson_regex_view        rx;
     struct bson_decimal128 dec;
-    bson_dbpointer         dbp;
+    bson_dbpointer_view    dbp;
+
+    bson_value_ref vref = bson_as_value_ref(42);
+    bson_value     val  = bson_value_copy(42);
 
     // Viewing APIs
     bson_data(view);
@@ -47,35 +52,15 @@ int main(int argc, char** argv) {
     bson_key(iter);
     bson_iterator_type(iter);
     bson_iterator_data(iter);
-    bson_iterator_data_size(iter);
     bson_as_view(mut);
     bson_begin(doc);
     bson_end(doc);
     bson_iterator_eq(iter, iter);
-    bson_iterator_double(iter);
-    bson_iterator_utf8(iter);
-    bson_iterator_document(iter, NULL);
-    bson_iterator_binary(iter);
-    bson_iterator_oid(iter);
-    bson_iterator_bool(iter);
-    bson_iterator_datetime(iter);
-    bson_iterator_regex(iter);
-    bson_iterator_dbpointer(iter);
-    bson_iterator_code(iter);
-    bson_iterator_symbol(iter);
-    bson_iterator_int32(iter);
-    bson_iterator_timestamp(iter);
-    bson_iterator_int64(iter);
-    bson_iterator_decimal128(iter);
-    bson_iterator_as_double(iter, NULL);
-    bson_iterator_as_bool(iter);
-    bson_iterator_as_int32(iter, NULL);
-    bson_iterator_as_int64(iter, NULL);
-    bson_key_eq(iter, u8);
+    bson_key_eq(iter, u8view);
 
     bson_insert(&mut, "hey", 1.0);
     bson_insert(&mut, iter, "hey", 1.0);
-    bson_insert(&mut, "hey", u8);
+    bson_insert(&mut, "hey", u8view);
     bson_insert(&mut, "hey", "hi");
     bson_insert(&mut, "hey", view);
     bson_insert(&mut, "hey", doc);
@@ -92,6 +77,7 @@ int main(int argc, char** argv) {
     bson_insert(&mut, "hey", ts);
     bson_insert(&mut, "hey", (int64_t)42);
     bson_insert(&mut, "hey", dec);
+    bson_insert(&mut, "hey", vref);
 
     // Document APIs
     bson_doc_capacity(doc);
@@ -110,28 +96,10 @@ int main(int argc, char** argv) {
     // Mutator
     bson_mutate(&doc);
     bson_mut_capacity(mut);
-    _bson_insert_double(&mut, iter, u8, 3.14);
-    bson_insert_utf8(&mut, iter, u8, u8);
-    _bson_insert_doc(&mut, iter, u8, view);
-    _bson_insert_array(&mut, iter, u8);
-    _bson_insert_binary(&mut, iter, u8, (bson_binary){});
-    _bson_insert_undefined(&mut, iter, u8);
-    _bson_insert_oid(&mut, iter, u8, (bson_oid){});
-    _bson_insert_bool(&mut, iter, u8, true);
-    _bson_insert_datetime(&mut, iter, u8, dt);
-    _bson_insert_null(&mut, iter, u8);
-    _bson_insert_regex(&mut, iter, u8, (bson_regex){});
-    _bson_insert_dbpointer(&mut, iter, u8, BSON_DBPOINTER_NULL);
-    _bson_insert_code(&mut, iter, u8, code);
-    _bson_insert_symbol(&mut, iter, u8, sym);
-    bson_insert_code_with_scope(&mut, iter, u8, code, view);
-    _bson_insert_int32(&mut, iter, u8, 42);
-    _bson_insert_timestamp(&mut, iter, u8, ts);
-    _bson_insert_int64(&mut, iter, u8, 42);
-    _bson_insert_decimal128(&mut, iter, u8, (struct bson_decimal128){});
-    _bson_insert_maxkey(&mut, iter, u8);
-    bson_insert_minkey(&mut, iter, u8);
-    bson_set_key(&mut, iter, u8);
+
+    bson_insert_code_with_scope(&mut, iter, u8view, code, view);
+
+    bson_set_key(&mut, iter, u8view);
     bson_tmp_uint_string(42);
     bson_relabel_array_elements_at(&mut, iter, 0);
     bson_relabel_array_elements(&mut);
@@ -141,6 +109,47 @@ int main(int argc, char** argv) {
     bson_erase(&mut, iter);
     bson_mut_child(&mut, iter);
     bson_mut_parent_iterator(mut);
+
+    bson_as_value_ref(3.1);
+    bson_as_value_ref(3.1f);
+    bson_as_value_ref(u8str);
+    bson_as_value_ref(u8view);
+    bson_as_value_ref("hello");
+    bson_as_value_ref(view);
+    bson_as_value_ref(doc);
+    bson_as_value_ref(mut);
+    bson_as_value_ref(bin);
+    bson_as_value_ref(true);
+    bson_as_value_ref(dt);
+    bson_as_value_ref(rx);
+    bson_as_value_ref(dbp);
+    bson_as_value_ref(code);
+    bson_as_value_ref(sym);
+    bson_as_value_ref((int32_t)42);
+    bson_as_value_ref(ts);
+    bson_as_value_ref((int64_t)42);
+    bson_as_value_ref(dec);
+    bson_as_value_ref(val);
+
+    bson_value_delete(bson_value_copy(3.1));
+    bson_value_delete(bson_value_copy(3.1f));
+    bson_value_delete(bson_value_copy(u8str));
+    bson_value_delete(bson_value_copy(u8view));
+    bson_value_delete(bson_value_copy("Hello"));
+    bson_value_delete(bson_value_copy(view));
+    bson_value_delete(bson_value_copy(doc));
+    bson_value_delete(bson_value_copy(mut));
+    bson_value_delete(bson_value_copy(bin));
+    bson_value_delete(bson_value_copy(true));
+    bson_value_delete(bson_value_copy(dt));
+    bson_value_delete(bson_value_copy(rx));
+    bson_value_delete(bson_value_copy(dbp));
+    bson_value_delete(bson_value_copy(code));
+    bson_value_delete(bson_value_copy(sym));
+    bson_value_delete(bson_value_copy((int32_t)42));
+    bson_value_delete(bson_value_copy(ts));
+    bson_value_delete(bson_value_copy((int64_t)42));
+    bson_value_delete(bson_value_copy(dec));
 
     return 0;
 }
