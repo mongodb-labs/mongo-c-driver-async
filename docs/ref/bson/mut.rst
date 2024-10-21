@@ -60,13 +60,15 @@ work with `bson_mut` objects, including:
 
   Obtain a new `bson_mut` mutator for the given document object.
 
+  .. important:: |mut-stable-admon|
+
 
 Inserting Data
 **************
 
 .. function::
-  [[1]] bson_iterator bson_insert(bson_mut* m, auto key, auto value)
-  [[2]] bson_iterator bson_insert(bson_mut* m, bson_iterator pos, auto key, auto value)
+  [[1]] bson_iterator bson_insert(bson_mut* m, __string_convertible key, __bson_value_convertible value)
+  [[2]] bson_iterator bson_insert(bson_mut* m, bson_iterator pos, __string_convertible key, __bson_value_convertible value)
 
   Insert a a value into a BSON document referred-to by `m`.
 
@@ -74,8 +76,8 @@ Inserting Data
   :param pos: A position at which to perform the insertion. For version ``[[1]]``,
     the default position is :expr:`bson_end(*m)`, which will append the value to
     the end of the document.
-  :param key: The new element key. Will be passed through `mlib_as_str_view`.
-  :param value: A value to be inserted. Must be one of the supported value types.
+  :param key: The new element key.
+  :param value: A value to be inserted.
   :return: Upon success, returns an iterator that refers to the inserted element.
     If there is an allocation failure, returns :expr:`bson_end(*m)`.
 
@@ -83,59 +85,13 @@ Inserting Data
 
   .. rubric:: Value Types
 
-  The following value types are supported automatically by `bson_insert`:
-
-  - `int32_t` and `int64_t`
-  - ``double`` and ``float``
-  - ``const char*`` and `mlib_str_view`
-  - `bson_view`, `bson_doc`, and `bson_mut` (will insert as a sub-document).
-  - `bson_binary`
-  - `bson_oid`
-  - ``bool``
-  - `bson_datetime`
-  - `bson_regex`
-  - `bson_dbpointer`
-  - `bson_code`
-  - `bson_symbol`
-  - `bson_timestamp`
-  - `bson_decimal128`
-
-  To insert a unit typed value (e.g. ``null``), use the typed insertion
-  functions (e.g. `bson_insert_null`).
+  The following value types are supported automatically by `bson_insert`. The
+  type of the newly inserted value is determined according to the
+  `__bson_value_convertible` type rules.
 
 
 .. function::
-  bson_iterator bson_insert_double(bson_mut d, bson_iterator p, auto key, double dbl)
-  bson_iterator bson_insert_utf8(bson_mut d, bson_iterator p, auto key, auto u8)
-  bson_iterator bson_insert_doc(bson_mut d, bson_iterator p, auto key, auto subdoc)
-  bson_iterator bson_insert_array(bson_mut d, bson_iterator p, auto key)
-  bson_iterator bson_insert_binary(bson_mut d, bson_iterator p, bson_binary bin)
-  bson_iterator bson_insert_undefined(bson_mut d, bson_iterator p, auto key)
-  bson_iterator bson_insert_oid(bson_mut d, bson_iterator p, auto key, bson_oid oid)
-  bson_iterator bson_insert_bool(bson_mut d, bson_iterator p, auto key, bool b)
-  bson_iterator bson_insert_datetime(bson_mut d, bson_iterator p, auto key, bson_datetime dt)
-  bson_iterator bson_insert_null(bson_mut d, bson_iterator p, auto key)
-  bson_iterator bson_insert_regex(bson_mut d, bson_iterator p, auto key, bson_regex rx)
-  bson_iterator bson_insert_dbpointer(bson_mut d, bson_iterator p, auto key, bson_dbpointer dbp)
-  bson_iterator bson_insert_code(bson_mut d, bson_iterator p, auto key, bson_code code)
-  bson_iterator bson_insert_symbol(bson_mut d, bson_iterator p, auto key, bson_symbol sym)
-  bson_iterator bson_insert_int32(bson_mut d, bson_iterator p, auto key, int32_t i)
-  bson_iterator bson_insert_timestamp(bson_mut d, bson_iterator p, auto key, bson_timestamp ts)
-  bson_iterator bson_insert_int64(bson_mut d, bson_iterator p, auto key, int64_t i)
-  bson_iterator bson_insert_decimal128(bson_mut d, bson_iterator p, auto key, bson_decimal128 dec)
-
-  Insert a value of the corresponding type into the document `d` at the given
-  position `p`.
-
-  :param d: A `bson_mut` mutator for some BSON document.
-  :param p: A `bson_iterator` that refers to some position. The new element will
-    be inserted at the position `p`. If `p` points to an existing element, then
-    the new element will appear *before* the element at `p`.
-  :param key: The new element key. Passed through `mlib_as_str_view`
-
-
-.. function::
-  bson_mut bson_child_mut(bson_mut* parent, bson_iterator pos)
+  bson_mut bson_mut_child(bson_mut* parent, bson_iterator pos)
 
   Obtain a mutator that manipulates a child document element at position `pos`
   within `parent`.
@@ -209,13 +165,12 @@ Behavioral Notes
 Iterator Invalidation
 *********************
 
-A BSON iterator |I| that belongs to a `bson_doc` |D| is *invalidated* if *any*
-elements are added or removed within the document heirarchy of |D|.
-
-For this reason, the insertion, erasing, and splicing APIs all return iterators
-that are adjusted to account for the invalidating operations.
+A BSON iterator |I| that belongs to a `bson_doc` |D| or and sub-document of |D|
+is *invalidated* if *any* elements are added or removed within the document
+heirarchy of |D|. **This is true even if** the operation does not cause a
+reallocation! For this reason, the insertion, erasing, and splicing APIs all
+return iterators that are adjusted to account for the invalidating operations.
 
 After modifying a subdocument |D'| using `bson_mut_child`, an iterator referring
-to |D'| can be recovered by using `bson_mut_parent_iterator` on the mutator
-created with `bson_mut_child`.
-
+to |D'| can be recovered by using `bson_mut_parent_iterator` on the mutator that
+was created with `bson_mut_child`.

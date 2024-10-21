@@ -63,7 +63,7 @@ TEST_CASE("bson/build/insert") {
     auto it = doc.begin();
     REQUIRE(it != doc.end());
     CHECK(it->key() == "foo");
-    CHECK(std::string_view(it->utf8()) == "bar");
+    CHECK(std::string_view(it->value().utf8) == "bar");
 }
 
 TEST_CASE("bson/build/subdoc") {
@@ -73,10 +73,10 @@ TEST_CASE("bson/build/subdoc") {
     child.emplace_back("bar", "baz");
     auto it = doc.begin();
     REQUIRE(it->type() == bson_type_document);
-    auto s     = it->document();
+    auto s     = it->value().document;
     auto subit = s.begin();
     CHECK(subit->key() == "bar");
-    CHECK(subit->utf8() == "baz");
+    CHECK(subit->value().utf8 == "baz");
     it = child.position_in_parent();
     CHECK(it->type() == bson_type_document);
     CHECK(it->key() == "foo");

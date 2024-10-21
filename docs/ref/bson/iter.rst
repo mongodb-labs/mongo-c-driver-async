@@ -58,9 +58,8 @@ Types
 
   .. function::
     const bson_byte* data() const
-    size_type data_size() const
 
-    :C API: `bson_iterator_data` and `bson_iterator_data_size`
+    :C API: `bson_iterator_data`
 
   .. function::
     void throw_if_error() const
@@ -78,95 +77,10 @@ Types
     .. function::
       bson_type type() const
       std::string_view key() const
+      bson_value_ref value() const
 
-      :C API: `bson_key` and `bson_iterator_type`
+      :C API: `bson_key`, `bson_iterator_type`, and `bson_iterator_value`
 
-    .. _iter.reference.access:
-
-    .. function::
-      double double_() const
-      std__string_view utf8() const
-      bson_view document() const
-      bson_view document(bson_view_errc& doc_errc) const
-      bson_binary binary() const
-      bson_oid oid() const
-      bool bool_() const
-      bson_datetime datetime() const
-      bson_regex regex() const
-      bson_dbpointer dbpointer() const
-      bson_code code() const
-      bson_symbol symbol() const
-      std__int32_t int32() const
-      bson_timestamp timestamp() const
-      std__int64_t int64() const
-      bson_decimal128 decimal128() const
-
-      Obtain the referred-to element value.
-
-      :C API: Use the :ref:`C API iterator access methods <iter.access>`
-      :throw: None of these functions throw any error. If the iterator has the
-        incorrect type, then a zero-initialized value of the corresponding type
-        will be returned instead.
-
-    .. _iter.reference.coerce:
-
-    .. function::
-      double as_double(bool* okay = nullptr) const
-      bool as_bool() const
-      std__int32_t as_int32(bool* okay = nullptr) const
-      std__int64_t as_int64(bool* okay = nullptr) const
-
-      :C API: :ref:`C API iterator coersion functions <iter.coerce>`
-
-    .. function::
-      template <typename F> \
-      decltype(auto) visit(F&& fn) const
-
-      Apply the value-visitor `fn` to the underlying element value.
-
-      :param fn: An invocable object. Must be invocable with each data type
-        that an element can hold. Each overload of the invocation must return
-        the same type.
-      :return: Returns the value obtained by invoking the visior function with
-        the appropriate value.
-
-    .. function::
-      template <typename T> \
-      std::optional<T> try_as() const
-
-      Attempt to obtain a value from the element with the given type. The type
-      must correspond to one of the data types returned by
-      :ref:`the accessor methods <iter.reference.access>`.
-
-
-.. enum:: bson_type
-
-  This enumeration corresponds to the types of BSON elements. Their numeric
-  value is equal to the octet value that is encoded in the BSON data itself.
-
-  .. enumerator::
-    bson_type_eod = 0x00
-    bson_type_double = 0x01
-    bson_type_utf8 = 0x02
-    bson_type_document = 0x03
-    bson_type_array = 0x04
-    bson_type_binary = 0x05
-    bson_type_undefined = 0x06
-    bson_type_oid = 0x07
-    bson_type_bool = 0x08
-    bson_type_date_time = 0x09
-    bson_type_null = 0x0A
-    bson_type_regex = 0x0B
-    bson_type_dbpointer = 0x0C
-    bson_type_code = 0x0D
-    bson_type_symbol = 0x0E
-    bson_type_codewscope = 0x0F
-    bson_type_int32 = 0x10
-    bson_type_timestamp = 0x11
-    bson_type_int64 = 0x12
-    bson_type_decimal128 = 0x13
-    bson_type_maxkey = 0x7F
-    bson_type_minkey = 0xFF
 
 .. enum:: bson_iter_errc
 
@@ -197,14 +111,14 @@ Document Iteration
 ******************
 
 .. function::
-  bson_iterator bson_begin(auto B)
-  bson_iterator bson_end(auto B)
+  bson_iterator bson_begin(__bson_viewable B)
+  bson_iterator bson_end(__bson_viewable B)
 
   Obtain a `bson_iterator` referring to the beginning or end of the given BSON
   document, respectively.
 
   :C++ API: Use the ``begin()`` and ``end()`` member function of the object `B`
-  :param B: A BSON document to be viewed. Passed through :c:macro:`bson_as_view`.
+  :param B: A BSON document to be viewed. Passed through `bson_as_view`.
   :return: A `bson_iterator` referring to the respective positions.
 
   .. important::
@@ -283,7 +197,7 @@ Looping
 
   :param IterName: An identifier that will be the name of the `bson_iterator`
     that will be in scope for the loop body.
-  :param Viewable: A BSON document object, passed through :c:macro:`bson_as_view`
+  :param Viewable: A BSON document object, passed through `bson_as_view`
   :param FirstIter: A first iterator to begin iteration.
   :param LastIter: The iterator at which to stop the loop.
 
@@ -336,90 +250,19 @@ Element Properties
   :precondition: :expr:`not bson_iterator_get_error(it)`
 
 
+.. function:: bson_value_ref bson_iterator_value(bson_iterator it)
+
+  Obtain a `bson_value_ref` that views the element value referred-to by `it`.
+
+  :precondition: :expr:`not bson_iterator_get_error(it)`
+
+
 .. function::
   const bson_byte* bson_iterator_data(bson_iterator it)
 
   Obtain a pointer to the element data referred-to by `it`.
 
   :precondition: :expr:`not bson_iterator_get_error(it)`
-
-
-.. function::
-  uint32_t bson_iterator_data_size(bson_iterator it)
-
-  Obtain the size of the element referred-to by `it`, as a number of bytes.
-
-
-.. _iter.access:
-
-Element Value Access
-********************
-
-.. function::
-  double bson_iterator_double(bson_iterator it)
-  mlib_str_view bson_iterator_utf8(bson_iterator it)
-  bson_view bson_iterator_document(bson_iterator it, bson_view_errc* doc_errc)
-  bson_binary bson_iterator_binary(bson_iterator it)
-  bson_oid bson_iterator_oid(bson_iterator it)
-  bool bson_iterator_bool(bson_iterator it)
-  bson_datetime bson_iterator_datetime(bson_iterator it)
-  bson_regex bson_iterator_regex(bson_iterator it)
-  bson_dbpointer bson_iterator_dbpointer(bson_iterator it)
-  bson_code bson_iterator_code(bson_iterator it)
-  bson_symbol bson_iterator_symbol(bson_iterator it)
-  int32_t bson_iterator_int32(bson_iterator it)
-  bson_timestamp bson_iterator_timestamp(bson_iterator it)
-  int64_t bson_iterator_int64(bson_iterator it)
-  bson_decimal128 bson_iterator_decimal128(bson_iterator it)
-
-  Obtain the decoded value of the referred-to element for the given iterator.
-
-  :C++ API: Use the :ref:`reference access methods <iter.reference.access>`
-  :param it: The iterator referred to a valid element.
-  :param doc_errc: For `bson_iterator_document`, an optional output parameter
-    that is written in case that the decoded document is invalid. If such an
-    error occurs, then the returned `bson_view` will be null. Upon success, the
-    value `bson_view_errc_okay <bson_view_errc::bson_view_errc_okay>` is
-    written.
-
-  If the `bson_iterator_type` of the iterator `it` does not match the target
-  type, returns a zero-initialized value of the corresponding type.
-
-.. _iter.coerce:
-.. function::
-  double bson_iterator_as_double(bson_iterator it, bool* okay)
-  bool bson_iterator_as_bool(bson_iterator it)
-  int32_t bson_iterator_as_int32(bson_iterator it, bool* okay)
-  int64_t bson_iterator_as_int64(bson_iterator it, bool* okay)
-
-  Coerce the given BSON value to an numeric type.
-
-  :C++ API: :ref:`The reference proxy coersion functions <iter.reference.coerce>`
-  :param it: A valid iterator to be decoded.
-  :param okay: An optional output parameter. If the returned value corresponds
-    to the decoded element value, this is set to :cpp:`true`. Otherwise, this
-    will be set to :cpp:`false`. `bson_iterator_as_bool` always coerces, so it
-    omits this parameter.
-
-  .. rubric:: Notes on behavior:
-
-  - For coercing a boolean element to a number, a :cpp:`true` element becomes :cpp:`1`,
-    and :cpp:`false` becomes :cpp:`0`.
-  - Coercing between double, int32, and int64 will do the coercing according to
-    the language's conversion rules. (e.g. an **int64** converted to a
-    **double** will first extract an `int64_t` and then convert it to a
-    :cpp:`double`)
-  - For coercing to a ``bool`` with `bson_iterator_as_bool`, the following
-    applies:
-
-    - If the element is a numeric type, a :cpp:`true` value will be returned if
-      if is not equal to :cpp:`0`. Otherwise, it returns :cpp:`false`.
-    - For documents, arrays, and strings, the returned value is a bool
-      corresponding to whether the corresponding value is non-empty. If decoding
-      a subdocument fails, returns :cpp:`false`.
-    - For BSON types **EOD**, **undefined**, **null**, **min-key**, and
-      **max-key**, returns :cpp:`false`.
-    - For all other BSON types, returns :cpp:`true` unconditionally.
 
 
 Behavioral Notes

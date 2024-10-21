@@ -79,9 +79,6 @@ Given an iterator referring to a valid element, we can ask its type using
   :start-after: [get-value]
   :end-before: end.
 
-There are several decoding functions. Refer to :ref:`iter.access` for a complete
-list.
-
 
 Example: Seek a Subdocument Element and Iterate It
 ##################################################

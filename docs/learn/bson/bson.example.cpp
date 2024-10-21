@@ -180,7 +180,7 @@ void get_double(bson_view v) {
         fputs("Expected a UTF-8 element", stderr);
         return;
     }
-    printf("Element '%s' has value '%s'\n", bson_key(it).data, bson_iterator_utf8(it).data);
+    printf("Element '%s' has value '%s'\n", bson_key(it).data, bson_iterator_value(it).utf8.data);
 }
 // end.
 
@@ -203,13 +203,7 @@ bool subdoc_iter(bson_view top) {
     }
 
     // Decode the array as a subdocument:
-    bson_view_errc err;
-    bson_view      array = bson_iterator_document(it, &err);
-    if (bson_data(array) == NULL) {
-        // Decoding the subdocument failed
-        fprintf(stderr, "Failed to decode child document [error %d]", err);
-        return false;
-    }
+    bson_array_view array = bson_iterator_value(it).array;
 
     // Iterate over each element of the array
     bson_foreach(sub_iter, array) {

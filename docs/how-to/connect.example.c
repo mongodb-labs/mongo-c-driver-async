@@ -1,5 +1,6 @@
 #include <amongoc/amongoc.h>
 
+#include <bson/iterator.h>
 #include <bson/mut.h>
 
 /**
@@ -125,19 +126,20 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
     bson_foreach(it, doc) {
         mlib_str_view str = bson_key(it);
         fprintf(into, "%s  \"%s\": ", indent, str.data);
-        switch (bson_iterator_type(it)) {
+        bson_value_ref val = bson_iterator_value(it);
+        switch (val.type) {
         case bson_type_eod:
         case bson_type_double:
-            fprintf(into, "%f,\n", bson_iterator_double(it));
+            fprintf(into, "%f,\n", val.double_);
             break;
         case bson_type_utf8:
-            fprintf(into, "\"%s\",\n", bson_iterator_utf8(it).data);
+            fprintf(into, "\"%s\",\n", val.utf8.data);
             break;
         case bson_type_document:
         case bson_type_array: {
             char*     i2     = astrcat(indent, "  ");
-            bson_view subdoc = bson_iterator_document(it, NULL);
-            print_bson(into, subdoc, "  ");
+            bson_view subdoc = bson_iterator_value(it).document;
+            print_bson(into, subdoc, i2);
             free(i2);
             fprintf(into, ",\n");
             break;
@@ -146,16 +148,16 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
             fprintf(into, "[undefined],\n");
             break;
         case bson_type_bool:
-            fprintf(into, bson_iterator_bool(it) ? "true,\n" : "false,\n");
+            fprintf(into, val.bool_ ? "true,\n" : "false,\n");
             break;
         case bson_type_null:
             fprintf(into, "null,\n");
             break;
         case bson_type_int32:
-            fprintf(into, "%d,\n", bson_iterator_int32(it));
+            fprintf(into, "%d,\n", val.int32);
             break;
         case bson_type_int64:
-            fprintf(into, "%ld,\n", bson_iterator_int64(it));
+            fprintf(into, "%ld,\n", val.int64);
             break;
         case bson_type_timestamp:
         case bson_type_decimal128:
@@ -163,7 +165,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
         case bson_type_minkey:
         case bson_type_oid:
         case bson_type_binary:
-        case bson_type_date_time:
+        case bson_type_datetime:
         case bson_type_regex:
         case bson_type_dbpointer:
         case bson_type_code:

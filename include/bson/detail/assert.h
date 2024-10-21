@@ -2,6 +2,8 @@
 
 #include <mlib/config.h>
 
+#include <stdlib.h>  // abort()
+
 // clang-format off
 #pragma push_macro("BSON_VIEW_CHECKED")
 #ifdef BSON_VIEW_CHECKED
@@ -36,6 +38,14 @@ enum {
         __builtin_unreachable();                                                                   \
     } else                                                                                         \
         ((void)0)
+
+#if mlib_is_gnu_like()
+#define BV_LIKELY(X) __builtin_expect((X), 1)
+#define BV_UNLIKELY(X) __builtin_expect((X), 0)
+#else
+#define BV_LIKELY(X) (X)
+#define BV_UNLIKELY(X) (X)
+#endif
 
 mlib_extern_c_begin();
 

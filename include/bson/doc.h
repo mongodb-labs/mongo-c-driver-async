@@ -2,6 +2,8 @@
 
 #include <bson/detail/assert.h>
 #include <bson/detail/mem.h>
+#include <bson/iterator.h>
+#include <bson/value_ref.h>
 #include <bson/view.h>
 
 #include <mlib/alloc.h>
@@ -23,8 +25,14 @@ typedef struct bson_doc {
     struct mlib_allocator _allocator;
 
 #if mlib_is_cxx()
-    friend constexpr ::bson_iterator begin(const bson_doc& m) noexcept { return bson_begin(m); }
-    friend constexpr ::bson_iterator end(const bson_doc& m) noexcept { return bson_end(m); }
+    ::bson_iterator begin() const noexcept { return bson_begin(*this); }
+    ::bson_iterator end() const noexcept { return bson_end(*this); }
+
+    operator bson_view() const noexcept {
+        bson_view r;
+        r._bson_document_data = this->_bson_document_data;
+        return r;
+    }
 #endif  // C++
 } bson_doc;
 
@@ -58,7 +66,7 @@ mlib_constexpr bson_byte* _bson_doc_buffer_ptr(bson_doc d) mlib_noexcept {
 }
 
 // Obtain the byte capacity of the document managed by `d`
-inline uint32_t bson_doc_capacity(bson_doc d) mlib_noexcept {
+mlib_constexpr uint32_t bson_doc_capacity(bson_doc d) mlib_noexcept {
     bson_byte* p = _bson_doc_buffer_ptr(d);
     return _bson_read_u32le(p);
 }
@@ -107,7 +115,7 @@ inline bool _bson_realloc(bson_doc* doc, uint32_t new_size) mlib_noexcept {
     _bson_write_u32le(new_buf, got_size - cookie_size);
     if (prev_buf == NULL) {
         // We reallocated a region after using the empty doc. Initialize it to an empty doc
-        _bson_memcpy(bson_mut_data(*doc), _bson_get_global_empty_doc_data(), 5);
+        memcpy(bson_mut_data(*doc), _bson_get_global_empty_doc_data(), 5);
     }
     return true;
 }
@@ -126,7 +134,7 @@ inline bool _bson_realloc(bson_doc* doc, uint32_t new_size) mlib_noexcept {
  * All outstanding iterators and pointers are invalidated if the requested size
  * is greater than our current capacity.
  */
-mlib_constexpr int32_t bson_doc_reserve(bson_doc* d, uint32_t size) mlib_noexcept {
+inline int32_t bson_doc_reserve(bson_doc* d, uint32_t size) mlib_noexcept {
     if (bson_doc_capacity(*d) >= size) {
         // We already have enough room
         return (int32_t)bson_doc_capacity(*d);
@@ -183,8 +191,14 @@ typedef struct bson_mut {
     uint32_t _offset_within_parent_data;
 
 #if mlib_is_cxx()
-    friend constexpr ::bson_iterator begin(const bson_mut& m) noexcept { return bson_begin(m); }
-    friend constexpr ::bson_iterator end(const bson_mut& m) noexcept { return bson_end(m); }
+    friend ::bson_iterator begin(const bson_mut& m) noexcept { return bson_begin(m); }
+    friend ::bson_iterator end(const bson_mut& m) noexcept { return bson_end(m); }
+
+    operator bson_view() const noexcept {
+        bson_view r;
+        r._bson_document_data = this->_bson_document_data;
+        return r;
+    }
 #endif  // C++
 } bson_mut;
 
@@ -243,7 +257,7 @@ inline bson_doc _bson_new(uint32_t reserve, mlib_allocator allocator) mlib_noexc
             return ret;
         }
         // Set an initial empty document:
-        _bson_memset(bson_mut_data(ret), 0, bson_doc_capacity(ret));
+        memset(bson_mut_data(ret), 0, bson_doc_capacity(ret));
         ret._bson_document_data[0].v = 5;
     }
     return ret;
@@ -262,7 +276,7 @@ inline bson_doc _bson_copy_view_with_allocator(bson_view      other,
     // the global empty instance. We should not attempt to write anything there.
     // It is already statically initialized.
     if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
-        _bson_memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
+        memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
     }
     return ret;
 }
@@ -273,7 +287,7 @@ inline bson_doc _bson_copy_mut_with_allocator(struct bson_mut other,
     // the global empty instance. We should not attempt to write anything there.
     // It is already statically initialized.
     if (ret._bson_document_data != _bson_get_global_empty_doc_data()) {
-        _bson_memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
+        memcpy(bson_mut_data(ret), bson_data(other), bson_size(other));
     }
     return ret;
 }
@@ -341,7 +355,7 @@ mlib_extern_c_begin();
 /**
  * @brief Free the resources of the given BSON document
  */
-inline void bson_delete(bson_doc d) mlib_noexcept {
+mlib_constexpr void bson_delete(bson_doc d) mlib_noexcept {
     if (d._bson_document_data == NULL
         || d._bson_document_data == _bson_get_global_empty_doc_data()) {
         // Object is null or statically allocated
@@ -351,6 +365,10 @@ inline void bson_delete(bson_doc d) mlib_noexcept {
 }
 
 mlib_extern_c_end();
+
+#define T bson_doc
+#define VecDestroyElement bson_delete
+#include <mlib/vec.t.h>
 
 #if mlib_is_cxx()
 
@@ -371,6 +389,8 @@ public:
 
     using iterator = bson_iterator;
 
+    using enable_trivially_relocatable = document;
+
 #if !mlib_audit_allocator_passing()
     document()
         : document(allocator_type(mlib_default_allocator)) {}
@@ -383,14 +403,14 @@ public:
     /**
      * @brief Construct a document object using the given allocator
      */
-    constexpr explicit document(allocator_type alloc)
+    explicit document(allocator_type alloc)
         : document(alloc, 5) {}
 
     /**
      * @brief Construct a new document with the given allocator, and reserving
      * the given capacity in the new document.
      */
-    constexpr explicit document(allocator_type alloc, std::size_t reserve_size) {
+    explicit document(allocator_type alloc, std::size_t reserve_size) {
         _doc = bson_new(static_cast<std::uint32_t>(reserve_size), alloc.c_allocator());
         if (data() == nullptr) {
             throw std::bad_alloc();
@@ -400,7 +420,7 @@ public:
     /**
      * @brief Take ownership of a C-style `::bson_doc` object
      */
-    constexpr explicit document(bson_doc&& o) noexcept {
+    explicit document(bson_doc&& o) noexcept {
         _doc = o;
         o    = bson_doc{};
     }
@@ -411,17 +431,17 @@ public:
      * @param v The document to be copied
      * @param alloc An allocator for the operation
      */
-    constexpr explicit document(bson_view v, allocator_type alloc)
+    explicit document(bson_view v, allocator_type alloc)
         : _doc(bson_new(v, alloc.c_allocator())) {
         if (data() == nullptr)
             throw std::bad_alloc();
     }
 
-    constexpr document(document const& other) { _doc = bson_new(other._doc); }
-    constexpr document(document&& other) noexcept
+    document(document const& other) { _doc = bson_new(other._doc); }
+    document(document&& other) noexcept
         : _doc(((document&&)other).release()) {}
 
-    constexpr document& operator=(const document& other) {
+    document& operator=(const document& other) {
         _del();
         _doc = bson_new(other._doc);
         if (data() == nullptr) {
@@ -430,36 +450,35 @@ public:
         return *this;
     }
 
-    constexpr document& operator=(document&& other) noexcept {
+    document& operator=(document&& other) noexcept {
         _del();
         _doc = ((document&&)other).release();
         return *this;
     }
 
-    constexpr iterator begin() const noexcept { return bson_begin(_doc); }
-    constexpr iterator end() const noexcept { return bson_end(_doc); }
+    iterator begin() const noexcept { return bson_begin(_doc); }
+    iterator end() const noexcept { return bson_end(_doc); }
 
-    constexpr iterator find(auto&& key) const noexcept
+    iterator find(auto&& key) const noexcept
         requires requires(view v) { v.find(key); }
     {
         return view(*this).find(key);
     }
 
-    constexpr bson_byte*       data() noexcept { return bson_mut_data(_doc); }
-    constexpr const bson_byte* data() const noexcept { return bson_data(_doc); }
-    constexpr std::size_t      byte_size() const noexcept { return bson_size(_doc); }
+    bson_byte*       data() noexcept { return bson_mut_data(_doc); }
+    const bson_byte* data() const noexcept { return bson_data(_doc); }
+    std::size_t      byte_size() const noexcept { return bson_size(_doc); }
 
-    constexpr bool empty() const noexcept { return byte_size() == 5; }
+    bool empty() const noexcept { return byte_size() == 5; }
 
-    constexpr void reserve(std::size_t n) {
+    void reserve(std::size_t n) {
         if (::bson_doc_reserve(&_doc, static_cast<std::uint32_t>(n)) < 0) {
             throw std::bad_alloc();
         }
     }
 
-    constexpr operator bson_view() const noexcept {
-        return bson_view::from_data(data(), byte_size());
-    }
+    operator bson_view() const noexcept { return bson_view::from_data(data(), byte_size()); }
+    operator bson_value_ref() const noexcept { return bson_value_ref::from(bson_view(*this)); }
 
     /**
      * @brief Prepare the internal buffer to be overwritten via invoking the given
@@ -472,7 +491,7 @@ public:
      * state.
      */
     template <class Operation>
-    constexpr void resize_and_overwrite(std::size_t len, Operation oper) {
+    void resize_and_overwrite(std::size_t len, Operation oper) {
         BV_ASSERT(len >= 5);
         reserve(len);
         try {
@@ -484,21 +503,21 @@ public:
     }
 
     // Obtain a reference to the wrapped C API struct
-    constexpr bson_doc&       get() noexcept { return _doc; }
-    constexpr const bson_doc& get() const noexcept { return _doc; }
+    bson_doc&       get() noexcept { return _doc; }
+    const bson_doc& get() const noexcept { return _doc; }
 
-    constexpr bson_doc release() && noexcept {
+    bson_doc release() && noexcept {
         auto m                   = _doc;
         _doc._bson_document_data = nullptr;
         return m;
     }
 
-    constexpr allocator_type get_allocator() const noexcept {
+    allocator_type get_allocator() const noexcept {
         return allocator_type(::bson_doc_get_allocator(_doc));
     }
 
 private:
-    constexpr void _del() noexcept {
+    void _del() noexcept {
         ::bson_delete(_doc);
         _doc._bson_document_data = nullptr;
     }

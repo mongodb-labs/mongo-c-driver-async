@@ -79,19 +79,22 @@ Create & Deletion
 
 .. function::
   [[1]] bson_doc bson_new(uint32_t reserve, mlib_allocator alloc)
-  [[2]] bson_doc bson_new(auto doc, mlib_allocator alloc)
+  [[2]] bson_doc bson_new(__bson_viewable doc, mlib_allocator alloc)
   [[3]] bson_doc bson_new()
   [[4]] bson_doc bson_new(uint32_t reserve)
   [[5]] bson_doc bson_new(mlib_allocator alloc)
   [[6]] bson_doc bson_new(bson_doc doc)
-  [[7]] bson_doc bson_new(auto doc)
+  [[7]] bson_doc bson_new(__bson_viewable doc)
 
   Create a new `bson_doc`.
 
   :param reserve: The number of bytes to reserve for the new document. The
     default and minimum is 5 bytes.
   :param doc: A document to be copied.
-  :param alloc: An allocator to be used with the docum
+  :param alloc: An allocator to be used with the document.
+  :allocation:
+    Uses `alloc`, if provided. Overload ``[[6]]`` will inherit the allocator
+    from `doc`. Other overloads will use `mlib_default_allocator`.
   :header: |this-header|
 
   .. rubric:: Overloads
