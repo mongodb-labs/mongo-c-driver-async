@@ -29,7 +29,7 @@ TEST_CASE("Async/Transform with the C API") {
                       mlib_terminating_allocator,
                       amongoc_nil,
                       [](box, status*, box value) noexcept {
-                          amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
+                          amongoc_box_cast(int, value) = 81 + amongoc_box_cast(int, value);
                           return value;
                       })
              .as_unique();
