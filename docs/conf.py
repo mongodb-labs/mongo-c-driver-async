@@ -83,6 +83,7 @@ CPPREF_INVENTORY: list[InvItem] = [
     InvItem(["std__ptrdiff_t"], "cpp:type", "cpp/types/ptrdiff_t", "std::ptrdiff_t"),
     InvItem(["std__byte"], "cpp:type", "cpp/types/byte", "std::byte"),
     InvItem(["std__forward_iterator"], "cpp:concept", "cpp/iterator/forward_iterator", "std::forward_iterator"),
+    InvItem(["std__ranges__forward_range"], "cpp:concept", "cpp/ranges/forward_range", "std::ranges::forward_range"),
     InvItem(["timespec"], "cpp:class", "c/chrono/timespec"),
     *itertools.chain.from_iterable(
         (
@@ -196,6 +197,10 @@ rst_prolog = """
     This page is for |amongoc| developers and the documented components and
     behavior are not part of any public API guarantees.
 
+.. |inline| replace:: :cpp:`inline`
+.. |extern| replace:: :cpp:`extern`
+.. |static| replace:: :cpp:`static`
+.. |const| replace:: :cpp:`const`
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
@@ -204,8 +209,10 @@ rst_prolog = """
 .. |E| replace:: :math:`E`
 .. |H| replace:: :math:`H`
 .. |I| replace:: :math:`I`
+.. |M| replace:: :math:`M`
 .. |Q| replace:: :math:`Q`
 .. |R| replace:: :math:`R`
+.. |R_1| replace:: :math:`R_1`
 .. |S| replace:: :math:`S`
 .. |T| replace:: :math:`T`
 .. |V| replace:: :math:`V`
@@ -218,6 +225,7 @@ rst_prolog = """
 .. |false| replace:: :cpp:`false`
 
 .. |macro-impl| replace:: This is implemented as a C preprocessor macro
+.. |iff| replace:: *if-and-only-if*
 
 """
 
