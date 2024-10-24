@@ -7,6 +7,7 @@
 .. toctree::
   :maxdepth: 2
 
+  guidelines
   nanosenders
   coroutines
   result
