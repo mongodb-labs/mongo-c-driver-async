@@ -13,3 +13,6 @@
   result
   queries
   documenting
+
+  bson-building
+  bson-parsing
