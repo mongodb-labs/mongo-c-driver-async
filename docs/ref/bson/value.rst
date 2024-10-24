@@ -12,9 +12,13 @@ BSON Values
 Types
 #####
 
-.. struct:: bson_value_ref
+.. struct:: [[zero_initializable]] bson_value_ref
 
   A non-owning read-only view of a BSON value.
+
+  :zero-initialized: |attr.zero-init| Has type `bson_type_eod`, and represents a
+    *null* value reference. **Note** that this is distinct from a reference to a
+    `bson_type_null` value!
 
   .. note:: This is a union-like type. Only one of the value fields is active
     at a time. Check `type` before accessing other fields.
@@ -100,9 +104,14 @@ Types
       the appropriate value.
 
 
-.. struct:: bson_value
+.. struct:: [[zero_initializable]] bson_value
 
   An owning dynamically-typed BSON value.
+
+  :zero-initialized: |attr.zero-init| Represents a lack of any value. Calling
+    `bson_value_delete` on such an object is a no-op. Creating a `bson_value_ref`
+    from such a value will create a null `bson_value_ref`. Using a zero-initialized
+    `bson_value` for most other operations is undefined behavior.
 
   .. note:: This is a union-like type. Only one of the value fields is active
     at a time. Check `type` before accessing other fields.

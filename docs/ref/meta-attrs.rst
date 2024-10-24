@@ -87,6 +87,57 @@ After passing an object to a |attr.transfer| function parameter, the only legal\
 object with a live value) or discarding (letting the object leave scope).
 
 
+|attr.nullable|
+###############
+
+.. doc-attr:: [[nullable]]
+
+  A parameter marked with |attr.nullable| indicates that passing a null-value
+  for the object is valid. For pointers, this indicates that passing
+  :cpp:`NULL`/:cpp:`nullptr` has well-defined behavior. Other pointer-like
+  objects may also have a null state, usually their |zero-initialized| state.
+
+  If a parameter is not marked |attr.nullable|, assume that passing a null
+  argument will introduce undefined behavior.
+
+
+|attr.zero-init|
+################
+
+.. doc-attr:: [[zero_initializable]]
+
+  When an aggregate type is annotated with |attr.zero-init|, it indicates that a
+  zero-initialized/empty-initialized instance of that aggregate type is a valid
+  object for certain operations. Usually, this corresponds to a null or zero
+  state. A type that is |attr.zero-init| should have a **Zero-initialized**
+  field describing the semantics of such a value.
+
+  For such an object, declaring a |static| instance with no explicit initializer
+  will be valid, as well as initializing using empty braces :cpp:`{}`, or using
+  `memset` to fill its object representation with zero-bytes.
+
+
+.. _zero-init:
+
+Zero Initialization / Empty Initialization
+******************************************
+
+`Zero initialization`__ (C++) and `empty initialization`__ (C) are similar
+concepts with similar behavior. For convenience, this documentation refers to
+*zero initialization* to mean either the C++ concept or *empty initialization*
+in C.
+
+In C++ and C23, a trivial aggregate may be initialized with an empty brace pair
+:cpp:`{ }` to achieve empt/zero-initialization. In prior C versions,
+initializing with a brace pair and a single literal zero :cpp:`{ 0 }` will
+usually achieve the same effect. Some C compilers implement the C23 language
+feature as an extension in earlier C versions. A trivial object declared
+|static| will always be zero-initialized at compile time.
+
+__ https://en.cppreference.com/w/cpp/language/zero_initialization
+__ https://en.cppreference.com/w/c/language/initialization
+
+
 |attr.type|
 ###########
 
@@ -99,7 +150,7 @@ object with a live value) or discarding (letting the object leave scope).
   - `amongoc_emitter` - Specifies the success result type of the emitter.
   - `amongoc_handler` - Specifies the result type expected by the handler.
   - `amongoc_box` and `amongoc_view` - Specifies the type that is contained
-    within the box for use with :c:macro:`amongoc_box_cast`
+    within the box for use with `amongoc_box_cast`
   - ``void*`` - Specifies the pointed-to type for the pointer.
 
 
@@ -124,6 +175,17 @@ object with a live value) or discarding (letting the object leave scope).
 
   For any methods not declared with :doc-attr:`[[optional]]`, assume that the
   method is required.
+
+
+The `__type` Parameter
+######################
+
+.. type:: __type
+
+  Certain function-like macros are annotated with a `__type` parameter. This
+  indicates that the corresponding macro argument should be a compile-time type
+  specifier rather than a runtime value.
+
 
 .. rubric:: Footnotes
 

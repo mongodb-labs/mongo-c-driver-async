@@ -13,14 +13,19 @@ Types
 #####
 
 .. struct::
-  bson_view
-  bson_array_view
+  [[zero_initializable]] bson_array_view
+  [[zero_initializable]] bson_view
 
-  This types represents null-able read-only view of a BSON document or array
+  These types represents null-able read-only view of a BSON document or array
   object. The object is pointer-sized, trivial, and zero-initializable. The
   `bson_array_view` has the same interface as `bson_view`, but disambiguates
   between arrays and documents at compile-time.
 
+  :zero-initializable:
+    |attr.zero-init| Represents a null view: A view that does not refer to any
+    document, equivalent to `bson_view_null`. One can call `bson_data` to test
+    for a null view. Using a null view is undefined behavior for most other
+    operations.
   :header: :header-file:`bson/view.h`
 
   .. note:: This type should not be created manually. It should be created using
@@ -142,7 +147,7 @@ View Inspection
 ***************
 
 .. function::
-  bson_view bson_as_view(__bson_viewable B)
+  bson_view bson_as_view(__bson_viewable [[nullable]] B)
 
   Obtain a `bson_view` for the given document-like object. This is also used by
   other function-like macros to coerce `bson_mut` and `bson_doc` to `bson_view`
@@ -167,7 +172,7 @@ View Inspection
   :param error: An optional output parameter that will describe the error encountered
     while decoding a BSON document from `data`.
   :return: A `bson_view` that views the document at `data`, or a null view if an
-    error occured. Checking for null can be done with :c:macro:`bson_data`.
+    error occured. Checking for null can be done with `bson_data`.
   :header: :header-file:`bson/view.h`
 
   The returned view is valid until:
@@ -192,11 +197,12 @@ View Inspection
 
 
 .. function::
-  const bson_byte* bson_data(__bson_viewable B)
-  bson_byte* bson_mut_data(__bson_viewable B)
+  const bson_byte* bson_data(__bson_viewable [[nullable]] B)
+  bson_byte* bson_mut_data(__bson_viewable [[nullable]] B)
 
   Obtain a pointer to `bson_byte` referring to the first byte in the given
-  document.
+  document. |attr.nullable| If the given object is a null view/document, this
+  returns a null pointer.
 
   :header: :header-file:`bson/iterator.h`
 

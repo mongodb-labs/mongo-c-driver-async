@@ -11,6 +11,11 @@ Header: ``amongoc/status.h``
 
   .. note:: This API is inspired by the C++ `std__error_code` API
 
+  :zero-initialized: A |zero-initialized| `amongoc_status` has **no defined
+    semantics**. If you want a default "okay" status, use `amongoc_okay`. To
+    create a constant-initialized okay status, use :cpp:`{&amongoc_generic_category, 0}`
+    as an initializer.
+
   .. member:: const amongoc_status_category_vtable* category
 
     Pointer to a virtual method table for status categories. This pointer can
@@ -187,6 +192,7 @@ Built-In |amongoc| Categories
     const amongoc_status_category_vtable amongoc_addrinfo_category
     const amongoc_status_category_vtable amongoc_io_category
     const amongoc_status_category_vtable amongoc_server_category
+    const amongoc_status_category_vtable amongoc_client_category
     const amongoc_status_category_vtable amongoc_unknown_category
 
   The above `amongoc_status_category_vtable` objects are the built-in status
@@ -229,9 +235,17 @@ Built-In |amongoc| Categories
 
   .. index:: pair: status category; amongoc.server
 
-  *server*
+  *server* (``amongoc.server``)
     These error conditions correspond to error codes returned from a MongoDB
     server. These values are named in :enum:`amongoc_server_errc`.
+
+  .. index:: ! pair: status category; amongoc.client
+
+  *client* (``amongoc.client``)
+    These error conditions correspond to erroneous use of client-side APIs.
+    These arise to prevent communication with a server in a way that would
+    likely cause undesired behavior, often from client/server incompatibilities.
+    These error values are named in :enum:`amongoc_client_errc`.
 
   .. index:: pair: status category; amongoc.unknown
 
@@ -245,6 +259,7 @@ Built-In |amongoc| Categories
     code.
 
 
+.. index:: ! pair: status codes; amongoc.server
 .. enum:: amongoc_server_errc
 
   This enum contains error code values corresponding to their numeric value
@@ -258,6 +273,21 @@ Built-In |amongoc| Categories
 
   .. note:: This enum is not exhaustive, and it is possible for a server to
     return an error code that does not have a corresponding enumerator.
+
+.. index:: ! pair: status codes; amongoc.client
+.. enum:: amongoc_client_errc
+
+  This enum corresponds to error codes that may arise for the
+  `amongoc_client_category` status category.
+
+  .. enumerator:: amongoc_client_errc_okay = 0
+
+    Represents no error
+
+  .. enumerator:: amongoc_client_errc_invalid_update_document
+
+    Issued during update CRUD operations where the update specification document
+    is invalid.
 
 
 C++ Exception Type

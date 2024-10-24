@@ -19,6 +19,9 @@ Types
   document. It can be used to read elements from a `bson_view` or `bson_doc`,
   and is also used when modifying elements with `bson_mut`.
 
+  :zero-initialized: A zero-initialized `bson_iterator` has no defined semantics
+    and should not be used for any operations.
+
   :header: |this-header|
 
   This type is fully trivial and is the size of two pointers.

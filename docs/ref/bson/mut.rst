@@ -21,6 +21,8 @@ Types
   A BSON document mutator.
 
   :C++ API: `bson::mutator`
+  :zero-initialized: A zero-initialized `bson_mut` has no defined semantics and
+    should not be used.
   :header: |this-header|
 
   A `bson_mut` is created using `bson_mutate` or may come from another API that

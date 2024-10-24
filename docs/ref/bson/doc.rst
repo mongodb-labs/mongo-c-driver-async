@@ -12,13 +12,17 @@ BSON Documents
 Types
 #####
 
-.. struct:: bson_doc
+.. struct:: [[zero_initializable]] bson_doc
 
   A struct that owns a top-level BSON document. This type is trivially
   relocatable.
 
   :C++ API: `bson::document` should be preferred in C++ code, as it will
     automatically copy and destroy document objects.
+  :zero-initialized: |attr.zero-init| Represents a null `bson_doc`. This is
+    *not* equivalent to an *empty* `bson_doc`. Calling `bson_delete` on
+    such a document is a no-op, but all other operations are undefined behavior.
+    Use `bson_new()` with no arguments to create an empty document object.
   :header: |this-header|
 
   A `bson_doc` has three significant properties:

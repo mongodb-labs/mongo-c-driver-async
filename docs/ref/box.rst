@@ -12,11 +12,14 @@ Header: :header-file:`amongoc/box.h`
 Types
 #####
 
-.. struct:: amongoc_box
+.. struct:: [[zero_initializable]] amongoc_box
 
   A type-erased boxed value of arbitrary type. The box manages storage for the
   boxed value and may contain a destructor function that will be executed when
   the box is destroyed.
+
+  :zero-initialized: |attr.zero-init| A zero-initialized `amongoc_box` is
+    equivalent to `amongoc_nil`.
 
   :header: |this-header|
 
@@ -190,8 +193,8 @@ Box Creation / Destruction
   amongoc_box_init_noinline(amongoc_box b, __type T, amongoc_box_destructor dtor)
   amongoc_box_init_noinline(amongoc_box b, __type T, amongoc_box_destructor dtor, mlib_allocator alloc)
 
-  Initialize a box to contain a zero-initialized storage for an instance of type
-  `T`.
+  Initialize a box to contain a |zero-initialized| storage for an instance of
+  type `T`.
 
   :C++ API: `amongoc::unique_box::from`
   :param b: An non-const lvalue expression of type `amongoc_box`. This is the

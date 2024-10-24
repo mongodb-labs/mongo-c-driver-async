@@ -186,6 +186,9 @@ rst_prolog = """
 .. |attr.transfer| replace:: :doc-attr:`[[transfer]]`
 .. |attr.type| replace:: :doc-attr:`[[type(…)]] <[[type(T)]]>`
 .. |attr.storage| replace:: :doc-attr:`[[storage]]`
+.. |attr.nullable| replace:: :doc-attr:`[[nullable]]`
+.. |attr.zero-init| replace:: :doc-attr:`[[zero_initializable]]`
+.. |zero-initialized| replace:: :ref:`zero-initialized <zero-init>`
 .. |C++ API| replace:: :strong:`(C++ API)`
 
 .. |devdocs-page| replace::

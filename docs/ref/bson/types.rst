@@ -14,7 +14,7 @@ Types
 Type Enumeration
 ****************
 
-.. enum:: bson_type
+.. enum:: [[zero_initializable]] bson_type
 
   This enumeration corresponds to the types of BSON elements. Their numeric
   value is equal to the octet value that is encoded in the BSON data itself.
@@ -51,18 +51,17 @@ The following custom struct types are defined for decoding certain element value
 
 
 .. struct::
-  bson_eod
-  bson_undefined
-  bson_null
-  bson_maxkey
-  bson_minkey
+  [[zero_initializable]] bson_eod
+  [[zero_initializable]] bson_undefined
+  [[zero_initializable]] bson_null
+  [[zero_initializable]] bson_maxkey
+  [[zero_initializable]] bson_minkey
 
   Empty struct types defined as placeholders for the BSON unit value types. The
   `bson_eod` struct is a special placeholder that represents the lack of value.
 
 
-.. struct::
-  bson_binary_view
+.. struct:: [[zero_initializable]] bson_binary_view
 
   .. member::
     const bson_byte* data;
@@ -75,14 +74,14 @@ The following custom struct types are defined for decoding certain element value
     The binary data subtype tag
 
 
-.. struct:: bson_oid
+.. struct:: [[zero_initializable]] bson_oid
 
   .. member:: uint8_t bytes[12]
 
     The twelve octets of the object ID
 
 
-.. struct:: bson_dbpointer_view
+.. struct:: [[zero_initializable]] bson_dbpointer_view
 
   .. member::
     mlib_str_view collection
@@ -94,7 +93,7 @@ The following custom struct types are defined for decoding certain element value
     The object ID within the collection
 
 
-.. struct:: bson_regex_view
+.. struct:: [[zero_initializable]] bson_regex_view
 
   .. member::
     mlib_str_view regex
@@ -103,34 +102,34 @@ The following custom struct types are defined for decoding certain element value
     The regular expression string and options string.
 
 
-.. struct:: bson_timestamp
+.. struct:: [[zero_initializable]] bson_timestamp
 
   .. member::
     uint32_t increment
     uint32_t timestamp
 
 
-.. struct:: bson_symbol_view
+.. struct:: [[zero_initializable]] bson_symbol_view
 
   .. member:: mlib_str_view utf8
 
     The symbol spelling string
 
 
-.. struct:: bson_code_view
+.. struct:: [[zero_initializable]] bson_code_view
 
   .. member:: mlib_str_view utf8
 
     The code string
 
 
-.. struct:: bson_decimal128
+.. struct:: [[zero_initializable]] bson_decimal128
 
   .. member::
     uint8_t bytes[16]
 
 
-.. struct:: bson_datetime
+.. struct:: [[zero_initializable]] bson_datetime
 
   .. member:: int64_t utf_ms_offset
 

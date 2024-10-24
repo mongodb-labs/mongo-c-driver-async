@@ -11,7 +11,17 @@ Strings & String Views
 Types
 #####
 
-.. struct:: mlib_str_view
+.. struct:: [[zero_initializable]] mlib_str_view
+
+  :zero-initialized: |attr.zero-init| A zero-initialized `mlib_str_view`
+    represents a *null* string view. It does not point to any string, including
+    any empty string. Testing for a null string view can be done by testing
+    whether the `data` member is a null pointer. A null string view is not
+    equal to any non-null string view. Two null strings views are considered
+    equivalent.
+
+    .. note:: Converting a null `mlib_str_view` to a C++ `std__string_view`
+      will create a `std__string_view` that views an unspecified empty string.
 
   .. member::
     const char* data
@@ -41,9 +51,16 @@ Types
     Compare the string with another string
 
 
-.. struct:: mlib_str
+.. struct:: [[zero_initializable]] mlib_str
 
   Represents a dynamically allocated immutable null-terminated string.
+
+  :zero-initialized: |attr.zero-init| A zero-initialized `mlib_str` represent a
+    *null* string. This is **distinct** from an empty string. Testing for a null
+    string can be done by comparing the `data` member to a null pointer. Calling
+    `mlib_str_delete` on a null string is a no-op. Creating an `mlib_str_view`
+    from a null string will create a null `mlib_str_view`. Using a null string
+    for any other operation is undefined behavior.
 
   .. member:: const char* data
 
