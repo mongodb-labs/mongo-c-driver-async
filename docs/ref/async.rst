@@ -93,12 +93,13 @@ Functions
   .. note::
 
     This operation does not support cancellation and will never encounter an
-    error during its completion. The status `st` and result `value` will always
-    be sent to the handler.
+    error during its completion except a potential `amongoc_alloc_failure`.
+    Unless allocation fails, status `st` and result `value` will always be sent
+    to the handler.
 
 
 .. function::
-  amongoc_emitter [[type(T)]] amognoc_then_just( \
+  amongoc_emitter [[type(T)]] amongoc_then_just( \
       amongoc_emitter [[transfer]] em, \
       amongoc_async_flags flags, \
       amongoc_status st, \
