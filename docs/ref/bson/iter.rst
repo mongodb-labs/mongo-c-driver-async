@@ -170,7 +170,7 @@ Document Iteration
   returns `bson_iter_errc::bson_iter_errc_okay`. See: :ref:`bson.iter.errant`
 
 
-.. function:: bson_iterator bson_find(auto B, auto Key)
+.. function:: bson_iterator bson_find(__bson_viewable B, __string_convertible Key)
 
   Obtain a `bson_iterator` referring to the first element within ``B`` that has
   the key ``Key``

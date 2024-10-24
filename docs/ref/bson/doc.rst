@@ -46,6 +46,81 @@ Types
   :C API: `bson_doc`
   :header: |this-header|
 
+  .. type::
+    iterator = ::bson_iterator
+    allocator_type = mlib::allocator<bson_byte>
+
+  .. function::
+    [[1]] document() noexcept
+    [[2]] document(bson_view v)
+    [[3]] document(allocator_type alloc) noexcept
+    [[4]] document(std__size_t reserve_size, allocator_type alloc)
+    [[5]] document(bson_doc&& d) noexcept
+    [[6]] document(bson_view v, allocator_type alloc)
+
+    Construct a new document object.
+
+    :param v: A BSON document to be copied.
+    :param alloc: An allocator for the new document.
+    :param d: A `bson_doc` which will be adopted.
+    :throw std__bad_alloc: In case of allocation failure. If copying an empty
+      document `v`, then no exception will ever be thrown.
+
+    .. rubric:: Overloads
+
+    1. Default-constructs an empty document with the default allocator.
+    2. Copy a document `v` using the default allocator.
+    3. Constructs an empty document using an allocator.
+    4. Constructs an empty document using an allocator, reserving capacity for
+       `reserve_size` bytes of data.
+    5. Takes ownership of the `bson_doc` object `d`. `d` is reset to a null
+       `bson_doc`.
+    6. Copy a document `v` using the given allocator.
+
+
+  .. function:: ~document()
+
+    Calls `bson_delete` on the managed `bson_doc` object.
+
+
+  .. function:: allocator_type get_allocator() const
+
+    Obtain the associated allocator for this object.
+
+  .. function::
+    iterator begin() const
+    iterator end() const
+
+    Provides C++ range behavior over document elements. See: `bson_iterator`,
+    `bson_begin`, and `bson_end`.
+
+  .. function::
+    iterator find(std__string_view key)
+
+    See: `bson_view::find`
+
+  .. function::
+    bson_byte* data()
+    const bson_byte* data() const
+    std__size_t byte_size() const
+
+    See: `bson_data`, `bson_size`
+
+  .. function::
+    operator bson_view() const
+    operator bson_value_ref() const
+
+  .. function::
+    bson_doc& get()
+    const bson_doc& get() const
+
+    Obtain an l-value reference to the wrapped C `bson_doc`
+
+  .. function::
+    bson_doc release() &&
+
+    Relinquish ownership of the managed `bson_doc` and return it to the caller.
+
 
 Functions & Macros
 ##################

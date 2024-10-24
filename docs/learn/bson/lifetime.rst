@@ -33,6 +33,18 @@ C++ code can create a document object using `bson::document`:
 It will automatically destroy the object when it leaves scope. Copying a
 `bson::document` will create a distinct copy of the data.
 
+A C `bson_doc` can be converted to a C++ `bson::document` by passing it as an
+r-value to the `bson::document` constructor.
+
+A C++ `bson::document` can be converted to a C `bson_doc` in two ways:
+
+- `bson::document::get` will return an l-value reference to the wrapped
+  `bson_doc`. This returned object should never be used with a |attr.transfer|
+  parameter.
+- `bson::document::release` will relinquish ownership of the held `bson_doc` and
+  return it to the caller. The `bson::document` object will be made null and the
+  returned `bson_doc` is now the responsibility of the caller.
+
 
 Copying
 #######

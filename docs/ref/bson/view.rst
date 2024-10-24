@@ -30,7 +30,7 @@ Types
 
   .. note:: This type should not be created manually. It should be created using
     `bson_as_view`, `bson_view_from_data`, `bson_iterator_document`, or
-    :c:macro:`BSON_VIEW_NULL`.
+    `bson_view_null`.
 
   .. type::
     iterator = ::bson_iterator
@@ -66,9 +66,12 @@ Types
 
     Determine whether the given document object is empty
 
-  .. function:: iterator find(std::string_view) const
+  .. function:: iterator find(std__string_view) const
 
-    Return an iterator referring to the
+    Return an iterator referring to the first element in :expr:`*this` with the
+    given key.
+
+    :C API: `bson_find`
 
   .. function::
     size_type byte_size() const
@@ -138,6 +141,20 @@ Types
   - `bson_doc`
   - `bson_array_view`
   - `bson_mut`
+
+
+Constants
+#########
+
+.. var::
+  const bson_view bson_view_null
+  const bson_array_view bson_array_view_null
+
+  Null views of BSON documents. They refer to no object. These are equivalent to
+  zero-initialized objects. A null view can be detected by checking if
+  `bson_data` returns a null pointer.
+
+  .. note:: |macro-impl|
 
 
 Functions & Macros

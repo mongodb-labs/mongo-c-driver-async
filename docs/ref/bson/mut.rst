@@ -60,7 +60,10 @@ work with `bson_mut` objects, including:
 .. function::
   bson_mut bson_mutate(bson_doc*)
 
-  Obtain a new `bson_mut` mutator for the given document object.
+  Obtain a new `bson_mut` |M| mutator for the given document object.
+
+  :invalidation: No iterators are |invalidated| by this call, but subsequent
+    operations on |M| may potentially invalidate them.
 
   .. important:: |mut-stable-admon|
 
@@ -82,24 +85,27 @@ Inserting Data
   :param value: A value to be inserted.
   :return: Upon success, returns an iterator that refers to the inserted element.
     If there is an allocation failure, returns :expr:`bson_end(*m)`.
+  :invalidation: |all-invalidated|
 
   .. note:: |macro-impl|
 
   .. rubric:: Value Types
 
-  The following value types are supported automatically by `bson_insert`. The
-  type of the newly inserted value is determined according to the
+  The type of the newly inserted value is determined according to the
   `__bson_value_convertible` type rules.
 
 
 .. function::
   bson_mut bson_mut_child(bson_mut* parent, bson_iterator pos)
 
-  Obtain a mutator that manipulates a child document element at position `pos`
-  within `parent`.
+  Obtain a mutator |M| that manipulates a child document element at position
+  `pos` within `parent`.
 
   :param parent: An existing mutator that refers to the document that owns `pos`.
   :param pos: An iterator referring to a document or array element within `parent`.
+  :invalidation: No iterators are |invalidated| by this function, but subsequent
+    operations may invalidate them. Use `bson_mut_parent_iterator` to recovery
+    the iterator `pos` from |M|.
 
   .. important:: |mut-stable-admon|
 
@@ -110,6 +116,10 @@ Inserting Data
   Obtain a `bson_iterator` that refers to the position of `m` within a parent
   document. This can only be called on a `bson_mut` that was created as a child
   of another `bson_mut`.
+
+  :param m: A mutator object that was returned by `bson_mut_child`. Calling this
+    with a mutator returned `bson_mutate` is *undefined behavior*.
+  :invalidation: No iterators are |invalidated|.
 
   This is useful to recover an iterator referring to a child document element
   after mutating that child document, since mutating a child may invalidate
@@ -130,8 +140,51 @@ Removing Elements
   :param first: The first element to be erased.
   :param last: The first element to be retained, or the end iterator.
   :return: Returns an iterator referring to the position after the removal.
+  :invalidation:
+    - `bson_erase` will |invalidate| all reachable iterators.
+    - `bson_erase_range` will |invalidate| all reachable iterators |iff| `first`
+      is not equal to `last`.
 
   If `first` and `last` are equivalent, then no element will be removed.
+
+
+Modifying Elements
+******************
+
+Existing document elements can be modified in-place to a limited extent.
+
+.. function::
+  bson_iterator bson_set_key(bson_mut* mut, bson_iterator pos, __string_convertible new_key)
+
+  Replace the element key of the element pointed-to by `pos`.
+
+  :param mut: Mutator for the document owning `pos`
+  :param pos: A valid iterator pointing to a live element. Must not be an error
+    or end iterator.
+  :param new_key: The key string to be replaced.
+  :return: The adjusted `pos` iterator following the modification.
+  :invalidation: |all-invalidated| |iff| `new_key` is not the same
+    length as :expr:`bson_key(pos)`.
+
+
+.. function::
+  bson_iterator bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx)
+  void bson_relabel_array_elements(bson_mut* doc)
+
+  Relabel elements within a BSON document `doc` as monotonically increasing
+  decimal integers. `bson_relabel_array_elements` is equivalent to
+  :expr:`bson_relabel_array_elements_at(doc, bson_begin(*doc), 0)`.
+
+  :param doc: The document to be modifed.
+  :param pos: Iterator referring to the first element to be modified. If equal
+    to :expr:`bson_end(*doc)`, then no elements are modified.
+  :param idx: The integer key to set for `pos`. All subsequent elements will be
+    relabeled by incrementing this index for each element.
+  :return: Returns the iterator referring to the `pos` element after the
+    relabelling is complete.
+  :invalidation: |all-invalidated| |iff| the length of any element's new key is
+    not equal to the length of its existing key. (When in doubt, assume all
+    iterators are invalidated.)
 
 
 Splicing Ranges
@@ -148,6 +201,9 @@ Splicing Ranges
     equal to `pos`, then no elements will be erased.
   :param from_begin: The first element to copy into `pos`
   :param from_end: The end of the range from which to copy.
+  :return: Returns the adjusted iterator pointing to the `pos` element.
+  :invalidation: |all-invalidated| |iff| any elements are deleted or inserted
+    (i.e. :expr:`pos != delete_end or from_begin != from_end`)
 
   .. important::
 
@@ -161,18 +217,60 @@ Splicing Ranges
     from `from_begin`.
 
 
+.. function::
+  bson_iterator bson_insert_disjoint_range(bson_mut* doc, bson_iterator pos, bson_iterator from_begin, bson_iterator from_end)
+
+  Copy elements in the range :cpp:`[from_begin, from_end)` into the document
+  `doc` at `pos`.
+
+  Equivalent to :expr:`bson_splice_disjoint_ranges(doc, pos, pos, from_begin, from_end)`
+
+  :invalidation: |all-invalidated| |iff| :expr:`from_begin != from_end`
+
+
+Utilities
+*********
+
+.. struct:: bson_u32_string
+
+  .. member:: char buf[11]
+
+    A small string enough to encode a non-negative 32-bit integer with a null
+    terminator.
+
+.. function::
+  bson_u32_string bson_u32_string_create(uint32_t i)
+
+  Create a small C string representing the base-10 encoding of the given 32-bit
+  integer `i`. The string is not dynamically allocated, so no deallocation is
+  necessary. The character array in the returned small string is
+  null-terminated.
+
+
 Behavioral Notes
 ################
+
+.. _mut.iter.invalidate:
 
 Iterator Invalidation
 *********************
 
-A BSON iterator |I| that belongs to a `bson_doc` |D| or and sub-document of |D|
-is *invalidated* if *any* elements are added or removed within the document
-heirarchy of |D|. **This is true even if** the operation does not cause a
-reallocation! For this reason, the insertion, erasing, and splicing APIs all
-return iterators that are adjusted to account for the invalidating operations.
+A BSON iterator |I| is *reachable* for a `bson_doc` |D| or `bson_mut` derived
+from |D| if there is any way to obtain that iterator by traversing the document
+heirarchy. |I| may be an iterator at the top level, or may be an iterator within
+any sub-document of |D|.
+
+A BSON iterator |I| that *reachable* in a `bson_doc` |D| may be *invalidated* by
+certain operations on |D| or any sub-document thereof. **This is true even if**
+the operation does not cause a reallocation! For this reason, the insertion,
+erasing, and splicing APIs all return iterators that are adjusted to account for
+the invalidating operations. Iterator invalidation behaviors are documented
+under the **Invalidation** field on the relevant function.
 
 After modifying a subdocument |D'| using `bson_mut_child`, an iterator referring
 to |D'| can be recovered by using `bson_mut_parent_iterator` on the mutator that
 was created with `bson_mut_child`.
+
+.. |invalidate| replace:: :ref:`invalidate <mut.iter.invalidate>`
+.. |invalidated| replace:: :ref:`invalidated <mut.iter.invalidate>`
+.. |all-invalidated| replace:: All reachable iterators are |invalidated|
