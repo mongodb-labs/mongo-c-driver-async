@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     (void)argv;
 
     bson_byte              bytes[512] = {{0}};
-    bson_view              view       = BSON_VIEW_NULL;
+    bson_view              view       = bson_view_null;
     bson_doc               doc        = bson_new();
     bson_mut               mut        = BSON_MUT_v2_NULL;
     mlib_str               u8str      = mlib_str_null;
@@ -100,7 +100,7 @@ int main(int argc, char** argv) {
     bson_insert_code_with_scope(&mut, iter, u8view, code, view);
 
     bson_set_key(&mut, iter, u8view);
-    bson_tmp_uint_string(42);
+    bson_u32_string_create(42);
     bson_relabel_array_elements_at(&mut, iter, 0);
     bson_relabel_array_elements(&mut);
     bson_splice_disjoint_ranges(&mut, iter, iter, iter, iter);

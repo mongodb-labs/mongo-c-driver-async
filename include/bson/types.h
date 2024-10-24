@@ -93,22 +93,27 @@ typedef enum bson_type {
  * read from or written into a BSON object.
  */
 typedef struct bson_eod {
+    mlib_empty_aggregate_c_compat;
     MLIB_IF_CXX(bool operator==(const bson_eod&) const = default;)
 } bson_eod;
 
 typedef struct bson_undefined {
+    mlib_empty_aggregate_c_compat;
     MLIB_IF_CXX(bool operator==(const bson_undefined&) const = default;)
 } bson_undefined;
 
 typedef struct bson_null {
+    mlib_empty_aggregate_c_compat;
     MLIB_IF_CXX(bool operator==(const bson_null&) const = default;)
 } bson_null;
 
 typedef struct bson_maxkey {
+    mlib_empty_aggregate_c_compat;
     MLIB_IF_CXX(bool operator==(const bson_maxkey&) const = default;)
 } bson_maxkey;
 
 typedef struct bson_minkey {
+    mlib_empty_aggregate_c_compat;
     MLIB_IF_CXX(bool operator==(const bson_minkey&) const = default;)
 } bson_minkey;
 

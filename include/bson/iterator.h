@@ -292,6 +292,23 @@ inline bson_iterator _bson_iterator_at(const bson_byte* const data, int32_t maxl
 }
 
 /**
+ * @internal
+ * @brief Recover an iterator within a document's data based on the byte offset of the desired
+ * element
+ *
+ * @param doc_data_begin Pointer to the document header
+ * @param elem_offset The byte offset of the element being requested. May point to the null
+ * terminator to recover the end iterator
+ */
+inline bson_iterator _bson_recover_iterator(const bson_byte* doc_data_begin,
+                                            ptrdiff_t        elem_offset) mlib_noexcept {
+    BV_ASSERT(elem_offset >= 4);
+    int32_t len = (int32_t)_bson_read_u32le(doc_data_begin);
+    BV_ASSERT(elem_offset < len);
+    return _bson_iterator_at(doc_data_begin + elem_offset, len - (int32_t)elem_offset);
+}
+
+/**
  * @brief Obtain a bson_iterator referring to the first position within `v`.
  */
 #define bson_begin(...) _bson_begin(bson_data(__VA_ARGS__))

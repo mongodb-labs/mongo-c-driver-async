@@ -37,3 +37,6 @@ extern mlib_constexpr int32_t _bson_value_re_len(const char* valptr, int32_t max
 extern mlib_constexpr int32_t _bson_valsize(bson_type              tag,
                                             const bson_byte* const valptr,
                                             int32_t                val_maxlen) mlib_noexcept;
+
+extern inline bson_iterator _bson_recover_iterator(const bson_byte* doc_data_begin,
+                                                   ptrdiff_t        elem_offset) mlib_noexcept;

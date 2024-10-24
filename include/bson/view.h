@@ -214,11 +214,20 @@ typedef struct bson_array_view {
 #endif
 } bson_array_view;
 
-/// A "null" constant expression for bson_view objects
-#define BSON_VIEW_NULL                                                                             \
-    mlib_init(bson_view) { NULL }
-
 mlib_extern_c_begin();
+
+inline const bson_view* _bsonViewNullInst() mlib_noexcept {
+    static const bson_view null = {0};
+    return &null;
+}
+
+inline const bson_array_view* _bsonArrayViewNullInst() mlib_noexcept {
+    static const bson_array_view null = {0};
+    return &null;
+}
+
+#define bson_view_null mlib_parenthesized_expression(*_bsonViewNullInst())
+#define bson_array_view_null mlib_parenthesized_expression(*_bsonArrayViewNullInst())
 
 /**
  * @brief View the given pointed-to data as a BSON document.
@@ -226,7 +235,7 @@ mlib_extern_c_begin();
 inline bson_view bson_view_from_data(const bson_byte* const data,
                                      const size_t           data_len,
                                      enum bson_view_errc*   error) mlib_noexcept {
-    bson_view           ret = BSON_VIEW_NULL;
+    bson_view           ret = {0};
     int32_t             len = 0;
     enum bson_view_errc err_sink;
     if (!error) {
@@ -267,7 +276,7 @@ inline bson_view bson_view_from_data(const bson_byte* const data,
 #define bson_as_view(...) _bson_view_from_ptr(bson_data(__VA_ARGS__))
 inline bson_view _bson_view_from_ptr(const bson_byte* p) mlib_noexcept {
     if (!p) {
-        return BSON_VIEW_NULL;
+        return bson_view_null;
     }
     int32_t len = (int32_t)_bson_read_u32le(p);
     BV_ASSERT(len >= 0);

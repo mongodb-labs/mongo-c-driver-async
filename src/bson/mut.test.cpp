@@ -6,7 +6,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstdint>
+
 using bson::document;
+
+static_assert(::bson_u32_string_create(UINT32_MAX).buf == std::string_view("4294967295"));
 
 TEST_CASE("bson/build/empty") {
     document doc{mlib_default_allocator};

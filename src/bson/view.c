@@ -13,6 +13,9 @@ extern inline bson_view _bson_view_from_ptr(const bson_byte*) mlib_noexcept;
 
 extern inline bson_iterator _bson_iterator_error(enum bson_iter_errc err) mlib_noexcept;
 
+extern inline const bson_view*       _bsonViewNullInst() mlib_noexcept;
+extern inline const bson_array_view* _bsonArrayViewNullInst() mlib_noexcept;
+
 void _bson_assert_fail(const char* expr, const char* file, int line) {
     fprintf(stderr,
             "bson/view ASSERTION FAILED at %s:%d: Expression [%s] evaluated to "

@@ -28,9 +28,6 @@ inline bson_mut bson_mutate(bson_doc* doc) mlib_noexcept {
  * @brief Compute the number of bytes available before we will require
  * reallocating
  *
- * @param d The mutator to inspect
- * @return uint32_t The capacity of the document `d`
- *
  * @note If `d` is a child document, the return value reflects the number of
  * bytes for the maximum size of `d` until which we will require reallocating
  * the parent, transitively.
@@ -340,13 +337,14 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
  * @param pos The element that will be updated
  * @param newkey The new key string for the element.
  * @return bson_iterator The iterator referring to the element after being
- * updated.
+ * updated, or the end iterator in case of allocation failure
  */
+#define bson_set_key(Doc, Pos, Key) _bson_set_key((Doc), (Pos), mlib_as_str_view(Key))
 inline bson_iterator
-bson_set_key(bson_mut* doc, bson_iterator pos, mlib_str_view newkey) mlib_noexcept {
+_bson_set_key(bson_mut* doc, bson_iterator pos, mlib_str_view newkey) mlib_noexcept {
     mlib_math_try();
     BV_ASSERT(!bson_stop(pos));
-    // Truncate the key to not contain an null bytes:
+    // Truncate the key to not contain any null bytes:
     newkey = mlib_str_view_chopnulls(newkey);
     // The current key:
     const mlib_str_view curkey = bson_key(pos);
@@ -377,7 +375,7 @@ bson_set_key(bson_mut* doc, bson_iterator pos, mlib_str_view newkey) mlib_noexce
 }
 
 /// Write the decimal representation of a uint32_t into the given string.
-inline char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
+mlib_constexpr char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
     if (v == 0) {
         *at++ = '0';
     } else if (v >= 10) {
@@ -398,31 +396,31 @@ inline char* _bson_write_uint(uint32_t v, char* at) mlib_noexcept {
  * @brief A simple type used to store a small string representing the the
  * integer keys of array elements.
  */
-struct bson_array_element_integer_keybuf {
-    char buf[12];
+struct bson_u32_string {
+    char buf[11];
 };
 
 /**
- * @brief Generate a UTF-8 string that contains the decimal spelling of the
+ * @brief Generate a small string that contains the decimal spelling of the
  * given uint32_t value
- *
- * @param val The value to be represented
- * @return mlib_str_view A view of the generated string. NOTE: This view will
- * remain valid only until a subsequent call to bson_tmp_uint_string within the
- * same thread.
  */
-inline struct bson_array_element_integer_keybuf bson_tmp_uint_string(uint32_t val) mlib_noexcept {
-    struct bson_array_element_integer_keybuf arr = {0};
+mlib_constexpr struct bson_u32_string bson_u32_string_create(uint32_t val) mlib_noexcept {
+    struct bson_u32_string arr = {0};
     _bson_write_uint(val, arr.buf);
     return arr;
 }
 
-inline void
+/**
+ * @brief Relabel the element keys in a document beginning at `pos` with index `idx`
+ */
+inline bson_iterator
 bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) mlib_noexcept {
+    ptrdiff_t it_offset = bson_iterator_data(pos) - bson_data(*doc);
     for (; !bson_stop(pos); pos = bson_next(pos)) {
-        struct bson_array_element_integer_keybuf key = bson_tmp_uint_string(idx);
-        pos = bson_set_key(doc, pos, mlib_as_str_view(key.buf));
+        struct bson_u32_string key = bson_u32_string_create(idx);
+        pos                        = bson_set_key(doc, pos, mlib_as_str_view(key.buf));
     }
+    return _bson_recover_iterator(bson_data(*doc), it_offset);
 }
 
 /**
@@ -528,18 +526,13 @@ inline bson_iterator bson_erase_range(bson_mut* const     doc,
     return bson_splice_disjoint_ranges(doc, first, last, last, last);
 }
 
-/**
- * @brief Remove a single element from the given bson document
- *
- * @param doc The document to modify
- * @param pos An iterator pointing to the single element to remove. Must not be
- * the end position
- * @return bson_iterator An iterator referring to the element after the removed
- * element.
- */
-static inline bson_iterator bson_erase(bson_mut* doc, bson_iterator pos) mlib_noexcept {
+inline bson_iterator bson_erase_one(bson_mut* const doc, const bson_iterator pos) mlib_noexcept {
     return bson_erase_range(doc, pos, bson_next(pos));
 }
+
+#define bson_erase(...) MLIB_PASTE(_bsonEraseArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define _bsonEraseArgc_2(Doc, Pos) bson_erase_one((Doc), (Pos))
+#define _bsonEraseArgc_3(Doc, First, Last) bson_erase_range((Doc), (First), (Last))
 
 /**
  * @brief Obtain a mutator for the subdocument at the given position within

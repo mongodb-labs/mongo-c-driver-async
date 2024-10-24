@@ -392,7 +392,7 @@ public:
     using enable_trivially_relocatable = document;
 
 #if !mlib_audit_allocator_passing()
-    document()
+    document() noexcept
         : document(allocator_type(mlib_default_allocator)) {}
     explicit document(bson_view v)
         : document(v, allocator_type(mlib_default_allocator)) {}
@@ -403,14 +403,14 @@ public:
     /**
      * @brief Construct a document object using the given allocator
      */
-    explicit document(allocator_type alloc)
-        : document(alloc, 5) {}
+    explicit document(allocator_type alloc) noexcept
+        : document(5, alloc) {}
 
     /**
      * @brief Construct a new document with the given allocator, and reserving
      * the given capacity in the new document.
      */
-    explicit document(allocator_type alloc, std::size_t reserve_size) {
+    explicit document(std::size_t reserve_size, allocator_type alloc) {
         _doc = bson_new(static_cast<std::uint32_t>(reserve_size), alloc.c_allocator());
         if (data() == nullptr) {
             throw std::bad_alloc();

@@ -109,7 +109,7 @@ concept all_value_rules = requires { (requires_appendable_value<Ts>(), ...); };
 
 // Append a value to a document with an integer key
 void append_nth_value(mutator& doc, std::size_t nth, const value_rule auto& value) {
-    auto buf = ::bson_tmp_uint_string(static_cast<std::uint32_t>(nth));
+    auto buf = ::bson_u32_string_create(static_cast<std::uint32_t>(nth));
     append_value(doc, std::string_view(buf.buf), value);
 }
 
@@ -283,7 +283,7 @@ struct doc<std::index_sequence<Is...>, Els...> : doc_element_part<Is, Els>... {
         : doc_element_part<Is, Els>(mlib_fwd(els))... {}
 
     bson::document build(mlib::allocator<> a) const {
-        bson::document ret{a, this->byte_size()};
+        bson::document ret{this->byte_size(), a};
         bson::mutator  mut{ret};
         ((this->doc_element_part<Is, Els>::element.append_to(mut)), ...);
         return ret;
