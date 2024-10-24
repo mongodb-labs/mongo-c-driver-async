@@ -14,6 +14,6 @@ int main() {
     amongoc_operation_destroy(op);
     assert(status.code == 0);
     assert(status.category == &amongoc_generic_category);
-    assert(*amongoc_box_cast(int*)(box) == 42);
+    assert(*amongoc_box_cast(int*, box) == 42);
     return 0;
 }

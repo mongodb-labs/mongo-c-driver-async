@@ -36,8 +36,8 @@ static_assert(box_inlinable_type<explicitly_relocatable>);
 TEST_CASE("Box/Store an Object") {
     amongoc_box b;
     *amongoc_box_init(b, int) = 42;
-    CHECK(amongoc_box_cast(int)(b) == 42);
-    CHECK(::amongoc_box_cast(int)(b) == 42);
+    CHECK(amongoc_box_cast(int, b) == 42);
+    CHECK(::amongoc_box_cast(int, b) == 42);
 }
 
 TEST_CASE("Box/Destroy Nothing") {

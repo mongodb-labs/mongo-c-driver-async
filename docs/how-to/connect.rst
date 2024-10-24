@@ -143,7 +143,7 @@ from the box and store it in our application state:
   :start-at: after_connect_say_hello(amongoc_box
   :end-at: take
 
-The :c:macro:`amongoc_box_take` macro is used to transfer the ownership from a
+The `amongoc_box_take` macro is used to transfer the ownership from a
 type-erased `amongoc_box` into a typed storage for the object that it holds. The
 object that was owned by the box is now owned by the storage destination.
 

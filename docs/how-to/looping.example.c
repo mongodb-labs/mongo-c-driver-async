@@ -24,7 +24,7 @@ amongoc_emitter loop_step(amongoc_box state_ptr, amongoc_status prev_status, amo
     (void)prev_res;
     (void)prev_status;
     // Print our status
-    state* s = amongoc_box_cast(state*)(state_ptr);
+    state* s = amongoc_box_cast(state*, state_ptr);
     // Compute the next sum and shift our numbers
     uint64_t cur = s->a;
     uint64_t sum = s->a + s->b;
@@ -91,7 +91,7 @@ int main(int argc, char const* const* argv) {
         return 2;
     } else {
         // Get the value returned with `amongoc_just` in `loop_step`
-        printf("Got final value: %lu\n", amongoc_box_cast(uint64_t)(result));
+        printf("Got final value: %lu\n", amongoc_box_cast(uint64_t, result));
     }
     return 0;
 }

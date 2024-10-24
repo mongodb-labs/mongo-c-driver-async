@@ -26,7 +26,7 @@ static void print_bson(FILE* into, bson_view doc, const char* indent);
  */
 amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
     (void)state_ptr;
-    bson_view resp = bson_as_view(amongoc_box_cast(bson_doc)(resp_data));
+    bson_view resp = bson_as_view(amongoc_box_cast(bson_doc, resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
     print_bson(stdout, resp, "");
@@ -46,14 +46,14 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
 amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box cl_box) {
     printf("Connected to server\n");
     // Store the connection in our app state
-    amongoc_box_take(amongoc_box_cast(app_state*)(state_ptr)->client, cl_box);
+    amongoc_box_take(amongoc_box_cast(app_state*, state_ptr)->client, cl_box);
 
     // Create a "hello" command
     bson_doc doc = bson_new();
     bson_mut mut = bson_mutate(&doc);
     bson_insert(&mut, "hello", "1");
     bson_insert(&mut, "$db", "test");
-    amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*)(state_ptr)->client,
+    amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*, state_ptr)->client,
                                                 bson_as_view(mut));
     bson_delete(doc);
 

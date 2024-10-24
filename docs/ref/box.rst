@@ -25,7 +25,7 @@ Types
   special type ``[[type(nil)]]`` refers to a the `amongoc_nil` special box
   value.
 
-  In C code, use :c:macro:`amongoc_box_init` to initialize box objects.
+  In C code, use `amongoc_box_init` to initialize box objects.
 
   When working with C++ code, prefer to use `amongoc::unique_box`, as it will
   prevent accidental copying and ensures the destructor is executed on the box
@@ -119,7 +119,7 @@ Types
     Obtain an l-value reference to the contained value of type `T`.
 
     :precondition: The :ref:`box must be active <box.active>` for the type `T`.
-    :c API: :c:macro:`amongoc_box_cast`
+    :c API: `amongoc_box_cast`
 
   .. function::
     template <typename T> \
@@ -173,7 +173,7 @@ Types
 
     Obtain a pointer to the data stored in the box.
 
-    :C API: :c:macro:`amongoc_box_data`
+    :C API: `amongoc_box_data`
 
 
 Functions & Macros
@@ -202,11 +202,11 @@ Box Creation / Destruction
     convertible to a function pointer: :cpp:any:`amongoc_box_destructor`. If
     omitted, the box will have no associated destructor.
   :param alloc: An `mlib_allocator` object to be used if the box requires
-    dynamic allocation. If omitted, the defautl allocator will be used.
-  :return: Returns a :cpp:`T*` pointer. If memory allocation was required and
-    fails, this returns :cpp:`nullptr`. Note that a :ref:`small <box.small>` type
-    used with `amongoc_box_init` will not allocate, so the returned pointer in
-    such a scenario will never be null.
+    dynamic allocation. If omitted, the default allocator will be used.
+  :return: Returns a non-|const| pointer to `T`. If memory allocation was
+    required and fails, this returns :cpp:`nullptr`. Note that a
+    :ref:`small <box.small>` type used with `amongoc_box_init` will not
+    allocate, so the returned pointer in such a scenario will never be null.
 
   The ``_noinline`` variant will inhibit the small-object optimization, which is
   required if the object being stored is not relocatable (i.e. it must be
@@ -240,57 +240,53 @@ Box Creation / Destruction
 Inspection
 **********
 
-.. c:macro:: amongoc_box_cast(T)
+.. function:: T amongoc_box_cast(__type T, __box_or_view box)
 
   :param T: The target type for the cast expression.
   :C++ API: `amongoc::unique_box::as` and `amongoc_view::as`
 
   Perform a cast from an :cpp:any:`amongoc_box` or :cpp:any:`amongoc_view` to an
-  l-value expression of type |T|. :c:expr:`amongoc_box_cast(...)` is only a
-  prefix to the full cast, which must be passed a box within another set of
-  parentheses::
-
-    void handle_boxed_int(amongoc_box b) {
-      // Copy an `int` from the box
-      int n = amongoc_box_cast(int)(b);
-    }
+  l-value expression of type `T`.
 
   Note that because the result is an l-value expression, this cast expression
   can be used to manipulate the value stored in the box::
 
     void changed_boxed_int(amongoc_box* b) {
       // Replace the boxed integer value with 42
-      amongoc_box_cast(int)(*b) = 42;
+      amongoc_box_cast(int, *b) = 42;
     }
 
-  If the given box is not active for the type |T|, then the behavior is
+  If the given box is not active for the type `T`, then the behavior is
   undefined.
 
 
-.. function:: void* amongoc_box_data(__box_or_view b)
+.. function::
+  void* amongoc_box_data(amongoc_box b)
+  const void* amongoc_box_data(const amongoc_box b)
+  const void* amongoc_box_data(amongoc_view b)
 
   Obtain a pointer to the object stored within a box `b`. Expands to an r-value
-  of type :cpp:`void*`.
+  of type :cpp:`void*`. If `b` is a |const| box or an `amongoc_view`, the
+  returned pointer is a pointer-to-|const|.
 
   :C++ API: `amongoc::unique_box::data`
 
   .. note:: |macro-impl|.
 
 
-.. function:: void amongoc_box_take(auto Dest, amongoc_box& Box)
+.. function:: void amongoc_box_take(auto dest, amongoc_box [[transfer]] box)
 
-  Moves the value stored in ``Box`` to overwrite the object ``Dest``.
+  Moves the value stored in `box` to overwrite the object `dest`.
 
-  :param Dest: An l-value expression of type |T| that will receive the boxed
-    value.
-  :param Box: |attr.transfer| A box that is :ref:`active <box.active>` for the
-    type |T|.
-  :postcondition: The box ``Box`` is :ref:`dead <box.dead>`.
+  :param dest: A non-|const| l-value expression of type |T| that will receive
+    the boxed value.
+  :param box: |attr.transfer| A non-|const| box that is
+    :ref:`active <box.active>` for the type |T|.
 
   This is useful to move an object from the type-erased box into a typed storage
-  variable for more convenient access. The dynamic storage for ``Box`` will be
+  variable for more convenient access. The dynamic storage for `box` will be
   released, but the destructor for the box will not be executed. The object is
-  now stored within ``Dest`` and it is up to the caller to manage its lifetime.
+  now stored within `dest` and it is up to the caller to manage its lifetime.
 
   .. note:: |macro-impl|.
 
@@ -402,9 +398,8 @@ State: Active for type |T|
 
 A box |B| is *active* for type |T| if **either**:
 
-- |B| was used with
-  :c:macro:`amongoc_box_init`/macro:`amongoc_box_init_noinline` with the
-  type |T|
+- |B| was used with `amongoc_box_init`/`amongoc_box_init_noinline` with the type
+  |T|
 - **OR** |B| was created with a C++ API that constructs a box,
 - **OR** |B| is a by-value copy of an `amongoc_box` that was already
   active for type |T|.
@@ -415,7 +410,7 @@ A box |B| is *active* for type |T| if **either**:
   |attr.transfer| parameter)
 
 If a box is active for type |T|, then it is legal to use it in
-:c:macro:`amongoc_box_cast` with type |T|.
+`amongoc_box_cast` with type |T|.
 
 
 .. _box.dead:
@@ -472,7 +467,7 @@ one should use `amongoc_box_init_noinline`, which forcibly disables the
 small-object optimization within the created box.
 
 The C++ APIs `amongoc::unique_box::from` will automatically handle this
-distiction by consulting `amongoc::enable_trivially_relocatable`.
+distiction by consulting `amongoc::enable_trivially_relocatable_v`.
 
 
 .. _box.trivial:
@@ -489,9 +484,8 @@ When a box is *trivial*, some usage requirements relax:
    and each copy has a distinct identity.
 2. It is safe to discard a trivial box (allow it to leave scope) without ever
    calling `amongoc_box_destroy`.
-3. It is safe to overwrite or reinitialize the box (e.g.
-   :c:macro:`amongoc_box_init`) with a new value without first destroying the
-   box.
+3. It is safe to overwrite or reinitialize the box (e.g. `amongoc_box_init`)
+   with a new value without first destroying the box.
 
 In general: the semantics of the |attr.transfer| attribute do not apply to
 trivial boxes.

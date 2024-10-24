@@ -14,8 +14,6 @@
 #if mlib_is_cxx()
 #include <amongoc/relocation.hpp>
 
-#include <mlib/utility.hpp>
-
 #include <new>
 #include <type_traits>
 #endif
@@ -59,7 +57,7 @@
  */
 typedef struct amongoc_box amongoc_box;
 
-typedef void (*amongoc_box_destructor)(void*) mlib_noexcept;
+typedef void (*amongoc_box_destructor)(void*);
 
 /// The total size of an amongoc_box object
 enum {
@@ -179,11 +177,11 @@ mlib_extern_c_begin();
  * This function is intentionally static-inline, as any inliner, dead-code-eliminator, and constant
  * propagator worth its salt will replace these with trivial memset/calloc/memcpy calls.
  */
-static inline void* _amongocBoxInitStorage(amongoc_box*           box,
-                                           bool                   allow_inline,
-                                           size_t                 size,
-                                           amongoc_box_destructor dtor,
-                                           mlib_allocator         alloc) mlib_noexcept {
+inline void* _amongocBoxInitStorage(amongoc_box*           box,
+                                    bool                   allow_inline,
+                                    size_t                 size,
+                                    amongoc_box_destructor dtor,
+                                    mlib_allocator         alloc) mlib_noexcept {
     if (allow_inline && !dtor && size <= AMONGOC_BOX_SMALL_SIZE) {
         // Store as a trivial object with no destructor
         box->_storage.is_dynamic  = 0;
@@ -230,7 +228,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
  *
  * @param box The box to be freed
  */
-static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
+inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
     if (box._storage.is_dynamic) {
         mlib_deallocate(box._storage.u.dynamic->alloc,
                         box._storage.u.dynamic,
@@ -242,7 +240,7 @@ static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
  * @internal
  * @brief Obtain a pointer to the value stored within a box
  */
-static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_noexcept {
+inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_noexcept {
     mlib_diagnostic_push();
     mlib_gnu_warning_disable("-Warray-bounds");
     if (stor->is_dynamic) {
@@ -264,7 +262,7 @@ static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_n
  *
  * @param box The box to destroy
  */
-static inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
+inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
     if (box._storage.has_dtor) {
         // Box has a destructor function
         if (box._storage.is_dynamic) {
@@ -327,7 +325,33 @@ mlib_extern_c_end();
 /**
  * @brief Obtain a pointer to the stored data within an amongoc_box or amongoc_view
  */
-#define amongoc_box_data(Box) (_amongocBoxDataPtr(&(Box)._storage))
+#define amongoc_box_data(Box) _amongocBoxData((Box))
+#define _amongocBoxData(B)                                                                         \
+    mlib_generic(_amongocBoxDataCxx, _amongocBoxConstDataPtr, &(B), const amongoc_box*: _amongocBoxConstDataPtr, amongoc_box*: _amongocBoxMutDataPtr, amongoc_view*: _amongocViewDataPtr)(&(B))
+
+inline const void* _amongocBoxConstDataPtr(const amongoc_box* b) mlib_noexcept {
+    return _amongocBoxDataPtr((struct _amongoc_box_storage*)&b->_storage);
+}
+
+inline const void* _amongocViewDataPtr(const amongoc_view* b) mlib_noexcept {
+    return _amongocBoxDataPtr((struct _amongoc_box_storage*)&b->_storage);
+}
+
+inline void* _amongocBoxMutDataPtr(amongoc_box* b) mlib_noexcept {
+    return _amongocBoxDataPtr(&b->_storage);
+}
+
+#if mlib_is_cxx()
+inline void* _amongocBoxDataCxx(amongoc_box* b) noexcept {
+    return _amongocBoxDataPtr(&b->_storage);
+}
+inline const void* _amongocBoxDataCxx(const amongoc_box* b) noexcept {
+    return _amongocBoxDataPtr(const_cast<_amongoc_box_storage*>(&b->_storage));
+}
+inline const void* _amongocBoxDataCxx(const amongoc_view* b) noexcept {
+    return _amongocBoxDataPtr(const_cast<_amongoc_box_storage*>(&b->_storage));
+}
+#endif  // C++
 
 /**
  * @brief Cast an amongoc_box expression to a contained type T
@@ -335,13 +359,12 @@ mlib_extern_c_end();
  * Syntax:
  *
  * ```
- * amongoc_box_cast(T)(some_box)
+ * amongoc_box_cast(T, some_box)
  * ```
  *
  * Expands to an l-value expression of type T
  */
-#define amongoc_box_cast(T) MLIB_IF_CXX(mlib::identity{}) (*(T*) _amongocBoxCastOpen
-#define _amongocBoxCastOpen(Box) (amongoc_box_data(Box)))
+#define amongoc_box_cast(T, Box) mlib_parenthesized_expression(*(T*)(amongoc_box_data(Box)))
 
 mlib_extern_c mlib_always_inline const amongoc_box* _amongocBoxGetNil() mlib_noexcept {
     static const amongoc_box box = {MLIB_IF_NOT_CXX(0)};
@@ -353,12 +376,6 @@ mlib_extern_c mlib_always_inline const amongoc_box* _amongocBoxGetNil() mlib_noe
  * discard this value.
  */
 #define amongoc_nil mlib_parenthesized_expression(*_amongocBoxGetNil())
-
-static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
-    memcpy(dst, _amongocBoxDataPtr(&box->_storage), sz);
-    amongoc_box_free_storage(*box);
-    *box = amongoc_nil;
-}
 
 /**
  * @brief "Take" the object from a box, storing it in the destination target, and
@@ -372,6 +389,11 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
  * @note DO NOT use this for C++ types! Use `unique_box::take`
  */
 #define amongoc_box_take(Dest, Box) _amongoc_box_take_impl(&(Dest), (sizeof(Dest)), &(Box))
+inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
+    memcpy(dst, amongoc_box_data(*box), sz);
+    amongoc_box_free_storage(*box);
+    *box = amongoc_nil;
+}
 
 #define DECLARE_BOX_EZ(Name, Type)                                                                 \
     static inline amongoc_box amongoc_box_##Name(Type val) mlib_noexcept {                         \
@@ -434,12 +456,12 @@ public:
 
     template <typename T>
     T& as() noexcept {
-        return amongoc_box_cast(T)(_box);
+        return amongoc_box_cast(T, _box);
     }
 
     template <typename T>
     const T& as() const noexcept {
-        return amongoc_box_cast(T)(const_cast<amongoc_box&>(_box));
+        return amongoc_box_cast(T, const_cast<amongoc_box&>(_box));
     }
 
     operator amongoc_view() const noexcept { return _box.view; }
@@ -461,9 +483,7 @@ public:
     }
 
     void*       data() noexcept { return amongoc_box_data(_box); };
-    const void* data() const noexcept {
-        return amongoc_box_data(const_cast<unique_box&>(*this)._box);
-    };
+    const void* data() const noexcept { return amongoc_box_data(_box); };
 
     /**
      * @brief Construct a new box value by decay-copying the given value
@@ -582,7 +602,7 @@ mlib_always_inline unique_box nil() noexcept { return unique_box{amongoc_box{}};
 
 template <typename T>
 T& amongoc_view::as() const noexcept {
-    return amongoc_box_cast(T)((amongoc_view&)*this);
+    return amongoc_box_cast(T, (amongoc_view&)*this);
 }
 
 template <typename T>

@@ -227,10 +227,78 @@
   MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                \
   mlib_static_assert(true, "")
 
-#define mlib_extern_c MLIB_IF_CXX(extern "C") MLIB_IF_NOT_CXX(extern)
+#define mlib_extern_c MLIB_IF_CXX(extern "C")
 
 #define mlib_parenthesized_expression(...)                                     \
   MLIB_IF_CXX(mlib::identity{})(__VA_ARGS__)
+
+/**
+ * @brief Test whether the current compiler version is at least the given
+ * version
+ */
+#define mlib_compiler_version_gte(Major, Minor, Patch)                         \
+  MLIB_IF_GCC(((__GNUC__ > Major) ||                                           \
+               (__GNUC__ >= Major && __GNUC_MINOR__ > Minor) ||                \
+               (__GNUC__ > Major && __GNUC_MINOR__ >= Minor &&                 \
+                __GNUC_PATCHLEVEL__ >= Patch)))                                \
+  MLIB_IF_CLANG(((__clang_major__ > Major) ||                                  \
+                 (__clang_major__ >= Major && __clang_minor__ > Minor) ||      \
+                 (__clang_major__ > Major && __clang_minor__ >= Minor &&       \
+                  __clang_patchlevel__ >= Patch)))                             \
+  MLIB_IF_MSVC(((_MSC_VER / 100 > Major) ||                                    \
+                (_MSC_VER / 100 >= Major && _MSC_VER % 100 > Minor) ||         \
+                (_MSC_VER / 100 >= Major && _MSC_VER % 100 >= Minor &&         \
+                 _MSC_FULL_VER % 100000 >= Patch)))
+
+#define mlib_is_gcc_at_least(Major, Minor, Patch)                              \
+  (mlib_is_gcc() && mlib_compiler_version_gte(Major, Minor, Patch))
+
+#define mlib_is_clang_at_least(Major, Minor, Patch)                            \
+  (mlib_is_clang() && mlib_compiler_version_gte(Major, Minor, Patch))
+
+#define mlib_is_msvc_at_least(Major, Minor, Patch)                             \
+  (mlib_is_msvc() && mlib_compiler_version_gte(Major, Minor, Patch))
+
+#if mlib_is_cxx() || defined(MLIB_FORCE_DISABLE_GENERIC_SELECTION)
+// Never use _Generic in C++
+#define mlib_has_generic_selection() 0
+#elif __STDC__ == 1 && __STDC_VERSION >= 201112L
+// Declares C11 support
+#define mlib_has_generic_selection() 1
+#elif mlib_is_gcc_at_least(4, 9, 0) || mlib_is_clang_at_least(3, 0, 0) ||      \
+    mlib_is_msvc_at_least(19, 28, 0)
+// Other compilers that support _Generic() without full C11
+#define mlib_has_generic_selection() 1
+#else
+#define mlib_has_generic_selection() 0
+#endif // Check for _Generic() support
+
+/**
+ * @brief Create a generic selection expression with fallback compatibility for
+ * C++
+ *
+ * @param CxxExpression The expression that will expand when compiled as C++
+ * @param DefaultExpression The expression that will expand if _Generic() is
+ * unsupported
+ * @param SelectorExpression The Selector expression for _Generic()
+ * @param __VA_ARGS__ All remaining arguments are the selectors for _Generic()
+ */
+#define mlib_generic(CxxExpression, DefaultExpression, SelectorExpression,     \
+                     ...)                                                      \
+  MLIB_LANG_PICK(MLIB_IF_ELSE(mlib_has_generic_selection())(                   \
+      _Generic((SelectorExpression), __VA_ARGS__))(DefaultExpression))         \
+  (CxxExpression)
+
+/**
+ * @brief For empty struct/union types, this must be the sole non-static
+ * declaration.
+ *
+ * In C++, this expands to a no-op static assertion. For C, this expands to an
+ * unspecified field of type `char`. This unspecified field should not be used
+ * for any reason.
+ */
+#define mlib_empty_aggregate_c_compat                                          \
+  MLIB_LANG_PICK(char _placeholder)(static_assert(true, ""))
 
 #if mlib_is_cxx()
 
