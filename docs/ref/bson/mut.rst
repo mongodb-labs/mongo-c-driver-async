@@ -45,6 +45,74 @@ Types
 
     Creates a new mutator for the given object.
 
+  .. function::
+    iterator begin() const
+    iterator end() const
+    iterator find(std__string_view) const
+    bson_byte* data() const
+    std__uint32_t byte_size() const
+
+    .. seealso::
+      - `bson::document::begin`
+      - `bson::document::end`
+      - `bson::document::find`
+      - `bson::document::data`
+      - `bson::document::byte_size`
+
+  .. function::
+    bson_mut& get()
+    const bson_mut& get() const
+
+  .. function::
+    iterator insert(iterator pos, auto pair)
+    iterator insert(iterator pos, bson_iterator::reference elem)
+    iterator emplace(iterator pos, std__string_view key, __bson_value_convertible auto val)
+
+    :C API: `bson_insert`
+    :invalidation: |all-invalidated|
+
+    - :expr:`insert(pos, pair)` method is equivalent to
+      :expr:`emplace(pos, std::get<0>(pair), std::get<1>(pair))`.
+    - :expr:`insert(pos, elem)` is equivalent to :expr:`emplace(pos, elem.key(), elem.value())`
+
+  .. function::
+    iterator push_back(auto pair)
+    iterator push_back(bson_iterator::reference elem)
+    iterator emplace_back(std__string_view key, __bson_value_convertible auto val)
+
+    :C API: `bson_insert`
+    :invalidation: |all-invalidated|
+
+    These are equivalent to `insert` or `emplace` with the end iterator as the
+    insertion position.
+
+  .. function::
+    inserted_subdocument insert_subdoc(iterator pos, std__string_view key)
+    inserted_subdocument insert_array(iterator pos, std__string_view key)
+    mutator push_subdoc(std__string_view key)
+    mutator push_array(std__string_view key)
+
+    Insert a new empty child document or array, and obtain a mutator for that
+    child.
+
+    .. important:: |mut-stable-admon|
+
+  .. struct:: inserted_subdocument
+
+    .. member::
+      iterator position
+      mutator mut
+
+  .. function::
+    mutator child(iterator pos)
+    iterator parent_iterator() const
+
+    :C API:
+      - `bson_mut_child`
+      - `bson_mut_parent_iterator`
+
+    .. important:: Regarding `child`: |mut-stable-admon|
+
 
 Functions & Macros
 ##################
@@ -130,8 +198,8 @@ Removing Elements
 *****************
 
 .. function::
-  bson_iterator bson_erase(bson_mut* m, bson_iterator pos)
-  bson_iterator bson_erase_range(bson_mut* m, bson_iterator first, bson_iterator last)
+  [[1]] bson_iterator bson_erase(bson_mut* m, bson_iterator pos)
+  [[2]] bson_iterator bson_erase(bson_mut* m, bson_iterator first, bson_iterator last)
 
   Erase one or multiple elements within a document `m`.
 
@@ -139,13 +207,17 @@ Removing Elements
   :param pos: A valid iterator referring to the single element to be erased.
   :param first: The first element to be erased.
   :param last: The first element to be retained, or the end iterator.
-  :return: Returns an iterator referring to the position after the removal.
+  :return:
+    1. The updated iterator referring to the position after `pos`
+    2. The updated iterator referring to the `last` position
   :invalidation:
-    - `bson_erase` will |invalidate| all reachable iterators.
-    - `bson_erase_range` will |invalidate| all reachable iterators |iff| `first`
-      is not equal to `last`.
+    1. |all-invalidated|
+    2. `bson_erase_range` will |invalidate| all reachable iterators |iff|
+       `first` is not equal to `last`.
 
   If `first` and `last` are equivalent, then no element will be removed.
+
+  .. note:: |macro-impl|
 
 
 Modifying Elements

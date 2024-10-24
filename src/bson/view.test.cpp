@@ -257,3 +257,24 @@ TEST_CASE("bson/view/foreach/Once evaluation") {
         // Empty
     }
 }
+
+TEST_CASE("bson/view/structured binding pair") {
+    // clang-format off
+    bson_byte dat[] = {
+        13, 0, 0, 0,
+        bson_type_regex, 'r', 0,
+        // rx
+        'f', 'o', 'o', 0,
+        // opts
+        0,
+        0,
+    };
+    // clang-format on
+    auto v = bson::view::from_data(dat, sizeof dat);
+    for (auto [key, val] : v) {
+        CHECK(key == "r");
+        CHECK(val.type == bson_type_regex);
+        CHECK(val.get_regex().regex == "foo");
+        CHECK(val.get_regex().options == "foo");
+    }
+}

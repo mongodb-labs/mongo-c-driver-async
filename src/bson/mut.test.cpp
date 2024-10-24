@@ -81,7 +81,20 @@ TEST_CASE("bson/build/subdoc") {
     auto subit = s.begin();
     CHECK(subit->key() == "bar");
     CHECK(subit->value().utf8 == "baz");
-    it = child.position_in_parent();
+    it = child.parent_iterator();
     CHECK(it->type() == bson_type_document);
     CHECK(it->key() == "foo");
+}
+
+TEST_CASE("bson/build/insert iter reference") {
+    document doc{::mlib_default_allocator};
+    auto     m1 = bson::mutator(doc);
+    m1.emplace_back("foo", "bar");
+    document other{::mlib_default_allocator};
+    CHECK(other.empty());
+    // We can push-back a pair formed from the iterator reference
+    bson::mutator(other).push_back(*doc.begin());
+    CHECK_FALSE(other.empty());
+    CHECK(other.begin()->key() == "foo");
+    CHECK(other.begin()->value().get_utf8() == "bar");
 }

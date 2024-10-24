@@ -18,6 +18,7 @@
 #if mlib_is_cxx()
 #include <iterator>
 #include <optional>
+#include <tuple>
 #endif
 
 /**
@@ -746,6 +747,15 @@ public:
     [[nodiscard]] inline std::optional<T> try_as() const noexcept {
         return bson_value_try_convert(*this, static_cast<T*>(nullptr));
     }
+
+    template <std::size_t N>
+    friend auto get(reference const& self) {
+        if constexpr (N == 0) {
+            return self.key();
+        } else {
+            return self.value();
+        }
+    }
 };
 
 class bson_iterator::arrow {
@@ -769,4 +779,16 @@ inline bson_iterator& bson_iterator::operator++() noexcept {
 
 inline bool bson_iterator::stop() const noexcept { return bson_stop(*this); }
 
+template <>
+struct std::tuple_size<bson_iterator::reference> : std::integral_constant<std::size_t, 2> {};
+
+template <>
+struct std::tuple_element<0, bson_iterator::reference> {
+    using type = std::string_view;
+};
+
+template <>
+struct std::tuple_element<1, bson_iterator::reference> {
+    using type = ::bson_value_ref;
+};
 #endif  // C++

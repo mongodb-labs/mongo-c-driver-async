@@ -633,10 +633,7 @@ private:
                      auto value) noexcept -> decltype(::bson_insert(&_mut, pos, key, value)) {
         return ::bson_insert(&_mut, pos, key, value);
     }
-    // Constrain to exactly handle `bool` (no conversions)
-    iterator _do_emplace(iterator pos, mlib_str_view key, std::same_as<bool> auto b) noexcept {
-        return ::bson_insert(&_mut, pos, key, b);
-    }
+
     iterator _do_emplace(iterator pos, mlib_str_view, bson_eod) noexcept {
         // Attempting to emplace a bson_eod is a no-op
         return pos;
@@ -660,6 +657,10 @@ public:
         requires requires { _emplace(pos, std::get<0>(pair), std::get<1>(pair)); }
     {
         return _emplace(pos, std::get<0>(pair), std::get<1>(pair));
+    }
+
+    iterator insert(iterator pos, bson_iterator::reference const& pair) {
+        return _emplace(pos, pair.key(), pair.value());
     }
 
     iterator emplace(iterator pos, std::string_view key, auto const& val)
@@ -692,7 +693,7 @@ public:
         return mutator(::bson_mut_child(&_mut, pos));
     }
 
-    [[nodiscard]] iterator position_in_parent() const noexcept {
+    [[nodiscard]] iterator parent_iterator() const noexcept {
         return ::bson_mut_parent_iterator(_mut);
     }
 };
