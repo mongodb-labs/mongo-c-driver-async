@@ -5,7 +5,7 @@
 
 #include <mlib/alloc.h>
 
-struct _amongoc_database_impl {
+struct amongoc_database {
     ::amongoc_client client;
     amongoc::string  database_name;
 
