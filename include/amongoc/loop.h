@@ -1,18 +1,11 @@
 #pragma once
 
-#include "./alloc.h"
 #include "./box.h"
-#include "./emitter.h"
 #include "./emitter_result.h"
 #include "./handler.h"
-#include "./operation.h"
 #include "./status.h"
 
 #include <mlib/config.h>
-
-#if mlib_is_cxx()
-#include <concepts>
-#endif
 
 typedef struct amongoc_loop_vtable amongoc_loop_vtable;
 typedef struct amongoc_loop        amongoc_loop;
@@ -119,7 +112,7 @@ mlib_extern_c_begin();
  * @return mlib_allocator The allocator associated with the loop if the loop provides
  * one. Otherwise, returns `mlib_default_allocator`.
  */
-static inline mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
+inline mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
     if (loop->vtable->get_allocator) {
         return loop->vtable->get_allocator(loop);
     }
