@@ -8,12 +8,15 @@
   color: var(--pst-color-muted);
 }
 
+.c-expr.sig-inline,
 .cpp-expr.sig-inline {
   background-color: var(--pst-color-surface);
   border: 1px solid var(--pst-color-border);
   border-radius: .25rem;
   padding: .1rem .25rem;
   white-space: nowrap;
+  font-weight: bold;
+  font-size: .875em;
 }
 
 dl[class].cpp {
