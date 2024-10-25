@@ -2,6 +2,8 @@
 
 #include <mlib/config.h>
 
+#include <stdbool.h>
+
 #if mlib_is_cxx()
 #include <string>
 #include <system_error>
