@@ -287,6 +287,13 @@ public:
         return operator new(n, mlib::get_allocator(x));
     }
 
+    // Allocate when the first parameter is a pointer to an object that provides
+    // an allocator
+    void*
+    operator new(std::size_t n, mlib::has_mlib_allocator auto const* p, auto const&...) noexcept {
+        return operator new(n, mlib::get_allocator(*p));
+    }
+
     void operator delete(void* p, std::size_t n) {
         // Adjust the pointer to coroutine storage back to the pointer to alloc_state
         // that we created in new()
@@ -303,6 +310,10 @@ public:
     template <mlib::has_mlib_allocator X>
     coroutine_promise_allocator_mixin(const X& x, auto&&...)
         : _alloc(amongoc::get_allocator(x)) {}
+
+    template <mlib::has_mlib_allocator P>
+    coroutine_promise_allocator_mixin(const P* x, auto&&...)
+        : _alloc(amongoc::get_allocator(*x)) {}
 
     // Expose the allocator associated with the coroutine
     allocator<> get_allocator() const noexcept { return _alloc; }
