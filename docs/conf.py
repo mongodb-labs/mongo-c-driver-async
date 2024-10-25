@@ -201,6 +201,7 @@ rst_prolog = """
 .. |extern| replace:: :cpp:`extern`
 .. |static| replace:: :cpp:`static`
 .. |const| replace:: :cpp:`const`
+.. |void| replace:: :cpp:`void`
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
