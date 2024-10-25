@@ -1,3 +1,5 @@
+#define VecDeclareExternInlines_bson_value_vec
+
 #include <bson/value.h>
 
 #define DECL_CONVERSION(FromType, TypeEnumerator, Member, Init)                                    \
@@ -33,3 +35,5 @@ extern mlib_constexpr bool    bson_value_as_bool(bson_value_ref it) mlib_noexcep
 extern mlib_constexpr int32_t bson_value_as_int32(bson_value_ref it, bool*) mlib_noexcept;
 extern mlib_constexpr int64_t bson_value_as_int64(bson_value_ref it, bool*) mlib_noexcept;
 extern mlib_constexpr double  bson_value_as_double(bson_value_ref it, bool*) mlib_noexcept;
+
+extern mlib_constexpr void bson_value_delete(bson_value val) mlib_noexcept;

@@ -30,6 +30,12 @@
 #define VecDestroyElement(N) ((void)(N))
 #endif
 
+#if MLIB_IS_EMPTY(MLIB_PASTE(VecDeclareExternInlines_, VecName))
+#define vec_extern_inline extern inline
+#else
+#define vec_extern_inline inline
+#endif
+
 #define fn(M) MLIB_PASTE(VecName, MLIB_PASTE(_, M))
 
 typedef struct VecName {
@@ -43,12 +49,14 @@ typedef struct VecName {
 #endif
 } VecName;
 
-static inline T*     fn(begin)(VecName v) mlib_noexcept { return v.data; }
-static inline T*     fn(end)(VecName v) mlib_noexcept { return v.data + v.size; }
-static inline size_t fn(max_size)(void) mlib_noexcept { return SSIZE_MAX / sizeof(T); }
+mlib_extern_c_begin();
+
+vec_extern_inline T*     fn(begin)(VecName v) mlib_noexcept { return v.data; }
+vec_extern_inline T*     fn(end)(VecName v) mlib_noexcept { return v.data + v.size; }
+vec_extern_inline size_t fn(max_size)(void) mlib_noexcept { return SSIZE_MAX / sizeof(T); }
 
 mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
-    static inline T* fn(resize(VecName* self, size_t count)) mlib_noexcept {
+    vec_extern_inline T* fn(resize(VecName* self, size_t count)) mlib_noexcept {
     if (count > fn(max_size())) {
         // We cannot allocate this many objects
         return NULL;
@@ -104,7 +112,7 @@ mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
 /**
  * @brief Create a new empty vector
  */
-static inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
+vec_extern_inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
     VecName ret;
     ret.data      = NULL;
     ret.size      = 0;
@@ -112,18 +120,21 @@ static inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
     return ret;
 }
 
-static inline void fn(delete(VecName v)) mlib_noexcept { (void)fn(resize(&v, 0)); }
+vec_extern_inline void fn(delete(VecName v)) mlib_noexcept { (void)fn(resize(&v, 0)); }
 
 /**
  * @brief Create a new vector with `n` zero-initialized elements
  */
-static inline VecName fn(new_n(size_t n, mlib_allocator alloc)) mlib_noexcept {
+vec_extern_inline VecName fn(new_n(size_t n, mlib_allocator alloc)) mlib_noexcept {
     VecName ret = fn(new (alloc));
     (void)fn(resize)(&ret, n);
     return ret;
 }
 
+mlib_extern_c_end();
+
 #undef T
 #undef fn
 #undef VecName
 #undef VecDestroyElement
+#undef vec_extern_inline

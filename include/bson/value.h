@@ -69,7 +69,7 @@ typedef struct bson_value {
 #endif  // C++
 } bson_value;
 
-static mlib_constexpr void bson_value_delete(bson_value val) mlib_noexcept {
+mlib_constexpr void bson_value_delete(bson_value val) mlib_noexcept {
     switch (val.type) {
     case bson_type_utf8:
     case bson_type_code:

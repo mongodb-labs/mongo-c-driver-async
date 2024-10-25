@@ -1,3 +1,5 @@
+#define VecDeclareExternInlines_bson_doc_vec
+
 #include <bson/doc.h>
 #include <bson/view.h>
 
