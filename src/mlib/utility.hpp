@@ -3,6 +3,7 @@
 #include <mlib/config.h>
 
 #include <exception>
+#include <memory>
 #include <utility>
 
 namespace mlib {
@@ -105,6 +106,23 @@ scope_success(F&&) -> scope_success<F>;
 template <typename T>
 constexpr T take(T& object) noexcept(noexcept(T(static_cast<T&&>(object))) and noexcept(T())) {
     return std::exchange(object, T());
+}
+
+/**
+ * @brief Delete a pointed-to object using an allocator that is associated with
+ * that object.
+ *
+ * @param inst A (possibly null) pointer to an object which must have an associated
+ * allocator. If the pointer is null, this function does nothing.
+ */
+template <typename T>
+void delete_via_associated_allocator(T* inst) {
+    if (inst == nullptr) {
+        return;
+    }
+    auto a = inst->get_allocator().template rebind<T>();
+    std::allocator_traits<decltype(a)>::destroy(a, inst);
+    std::allocator_traits<decltype(a)>::deallocate(a, inst, 1);
 }
 
 }  // namespace mlib

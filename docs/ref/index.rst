@@ -18,6 +18,7 @@ Reference
   async
   alloc
   client
+  database
   loop
   handler
 

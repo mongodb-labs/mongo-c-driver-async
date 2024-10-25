@@ -187,6 +187,19 @@ The `__type` Parameter
   specifier rather than a runtime value.
 
 
+Unspecified Types
+#################
+
+.. type:: __unspecified
+
+  This documentation type indicates a private type that is not part of the
+  public API, although an annotated struct field may be part of the public API.
+
+  Dereferencing a pointer-to or accessing the members of an `__unspecified` type
+  is not guaranteed to have well-defined behavior. A pointer-to-`__unspecified`
+  should be considered a stronger-typed |void|.
+
+
 .. rubric:: Footnotes
 
 .. [#ebadf] While using a closed file descriptor *may* result in ``EBADF``, it
