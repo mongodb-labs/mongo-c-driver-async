@@ -239,7 +239,7 @@ struct adapt_memfun_x<F, void (default_loop::*)(Args...)> {
     // A free function that takes a type-erased default_loop and invokes the bound member function.
     // Presents a signature based on the signature of the target member function
     static void ap(amongoc_loop* self, Args... args) noexcept {
-        return (amongoc_box_cast(default_loop)(self->userdata).*F)(mlib_fwd(args)...);
+        return (amongoc_box_cast(default_loop, self->userdata).*F)(mlib_fwd(args)...);
     }
 };
 
@@ -275,7 +275,7 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
 }
 
 void amongoc_default_loop_run(amongoc_loop* loop) noexcept {
-    auto& ioc = amongoc_box_cast(default_loop)(loop->userdata).ioc;
+    auto& ioc = amongoc_box_cast(default_loop, loop->userdata).ioc;
     // Restart the IO context, allowing us to call run() more than once
     ioc.restart();
     ioc.run();

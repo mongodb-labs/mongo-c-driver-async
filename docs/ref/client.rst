@@ -24,7 +24,7 @@ Functions
 *********
 
 .. function::
-  amongoc_emitter [[type(amongoc_client)]] amongoc_client_new(amongoc_loop* loop, const char* uri)
+  amongoc_emitter [[type(amongoc_client)]] amongoc_client_new(amongoc_loop* loop, __string_convertible uri)
 
   Asynchronously connect to the remote server at the given location.
 
@@ -36,7 +36,7 @@ Functions
 
 
 .. function::
-  void amongoc_client_destroy(amongoc_client [[transfer]])
+  void amongoc_client_delete(amongoc_client [[transfer]])
 
   Destroy the client object, releasing any resources it may have acquired.
 
@@ -47,8 +47,8 @@ Functions
 
 
 .. function::
-  amongoc_emitter [[type(bson_mut)]] amongoc_client_command(amongoc_client cl, bson_view doc)
-  amongoc_emitter [[type(bson_mut)]] amongoc_client_command_nocopy(amongoc_client cl, bson_view doc)
+  amongoc_emitter [[type(bson_doc)]] amongoc_client_command(amongoc_client cl, bson_view doc)
+  amongoc_emitter [[type(bson_doc)]] amongoc_client_command_nocopy(amongoc_client cl, bson_view doc)
 
   Issue a command against the MongoDB server connected with `cl`
 
@@ -57,7 +57,16 @@ Functions
     version of this call will not copy the data into the emitter, requiring that
     the caller ensure the data viewd by `doc` remains valid until the operation
     completes.
-  :return: An `amongoc_emitter` that resolves with a `bson_mut` containing the
+  :return: An `amongoc_emitter` that resolves with a `bson_doc` containing the
     server's response message.
   :allocation: Memory allocation is performed by the event loop of the connection.
   :header: |this-header|
+
+  .. note:: The command requires a ``$db`` field.
+
+
+.. function::
+  amongoc_loop* amongoc_client_get_event_loop(amongoc_client cl)
+  mlib_allocator amongoc_client_get_allocator(amongoc_client cl)
+
+  Obtain the event loop or allocator associated with the client.

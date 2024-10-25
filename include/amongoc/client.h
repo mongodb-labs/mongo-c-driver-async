@@ -5,6 +5,7 @@
 #include "./loop.h"
 
 #include <mlib/config.h>
+#include <mlib/str.h>
 
 struct _amongoc_client_impl;
 struct bson_view;
@@ -21,18 +22,19 @@ mlib_extern_c_begin();
  * @param loop The event loop to be used
  * @param uri The connection URI string that specifies that peer and connection options
  */
-amongoc_emitter amongoc_client_new(amongoc_loop* loop, const char* uri) mlib_noexcept;
+#define amongoc_client_new(Loop, URI) _amongoc_client_new((Loop), mlib_as_str_view((URI)))
+amongoc_emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri) mlib_noexcept;
 
 /// Destroy an amongoc_client created with amongoc_client_new
-void amongoc_client_destroy(amongoc_client cl) mlib_noexcept;
+void amongoc_client_delete(amongoc_client cl) mlib_noexcept;
 
 /**
  * @brief Issue a command on an amongoc_client. Upon success, resolves
- * with a bson_mut object
+ * with a bson_doc object
  *
  * @param cl The connection on which to send the command
  * @param doc The document to be sent to the server
- * @return amongoc_emitter An emitter that resolves with a bson_mut
+ * @return amongoc_emitter An emitter that resolves with a bson_doc
  */
 amongoc_emitter amongoc_client_command(amongoc_client cl, struct bson_view doc) mlib_noexcept;
 amongoc_emitter amongoc_client_command_nocopy(amongoc_client   conn,
@@ -51,7 +53,7 @@ mlib_extern_c_end();
  * @brief An encapsulated amongoc_client object. This object is pointer-like
  */
 struct amongoc_client {
-    struct _amongoc_client_impl* _impl;
+    struct _amongoc_client_impl* impl;
 
 #if mlib_is_cxx()
     // Get the event loop associated with this client
@@ -72,7 +74,7 @@ mlib_extern_c_begin();
  * @param cl The client to be queried
  * @return mlib_allocator The allocator for the client (originates from the event loop)
  */
-static inline mlib_allocator amongoc_conn_get_allocator(amongoc_client cl) mlib_noexcept {
+inline mlib_allocator amongoc_client_get_allocator(amongoc_client cl) mlib_noexcept {
     return amongoc_loop_get_allocator(amongoc_client_get_event_loop(cl));
 }
 
