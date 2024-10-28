@@ -75,6 +75,16 @@ template <typename F>
 scope_fail(F&&) -> scope_fail<F>;
 
 /**
+ * @brief Create a defered execution block in the current lexical scope
+ */
+#define mlib_defer ::mlib::scope_exit MLIB_PASTE(_mlibScopeExit, __LINE__) = [&]
+/**
+ * @brief Create a deferred execution block in the current scope, which will only
+ * run if we exit via exception.
+ */
+#define mlib_defer_fail ::mlib::scope_fail MLIB_PASTE(_mlibScopeExit, __LINE__) = [&]
+
+/**
  * @brief A scope-exit utility that only executes the attached function if the scope exits without
  * throwing an exception
  */

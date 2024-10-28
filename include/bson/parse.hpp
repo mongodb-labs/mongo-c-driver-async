@@ -600,6 +600,8 @@ struct each {
     }
 
     result operator()(bson_array_view arr) { return (*this)(bson_view(arr)); }
+
+    auto operator()(reference const& ref) { return type<bson_array_view>(*this)(ref); }
 };
 
 template <rule<reference> P>

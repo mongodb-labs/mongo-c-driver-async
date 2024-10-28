@@ -15,6 +15,8 @@
 #include <mlib/alloc.h>
 #include <mlib/config.h>
 
+#include <stdbool.h>
+#include <stddef.h>
 #include <string.h>
 
 #ifndef T
@@ -44,8 +46,8 @@ typedef struct VecName {
     mlib_allocator allocator;
 
 #if mlib_is_cxx()
-    T* begin() const noexcept { return data; }
-    T* end() const noexcept { return data + size; }
+    T* begin() noexcept { return data; }
+    T* end() noexcept { return data + size; }
 #endif
 } VecName;
 
@@ -56,10 +58,10 @@ vec_extern_inline T*     fn(end)(VecName v) mlib_noexcept { return v.data + v.si
 vec_extern_inline size_t fn(max_size)(void) mlib_noexcept { return SSIZE_MAX / sizeof(T); }
 
 mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
-    vec_extern_inline T* fn(resize(VecName* self, size_t count)) mlib_noexcept {
+    vec_extern_inline bool fn(resize(VecName* self, size_t count)) mlib_noexcept {
     if (count > fn(max_size())) {
         // We cannot allocate this many objects
-        return NULL;
+        return false;
     }
     if (count < self->size) {
         // We need to destroy elements at the tail
@@ -74,6 +76,9 @@ mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
         if (self->size) {
             mlib_deallocate(self->allocator, self->data, self->size * sizeof(T));
         }
+        self->data = NULL;
+        self->size = 0;
+        return true;
     } else if (count != self->size) {
         pointer = (T*)mlib_reallocate(self->allocator,
                                       self->data,
@@ -88,25 +93,32 @@ mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
     if (!pointer) {
         // We assume that shrinking cannot fail. Otherwise, we'll have destroyed
         // elements at the tail and now we have a vec that contains dead elements.
-        return NULL;
+        return false;
     }
     // Update the data pointer
     self->data = pointer;
 
-    T* ret_ptr;
     if (count > self->size) {
         // Zero-init the tail
         T* iter = self->data + self->size;
         memset(iter, 0, sizeof(T) * (count - self->size));
-        // We grew the vector. Return the pointer to the first new element
-        ret_ptr = self->data + self->size;
-    } else {
-        // We shrunk the vector. Return the pointr to the end
-        ret_ptr = self->data + count;
     }
     // Update the stored size
     self->size = count;
-    return ret_ptr;
+    return true;
+}
+
+/**
+ * @brief Append another element, returning a pointer to that element.
+ */
+mlib_nodiscard("Check the returned pointer for failure")
+    vec_extern_inline T* fn(push(VecName* self)) mlib_noexcept {
+    size_t count = self->size;
+    if (!fn(resize(self, count + 1))) {
+        // Failed to push another item
+        return NULL;
+    }
+    return self->data + count;
 }
 
 /**
@@ -125,9 +137,9 @@ vec_extern_inline void fn(delete(VecName v)) mlib_noexcept { (void)fn(resize(&v,
 /**
  * @brief Create a new vector with `n` zero-initialized elements
  */
-vec_extern_inline VecName fn(new_n(size_t n, mlib_allocator alloc)) mlib_noexcept {
+vec_extern_inline VecName fn(new_n(size_t n, bool* okay, mlib_allocator alloc)) mlib_noexcept {
     VecName ret = fn(new (alloc));
-    (void)fn(resize)(&ret, n);
+    *okay       = fn(resize)(&ret, n);
     return ret;
 }
 
