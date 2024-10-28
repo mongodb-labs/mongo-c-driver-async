@@ -254,15 +254,29 @@ static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
         break;
     case bson_type_utf8:
         ret.string = mlib_str_copy(val.utf8).str;
+        if (!ret.string.data) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         break;
     case bson_type_document:
     case bson_type_array:
         ret.document = bson_new(val.document);
+        if (!bson_data(ret.document)) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         break;
-    case bson_type_binary:
-        ret.binary.bytes   = bson_byte_vec_new_n(val.binary.data_len, alloc);
+    case bson_type_binary: {
+        bool alloc_okay  = false;
+        ret.binary.bytes = bson_byte_vec_new_n(val.binary.data_len, &alloc_okay, alloc);
+        if (!alloc_okay) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         ret.binary.subtype = val.binary.subtype;
         break;
+    }
     case bson_type_oid:
         ret.oid = val.oid;
         break;
@@ -273,18 +287,39 @@ static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
         ret.datetime = val.datetime;
         break;
     case bson_type_regex:
-        ret.regex.rx      = mlib_str_copy(val.regex.regex).str;
+        ret.regex.rx = mlib_str_copy(val.regex.regex).str;
+        if (!ret.regex.rx.data) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         ret.regex.options = mlib_str_copy(val.regex.options).str;
+        if (!ret.regex.options.data) {
+            mlib_str_delete(ret.regex.rx);
+            ret.type = bson_type_eod;
+            return ret;
+        }
         break;
     case bson_type_dbpointer:
         ret.dbpointer.collection = mlib_str_copy(val.dbpointer.collection).str;
-        ret.dbpointer.object_id  = val.dbpointer.object_id;
+        if (!ret.dbpointer.collection.data) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
+        ret.dbpointer.object_id = val.dbpointer.object_id;
         break;
     case bson_type_code:
         ret.string = mlib_str_copy(val.code.utf8).str;
+        if (!ret.string.data) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         break;
     case bson_type_symbol:
         ret.string = mlib_str_copy(val.symbol.utf8).str;
+        if (!ret.string.data) {
+            ret.type = bson_type_eod;
+            return ret;
+        }
         break;
     case bson_type_int32:
         ret.int32 = val.int32;

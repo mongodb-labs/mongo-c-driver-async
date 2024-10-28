@@ -144,16 +144,6 @@ typedef struct bson_value_ref {
 #endif  // C++
 } bson_value_ref;
 
-#define bson_undefined_value                                                                       \
-    mlib_init(bson_value_ref) {                                                                    \
-        .type = bson_type_undefined, { .double_ = 0 }                                              \
-    }
-
-#define bson_null_value                                                                            \
-    mlib_init(bson_value_ref) {                                                                    \
-        .type = bson_type_null, { .double_ = 0 }                                                   \
-    }
-
 mlib_extern_c_begin();
 
 mlib_constexpr bool bson_value_as_bool(bson_value_ref val) mlib_noexcept {
