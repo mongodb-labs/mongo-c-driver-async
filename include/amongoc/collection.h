@@ -395,13 +395,13 @@ typedef struct amongoc_cursor {
     int64_t             cursor_id;
     amongoc_collection* coll;
     bson_doc            records;
-    int                 batch_size;
+    int                 _batch_size;
 
     MLIB_IF_CXX(mlib::allocator<> get_allocator()
                     const noexcept { return ::amongoc_collection_get_allocator(coll); })
 } amongoc_cursor;
 
-inline void amongoc_cursor_destroy(amongoc_cursor c) mlib_noexcept { bson_delete(c.records); }
+inline void amongoc_cursor_delete(amongoc_cursor c) mlib_noexcept { bson_delete(c.records); }
 
 amongoc_emitter amongoc_cursor_next(struct amongoc_cursor curs) mlib_noexcept;
 

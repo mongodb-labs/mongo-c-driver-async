@@ -15,7 +15,8 @@ void amongoc::emitter_promise::unhandled_exception() noexcept {
     } catch (const wire::server_error& err) {
         return_value(
             emitter_result(status::from(err.code()),
-                           unique_box::from(this->get_allocator(), bson::document(err.body()))));
+                           unique_box::from(this->get_allocator(),
+                                            bson::document(err.body(), this->get_allocator()))));
     } catch (std::system_error const& err) {
         return_value(emitter_result(status::from(err.code()),
                                     unique_box::from(::mlib_default_allocator,

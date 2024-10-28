@@ -23,7 +23,7 @@ void c_create() {
 
 void cxx_create() {
     // Will be destroyed automatically
-    bson::document doc;
+    bson::document doc{::mlib_default_allocator};
 }
 // end.
 

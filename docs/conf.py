@@ -11,10 +11,12 @@ import os
 import re
 import zlib
 from pathlib import Path
-from typing import Callable, Iterable, Literal, NamedTuple
+from typing import Any, Callable, Iterable, Literal, NamedTuple
 
 from sphinx import addnodes
 from sphinx.application import Sphinx
+from sphinx.domains import Domain, ObjType
+from sphinx.roles import XRefRole
 from sphinx.environment import BuildEnvironment
 
 project = "amongoc"
@@ -144,6 +146,7 @@ generate_sphinx_inventory(CPPREF_GENERATED_INV, "cppreference", "0", CPPREF_INVE
 intersphinx_mapping = {
     "cmake": ("https://cmake.org/cmake/help/latest", None),
     "cppref": ("https://en.cppreference.com/w/", CPPREF_GENERATED_INV),
+    "mongodb": ("https://www.mongodb.com/docs/manual", None),
 }
 
 templates_path = ["_templates"]
@@ -182,6 +185,8 @@ rst_prolog = """
 
 .. role:: project-name(literal)
     :class: project-name
+
+.. role:: dbcommand(mongodb:dbcommand)
 
 .. |amongoc| replace:: :project-name:`amongoc`
 .. |attr.transfer| replace:: :doc-attr:`[[transfer]]`
@@ -282,6 +287,19 @@ def parse_earthly_artifact(env: BuildEnvironment, sig: str, signode: addnodes.de
     return sig
 
 
+class MongoDBDomain(Domain):
+    name = "mongodb"
+    object_types = {
+        "dbcommand": ObjType("Database Command", "dbcommand"),
+    }
+    roles = {
+        "dbcommand": XRefRole(),
+    }
+
+    def merge_domaindata(self, docnames: list[str], otherdata: dict[str, Any]) -> None:
+        pass
+
+
 def setup(app: Sphinx):
     app.add_object_type(  # type: ignore
         "header-file",
@@ -314,3 +332,4 @@ def setup(app: Sphinx):
         indextemplate="repository file; %s",
         parse_node=annotator("repository file"),
     )
+    app.add_domain(MongoDBDomain)
