@@ -19,8 +19,10 @@ Reference
   alloc
   client
   database
+  collection
   loop
   handler
 
   bson/index
   str
+  vec

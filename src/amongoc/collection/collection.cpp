@@ -52,7 +52,7 @@ amongoc_find_one_and_update(amongoc_collection*             coll,
                             size_t                          pipeline_len,
                             const amongoc_find_plus_params* params) mlib_noexcept;
 
-extern inline void amongoc_cursor_destroy(amongoc_cursor c) mlib_noexcept;
+extern inline void amongoc_cursor_delete(amongoc_cursor c) mlib_noexcept;
 
 constexpr const amongoc_status_category_vtable amongoc_crud_category = {
     .name = [] { return "amongoc.crud"; },
@@ -73,8 +73,8 @@ constexpr const amongoc_status_category_vtable amongoc_crud_category = {
 };
 
 static ::amongoc_cursor _parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
-    ::amongoc_cursor curs;
-    bson_view        batch;
+    amongoc_cursor curs{};
+    bson_view      batch{};
     {
         using namespace bson::parse;
         using bson::parse::any;
@@ -92,9 +92,9 @@ static ::amongoc_cursor _parse_cursor(::amongoc_collection& coll, int batch_size
                                })),
                    });
     }
-    curs.batch_size = batch_size;
-    curs.coll       = &coll;
-    curs.records    = bson::document(batch).release();
+    curs._batch_size = batch_size;
+    curs.coll        = &coll;
+    curs.records     = bson::document(batch, coll.get_allocator()).release();
     return curs;
 }
 
@@ -156,9 +156,7 @@ emitter amongoc_aggregate_on_collection(amongoc_collection*             coll,
     co_await ramp_end;
     const bson::document resp = co_await coll->simple_request(command);
     const auto           curs = _parse_cursor(*coll, batch_size, resp);
-    co_return unique_box::from(coll->get_allocator(),
-                               curs,
-                               just_invokes<&amongoc_cursor_destroy>{});
+    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
 }
 
 emitter amongoc_count_documents(amongoc_collection*         coll,
@@ -335,9 +333,7 @@ emitter amongoc_find(amongoc_collection*        coll,
     const auto resp = co_await coll->simple_request(command);
     const auto curs = _parse_cursor(*coll, batch_size, resp);
 
-    co_return unique_box::from(coll->get_allocator(),
-                               curs,
-                               just_invokes<&amongoc_cursor_destroy>{});
+    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
 }
 
 emitter amongoc_cursor_next(amongoc_cursor curs) noexcept {
@@ -345,19 +341,17 @@ emitter amongoc_cursor_next(amongoc_cursor curs) noexcept {
     auto coll = curs.coll;
     using bson::make::doc;
     using namespace bson::make;
-    ::amongoc_cursor_destroy(curs);  // Delete the records
+    ::amongoc_cursor_delete(curs);  // Delete the records
     curs               = {};
     bson::document cmd = doc(pair("getMore", id),
                              pair("$db", coll->database_name),
                              pair("collection", coll->collection_name),
-                             optional_pair("batchSize", curs.batch_size))
+                             optional_pair("batchSize", curs._batch_size))
                              .build(coll->get_allocator());
     co_await ramp_end;
     const auto resp = co_await coll->simple_request(cmd);
-    curs            = _parse_cursor(*coll, curs.batch_size, resp);
-    co_return unique_box::from(coll->get_allocator(),
-                               curs,
-                               just_invokes<&amongoc_cursor_destroy>{});
+    curs            = _parse_cursor(*coll, curs._batch_size, resp);
+    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
 }
 
 /**

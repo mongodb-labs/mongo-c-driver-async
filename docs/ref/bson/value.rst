@@ -16,6 +16,8 @@ Types
 
   A non-owning read-only view of a BSON value.
 
+  .. _bson-null-ref:
+
   :zero-initialized: |attr.zero-init| Has type `bson_type_eod`, and represents a
     *null* value reference. **Note** that this is distinct from a reference to a
     `bson_type_null` value!
@@ -68,7 +70,7 @@ Types
   .. function::
     static bson_value_ref from(__bson_value_convertible V)
 
-    Obtian a `bson_value_ref` instance that views the given value `V`
+    Obtain a `bson_value_ref` instance that views the given value `V`
 
   .. function::
     bool as_bool()
