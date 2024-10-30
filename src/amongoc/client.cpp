@@ -29,10 +29,7 @@ emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri_str) noexcept 
         co_return uri.error();
     }
     auto alloc = loop->get_allocator().rebind<_amongoc_client_impl>();
-    auto cl    = unique_box::from(  //
-        alloc,
-        amongoc_client{alloc.new_(*loop, *mlib_fwd(uri))},
-        just_invokes<&amongoc_client_delete>{});
+    auto cl    = unique_box::from(alloc, amongoc_client{alloc.new_(*loop, *mlib_fwd(uri))});
     // Await a connection from the pool, to ensure that the connection is valid
     co_await cl.as<amongoc_client>().impl->_pool.checkout();
     // The connection is okay. Return it now.
@@ -42,9 +39,7 @@ emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri_str) noexcept 
 static amongoc_emitter _command(amongoc_client cl, auto doc) noexcept {
     co_await ramp_end;
     auto resp = co_await wire::simple_request(pool_client(cl.impl->_pool), bson_view(doc));
-    co_return unique_box::from(cl.get_allocator(),
-                               mlib_fwd(resp).release(),
-                               just_invokes<&bson_delete>{});
+    co_return unique_box::from(cl.get_allocator(), mlib_fwd(resp).release());
 }
 
 emitter amongoc_client_command(amongoc_client cl, bson_view doc) noexcept {

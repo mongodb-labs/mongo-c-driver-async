@@ -105,7 +105,7 @@ TEST_CASE("Async/let") {
     auto        op  = amongoc_tie(mlib_fwd(em).release(), nullptr, &fin, mlib_default_allocator);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
-    amongoc_operation_destroy(op);
+    amongoc_operation_delete(op);
     amongoc_default_loop_destroy(&loop);
 }
 

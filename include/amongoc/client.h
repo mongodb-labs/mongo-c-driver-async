@@ -27,6 +27,7 @@ amongoc_emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri) mlib_
 
 /// Destroy an amongoc_client created with amongoc_client_new
 void amongoc_client_delete(amongoc_client cl) mlib_noexcept;
+mlib_assoc_deleter(amongoc_client, amongoc_client_delete);
 
 /**
  * @brief Issue a command on an amongoc_client. Upon success, resolves

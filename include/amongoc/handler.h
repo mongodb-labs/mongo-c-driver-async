@@ -6,14 +6,9 @@
 #include "./status.h"
 
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
-#if mlib_is_cxx()
-namespace amongoc {
-
-class unique_handler;
-
-}  // namespace amongoc
-#endif
+MLIB_IF_CXX(namespace amongoc { struct unique_handler; })
 
 typedef struct amongoc_handler amongoc_handler;
 
@@ -42,27 +37,11 @@ struct amongoc_handler {
     // Virtual method table
     const struct amongoc_handler_vtable* vtable;
 
+    mlib_declare_member_deleter(&amongoc_handler::userdata);
+
 #if mlib_is_cxx()
     /// Transfer ownership of the handler into a unique_handler
     inline amongoc::unique_handler as_unique() && noexcept;
-
-    /**
-     * @brief Resolve the handler with the given status and value.
-     *
-     * @param st The result status
-     * @param result The result value
-     */
-    void complete(amongoc_status st, amongoc::unique_box&& result) & noexcept {
-        // The callback takes ownership of the handler and the result
-        this->vtable->complete(this, st, mlib_fwd(result).release());
-    }
-
-    mlib::allocator<> get_allocator() const noexcept {
-        if (vtable->get_allocator) {
-            return mlib::allocator<>(vtable->get_allocator(this, ::mlib_default_allocator));
-        }
-        return mlib::allocator<>(::mlib_default_allocator);
-    }
 #endif
 };
 
@@ -87,9 +66,7 @@ static inline void amongoc_handler_complete(amongoc_handler* hnd,
  *
  * @note This function should not be used on a handler that was consumed by another operation.
  */
-static inline void amongoc_handler_destroy(amongoc_handler hnd) mlib_noexcept {
-    amongoc_box_destroy(hnd.userdata);
-}
+mlib_declare_c_deletion_function(amongoc_handler_delete, amongoc_handler);
 
 /**
  * @brief Register a stop callback with the given handler
@@ -188,45 +165,12 @@ private:
 /**
  * @brief Unique ownership wrapper for an `::amongoc_handler`
  */
-class unique_handler {
-public:
+struct unique_handler : mlib::unique<::amongoc_handler> {
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_handler);
-    // Default-contsruct to nothing
-    unique_handler() = default;
-    // Take ownership of a handler object
-    explicit unique_handler(amongoc_handler&& h) noexcept {
-        _handler = h;
-        h        = {};
-    }
+    using unique_handler::unique::unique;
 
     // Test whether this handler has a value
-    constexpr bool has_value() const noexcept { return _handler.vtable != nullptr; }
-
-    // Move-construct
-    unique_handler(unique_handler&& o) noexcept
-        : _handler(mlib_fwd(o).release()) {}
-
-    // Move-assign
-    unique_handler& operator=(unique_handler&& o) noexcept {
-        amongoc_handler_destroy(_handler);
-        _handler = mlib_fwd(o).release();
-        return *this;
-    }
-
-    // Discard the associated handler object
-    ~unique_handler() {
-        // This is a no-op if the handler has been released
-        amongoc_handler_destroy(_handler);
-    }
-
-    /**
-     * @brief Relinquish ownership of the underlying `::amongoc_handler` and return it
-     */
-    [[nodiscard]] amongoc_handler release() && noexcept {
-        auto h   = _handler;
-        _handler = {};
-        return h;
-    }
+    constexpr bool has_value() const noexcept { return get().vtable != nullptr; }
 
     /**
      * @brief Resolve the handler with the given status and value.
@@ -236,30 +180,30 @@ public:
      */
     void complete(amongoc_status st, unique_box&& result) & noexcept {
         // The callback takes ownership of the handler and the result
-        _handler.complete(st, mlib_fwd(result));
+        ::amongoc_handler_complete(&get(), st, mlib_fwd(result).release());
     }
 
     /// Allow invocation with an emitter_result, implementing nanoreceiver<emitter_result>
     void operator()(emitter_result&& r) noexcept { complete(r.status, mlib_fwd(r).value); }
 
     /**
-     * @brief Register a stop callback with the handler. @see `amongoc_register_stop`
+     * @brief Register a stop callback with the handler. @see `amongoc_handler_register_stop`
      */
     [[nodiscard]] unique_box register_stop(void* userdata, void (*callback)(void*)) noexcept {
-        return amongoc_handler_register_stop(&_handler, userdata, callback).as_unique();
+        return amongoc_handler_register_stop(&get(), userdata, callback).as_unique();
     }
 
     /// Test whether the handler is able to request a stop
     [[nodiscard]] bool stop_possible() const noexcept {
-        return _handler.vtable->register_stop != nullptr;
+        return get().vtable->register_stop != nullptr;
     }
 
     // Obtain the stop token for this handler
-    handler_stop_token get_stop_token() const noexcept { return handler_stop_token(_handler); }
+    handler_stop_token get_stop_token() const noexcept { return handler_stop_token(get()); }
 
     // Obtain the allocator associated with the handler.
     allocator<> get_allocator() const noexcept {
-        return allocator<>(::amongoc_handler_get_allocator(&_handler, ::mlib_default_allocator));
+        return ::amongoc_handler_get_allocator(&get(), ::mlib_default_allocator);
     }
 
     /**
@@ -282,8 +226,6 @@ public:
     }
 
 private:
-    amongoc_handler _handler{};
-
     // Implement the wrapper for invocable objects, used by from()
     template <typename R>
     struct wrapper {
@@ -329,6 +271,7 @@ private:
 
         static constexpr amongoc_handler_vtable vtable = {
             .complete      = &_complete,
+            .register_stop = nullptr,
             .get_allocator = &_get_allocator,
         };
     };

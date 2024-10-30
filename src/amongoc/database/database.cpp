@@ -1,10 +1,13 @@
+#include <amongoc/box.h>
 #include <amongoc/client.h>
 #include <amongoc/client/impl.hpp>
+#include <amongoc/collection.h>
 #include <amongoc/database.h>
 #include <amongoc/database/impl.hpp>
 #include <amongoc/string.hpp>
 
 #include <bson/make.hpp>
+#include <bson/parse.hpp>
 
 #include <mlib/alloc.h>
 #include <mlib/utility.hpp>
@@ -34,7 +37,6 @@ amongoc_client amongoc_database_get_client(amongoc_database const* db) noexcept 
     return db->client;
 }
 
-// TODO: Complete and document this API
 amongoc_emitter amongoc_database_aggregate(amongoc_database*               db,
                                            bson_view const*                pipeline,
                                            size_t                          pipeline_len,
@@ -57,6 +59,11 @@ amongoc_emitter amongoc_database_aggregate(amongoc_database*               db,
               optional_pair("let", params->let))
               .build(db->get_allocator());
     co_await ramp_end;
-    const bson::document resp = co_await db->client.impl->simple_request(command);
-    std::terminate();  // TODO
+    const bson::document         resp = co_await db->client.impl->simple_request(command);
+    mlib::unique<amongoc_cursor> curs;
+    using namespace bson::parse;
+    bson_view batch{};
+    must_parse(resp, bson::parse::doc(require("firstBatch", must(store(batch)))));
+    curs->records = bson_new(batch, db->get_allocator().c_allocator());
+    co_return unique_box::from(db->get_allocator(), mlib_fwd(curs));
 }

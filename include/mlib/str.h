@@ -4,6 +4,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
 #include <assert.h>
 #include <inttypes.h>
@@ -402,6 +403,8 @@ inline void mlib_str_delete(mlib_str s) mlib_noexcept {
     }
     mlib_deallocate(s.alloc, d - sizeof(size_t), mlib_strlen(s) + sizeof(size_t) + 1);
 }
+
+mlib_assoc_deleter(mlib_str, mlib_str_delete);
 
 /**
  * @brief Free and re-assign the given @ref mlib_str

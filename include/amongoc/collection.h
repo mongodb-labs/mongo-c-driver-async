@@ -1,5 +1,6 @@
 #pragma once
 
+#include <amongoc/aggregate_params.h>
 #include <amongoc/client.h>
 #include <amongoc/emitter.h>
 #include <amongoc/loop.h>
@@ -13,6 +14,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 #include <mlib/str.h>
 #include <mlib/time.h>
 
@@ -38,6 +40,7 @@ amongoc_collection* _amongoc_collection_new(amongoc_client cl,
  * @brief Delete a collection handle. Is a no-op for null handles.
  */
 void amongoc_collection_delete(amongoc_collection*) mlib_noexcept;
+mlib_assoc_deleter(amongoc_collection*, amongoc_collection_delete);
 
 /**
  * @brief Obtain the client handle associated with the collection
@@ -79,12 +82,12 @@ typedef struct amongoc_write_result {
     int64_t                 upserted_count;
     amongoc_write_error_vec write_errors;
     bson_value              upserted_id;
+
+    mlib_declare_member_deleter(&amongoc_write_result::write_errors,
+                                &amongoc_write_result::upserted_id);
 } amongoc_write_result;
 
-inline void amongoc_write_result_delete(amongoc_write_result r) mlib_noexcept {
-    amongoc_write_error_vec_delete(r.write_errors);
-    bson_value_delete(r.upserted_id);
-}
+mlib_declare_c_deletion_function(amongoc_write_result_delete, amongoc_write_result);
 
 // *  .o88b.  .d88b.  db    db d8b   db d888888b
 // * d8P  Y8 .8P  Y8. 88    88 888o  88 `~~88~~'
@@ -399,9 +402,11 @@ typedef struct amongoc_cursor {
 
     MLIB_IF_CXX(mlib::allocator<> get_allocator()
                     const noexcept { return ::amongoc_collection_get_allocator(coll); })
+
+    mlib_declare_member_deleter(&amongoc_cursor::records);
 } amongoc_cursor;
 
-inline void amongoc_cursor_delete(amongoc_cursor c) mlib_noexcept { bson_delete(c.records); }
+mlib_declare_c_deletion_function(amongoc_cursor_delete, amongoc_cursor);
 
 amongoc_emitter amongoc_cursor_next(struct amongoc_cursor curs) mlib_noexcept;
 

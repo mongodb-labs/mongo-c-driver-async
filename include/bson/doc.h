@@ -8,6 +8,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
 /**
  * @brief A mutable BSON document.
@@ -363,6 +364,8 @@ mlib_constexpr void bson_delete(bson_doc d) mlib_noexcept {
     }
     mlib_reallocate(d._allocator, _bson_doc_buffer_ptr(d), 0, 1, bson_doc_capacity(d) + 4, NULL);
 }
+
+mlib_assoc_deleter(bson_doc, bson_delete);
 
 mlib_extern_c_end();
 

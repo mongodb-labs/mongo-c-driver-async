@@ -148,7 +148,7 @@ Handlers
 
   .. seealso:: :ref:`handler.allocator`
 
-.. function:: void amongoc_handler_destroy(amongoc_handler [[transfer]] h)
+.. function:: void amongoc_handler_delete(amongoc_handler [[transfer]] h)
 
   Destroy a handler object.
 

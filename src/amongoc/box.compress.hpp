@@ -82,7 +82,8 @@ struct compressed_box<0, true> {
     [[nodiscard]] unique_box recover() && noexcept {
         box ret = amongoc_nil;
         memcpy(ret._storage.u.nontrivial_inline.dtor_bytes + 0, &dtor, sizeof dtor);
-        dtor = nullptr;
+        ret._storage.has_dtor = true;
+        dtor                  = nullptr;
         return mlib_fwd(ret).as_unique();
     }
 
@@ -172,12 +173,12 @@ auto _compress_p1(unique_box&&    box,
 
 template <std::size_t... Sz, typename F>
 decltype(auto) unique_box::compress(F&& vis) && {
-    if (_box._storage.is_dynamic) {
+    if (get()._storage.is_dynamic) {
         // Box is dynamic. Compress it to a single pointer.
         dynamic_box b{std::move(*this).release()._storage.u.dynamic};
         return vis(std::move(b));
     } else {
-        return _compress_p1(std::move(*this), _box, std::index_sequence<Sz...>{}, mlib_fwd(vis));
+        return _compress_p1(std::move(*this), get(), std::index_sequence<Sz...>{}, mlib_fwd(vis));
     }
 }
 
@@ -207,7 +208,7 @@ struct compressed_emitter {
 
 template <std::size_t... Sz, typename F>
 auto unique_emitter::compress(F&& fn) && {
-    auto vt = _emitter.vtable;
+    auto vt = get().vtable;
     static_assert(((Sz % sizeof(void*) == 0) and ...),
                   "Sizes for emitter compression should be multiples of the pointer size. Smaller "
                   "compression is semantically valid, but produces no runtime benefit, at the cost "

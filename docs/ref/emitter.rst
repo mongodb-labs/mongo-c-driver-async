@@ -60,7 +60,7 @@ Header: ``amongoc/emitter.h``
       `amongoc_start` on the returned operation object.
 
       If the returned operation object is destroyed with
-      `amongoc_operation_destroy` without ever being started with
+      `amongoc_operation_delete` without ever being started with
       `amongoc_start`, then there must be no observable effect.
 
 
@@ -77,7 +77,7 @@ Header: ``amongoc/emitter.h``
     using high-level APIs such as those in the :header-file:`amongoc/async.h`
     header.
 
-.. function:: void amongoc_emitter_discard(amongoc_emitter [[transfer]] em)
+.. function:: void amongoc_emitter_delete(amongoc_emitter [[transfer]] em)
 
   Discard an unused emitter object without connecting it to anything. The
   associated asynchronous operation will never be launched, but associated

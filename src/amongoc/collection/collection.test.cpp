@@ -49,9 +49,8 @@ TEST_CASE_METHOD(collection_fixture, "Collection/Insert+Find one") {
         REQUIRE_FALSE(res.status.is_error());
     }
 
-    amongoc_cursor   cursor = res.value.take<amongoc_cursor>();
-    mlib::scope_exit _      = [&] { ::amongoc_cursor_delete(cursor); };
-    auto             iter   = bson_begin(cursor.records);
+    mlib::unique cursor = res.value.take<amongoc_cursor>();
+    auto         iter   = bson_begin(cursor->records);
     REQUIRE_FALSE(iter.stop());
     REQUIRE(iter->type() == bson_type_document);
     auto one = *iter;

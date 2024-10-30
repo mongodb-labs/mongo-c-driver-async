@@ -4,19 +4,13 @@
 #include "./emitter_result.h"
 #include "./handler.h"
 #include "./operation.h"
-#include "./status.h"
 
 #include <amongoc/alloc.h>
 
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
-#if mlib_is_cxx()
-namespace amongoc {
-
-class unique_emitter;
-
-}  // namespace amongoc
-#endif
+MLIB_IF_CXX(namespace amongoc { struct unique_emitter; })
 
 struct amongoc_emitter_vtable {
     /**
@@ -35,6 +29,8 @@ struct amongoc_emitter {
     struct amongoc_emitter_vtable const* vtable;
     // The userdata associated with the object
     amongoc_box userdata;
+
+    mlib_declare_member_deleter(&amongoc_emitter::userdata);
 
 #if mlib_is_cxx()
     inline amongoc::unique_emitter as_unique() && noexcept;
@@ -64,9 +60,7 @@ static inline amongoc_operation amongoc_emitter_connect(amongoc_emitter emit,
  * @note This function should not be used on an emitter object that was consumed by another
  * operation.
  */
-static inline void amongoc_emitter_discard(amongoc_emitter emit) mlib_noexcept {
-    amongoc_box_destroy(emit.userdata);
-}
+mlib_declare_c_deletion_function(amongoc_emitter_delete, amongoc_emitter);
 
 mlib_extern_c_end();
 
@@ -78,33 +72,9 @@ using emitter = ::amongoc_emitter;
 /**
  * @brief A move-only wrapper around `amongoc_emitter`
  */
-class unique_emitter {
-public:
+struct unique_emitter : mlib::unique<::amongoc_emitter> {
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_emitter);
-    explicit unique_emitter(emitter&& em)
-        : _emitter(em) {
-        em = {};
-    }
-
-    unique_emitter(unique_emitter&& other) noexcept
-        : _emitter(mlib_fwd(other).release()) {}
-
-    ~unique_emitter() { amongoc_emitter_discard(((unique_emitter&&)*this).release()); }
-
-    unique_emitter& operator=(unique_emitter&& other) noexcept {
-        amongoc_emitter_discard(((unique_emitter&&)*this).release());
-        _emitter = mlib_fwd(other).release();
-        return *this;
-    }
-
-    /**
-     * @brief Relinquish ownership of the emitter and return it to the caller
-     */
-    [[nodiscard]] emitter release() && noexcept {
-        auto e   = _emitter;
-        _emitter = {};
-        return e;
-    }
+    using unique_emitter::unique::unique;
 
     /**
      * @brief Create an amongoc_emitter from an object that is invocable with a unique_handler
@@ -150,9 +120,6 @@ public:
 
     template <std::size_t... Sz, typename F>
     auto compress(F&& fn) &&;
-
-private:
-    emitter _emitter{};
 };
 
 template <typename T>

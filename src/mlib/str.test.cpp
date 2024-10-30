@@ -46,12 +46,12 @@ static_assert(::mlib_str_rfind("foo", "fooo") < 0);
 static_assert(::mlib_str_rfind("", "fooo") < 0);
 static_assert(::mlib_str_rfind("", "") == 0);
 
-TEST_CASE("mlib/string/new") {
+TEST_CASE("mlib/str/new") {
     mlib_str s = mlib_str_new().str;
     mlib_str_delete(s);
 }
 
-TEST_CASE("mlib/string/resize") {
+TEST_CASE("mlib/str/resize") {
     mlib_str_mut s = mlib_str_new(16);
     mlib_str_mut_resize(&s, 1024);
     mlib_str_delete(s.str);
@@ -61,4 +61,9 @@ TEST_CASE("mlib/string/resize") {
     mlib_str_mut_resize(&s, 2);
     CHECK(s == "He");
     mlib_str_delete(s.str);
+}
+
+TEST_CASE("mlib/str/Delete null") {
+    mlib_str null{};
+    ::mlib_str_delete(null);  // No-op, safe
 }

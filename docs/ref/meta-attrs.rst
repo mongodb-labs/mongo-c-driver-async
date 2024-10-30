@@ -128,11 +128,12 @@ concepts with similar behavior. For convenience, this documentation refers to
 in C.
 
 In C++ and C23, a trivial aggregate may be initialized with an empty brace pair
-:cpp:`{ }` to achieve empt/zero-initialization. In prior C versions,
-initializing with a brace pair and a single literal zero :cpp:`{ 0 }` will
-usually achieve the same effect. Some C compilers implement the C23 language
-feature as an extension in earlier C versions. A trivial object declared
-|static| will always be zero-initialized at compile time.
+:cpp:`{ }` to achieve empt/zero-initialization (this is called *value
+initialization* in C++). In prior C versions, initializing with a brace pair and
+a single literal zero :cpp:`{ 0 }` will usually achieve the same effect. Some C
+compilers implement the C23 language feature as an extension in earlier C
+versions. An object declared |static| without an explicit initializer will
+always be zero-initialized at compile time.
 
 __ https://en.cppreference.com/w/cpp/language/zero_initialization
 __ https://en.cppreference.com/w/c/language/initialization

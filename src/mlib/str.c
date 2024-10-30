@@ -1,3 +1,5 @@
+#define VecDeclareExternInlines_mlib_str_vec
+
 #include <mlib/alloc.h>
 #include <mlib/config.h>
 #include <mlib/cstring.h>

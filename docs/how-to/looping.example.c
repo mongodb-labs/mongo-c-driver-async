@@ -80,7 +80,7 @@ int main(int argc, char const* const* argv) {
     amongoc_start(&op);
     // Run the program within the event loop
     amongoc_default_loop_run(&loop);
-    amongoc_operation_destroy(op);
+    amongoc_operation_delete(op);
     amongoc_default_loop_destroy(&loop);
 
     if (amongoc_is_error(status)) {

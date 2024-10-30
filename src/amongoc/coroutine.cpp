@@ -20,8 +20,7 @@ void amongoc::emitter_promise::unhandled_exception() noexcept {
     } catch (std::system_error const& err) {
         return_value(emitter_result(status::from(err.code()),
                                     unique_box::from(::mlib_default_allocator,
-                                                     mlib_str_copy(err.what()).str,
-                                                     just_invokes<&::mlib_str_delete>{})));
+                                                     mlib_str_copy(err.what()).str)));
     } catch (amongoc::exception const& err) {
         return_value(err.status());
     } catch (std::bad_alloc const&) {
@@ -41,7 +40,9 @@ struct co_emitter_starter {
         emitter_promise& pr = _co.promise();
         if (_co.done()) {
             // The coroutine already returned. Fulfill the handler now
-            h.complete(pr.fin_result.status, std::move(pr.fin_result.value));
+            ::amongoc_handler_complete(&h,
+                                       pr.fin_result.status,
+                                       std::move(pr.fin_result.value).release());
         } else {
             // The coroutine is still pending. Attach the handler and resume
             _co.promise().fin_handler = std::move(h).as_unique();

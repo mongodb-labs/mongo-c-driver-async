@@ -10,6 +10,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 #include <mlib/str.h>
 
 #if mlib_is_cxx()
@@ -108,6 +109,8 @@ mlib_constexpr void bson_value_delete(bson_value val) mlib_noexcept {
         break;
     }
 }
+
+mlib_assoc_deleter(bson_value, bson_value_delete);
 
 // Declare a C conversion function
 #define DECL_CONVERSION(FromType, TypeEnumerator, Member, Init)                                    \

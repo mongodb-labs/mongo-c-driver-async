@@ -14,6 +14,7 @@
  */
 #include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -73,9 +74,7 @@ mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
     T* pointer;
     if (count == 0) {
         pointer = NULL;
-        if (self->size) {
-            mlib_deallocate(self->allocator, self->data, self->size * sizeof(T));
-        }
+        mlib_deallocate(self->allocator, self->data, self->size * sizeof(T));
         self->data = NULL;
         self->size = 0;
         return true;
@@ -133,6 +132,7 @@ vec_extern_inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
 }
 
 vec_extern_inline void fn(delete(VecName v)) mlib_noexcept { (void)fn(resize(&v, 0)); }
+mlib_assoc_deleter(VecName, fn(delete));
 
 /**
  * @brief Create a new vector with `n` zero-initialized elements

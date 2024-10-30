@@ -11,6 +11,8 @@
 #include <bson/value_ref.h>
 
 #include <mlib/alloc.h>
+#include <mlib/delete.h>
+#include <mlib/unique.hpp>
 #include <mlib/utility.hpp>
 
 #include <iterator>
@@ -18,8 +20,6 @@
 #include <string_view>
 
 using namespace amongoc;
-
-extern inline void amongoc_write_result_delete(amongoc_write_result r) mlib_noexcept;
 
 extern inline amongoc_emitter amongoc_delete_one(amongoc_collection*          coll,
                                                  bson_view                    filter,
@@ -52,8 +52,6 @@ amongoc_find_one_and_update(amongoc_collection*             coll,
                             size_t                          pipeline_len,
                             const amongoc_find_plus_params* params) mlib_noexcept;
 
-extern inline void amongoc_cursor_delete(amongoc_cursor c) mlib_noexcept;
-
 constexpr const amongoc_status_category_vtable amongoc_crud_category = {
     .name = [] { return "amongoc.crud"; },
     .strdup_message =
@@ -72,7 +70,8 @@ constexpr const amongoc_status_category_vtable amongoc_crud_category = {
     .is_timeout      = nullptr,
 };
 
-static ::amongoc_cursor _parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
+static mlib::unique<amongoc_cursor>
+_parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
     amongoc_cursor curs{};
     bson_view      batch{};
     {
@@ -95,7 +94,7 @@ static ::amongoc_cursor _parse_cursor(::amongoc_collection& coll, int batch_size
     curs._batch_size = batch_size;
     curs.coll        = &coll;
     curs.records     = bson::document(batch, coll.get_allocator()).release();
-    return curs;
+    return mlib::unique(std::move(curs));
 }
 
 ::amongoc_collection* _amongoc_collection_new(amongoc_client cl,
@@ -133,10 +132,10 @@ emitter amongoc_collection_drop(amongoc_collection*                   coll,
     co_return 0;
 }
 
-emitter amongoc_aggregate_on_collection(amongoc_collection*             coll,
-                                        const bson_view*                pipeline,
-                                        size_t                          pipeline_len,
-                                        const amongoc_aggregate_params* params) noexcept {
+emitter amongoc_collection_aggregate(amongoc_collection*             coll,
+                                     const bson_view*                pipeline,
+                                     size_t                          pipeline_len,
+                                     const amongoc_aggregate_params* params) noexcept {
     static const amongoc_aggregate_params dflt_params{};
     params or (params = &dflt_params);
 
@@ -155,8 +154,8 @@ emitter amongoc_aggregate_on_collection(amongoc_collection*             coll,
                              optional_pair("let", params->let));
     co_await ramp_end;
     const bson::document resp = co_await coll->simple_request(command);
-    const auto           curs = _parse_cursor(*coll, batch_size, resp);
-    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
+    auto                 curs = _parse_cursor(*coll, batch_size, resp);
+    co_return unique_box::from(coll->get_allocator(), std::move(curs));
 }
 
 emitter amongoc_count_documents(amongoc_collection*         coll,
@@ -253,22 +252,18 @@ emitter amongoc_distinct(amongoc_collection*            coll,
         using bson::parse::doc;
         must_parse(resp, doc(require("values", must(type<bson_array_view>(store(values))))));
     }
-    bool           alloc_okay = false;
-    bson_value_vec vec
-        = bson_value_vec_new_n(static_cast<std::size_t>(std::ranges::distance(values)),
-                               &alloc_okay,
-                               coll->get_allocator().c_allocator());
+    bool         alloc_okay = false;
+    mlib::unique vec = bson_value_vec_new_n(static_cast<std::size_t>(std::ranges::distance(values)),
+                                            &alloc_okay,
+                                            coll->get_allocator().c_allocator());
     if (not alloc_okay) {
         throw std::bad_alloc();
     }
-    mlib_defer_fail { bson_value_vec_delete(vec); };
-    auto out = vec.begin();
+    auto out = vec->begin();
     for (auto el : values) {
         *out++ = bson_value_copy(el.value());
     }
-    co_return unique_box::from(coll->get_allocator(),
-                               vec,
-                               just_invokes<&::bson_value_vec_delete>{});
+    co_return unique_box::from(coll->get_allocator(), mlib_fwd(vec));
 }
 
 emitter amongoc_estimated_document_count(amongoc_collection*         coll,
@@ -331,27 +326,28 @@ emitter amongoc_find(amongoc_collection*        coll,
         optional_pair("let", params->let));
     co_await ramp_end;
     const auto resp = co_await coll->simple_request(command);
-    const auto curs = _parse_cursor(*coll, batch_size, resp);
+    auto       curs = _parse_cursor(*coll, batch_size, resp);
 
-    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
+    co_return unique_box::from(coll->get_allocator(), std::move(curs));
 }
 
-emitter amongoc_cursor_next(amongoc_cursor curs) noexcept {
-    auto id   = curs.cursor_id;
-    auto coll = curs.coll;
+emitter amongoc_cursor_next(amongoc_cursor curs_) noexcept {
+    mlib::unique curs = std::move(curs_);
+    auto         id   = curs->cursor_id;
+    auto         coll = curs->coll;
     using bson::make::doc;
     using namespace bson::make;
-    ::amongoc_cursor_delete(curs);  // Delete the records
-    curs               = {};
+    auto bat = curs->_batch_size;
+    curs.reset();  // Delete the records
     bson::document cmd = doc(pair("getMore", id),
                              pair("$db", coll->database_name),
                              pair("collection", coll->collection_name),
-                             optional_pair("batchSize", curs._batch_size))
+                             optional_pair("batchSize", bat))
                              .build(coll->get_allocator());
     co_await ramp_end;
     const auto resp = co_await coll->simple_request(cmd);
-    curs            = _parse_cursor(*coll, curs._batch_size, resp);
-    co_return unique_box::from(coll->get_allocator(), curs, just_invokes<&amongoc_cursor_delete>{});
+    curs            = _parse_cursor(*coll, bat, resp);
+    co_return unique_box::from(coll->get_allocator(), std::move(curs));
 }
 
 /**
@@ -362,17 +358,17 @@ emitter amongoc_cursor_next(amongoc_cursor curs) noexcept {
  *  the value of the `n` field.
  * @param alloc An allocator to be used for the object.
  */
-static amongoc_write_result _parse_write_result(bson_view resp,
-                                                int64_t(amongoc_write_result::*n_field),
-                                                mlib::allocator<> alloc) {
-    amongoc_write_result ret{};
+static mlib::unique<amongoc_write_result>
+_parse_write_result(bson_view resp,
+                    int64_t(amongoc_write_result::*n_field),
+                    mlib::allocator<> alloc) {
+    mlib::unique<amongoc_write_result> ret;
     using namespace bson::parse;
     bson_value_ref upserted_id{};
-    ret.write_errors          = amongoc_write_error_vec_new(alloc.c_allocator());
+    ret->write_errors         = amongoc_write_error_vec_new(alloc.c_allocator());
     int64_t          we_code  = 0;
     int64_t          we_index = 0;
     std::string_view we_str_msg;
-    mlib_defer_fail { amongoc_write_result_delete(ret); };
 
     // Parse rule that extracts and appends a write error
     auto parse_write_error = all{
@@ -382,7 +378,7 @@ static amongoc_write_result _parse_write_result(bson_view resp,
             require("errmsg", store(we_str_msg))),
         // Then append to the output vector.
         action([&](auto&&) {
-            auto* we = ::amongoc_write_error_vec_push(&ret.write_errors);
+            auto* we = ::amongoc_write_error_vec_push(&ret->write_errors);
             if (not we) {
                 throw std::bad_alloc();
             }
@@ -394,18 +390,18 @@ static amongoc_write_result _parse_write_result(bson_view resp,
         }),
     };
     must_parse(resp,
-               doc(require("n", must(integer(store(ret.*n_field)))),
-                   field("nModified", must(integer(store(ret.modified_count)))),
-                   field("nMatched", must(integer(store(ret.matched_count)))),
-                   field("nUpserted", must(integer(store(ret.upserted_count)))),
+               doc(require("n", must(integer(store(ret.get().*n_field)))),
+                   field("nModified", must(integer(store(ret->modified_count)))),
+                   field("nMatched", must(integer(store(ret->matched_count)))),
+                   field("nUpserted", must(integer(store(ret->upserted_count)))),
                    field("upserted",
                          must(doc(require("0", doc(require("_id", store(upserted_id))))))),
                    field("writeErrors", must(each(parse_write_error)))));
-    ret.upserted_id = bson_value_copy(upserted_id, alloc.c_allocator());
+    ret->upserted_id = bson_value_copy(upserted_id, alloc.c_allocator());
     if (upserted_id.has_value()) {
-        ret.upserted_count++;
+        ret->upserted_count++;
     }
-    ret.*n_field -= ret.upserted_count;
+    ret.get().*n_field -= ret->upserted_count;
     return ret;
 }
 
@@ -425,20 +421,16 @@ emitter amongoc_insert_ex(amongoc_collection*          coll,
                              pair("bypassDocumentValidation", params->bypass_document_validation));
 
     co_await ramp_end;
-    const auto             resp = co_await coll->simple_request(command);
-    ::amongoc_write_result res
+    const auto resp = co_await coll->simple_request(command);
+    auto       res
         = _parse_write_result(resp, &amongoc_write_result::inserted_count, coll->get_allocator());
-    mlib_defer_fail { amongoc_write_result_delete(res); };
 
     status st;
     st.category = &amongoc_crud_category;
-    st.code     = res.write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
+    st.code     = res->write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
 
-    res.acknowledged = true;
-    co_return emitter_result(st,
-                             unique_box::from(coll->get_allocator(),
-                                              res,
-                                              just_invokes<&::amongoc_write_result_delete>{}));
+    res->acknowledged = true;
+    co_return emitter_result(st, unique_box::from(coll->get_allocator(), mlib_fwd(res)));
 }
 
 static bool _is_update_spec_doc(bson_view s) {
@@ -508,16 +500,12 @@ emitter amongoc_update_ex(amongoc_collection*          coll,
     const auto resp = co_await coll->simple_request(command);
     auto       res
         = ::_parse_write_result(resp, &amongoc_write_result::matched_count, coll->get_allocator());
-    mlib_defer_fail { amongoc_write_result_delete(res); };
 
     status st;
     st.category = &amongoc_crud_category;
-    st.code     = res.write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
+    st.code     = res->write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
 
-    co_return emitter_result(st,
-                             unique_box::from(coll->get_allocator(),
-                                              res,
-                                              just_invokes<&::amongoc_write_result_delete>{}));
+    co_return emitter_result(st, unique_box::from(coll->get_allocator(), mlib_fwd(res)));
 }
 
 amongoc_emitter amongoc_update_one_with_pipeline(amongoc_collection*          coll,
@@ -597,6 +585,5 @@ emitter amongoc_find_and_modify(amongoc_collection*             coll,
     must_parse(resp, doc(require("value", any(type<bson_null>(), store(view)))));
     co_return unique_box::from(coll->get_allocator(),
                                view ? ::bson_new(view, coll->get_allocator().c_allocator())
-                                    : bson_doc{},
-                               just_invokes<&::bson_delete>{});
+                                    : bson_doc{});
 }

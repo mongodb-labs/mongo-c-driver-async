@@ -94,7 +94,7 @@ int main(int argc, char const* const* argv) {
     amongoc_operation op         = amongoc_tie(em, &fin_status, NULL, mlib_default_allocator);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
-    amongoc_operation_destroy(op);
+    amongoc_operation_delete(op);
 
     // Destroy the connection since we are done with it (this is a no-op for a null connection)
     amongoc_client_delete(state.client);

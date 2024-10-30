@@ -8,6 +8,7 @@
   :maxdepth: 2
 
   guidelines
+  deletion
   nanosenders
   coroutines
   result

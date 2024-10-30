@@ -3,6 +3,7 @@
 #include "./alloc.h"
 
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
 #include <stdalign.h>
 #include <stdbool.h>
@@ -13,6 +14,8 @@
 
 #if mlib_is_cxx()
 #include <amongoc/relocation.hpp>
+
+#include <mlib/unique.hpp>
 
 #include <new>
 #include <type_traits>
@@ -101,7 +104,7 @@ struct _amongoc_box_storage {
 #if mlib_is_cxx()
 namespace amongoc {
 
-class unique_box;
+struct unique_box;
 
 /**
  * @brief Match types which can be stored inline within an amongoc_box.
@@ -279,6 +282,8 @@ inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
     amongoc_box_free_storage(box);
 }
 
+mlib_assoc_deleter(amongoc_box, amongoc_box_destroy);
+
 mlib_extern_c_end();
 
 /**
@@ -431,49 +436,21 @@ namespace amongoc {
 
 using box = amongoc_box;
 
-class unique_box {
-public:
+struct unique_box : mlib::unique<::amongoc_box> {
     AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, unique_box);
-    // Move-construct from a box
-    explicit unique_box(amongoc_box&& b) noexcept
-        : _box(b) {
-        b = amongoc_nil;
-    }
-
-    unique_box(unique_box&& other) noexcept
-        : _box(other._box) {
-        other._box = amongoc_nil;
-    }
-
-    unique_box& operator=(unique_box&& other) noexcept {
-        amongoc_box_destroy(_box);
-        _box       = other._box;
-        other._box = amongoc_nil;
-        return *this;
-    }
-
-    mlib_always_inline ~unique_box() { amongoc_box_destroy(_box); }
+    using unique_box::unique::unique;
 
     template <typename T>
     T& as() noexcept {
-        return amongoc_box_cast(T, _box);
+        return amongoc_box_cast(T, get());
     }
 
     template <typename T>
     const T& as() const noexcept {
-        return amongoc_box_cast(T, const_cast<amongoc_box&>(_box));
+        return amongoc_box_cast(T, const_cast<amongoc_box&>(get()));
     }
 
-    operator amongoc_view() const noexcept { return _box.view; }
-
-    /**
-     * @brief Release ownership of the box, returning the C-style `amongoc_box`
-     */
-    [[nodiscard]] amongoc_box release() && noexcept {
-        box r = _box;
-        _box  = amongoc_nil;
-        return r;
-    }
+    operator amongoc_view() const noexcept { return get().view; }
 
     template <typename T>
     T take() noexcept {
@@ -482,8 +459,8 @@ public:
         return ret;
     }
 
-    void*       data() noexcept { return amongoc_box_data(_box); };
-    const void* data() const noexcept { return amongoc_box_data(_box); };
+    void*       data() noexcept { return amongoc_box_data(get()); };
+    const void* data() const noexcept { return amongoc_box_data(get()); };
 
     /**
      * @brief Construct a new box value by decay-copying the given value
@@ -492,8 +469,18 @@ public:
      * @return amongoc_box The newly constructed box that contains the value
      */
     template <typename T>
+        requires(not mlib::unique_deletable<T>)
     static unique_box from(allocator<> alloc, T&& value) {
         return make<std::decay_t<T>>(alloc, mlib_fwd(value));
+    }
+
+    /**
+     * @brief Construct a new box that takes ownership of a type that is deletable
+     * using the unique_deleter mechanism
+     */
+    template <mlib::unique_deletable T>
+    static unique_box from(allocator<> a, T&& inst) {
+        return from(a, mlib_fwd(inst), mlib::delete_unique);
     }
 
     // Prevent users from accidentally box-ing a box
@@ -505,6 +492,11 @@ public:
     static void from(allocator<>, unique_box&&)       = delete;
     static void from(allocator<>, unique_box const&)  = delete;
     static void from(allocator<>, unique_box const&&) = delete;
+
+    template <typename T, typename D>
+    static unique_box from(allocator<> a, mlib::unique<T, D> uniq) {
+        return from(a, mlib_fwd(uniq).release(), D{});
+    }
 
     /**
      * @brief Create a box that contains a `T` with an explicit destructor object type
@@ -548,10 +540,10 @@ public:
         if constexpr (std::is_trivially_destructible_v<T>) {
             // No destructor needed. This gives more space within the box for the small-object
             // optimization
-            ptr = ret._box.prepare_storage<T>(alloc, nullptr);
+            ptr = ret.get().prepare_storage<T>(alloc, nullptr);
         } else {
             // Add a destructor function that just invokes the destructor on the object
-            ptr = ret._box.prepare_storage<T>(alloc, indirect_destroy<T>);
+            ptr = ret.get().prepare_storage<T>(alloc, indirect_destroy<T>);
         }
         // Placement-new the object into storage
         if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(mlib_fwd(args)...))) {
@@ -563,7 +555,7 @@ public:
             try {
                 alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
             } catch (...) {
-                amongoc_box_free_storage(ret._box);
+                amongoc_box_free_storage(mlib_fwd(ret).release());
                 throw;
             }
         }
@@ -582,9 +574,6 @@ public:
     decltype(auto) compress(F&& fn) &&;
 
 private:
-    // The managed box
-    amongoc_box _box = ::amongoc_nil;
-
     template <typename T>
     static void indirect_destroy(void* p) noexcept {
         static_cast<T*>(p)->~T();

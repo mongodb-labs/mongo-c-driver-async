@@ -226,7 +226,7 @@ We now launch the composed operation using `amongoc_start`. This will enqueue
 work on the event loop. We then give the event loop control to run the program
 using `amongoc_default_loop_run`. After the event loop returns, all asynchronous
 work has completed, and we destroy the operation with
-`amongoc_operation_destroy`. This will free resources associated with the
+`amongoc_operation_delete`. This will free resources associated with the
 operation.
 
 We also now have a copy of the connection that was created with

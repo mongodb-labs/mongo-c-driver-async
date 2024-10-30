@@ -38,7 +38,7 @@ Header: ``amongoc/operation.h``
 
   Launch the operation defined by the given operation object.
 
-.. function:: void amongoc_operation_destroy(amongoc_operation [[transfer]] op)
+.. function:: void amongoc_operation_delete(amongoc_operation [[transfer]] op)
 
   Destroy an operation object.
 
@@ -60,7 +60,7 @@ Header: ``amongoc/operation.h``
 
   .. function:: ~unique_operation()
 
-    Calls `amongoc_operation_destroy` on the operation.
+    Calls `amongoc_operation_delete` on the operation.
 
   .. function:: template <typename F> unique_operation from_starter(unique_handler&& h, F&& fn)
 
