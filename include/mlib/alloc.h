@@ -84,6 +84,9 @@ mlib_constexpr void* mlib_allocate(mlib_allocator alloc, size_t sz) mlib_noexcep
  * @brief Deallocate a region that was obtained from the given `mlib_allocator`
  */
 mlib_constexpr void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz) mlib_noexcept {
+    if (!p) {
+        return;
+    }
     mlib_reallocate(alloc, p, 0, 0, sz, &sz);
 }
 

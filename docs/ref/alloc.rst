@@ -19,6 +19,8 @@ Types
   Provides support for customizing dynamic memory allocation.
 
   :header: |this-header|
+  :zero-initialized: A |zero-initialized| `mlib_allocator` is not valid for
+    **any operation** *except* with `mlib_deallocate` of a null pointer.
 
   Many |amongoc| APIs accept an `mlib_allocator` parameter, or otherwise consult
   other objects that carry an `mlib_allocator` (e.g. `amongoc_loop` has an
@@ -146,7 +148,7 @@ Functions
 .. function::
   void* mlib_allocate(mlib_allocator alloc, size_t sz)
   void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz)
-  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
+  void* mlib_reallocate(mlib_allocator alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
@@ -159,11 +161,20 @@ Functions
     - For allocation functions: **upon success**: returns a pointer to the
       beginning of a newly allocated region of at least size `sz` and optional
       alignment `alignment`. **Upon failure**, returns :cpp:`nullptr`.
-
   :header: |this-header|
 
   The `mlib_reallocate` function is a wrapper around the
   `mlib_allocator_impl::reallocate` function.
+
+  .. important::
+
+    For `mlib_deallocate`: If the pointer `p` is null, then it is legal for
+    `alloc` to have a null `mlib_allocator::impl` member. **This is the only
+    legal use of a null allocator**.
+
+    This behavior is crafted specifically to support deletion of aggregate types
+    which store an allocator and a pointer as a member, so that deleting a
+    zero-initialized instance of that struct is a valid no-op.
 
 
 Constants
