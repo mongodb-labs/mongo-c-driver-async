@@ -1,3 +1,4 @@
+#include <amongoc/aggregate.h>
 #include <amongoc/box.h>
 #include <amongoc/client.h>
 #include <amongoc/client/impl.hpp>
@@ -35,6 +36,13 @@ const char* amongoc_database_get_name(amongoc_database const* db) noexcept {
 
 amongoc_client amongoc_database_get_client(amongoc_database const* db) noexcept {
     return db->client;
+}
+
+amongoc_emitter _amongoc_aggregate_on(::amongoc_database*             db,
+                                      bson_view const*                pipeline,
+                                      size_t                          pipeline_len,
+                                      const amongoc_aggregate_params* params) noexcept {
+    return ::amongoc_database_aggregate(db, pipeline, pipeline_len, params);
 }
 
 amongoc_emitter amongoc_database_aggregate(amongoc_database*               db,

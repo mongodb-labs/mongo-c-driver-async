@@ -132,6 +132,13 @@ emitter amongoc_collection_drop(amongoc_collection*                   coll,
     co_return 0;
 }
 
+amongoc_emitter _amongoc_aggregate_on(::amongoc_collection*           coll,
+                                      bson_view const*                pipeline,
+                                      size_t                          pipeline_len,
+                                      const amongoc_aggregate_params* params) noexcept {
+    return ::amongoc_collection_aggregate(coll, pipeline, pipeline_len, params);
+}
+
 emitter amongoc_collection_aggregate(amongoc_collection*             coll,
                                      const bson_view*                pipeline,
                                      size_t                          pipeline_len,
