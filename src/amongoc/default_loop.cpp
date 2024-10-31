@@ -26,12 +26,8 @@
 
 #include <chrono>
 #include <cstddef>
-#include <forward_list>
-#include <list>
 #include <memory>
 #include <new>
-#include <ratio>
-#include <set>
 
 using namespace amongoc;
 
