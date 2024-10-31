@@ -9,6 +9,10 @@
  * - Optional: Define a type `VecName` to the name of the vector.
  * - Optional: Define a `VecDestroyElement` macro to specify how the vector
  *   should destroy elements.
+ * - Optional: Define `VecInitElement(Ptr, Alloc, ...)` which initializes a new element.
+ *   The first macro argument is a pointer to the element. the second is the allocator
+ *   of the vector itself, and subsequent arguments are unspecified and reserved for
+ *   future use. Elements are zero-initialized before being passed to this macro.
  *
  * Types stored in the vector must be trivially relocatable.
  */
@@ -58,8 +62,8 @@ vec_extern_inline T*     fn(begin)(VecName v) mlib_noexcept { return v.data; }
 vec_extern_inline T*     fn(end)(VecName v) mlib_noexcept { return v.data + v.size; }
 vec_extern_inline size_t fn(max_size)(void) mlib_noexcept { return SSIZE_MAX / sizeof(T); }
 
-mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
-    vec_extern_inline bool fn(resize(VecName* self, size_t count)) mlib_noexcept {
+mlib_nodiscard("Check the returned bool to detect allocation failure")  //
+    vec_extern_inline bool fn(resize(VecName* const self, size_t const count)) mlib_noexcept {
     if (count > fn(max_size())) {
         // We cannot allocate this many objects
         return false;
@@ -101,6 +105,19 @@ mlib_nodiscard("Check the returned pointer to detect allocation failure")  //
         // Zero-init the tail
         T* iter = self->data + self->size;
         memset(iter, 0, sizeof(T) * (count - self->size));
+#ifdef VecInitElement
+        // Initialize each element.
+        // Pass a const-copy of the allocator to the initializer, in case
+        // the initializer wishes to use it.
+        const mlib_allocator _vec_allocator = self->allocator;
+        (void)_vec_allocator;
+        for (; iter != self->data + count; ++iter) {
+            // XXX: There is no error handling here. Currently, no vector types
+            // in the library can fail to initialize, so we're safe.
+            T* const _new_vec_element_ptr = iter;
+            (void)(VecInitElement(_new_vec_element_ptr, _vec_allocator, ~));
+        }
+#endif
     }
     // Update the stored size
     self->size = count;
@@ -150,3 +167,6 @@ mlib_extern_c_end();
 #undef VecName
 #undef VecDestroyElement
 #undef vec_extern_inline
+#ifdef VecInitElement
+#undef VecInitElement
+#endif

@@ -22,4 +22,5 @@ mlib_declare_c_deletion_function(amongoc_write_error_delete, amongoc_write_error
 
 #define T amongoc_write_error
 #define VecDestroyElement amongoc_write_error_delete
+#define VecInitElement(Inst, Alloc, ...) Inst->errmsg = mlib_str_new(0, Alloc).str
 #include <mlib/vec.t.h>

@@ -566,3 +566,8 @@ inline mlib_str _mlib_substr(mlib_str_view s, size_t at, size_t len) mlib_noexce
 }
 
 mlib_extern_c_end();
+
+#define T mlib_str
+#define VecDestroyElement mlib_str_delete
+#define VecInitElement(String, Alloc, ...) *String = mlib_str_new(0, Alloc).str
+#include <mlib/vec.t.h>

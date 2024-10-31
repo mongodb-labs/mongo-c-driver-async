@@ -77,7 +77,7 @@ This page will document the vector type interface using a placeholder type
   ``[[2]]`` is equivalent to calling ``[[1]]`` followed by an immediate
   `item_vec_resize`.
 
-  :param n: The number of objects to be created. New objects are |zero-initialized|
+  :param n: The number of objects to be created.
   :param alloc_okay: A boolean that is set to |true| when the function succeeds.
     A |false| result indicates an allocation failure. This must not be null, as
     this is the only reliable way to detect allocation failures.
@@ -92,13 +92,13 @@ This page will document the vector type interface using a placeholder type
 
 .. function:: bool item_vec_resize(item_vec* self, size_t count)
 
-  Resize the vector `self` to contain `count` items. Newly added items are
-  |zero-initialized|. Removed items are destroyed. Returns |true| on success,
-  returns |false| if there was an allocation failure.
+  Resize the vector `self` to contain `count` items. Removed items are
+  destroyed. Returns |true| on success, returns |false| if there was an
+  allocation failure.
 
 
 .. function:: item_vec::T* item_vec_push(item_vec* self)
 
-  Append a new item to the end of the vector. The object will be
-  zero-initialized. Upon success, returns a pointer to the added object. If
-  there is an allocation failure, then a null pointer is returned.
+  Append a new item to the end of the vector. Upon success, returns a pointer to
+  the added object. If there is an allocation failure, then a null pointer is
+  returned.

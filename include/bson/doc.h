@@ -371,6 +371,7 @@ mlib_extern_c_end();
 
 #define T bson_doc
 #define VecDestroyElement bson_delete
+#define VecInitElement(Doc, Alloc, ...) *Doc = bson_new(Alloc)
 #include <mlib/vec.t.h>
 
 #if mlib_is_cxx()
