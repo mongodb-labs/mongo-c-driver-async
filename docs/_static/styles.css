@@ -30,4 +30,5 @@ dl[class].cpp {
 
 a.reference.external::after {
   content: '⭧';
+  font-size: 80%;
 }
