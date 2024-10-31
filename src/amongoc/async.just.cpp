@@ -1,5 +1,6 @@
 #include <amongoc/async.h>
 #include <amongoc/box.compress.hpp>
+#include <amongoc/handler.h>
 
 using namespace amongoc;
 
@@ -15,7 +16,7 @@ emitter amongoc_just(status st, box value, mlib_allocator alloc_) noexcept {
             [[no_unique_address]] Compressed value;
             [[no_unique_address]] GetStatus  get_status;
             void                             operator()(amongoc_handler& hnd) {
-                hnd.complete(get_status(), mlib_fwd(value).recover());
+                ::amongoc_handler_complete(&hnd, get_status(), mlib_fwd(value).recover().release());
             }
         };
 

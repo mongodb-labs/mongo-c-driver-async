@@ -12,6 +12,7 @@
 #include <amongoc/operation.h>
 #include <amongoc/status.h>
 
+#include <mlib/alloc.h>
 #include <mlib/object_t.hpp>
 
 #include <new>
@@ -136,9 +137,10 @@ struct cxx_recv_as_c_handler {
                             // constructing a stop callback
                             return amongoc_nil;
                         }
-                        return unique_box::make<stop_callback>(allocator<>{hnd->get_allocator()},
-                                                               tk,
-                                                               stopper{userdata, callback})
+                        return unique_box::make<stop_callback>(
+                                   ::amongoc_handler_get_allocator(hnd, ::mlib_default_allocator),
+                                   tk,
+                                   stopper{userdata, callback})
                             .release();
                     };
                 } else {

@@ -116,8 +116,9 @@ emitter amongoc_alloc_failure() noexcept {
         static amongoc_status nomem{&amongoc_generic_category, ENOMEM};
         amongoc_operation     ret = {};
         ret.handler               = h;
-        ret.start_callback
-            = [](amongoc_operation* self) noexcept { self->handler.complete(nomem, nil()); };
+        ret.start_callback        = [](amongoc_operation* self) noexcept {
+            ::amongoc_handler_complete(&self->handler, nomem, amongoc_nil);
+        };
         return ret;
     }};
     emitter                       ret  = {};

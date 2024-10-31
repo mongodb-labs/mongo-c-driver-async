@@ -135,7 +135,7 @@ struct default_loop {
     // TODO: Define behavior when the below operations fail to allocate memory.
 
     void call_soon(status st, box res, amongoc_handler h) {
-        auto a = h.get_allocator();
+        mlib::allocator<> a = ::amongoc_handler_get_allocator(&h, ::mlib_default_allocator);
         asio::post(ioc,
                    mlib::bind_allocator(a,
                                         [st,
@@ -194,8 +194,8 @@ struct default_loop {
         boost::container::static_vector<asio::const_buffer, 16> buf_vec;
         mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
                                buf_vec);
-        auto a  = on_write.get_allocator();
-        auto uh = mlib_fwd(on_write).as_unique();
+        mlib::allocator<> a  = ::amongoc_handler_get_allocator(&on_write, ::mlib_default_allocator);
+        auto              uh = mlib_fwd(on_write).as_unique();
         sock.as<tcp::socket>().async_write_some(buf_vec,
                                                 adapt_handler(mlib_fwd(uh),
                                                               as_box(a),
@@ -209,8 +209,8 @@ struct default_loop {
         boost::container::static_vector<asio::mutable_buffer, 16> buf_vec;
         mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
                                buf_vec);
-        auto a  = on_read.get_allocator();
-        auto uh = mlib_fwd(on_read).as_unique();
+        mlib::allocator<> a  = ::amongoc_handler_get_allocator(&on_read, ::mlib_default_allocator);
+        auto              uh = mlib_fwd(on_read).as_unique();
         sock.as<tcp::socket>().async_read_some(buf_vec,
                                                adapt_handler(mlib_fwd(uh),
                                                              as_box(a),
