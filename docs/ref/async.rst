@@ -233,25 +233,38 @@ Types
 #####
 
 .. type::
-  amongoc_then_transformer = \
-      amongoc_box [[type(Out)]] (*)\
-          (amongoc_box [[transfer, type(User)]] userdata, \
-           amongoc_status* st, \
-           amongoc_box [[transfer, type(In)]] value)
-  amongoc_let_transformer = \
-      amongoc_emitter [[type(Out)]] (*)\
-          (amongoc_box [[transfer, type(User)]] userdata, \
-           amongoc_status st, \
-           amongoc_box [[transfer, type(In)]] value)
+  amongoc_then_transformer
+  amongoc_let_transformer
+
+  These are *function pointer types* with the following signatures:
+
+  .. This is written as a nested function declaration to render the signatures
+  .. in a readable format. Trying to write a function pointer under "type::"
+  .. generates an unreadable mess in the output
+
+  .. function::
+    amongoc_box [[type(Out)]] __then_signature( \
+      amongoc_box [[transfer, type(User)]] userdata, \
+      amongoc_status* inout_st, \
+      amongoc_box [[transfer, type(In)]] value)
+    amongoc_emitter [[type(Out)]] __let_signature( \
+      amongoc_box [[transfer, type(User)]] userdata, \
+      amongoc_status st, \
+      amongoc_box [[transfer, type(In)]] value)
 
   The function pointer types used to transform an emitter result for
-  `amongoc_then` and `amongoc_let`, respectively. The following parameters are
-  used:
+  `amongoc_then` and `amongoc_let`, respectively.
 
   :header: |this-header|
 
-  `amongoc_box` |attr.transfer| :doc-attr:`[[type(User)]] <[[type(T)]]>` ``userdata``
+  The following parameters are used:
+
+  .. var:: amongoc_box [[transfer, type(User)]] userdata
+
     The ``userdata`` value that was given to `amongoc_then`/`amongoc_let`.
+
+    Note the |attr.transfer| attribute: It is responsibility of the callee to
+    clean up this object.
 
     .. note::
 
@@ -261,15 +274,21 @@ Types
       sure to attach a destructor to your userdata, since it may need to be
       cleaned up by code that is outside of your control.
 
-  `amongoc_status` ``st`` / `amongoc_status` ``*st``
+  .. var::
+    amongoc_status st
+    amongoc_status* inout_st
+
     The resolve status of the input emitter.
 
-    For `amongoc_then`, this is a non-null pointer to a status object that may
-    be modified by the transformer. The modified status will then be used as the
-    result status of the composed emitter.
+    For `amongoc_then`, `inout_st` is a non-null pointer to a status object that
+    may be modified by the transformer. The modified status will then be used as
+    the result status of the composed emitter.
 
-  `amongoc_box` |attr.transfer| :doc-attr:`[[type(In)]] <[[type(T)]]>` ``value``
-    The result value that was emitted by the input emitter.
+  .. var:: amongoc_box [[transfer, type(In)]] value
+
+    The result value that was emitted by the input emitter. Note the
+    |attr.transfer| attribute: It is responsibility of the callee to clean up
+    this object.
 
   The ``then`` transformer is expected to return an `amongoc_box`, while the
   ``let`` transformer must return an `amongoc_emitter`. For an explanation of

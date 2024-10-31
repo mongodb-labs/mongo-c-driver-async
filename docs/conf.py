@@ -87,6 +87,8 @@ CPPREF_INVENTORY: list[InvItem] = [
     InvItem(["std__forward_iterator"], "cpp:concept", "cpp/iterator/forward_iterator", "std::forward_iterator"),
     InvItem(["std__ranges__forward_range"], "cpp:concept", "cpp/ranges/forward_range", "std::ranges::forward_range"),
     InvItem(["timespec"], "cpp:class", "c/chrono/timespec"),
+    InvItem(["c/language/value_category"], "std:doc", "c/language/value_category", "Value categories (C)"),
+    InvItem(["cpp/language/value_category"], "std:doc", "cpp/language/value_category", "Value categories (C++)"),
     *itertools.chain.from_iterable(
         (
             InvItem([itype], "cpp:type", "c/types/integer", itype),
@@ -213,6 +215,7 @@ rst_prolog = """
 .. |D| replace:: :math:`D`
 .. |D'| replace:: :math:`D'`
 .. |E| replace:: :math:`E`
+.. |F| replace:: :math:`F`
 .. |H| replace:: :math:`H`
 .. |I| replace:: :math:`I`
 .. |M| replace:: :math:`M`

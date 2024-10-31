@@ -189,8 +189,8 @@ Classes
     The stored value will be perfect-forwarded and supports reference types for
     `T`:
 
-    - If given an lvalue |x|, then `just` will store an lvalue reference to
-      |x|. When it completes, the receiver will be passed an lvalue reference
+    - If given an :term:`lvalue` |x|, then `just` will store an lvalue reference
+      to |x|. When it completes, the receiver will be passed an lvalue reference
       to that |x|.
     - If given an r-value of type `T`, then `just` will hold a copy of that value.
     - If `just` is copy-connected, then the held `T` will be copied into the
@@ -201,8 +201,8 @@ Classes
 
   .. hint::
 
-    Beware that passing an lvalue via CTAD to `just()` will cause the `just` to
-    hold a reference to that lvalue::
+    Beware that passing an :term:`lvalue` via CTAD to `just()` will cause the
+    `just` to hold a reference to that lvalue::
 
       auto foo() {
         std::string h = "Hello!";

@@ -38,7 +38,7 @@ r-value to the `bson::document` constructor.
 
 A C++ `bson::document` can be converted to a C `bson_doc` in two ways:
 
-- `bson::document::get` will return an l-value reference to the wrapped
+- `bson::document::get` will return an lvalue reference to the wrapped
   `bson_doc`. This returned object should never be used with a |attr.transfer|
   parameter.
 - `bson::document::release` will relinquish ownership of the held `bson_doc` and

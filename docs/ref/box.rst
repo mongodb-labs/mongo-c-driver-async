@@ -119,7 +119,7 @@ Types
 
   .. function:: template <typename T> T& as() noexcept
 
-    Obtain an l-value reference to the contained value of type `T`.
+    Obtain an lvalue reference to the contained value of type `T`.
 
     :precondition: The :ref:`box must be active <box.active>` for the type `T`.
     :c API: `amongoc_box_cast`
@@ -197,8 +197,8 @@ Box Creation / Destruction
   type `T`.
 
   :C++ API: `amongoc::unique_box::from`
-  :param b: An non-const lvalue expression of type `amongoc_box`. This is the
-    box that will be initiatlized.
+  :param b: An modifiable :term:`lvalue` expression of type `amongoc_box`. This
+    is the box that will be initiatlized.
   :param T: The type that should be stored within the box.
   :param dtor: A destructor function that should be executed when the box is
     destroyed with `amongoc_box_destroy`. The destructor function should be
@@ -249,10 +249,10 @@ Inspection
   :C++ API: `amongoc::unique_box::as` and `amongoc_view::as`
 
   Perform a cast from an :cpp:any:`amongoc_box` or :cpp:any:`amongoc_view` to an
-  l-value expression of type `T`.
+  :term:`lvalue` expression of type `T`.
 
-  Note that because the result is an l-value expression, this cast expression
-  can be used to manipulate the value stored in the box::
+  Note that because the result is an :term:`lvalue` expression, this cast
+  expression can be used to manipulate the value stored in the box::
 
     void changed_boxed_int(amongoc_box* b) {
       // Replace the boxed integer value with 42
@@ -281,8 +281,8 @@ Inspection
 
   Moves the value stored in `box` to overwrite the object `dest`.
 
-  :param dest: A non-|const| l-value expression of type |T| that will receive
-    the boxed value.
+  :param dest: A non-|const| :term:`lvalue` expression of type |T| that will
+    receive the boxed value.
   :param box: |attr.transfer| A non-|const| box that is
     :ref:`active <box.active>` for the type |T|.
 

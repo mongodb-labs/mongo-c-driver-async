@@ -36,9 +36,9 @@ another value.
 Initializing a Box with a Value
 ###############################
 
-To initialize the value stored in a box, use `amongoc_box_init`. Pass an l-value
-expression referring to an `amongoc_box` as the first argument, and a type as
-the second:
+To initialize the value stored in a box, use `amongoc_box_init`. Pass an
+:term:`lvalue` expression referring to an `amongoc_box` as the first argument,
+and a type as the second:
 
 .. literalinclude:: box.example.cpp
   :start-after: [init-box-simple]
@@ -54,6 +54,14 @@ dynamically allocate the object, depending on several factors.
   meaning that the call to `amongoc_box_destroy` is not actually necessary. In
   general, it is better to call `amongoc_box_destroy` unless you can be certain
   that a box is trivial.
+
+
+Creating Simple Boxes
+#####################
+
+|amongoc| comes with shorthands for creating boxes that contain built-in types.
+For example `amongoc_box_int` will create a new `amongoc_box` that contains an
+:cpp:`int`.
 
 
 Initializing a Box with a Custom Type
@@ -103,8 +111,8 @@ box using `amongoc_box_cast`:
   :start-after: [box-cast]
   :end-before: end.
 
-The first argument to `amongoc_box_cast` must be a type specifier, and the second
-argument must be an l-value of type `amongoc_box`.
+The first argument to `amongoc_box_cast` must be a type specifier, and the
+second argument must be an :term:`lvalue` of type `amongoc_box`.
 
 
 Moving from a Box
@@ -116,11 +124,12 @@ To steal a value from an `amongoc_box`, use `amongoc_box_take`:
   :start-after: [box-take]
   :end-before: end.
 
-The `amongoc_box_take` function expects an l-value of the box's contained type
-as its first argument, and an l-value of `amongoc_box` as the second. This
-special function will move the box's contained value into the target and then
-release any dynamic storage required in the box, without executing any
-destructor function associated with the box.
+The `amongoc_box_take` function expects a modifiable :term:`lvalue` of the box's
+contained type as its first argument, and an :term:`lvalue` of `amongoc_box` as
+the second. This special function will move the box's contained value into the
+target and then release any dynamic storage required in the box, without
+executing any destructor function associated with the box.
+
 
 
 Using `unique_box` in C++

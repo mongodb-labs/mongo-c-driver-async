@@ -114,7 +114,7 @@ Types
     bson_doc& get()
     const bson_doc& get() const
 
-    Obtain an l-value reference to the wrapped C `bson_doc`
+    Obtain an lvalue reference to the wrapped C `bson_doc`
 
   .. function::
     bson_doc release() &&

@@ -69,8 +69,8 @@ Header: ``amongoc/operation.h``
 
     :param h: The handler object to be attached to the operation.
     :param fn: The starter invocable that will be invoked whent he operation is
-      is started. A l-value reference to the stored handler will be passed as the
-      sole argument to the starter function.
+      is started. An lvalue reference to the stored handler will be passed as
+      the sole argument to the starter function.
     :allocation: The operation state will be allocated using
       :ref:`the allocator associated with the handler <handler.allocator>` `h`.
 

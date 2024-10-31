@@ -108,9 +108,9 @@ Linkage Blocks
 **Beware** R-values that look like L-values
 *******************************************
 
-**Avoid** writing object expression macros that expand to r-values. Users may
+**Avoid** writing object expression macros that expand to rvalues. Users may
 expect to be able to take the address of such an expression since it looks like
-an l-value::
+an :term:`lvalue`::
 
   #define my_special_constant 42
 

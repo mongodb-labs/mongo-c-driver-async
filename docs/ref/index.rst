@@ -26,3 +26,5 @@ Reference
   bson/index
   str
   vec
+
+  glossary
