@@ -13,7 +13,7 @@ order to ensure uniform deletion behavior across the codebase.
   This is a C-compatible header that is mostly useful for C++ code only.
 
 
-Defining Deletion Methods
+Object Deletion Mechanism
 #########################
 
 1. Any public C type that acts as an owner of resources, whether it is a pointer
@@ -23,9 +23,9 @@ Defining Deletion Methods
    when certain macros are used. Read below.
 2. A type that is deletable using `mlib::unique_deleter` meets the
    `mlib::unique_deletable` concept.
-3. For types which have subtle deletion behavior that is implemented as a
-   hand-written C API function, use :c:macro:`mlib_assoc_deleter` to
-   associated the C API function with a `mlib::unique_deleter` specialization.
+3. For a type |T| which has subtle deletion behavior that is implemented as a
+   hand-written C API function |F|, use :c:macro:`mlib_assoc_deleter` to
+   associate the function |F| with the type |T|.
 4. For a simple struct type that contains resource-owning members which are
    themselves `mlib::unique_deletable`, use
    :c:macro:`mlib_declare_member_deleter` and use
@@ -120,20 +120,29 @@ Deletion APIs
 
 .. c:macro:: mlib_declare_c_deletion_function(FuncName, Type)
 
-  Declares a C-linkage function named by ``FuncName`` that accepts a ``Type``
-  by-value. The body of that function will call `mlib::delete_unique` with the
-  instance of the value.
+  Declares and defines a C-linkage function named by ``FuncName`` that accepts a
+  ``Type`` by-value.
 
   .. important:: Don't use this with :c:macro:`mlib_assoc_deleter`
+
+  The body of that function will call `mlib::delete_unique` with the instance of
+  the value.
+
+  When compiled as C, this expands to the forward declaration of the function.
+  When compiled as C++, this expands to an inline definition of that function.
+  The function must appear in at least one C++ :term:`translation unit` in order
+  to emit this function's definition.
 
 
 .. c:macro:: mlib_assoc_deleter(Type, DeletionFunc)
 
   Creates a compile-time association between the given type and a C API deletion
-  function. The function must be invocable with a modifiable l-value of type
+  function. The function must be invocable with a modifiable lvalue of type
   ``Type``.
 
   :header: :header-file:`mlib/delete.h`
+
+  .. important:: Don't use this with :c:macro:`mlib_declare_c_deletion_function`
 
   When compiled as C, this expands to an empty declaration.
 
@@ -141,7 +150,8 @@ Deletion APIs
   `mlib::unique_deleter` for the type ``Type``, which will invoke
   ``DeletionFunc`` for that type.
 
-  .. important:: Don't use this with :c:macro:`mlib_declare_c_deletion_function`
+  The expansion of this macro should always appear within any
+  :term:`translation unit` that contains the definition of the associated type.
 
 
 Examples
