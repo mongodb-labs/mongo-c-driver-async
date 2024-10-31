@@ -14,15 +14,16 @@ common shorthands for behavioral guarantees of the annotated APIs.
 
 .. doc-attr:: [[transfer]]
 
-  If a function parameter is annotated with |attr.transfer|, it means that
-  passing an object by-value to that function will invalidate the value in the
-  caller's scope.
+  The |attr.transfer| has two significant points:
 
-  When an object is passed through a parameter that is marked with
-  |attr.transfer|, it becomes the responsibility of the called function to
-  manage the lifetime of the associated object. The function **must** eventually
-  pass the object to another function that has an |attr.transfer| attribute.\
-  [#box-trivial-note]_
+  1. If a function parameter is annotated with |attr.transfer|, it means that
+     passing an value to that function will invalidate the value in the caller's
+     scope.
+  2. When an object is passed through a parameter that is marked with
+     |attr.transfer|, it becomes the responsibility of the called function to
+     manage the lifetime of the associated object. The function **must**
+     eventually pass the object to another function that has an |attr.transfer|
+     attribute.\ [#box-trivial-note]_
 
 
 Example: POSIX ``close``
