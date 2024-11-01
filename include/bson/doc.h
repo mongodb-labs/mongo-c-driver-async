@@ -463,11 +463,7 @@ public:
     iterator begin() const noexcept { return bson_begin(_doc); }
     iterator end() const noexcept { return bson_end(_doc); }
 
-    iterator find(auto&& key) const noexcept
-        requires requires(view v) { v.find(key); }
-    {
-        return view(*this).find(key);
-    }
+    iterator find(std::string_view key) const noexcept { return view(*this).find(key); }
 
     bson_byte*       data() noexcept { return bson_mut_data(_doc); }
     const bson_byte* data() const noexcept { return bson_data(_doc); }

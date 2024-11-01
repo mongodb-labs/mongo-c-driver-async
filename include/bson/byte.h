@@ -23,7 +23,7 @@ typedef struct bson_byte {
     constexpr explicit operator std::uint8_t() const noexcept { return v; }
     constexpr explicit operator char() const noexcept { return static_cast<char>(v); }
 
-    bool           operator==(const bson_byte&) const = default;
+    constexpr bool operator==(const bson_byte& other) const { return v == other.v; }
     constexpr bool operator==(std::byte c) const noexcept { return std::byte{v} == c; }
     constexpr bool operator==(std::uint8_t c) const noexcept { return v == c; }
 #endif

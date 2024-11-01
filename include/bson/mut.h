@@ -608,11 +608,7 @@ public:
     iterator begin() const noexcept { return bson_begin(_mut); }
     iterator end() const noexcept { return bson_end(_mut); }
 
-    iterator find(auto&& key) const noexcept
-        requires requires(view v) { v.find(key); }
-    {
-        return view(*this).find(key);
-    }
+    iterator find(std::string_view key) const noexcept { return view(*this).find(key); }
 
     operator view() const noexcept { return view::from_data(data(), byte_size()); }
 
@@ -628,9 +624,10 @@ public:
 private:
     ::bson_mut _mut;
 
+    template <typename V>
     auto _do_emplace(iterator      pos,
                      mlib_str_view key,
-                     auto value) noexcept -> decltype(::bson_insert(&_mut, pos, key, value)) {
+                     V value) noexcept -> decltype(::bson_insert(&_mut, pos, key, value)) {
         return ::bson_insert(&_mut, pos, key, value);
     }
 
@@ -639,9 +636,10 @@ private:
         return pos;
     }
 
-    iterator _emplace(iterator pos, std::string_view key_, auto const& val)
-        requires requires(mlib_str_view key) { _do_emplace(pos, key, val); }
-    {
+    template <typename V>
+    auto _emplace(iterator         pos,
+                  std::string_view key_,
+                  V const&         val) -> decltype(_do_emplace(pos, mlib_str_view{}, val)) {
         const mlib_str_view key = mlib_str_view::from(key_);
         const iterator      ret = _do_emplace(pos, key, val);
         if (ret == end()) {
@@ -653,9 +651,10 @@ private:
 
 public:
     struct inserted_subdocument;
-    iterator insert(iterator pos, auto const& pair)
-        requires requires { _emplace(pos, std::get<0>(pair), std::get<1>(pair)); }
-    {
+    template <typename P>
+    auto insert(iterator pos,
+                P const& pair)  //
+        -> decltype(_emplace(pos, std::get<0>(pair), std::get<1>(pair))) {
         return _emplace(pos, std::get<0>(pair), std::get<1>(pair));
     }
 
@@ -663,21 +662,19 @@ public:
         return _emplace(pos, pair.key(), pair.value());
     }
 
-    iterator emplace(iterator pos, std::string_view key, auto const& val)
-        requires requires { _emplace(pos, key, val); }
-    {
+    template <typename V>
+    auto
+    emplace(iterator pos, std::string_view key, V const& val) -> decltype(_emplace(pos, key, val)) {
         return _emplace(pos, key, val);
     }
 
-    iterator push_back(auto const& pair)
-        requires requires { insert(end(), pair); }
-    {
+    template <typename P>
+    auto push_back(P const& pair) -> decltype(insert(end(), pair)) {
         return insert(end(), pair);
     }
 
-    iterator emplace_back(std::string_view key, auto const& val)
-        requires requires { emplace(end(), key, val); }
-    {
+    template <typename V>
+    auto emplace_back(std::string_view key, V const& val) -> decltype(emplace(end(), key, val)) {
         return emplace(end(), key, val);
     }
 

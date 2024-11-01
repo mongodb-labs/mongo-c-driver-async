@@ -46,6 +46,7 @@ typedef struct bson_iterator {
 
     // Compare two iterators for equality
     inline bool operator==(const bson_iterator other) const noexcept;
+    bool operator!=(const bson_iterator& other) const noexcept { return not(*this == other); }
 
     // Get the proxy reference
     inline reference operator*() const;
