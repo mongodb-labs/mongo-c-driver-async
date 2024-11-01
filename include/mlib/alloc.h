@@ -219,37 +219,30 @@ private:
 
 public:
     template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) &
-        requires requires { _object(mlib_fwd(args)...); }
-    {
+    constexpr auto operator()(Args&&... args) & -> decltype(_object(mlib_fwd(args)...)) {
         return _object(mlib_fwd(args)...);
     }
 
     template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) const&
-        requires requires { _object(mlib_fwd(args)...); }
-    {
+    constexpr auto operator()(Args&&... args) const& -> decltype(_object(mlib_fwd(args)...)) {
         return _object(mlib_fwd(args)...);
     }
 
     template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) &&
-        requires requires { std::move(*this)._object(mlib_fwd(args)...); }
-    {
+    constexpr auto
+    operator()(Args&&... args) && -> decltype(std::move(*this)._object(mlib_fwd(args)...)) {
         return std::move(*this)._object(mlib_fwd(args)...);
     }
 
     template <typename... Args>
-    constexpr decltype(auto) operator()(Args&&... args) const&&
-        requires requires { std::move(*this)._object(mlib_fwd(args)...); }
-    {
+    constexpr auto
+    operator()(Args&&... args) const&& -> decltype(std::move(*this)._object(mlib_fwd(args)...)) {
         return std::move(*this)._object(mlib_fwd(args)...);
     }
 
     // Forward other queries to the underlying type
-    constexpr auto query(auto q) const noexcept
-        requires requires { q(_object); }
-    {
+    template <typename Q>
+    constexpr auto query(Q q) const noexcept -> decltype(q(_object)) {
         return q(_object);
     }
 };
