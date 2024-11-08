@@ -184,9 +184,10 @@ The `__type` Parameter
 
 .. type:: __type
 
-  Certain function-like macros are annotated with a `__type` parameter. This
-  indicates that the corresponding macro argument should be a compile-time type
-  specifier rather than a runtime value.
+  Certain :term:`function-like macro`\ s are documented as functions, and they
+  may be annotated with a `__type` parameter. This indicates that the
+  corresponding macro argument should be a compile-time type specifier rather
+  than a runtime value.
 
 
 Unspecified Types

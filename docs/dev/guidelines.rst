@@ -17,7 +17,7 @@ Prefer ``snake_case``
 
 - If the macro is intended to be used as an expression, statement, attribute,
   declaration, or declaration specifier, use ``snake_case``.
-- If a function-like macro performs nontrivial token manipulation, use
+- If a :term:`function-like macro` performs nontrivial token manipulation, use
   ``SHOUTING_CASE``.
 
 
@@ -79,7 +79,7 @@ concise conditional compilation/macro expansions.
 **Avoid** using :cpp:`#ifdef` or :cpp:`#if` with object macros
 **************************************************************
 
-Instead, use :cpp:`#if` with function-like macros
+Instead, use :cpp:`#if` with :term:`function-like macro`\ s
 
 **Bad**::
 
@@ -104,13 +104,15 @@ Linkage Blocks
 **Prefer** to use :c:macro:`mlib_extern_c_begin` and
 :c:macro:`mlib_extern_c_end` to conditional :cpp:`extern "C"`.
 
+.. seealso:: :term:`language linkage`
+
 
 **Beware** R-values that look like L-values
 *******************************************
 
-**Avoid** writing object expression macros that expand to rvalues. Users may
-expect to be able to take the address of such an expression since it looks like
-an :term:`lvalue`::
+**Avoid** writing :term:`object-like macros <object-like macro>` that expand to
+rvalues. Users may expect to be able to take the address of such an expression
+since it looks like an :term:`lvalue`::
 
   #define my_special_constant 42
 
@@ -124,6 +126,14 @@ Instead, use the same idiom as used for C ``errno``::
   }
 
   #define my_special_constant mlib_parenthesized_expression(*_mySpecialConstantPtr())
+
+Alternatively, write it as a :term:`function-like macro` that accepts no
+arguments::
+
+  #define my_special_constant() mlib_parenthesized_expression(42)
+
+While this is less than ideal, it does not look like an :term:`lvalue` when it
+appears in source code.
 
 
 Declaration/Statement macros should require a semicolon
@@ -176,10 +186,11 @@ Utility Macros
 .. c:macro::
   MLIB_LANG_PICK
 
-  A special function-like macro that takes two argument lists in two sets of
-  parenthesis. If compiled as C, the first argument list will be expanded. In
-  C++, the second argument list will be expanded. The unused argument list will
-  be discarded. Neither argument will undergo immediate macro expansion::
+  A special :term:`function-like macro` that takes two argument lists in two
+  sets of parenthesis. If compiled as C, the first argument list will be
+  expanded. In C++, the second argument list will be expanded. The unused
+  argument list will be discarded. Neither argument will undergo immediate macro
+  expansion::
 
     puts(MLIB_LANG_PICK("I am compiled as C!")("I am compiled as C++!"));
 
@@ -211,7 +222,8 @@ Utility Macros
 
 .. c:macro:: mlib_extern_c
 
-  Expands to :cpp:`extern "C"` when compiling as C++, otherwise nothing
+  Expands to :cpp:`extern "C"` when compiling as C++, otherwise an empty
+  attribute. Enforces :term:`C linkage` on an entity.
 
 
 .. c:macro::
@@ -219,14 +231,17 @@ Utility Macros
     mlib_extern_c_end()
 
   Declaration-like function macros that expand to the :cpp:`extern "C"` block
-  for wrapping APIs. Note that these expand to *declarations* and require a
-  following semicolon::
+  for wrapping APIs with :term:`C linkage`. Note that these expand to
+  *declarations* and require a following semicolon::
 
     mlib_extern_c_begin();
 
     extern int meow;
 
     mlib_extern_c_end();
+
+  For declaring a single item, it may be more ergonomic to use
+  :c:macro:`mlib_extern_c`.
 
 
 .. c:macro::
@@ -237,8 +252,8 @@ Utility Macros
   mlib_is_msvc()
   mlib_is_gnu_like()
 
-  Expression-macros that evaluate to 0 or 1 depending on the compile and the
-  compile language.
+  Expression-macros that evaluate to ``0`` or ``1`` depending on the compiler
+  and the compile language.
 
 
 .. c:macro:: mlib_init(T)
@@ -251,7 +266,7 @@ Utility Macros
       return mlib_init(my_struct){a, 42};
     }
 
-  .. note:: The type ``T`` cannot use an *elaborated name*, as that does not
+  .. note:: The type ``T`` cannot use an :term:`elaborated name`, as that does not
       work with C++ brace initializers
 
 
@@ -310,6 +325,8 @@ In general, you should not use linkage specifiers around type definitions, since
 they do not require it, and adding C++ members to types will break if it is
 wrapped in :cpp:`extern "C"`.
 
+.. seealso:: :term:`language linkage`
+
 
 **Be aware** of C's |inline| rules
 **********************************
@@ -330,6 +347,13 @@ declaration.
 ***************************************************************************
 
 While probably benign, this will generate an unignorable compiler warning.
+
+
+C++ Compatibility
+*****************
+
+All public headers that have a ``.h`` extension **must** be able to be compiled
+as C *and* as C++. To write a C++-only header, use the ``.hpp`` file extension.
 
 
 Inclusion of C++ APIs in C Headers
@@ -357,3 +381,5 @@ functions that construct instances of the object (e.g. `amongoc_status::from`).
 
 This will change the definition of inline functions defined in C headers that
 use such types, leading to ODR violations.
+
+For easier automatic destruction of C types, follow the rules in :doc:`deletion`.

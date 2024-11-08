@@ -88,7 +88,15 @@ CPPREF_INVENTORY: list[InvItem] = [
     InvItem(["std__ranges__forward_range"], "cpp:concept", "cpp/ranges/forward_range", "std::ranges::forward_range"),
     InvItem(["timespec"], "cpp:class", "c/chrono/timespec"),
     InvItem(["c/language/value_category"], "std:doc", "c/language/value_category", "Value categories (C)"),
+    InvItem(["c/preprocessor/replace"], "std:doc", "c/preprocessor/replace", "Replacing test macros (C)"),
     InvItem(["cpp/language/value_category"], "std:doc", "cpp/language/value_category", "Value categories (C++)"),
+    InvItem(["cpp/language/language_linkage"], "std:doc", "cpp/language/language_linkage", "Language linkage (C++)"),
+    InvItem(
+        ["cpp/language/elaborated_type_specifier"],
+        "std:doc",
+        "cpp/language/elaborated_type_specifier",
+        "Elaborated type specifier (C++)",
+    ),
     *itertools.chain.from_iterable(
         (
             InvItem([itype], "cpp:type", "c/types/integer", itype),

@@ -120,8 +120,8 @@ Deletion APIs
 
 .. c:macro:: mlib_declare_c_deletion_function(FuncName, Type)
 
-  Declares and defines a C-linkage function named by ``FuncName`` that accepts a
-  ``Type`` by-value.
+  Declares and defines a :term:`C linkage` function named by ``FuncName`` that
+  accepts a ``Type`` by-value.
 
   .. important:: Don't use this with :c:macro:`mlib_assoc_deleter`
 

@@ -167,8 +167,8 @@ View Inspection
   bson_view bson_as_view(__bson_viewable [[nullable]] B)
 
   Obtain a `bson_view` for the given document-like object. This is also used by
-  other function-like macros to coerce `bson_mut` and `bson_doc` to `bson_view`
-  automatically.
+  other :term:`function-like macro`\ s to coerce `bson_mut` and `bson_doc` to
+  `bson_view` automatically.
 
   :param B: A `bson_mut`, `bson_doc`, or `bson_view`.
   :return: A new `bson_view` that views the document associated with ``B``.

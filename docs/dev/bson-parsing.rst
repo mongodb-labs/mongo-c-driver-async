@@ -75,7 +75,7 @@ Parser Rules
   template <typename T> bson::parse::store
 
   A parser rule that stores its operand in a target. The type `T` should usually
-  be an l-value reference. If `T` is not just a `bson_iterator::reference`, then
+  be an lvalue reference. If `T` is not just a `bson_iterator::reference`, then
   the rule will also check that the operand is of the correct type.
 
   Upon storing, accepts.
