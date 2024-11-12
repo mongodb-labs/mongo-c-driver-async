@@ -431,7 +431,12 @@ struct amongoc_status {
     // Return `true` if the status represents an error
     inline bool is_error() const noexcept;
 
-    bool operator==(amongoc_status const&) const = default;
+    constexpr bool operator==(amongoc_status const& other) const noexcept {
+        return category == other.category and code == other.code;
+    }
+    constexpr bool operator!=(amongoc_status const& other) const noexcept {
+        return not(*this == other);
+    }
 #endif
 };
 
