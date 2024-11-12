@@ -9,7 +9,7 @@
 #include <math.h>
 
 #if mlib_is_cxx()
-#include <type_traits>
+#include <mlib/type_traits.hpp>
 #endif
 
 struct bson_value;
@@ -53,8 +53,8 @@ typedef struct bson_value_ref {
     // Conversions
     // Copy an existing value ref
     template <typename R>
-        requires std::is_same_v<R, bson_value_ref>
-    constexpr static bson_value_ref from(R r) noexcept {
+    constexpr static mlib::detail::requires_t<bson_value_ref, std::is_same<R, bson_value_ref>>
+    from(R r) noexcept {
         return r;
     }
 
@@ -98,9 +98,9 @@ typedef struct bson_value_ref {
     DECL_CONVERSION(bson::maxkey, ::bson_type_maxkey, int32, 0);
     DECL_CONVERSION(bson::minkey, ::bson_type_minkey, int32, 0);
 #undef DECL_CONVERSION
-    template <typename B>
-        requires std::is_same_v<B, bool>
-    constexpr static bson_value_ref from(B b) noexcept {
+    template <typename B, int = 0>
+    constexpr static mlib::detail::requires_t<bson_value_ref, std::is_same<B, bool>>
+    from(B b) noexcept {
         return bson_value_ref{.type = ::bson_type_bool, .bool_ = b};
     }
 
@@ -130,8 +130,9 @@ typedef struct bson_value_ref {
 
     bool operator==(const bson_value_ref& oher) const noexcept;
 
-    template <std::integral I>
-    constexpr bool operator==(const I i) const noexcept {
+    template <typename I>
+    constexpr mlib::detail::requires_t<bool, std::is_integral<I>>
+    operator==(const I i) const noexcept {
         bool is_int = false;
         bool eq_i   = this->as_int64(&is_int) == i;
         return eq_i and is_int;

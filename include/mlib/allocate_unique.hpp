@@ -11,7 +11,7 @@ struct alloc_deleter {
     mlib::allocator<> alloc;
 
     template <typename T>
-    void operator()(T* ptr) const noexcept {
+    constexpr void operator()(T* ptr) const noexcept {
         auto a = alloc.rebind<T>();
         a.delete_(ptr);
     }

@@ -17,7 +17,6 @@ namespace mlib {
  * - Requires that the deleter is invocable with a modifiable l-value of type `T`
  */
 template <typename T, typename Deleter = unique_deleter<T>>
-    requires requires(T& inst) { Deleter{}(inst); }
 class unique {
 public:
     // Default-construct to a default-constructed instance

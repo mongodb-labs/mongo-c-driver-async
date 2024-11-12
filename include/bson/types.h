@@ -94,56 +94,72 @@ typedef enum bson_type {
  */
 typedef struct bson_eod {
     mlib_empty_aggregate_c_compat;
-    MLIB_IF_CXX(bool operator==(const bson_eod&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_eod&) const = default;
+#endif
 } bson_eod;
 
 typedef struct bson_undefined {
     mlib_empty_aggregate_c_compat;
-    MLIB_IF_CXX(bool operator==(const bson_undefined&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_undefined&) const = default;
+#endif
 } bson_undefined;
 
 typedef struct bson_null {
     mlib_empty_aggregate_c_compat;
-    MLIB_IF_CXX(bool operator==(const bson_null&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_null&) const = default;
+#endif
 } bson_null;
 
 typedef struct bson_maxkey {
     mlib_empty_aggregate_c_compat;
-    MLIB_IF_CXX(bool operator==(const bson_maxkey&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_maxkey&) const = default;
+#endif
 } bson_maxkey;
 
 typedef struct bson_minkey {
     mlib_empty_aggregate_c_compat;
-    MLIB_IF_CXX(bool operator==(const bson_minkey&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_minkey&) const = default;
+#endif
 } bson_minkey;
 
 typedef struct bson_binary_view {
     const bson_byte* data;
     uint32_t         data_len;
     uint8_t          subtype;
-#if mlib_is_cxx()
+#if mlib_have_cxx20()
     constexpr std::span<const bson_byte> bytes_span() const noexcept {
         return std::span{data, data_len};
     }
-    MLIB_IF_CXX(bool operator==(const bson_binary_view&) const noexcept;)
+    bool operator==(const bson_binary_view&) const noexcept;
 #endif  //
 } bson_binary_view;
 
 typedef struct bson_oid {
     uint8_t bytes[12];
-    MLIB_IF_CXX(bool operator==(const bson_oid&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_oid&) const = default;
+#endif
 } bson_oid;
 #define BSON_OID_ZERO (mlib_init(bson_oid){{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
 
 typedef struct bson_datetime {
     int64_t utc_ms_offset;
-    MLIB_IF_CXX(bool operator==(const bson_datetime&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_datetime&) const = default;
+#endif
 } bson_datetime;
 
 typedef struct bson_regex_view {
     mlib_str_view regex;
     mlib_str_view options;
-    MLIB_IF_CXX(bool operator==(const bson_regex_view&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_regex_view&) const = default;
+#endif
 } bson_regex_view;
 
 #define BSON_REGEX_NULL (mlib_init(bson_regex_view){mlib_str_view_null, mlib_str_view_null})
@@ -151,30 +167,40 @@ typedef struct bson_regex_view {
 typedef struct bson_dbpointer_view {
     mlib_str_view collection;
     bson_oid      object_id;
-    MLIB_IF_CXX(bool operator==(const bson_dbpointer_view&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_dbpointer_view&) const = default;
+#endif
 } bson_dbpointer_view;
 
 #define BSON_DBPOINTER_NULL (mlib_init(bson_dbpointer_view){NULL, 0, BSON_OID_ZERO})
 
 typedef struct bson_code_view {
     mlib_str_view utf8;
-    MLIB_IF_CXX(bool operator==(const bson_code_view&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_code_view&) const = default;
+#endif
 } bson_code_view;
 
 typedef struct bson_symbol_view {
     mlib_str_view utf8;
-    MLIB_IF_CXX(bool operator==(const bson_symbol_view&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_symbol_view&) const = default;
+#endif
 } bson_symbol_view;
 
 typedef struct bson_timestamp {
     uint32_t increment;
     uint32_t utc_sec_offset;
-    MLIB_IF_CXX(bool operator==(const bson_timestamp&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_timestamp&) const = default;
+#endif
 } bson_timestamp;
 
 typedef struct bson_decimal128 {
     uint8_t bytes[16];
-    MLIB_IF_CXX(bool operator==(const bson_decimal128&) const = default;)
+#if mlib_have_cxx20()
+    bool operator==(const bson_decimal128&) const = default;
+#endif
 } bson_decimal128;
 
 #if mlib_is_cxx()

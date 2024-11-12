@@ -12,12 +12,17 @@
 
 #include <mlib/config.h>
 
+#if mlib_is_cxx()
+#include <type_traits>
+#endif
+
 /**
  * @brief Use inline within a struct to declare a deletion spec that invokes
  * a deletion on struct members. In C, expands to an empty declaration.
  */
 #define mlib_declare_member_deleter(...)                                                           \
-    MLIB_IF_CXX(using deleter = ::mlib::delete_members<__VA_ARGS__>;) mlib_static_assert(true)
+    MLIB_IF_ELSE(mlib_have_cxx20())                                                                \
+    (using deleter = ::mlib::delete_members<__VA_ARGS__>)(mlib_static_assert(true))
 
 /**
  * @brief Place at global scope to declare the associated between a simple type
@@ -37,10 +42,11 @@
  * translation unit, even if it isn't called in that TU.
  */
 #define mlib_declare_c_deletion_function(FuncName, Type)                                           \
-    MLIB_LANG_PICK(void FuncName(Type inst))                                                       \
+    MLIB_IF_ELSE(mlib_have_cxx20())                                                                \
     (extern "C" MLIB_IF_GNU_LIKE([[gnu::used]]) inline void FuncName(Type inst) noexcept {         \
         ::mlib::delete_unique(inst);                                                               \
-    } static_assert(true, ""))
+    } static_assert(true, "")) /*                */                                                \
+        (void FuncName(Type inst))
 
 #if mlib_is_cxx()
 
@@ -70,6 +76,7 @@ inline constexpr struct delete_unique_fn {
     }
 } delete_unique;
 
+#if mlib_have_cxx20()
 /**
  * @brief A deleter that detects an ADL-visible `mlib_delete_this()` function
  */
@@ -85,6 +92,7 @@ struct unique_deleter<T> {
 template <typename T>
     requires requires { typename T::deleter; }
 struct unique_deleter<T> : T::deleter {};
+#endif  // ≥C++20
 
 /**
  * @brief A deleter that invokes `delete_unique` on each of the given class members
@@ -97,8 +105,10 @@ struct delete_members {
     }
 };
 
+#if mlib_have_cxx20()
 template <typename T>
 concept unique_deletable = requires(T& inst) { mlib::delete_unique(inst); };
+#endif
 
 /**
  * @brief An invocable object that holds a compile-time constant invocable (usually a function

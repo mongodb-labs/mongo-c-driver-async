@@ -27,8 +27,13 @@
 
 namespace bson {
 
+#if mlib_have_cxx20()
 template <typename T>
 concept as_value_convertbile = requires(const T& obj) { ::bson_as_value_ref(obj); };
+#endif
+
+template <typename T>
+using as_value_ref_t = decltype(::bson_as_value_ref(std::declval<T>()));
 
 }  // namespace bson
 
@@ -65,7 +70,7 @@ typedef struct bson_value {
     };
 
 #if mlib_is_cxx()
-    template <bson::as_value_convertbile T>
+    template <typename T, typename = bson::as_value_ref_t<T>>
     constexpr bool operator==(const T& val) const noexcept;
 #endif  // C++
 } bson_value;
@@ -148,7 +153,7 @@ inline bson_value_ref _bson_value_ref_from_cstring(const char* s) mlib_noexcept 
 }
 mlib_constexpr bson_value_ref _bson_value_ref_dup(bson_value_ref ref) mlib_noexcept { return ref; }
 mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_noexcept {
-    bson_value_ref ret;
+    bson_value_ref ret MLIB_IF_CXX(= {});
     ret.type = val.type;
     switch (val.type) {
     case bson_type_eod:
@@ -243,7 +248,7 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
 #define _bsonValueCopyArgc_2(X, Alloc) _bson_value_copy(bson_as_value_ref((X)), (Alloc))
 static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
                                                   mlib_allocator alloc) mlib_noexcept {
-    bson_value ret;
+    bson_value ret MLIB_IF_CXX(= {});
     ret.type = val.type;
     switch (val.type) {
     case bson_type_eod:
@@ -352,7 +357,7 @@ constexpr bson_value_ref bson_value_ref::from(bson_value const& v) noexcept {
     return _bson_value_ref_from_value(v);
 }
 
-template <bson::as_value_convertbile T>
+template <typename T, typename>
 constexpr bool bson_value::operator==(const T& val) const noexcept {
     return bson_as_value_ref(*this) == val;
 }

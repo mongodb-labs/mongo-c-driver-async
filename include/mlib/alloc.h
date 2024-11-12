@@ -6,7 +6,8 @@
 #include <stdint.h>
 
 #if mlib_is_cxx()
-#include <memory>
+#include <mlib/detail/cxx20.hpp>
+
 #include <new>
 #endif
 
@@ -56,10 +57,10 @@ struct mlib_allocator {
  *
  * @param alloc The allocator to be used
  * @param prev_ptr Pointer to the previously allocated region
- * @param new_size The new requested size of the region
+ * @param new_size The new requested size of the region. If zero, the region is deallocated.
  * @param prev_size The previously requested size of the region
  * @param out_new_size Output pointer that receives the new region size
- * @return mlib_constexpr*
+ * @return A pointer to the reallocated region, or NULL on failure, or NULL if `new_size` is zero
  */
 mlib_constexpr void* mlib_reallocate(mlib_allocator alloc,
                                      void*          prev_ptr,
@@ -112,7 +113,7 @@ namespace mlib {
 /**
  * @brief A C++-style allocator that adapts an `mlib_allocator`
  *
- * @tparam T
+ * @tparam T The type being managed. IF `void`, this is a proto-allocator.
  */
 template <typename T = void>
 class allocator {
@@ -134,10 +135,10 @@ public:
 
     // Allocate N objects
     constexpr pointer allocate(size_t n) const {
-        const size_t max_count = SIZE_MAX / sizeof(T);
+        const size_t max_count = SSIZE_MAX / sizeof(T);
         if (n > max_count) {
             // Multiplying would overflow
-            return nullptr;
+            throw std::bad_alloc();
         }
         pointer p = static_cast<pointer>(
             ::mlib_reallocate(_alloc, nullptr, n * sizeof(T), alignof(T), 0, &n));
@@ -162,7 +163,8 @@ public:
     template <typename... Args>
     constexpr pointer new_(Args&&... args) const {
         pointer p = this->allocate(1);
-        return new (p) T(static_cast<Args&&>(args)...);
+        this->construct(p, mlib_fwd(args)...);
+        return p;
     }
 
     // Utility to destroy and deallocate a single object that was allocated with this allocator
@@ -182,7 +184,7 @@ public:
     // Construct the object, injecting this allocator if appropriate
     template <typename... Args>
     constexpr void construct(pointer p, Args&&... args) const {
-        std::uninitialized_construct_using_allocator(p, *this, static_cast<Args&&>(args)...);
+        mlib::detail::uninitialized_construct_using_allocator(p, *this, mlib_fwd(args)...);
     }
 
 private:
@@ -254,25 +256,46 @@ explicit bind_allocator(Alloc, T&&) -> bind_allocator<Alloc, T>;
  * @brief Query function object type that obtains the allocator associated with an object
  */
 struct get_allocator_fn {
-    constexpr auto operator()(const auto& arg) const noexcept
-        requires requires { arg.query(*this); } and (not requires { arg.get_allocator(); })
-    {
-        return arg.query(*this);
+    // Base case: No associated allocator
+    template <typename O, typename A>
+    constexpr static A impl(detail::rank<0>, const O&, const A dflt) {
+        return dflt;
     }
 
-    constexpr auto operator()(const auto& arg) const noexcept
-        requires requires { arg.get_allocator(); }
-    {
-        return arg.get_allocator();
+    // Case: Has a query() for get_allocator_fn
+    template <typename O, typename A>
+    constexpr static auto impl(detail::rank<1>, const O& obj, const A /* dflt */)
+        -> decltype(obj.query(std::declval<get_allocator_fn const&>())) {
+        return obj.query(get_allocator_fn{});
+    }
+    template <typename O>
+    constexpr static auto impl(detail::rank<1>, const O& obj)
+        -> decltype(obj.query(std::declval<get_allocator_fn const&>())) {
+        return obj.query(get_allocator_fn{});
     }
 
-    constexpr auto operator()(const auto& arg, auto dflt) const noexcept {
-        if constexpr (requires { (*this)(arg); }) {
-            return (*this)(arg);
-        } else {
-            return dflt;
-        }
-    }
+    // Case: Has a get_allocator() member
+    template <typename O, typename A>
+    constexpr static auto impl(detail::rank<2>, const O& obj, const A /* dflt */)
+        MLIB_RETURNS(obj.get_allocator());
+    template <typename O>
+    constexpr static auto impl(detail::rank<2>, const O& obj)  //
+        MLIB_RETURNS(obj.get_allocator());
+
+    /**
+     * @brief Obtain the associated allocator. Is not invocable if there is no associated allocator
+     */
+    template <typename O>
+    constexpr auto operator()(const O& obj) const  //
+        MLIB_RETURNS(impl(detail::rank<5>{}, obj));
+
+    /**
+     * @brief Obtain the associated allocator, or a default allocator if there is no associated
+     * allocator
+     */
+    template <typename O, typename A>
+    constexpr auto operator()(const O& obj, A dflt) const
+        MLIB_RETURNS(impl(detail::rank<5>{}, obj, dflt));
 };
 
 /**
@@ -280,6 +303,13 @@ struct get_allocator_fn {
  */
 inline constexpr struct get_allocator_fn get_allocator {};
 
+/**
+ * @brief Obtain the type of allocator associated with an object
+ */
+template <typename T>
+using get_allocator_t = decltype(get_allocator(std::declval<const T&>()));
+
+#if mlib_have_cxx20()
 /**
  * @brief Match a type for which `mlib::get_allocator` will return an object
  *
@@ -295,12 +325,7 @@ concept has_allocator = requires(const T& obj) { get_allocator(obj); };
 template <typename T>
 concept has_mlib_allocator
     = has_allocator<T> and requires(allocator<> a, const T obj) { a = get_allocator(obj); };
-
-/**
- * @brief Obtain the type of allocator associated with an object
- */
-template <typename T>
-using get_allocator_t = decltype(get_allocator(*(const T*)nullptr));
+#endif  // ≥C++20
 
 }  // namespace mlib
 

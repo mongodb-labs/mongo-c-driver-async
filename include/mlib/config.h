@@ -10,6 +10,12 @@
 
 #include <sys/param.h>
 
+#if __cplusplus
+#if __has_include(<version>)
+#include <version>
+#endif
+#endif
+
 /**
  * @brief A function-like macro that always expands to nothing
  */
@@ -42,6 +48,14 @@
 #define MLIB_EVAL_4(...) MLIB_EVAL_2(MLIB_EVAL_2(__VA_ARGS__))
 #define MLIB_EVAL_2(...) MLIB_EVAL_1(MLIB_EVAL_1(__VA_ARGS__))
 #define MLIB_EVAL_1(...) __VA_ARGS__
+
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907L &&                    \
+    defined(__cpp_impl_three_way_comparison) &&                                \
+    __cpp_impl_three_way_comparison >= 201907L
+#define mlib_have_cxx20() 1
+#else
+#define mlib_have_cxx20() 0
+#endif
 
 /**
  * @brief Expands to the given argument list, suppressing macro argument
@@ -158,7 +172,7 @@
  * @brief Macro that should be used to toggle convenience APIs that will
  * pass default allocators.
  */
-#define mlib_audit_allocator_passing() 0
+#define mlib_audit_allocator_passing() 1
 #endif // mlib_audit_allocator_passing
 
 #ifdef __GNUC__
@@ -194,6 +208,7 @@
 
 #define mlib_nodiscard(Msg) MLIB_LANG_PICK([[]])([[nodiscard(Msg)]])
 
+#if defined __cpp_concepts
 #define MLIB_RETURNS(...)                                                      \
   noexcept(noexcept(__VA_ARGS__))                                              \
       ->decltype(auto)                                                         \
@@ -202,6 +217,11 @@
     return __VA_ARGS__;                                                        \
   }                                                                            \
   static_assert(true)
+#else
+#define MLIB_RETURNS(...)                                                      \
+  noexcept(noexcept(__VA_ARGS__))->decltype(auto) { return __VA_ARGS__; }      \
+  static_assert(true)
+#endif
 
 #define mlib_always_inline                                                     \
   MLIB_IF_GNU_LIKE(__attribute__((always_inline)))                             \
@@ -227,7 +247,7 @@
   MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                \
   mlib_static_assert(true, "")
 
-#define mlib_extern_c MLIB_IF_CXX(extern "C")
+#define mlib_extern_c MLIB_LANG_PICK([[]])(extern "C")
 
 #define mlib_parenthesized_expression(...)                                     \
   MLIB_IF_CXX(mlib::identity{})(__VA_ARGS__)
@@ -304,6 +324,10 @@
 
 namespace mlib {
 
+/**
+ * @retval `true` if evaluated at compile-time and checking is supported
+ * @retval `false` otherwise
+ */
 mlib_constexpr bool is_constant_evaluated() noexcept {
 #ifdef __cpp_if_consteval
   if consteval {
@@ -312,6 +336,11 @@ mlib_constexpr bool is_constant_evaluated() noexcept {
     return false;
   }
 #endif
+#if mlib_is_gnu_like() || mlib_is_msvc()
+  // GNU and MSVC share the builtin
+  return __builtin_is_constant_evaluated();
+#endif
+  // Otherwise we cannot check
   return false;
 }
 
@@ -321,7 +350,7 @@ mlib_constexpr bool is_constant_evaluated() noexcept {
 struct identity {
   template <typename T>
   mlib_always_inline constexpr T &&operator()(T &&arg) const noexcept {
-    return arg;
+    return static_cast<T &&>(arg);
   }
 };
 

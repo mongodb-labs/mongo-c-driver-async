@@ -107,7 +107,7 @@ mlib_constexpr mlib_str_view _mlib_str_view_cstr(const char* s) mlib_noexcept {
  */
 #define mlib_str_view_chopnulls(S) _mlib_str_view_chopnulls(mlib_as_str_view(S))
 mlib_constexpr mlib_str_view _mlib_str_view_chopnulls(mlib_str_view str) mlib_noexcept {
-    size_t len = strnlen(str.data, str.len);
+    size_t len = mlib_strnlen(str.data, str.len);
     str.len    = len;
     return str;
 }

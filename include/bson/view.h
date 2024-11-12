@@ -6,11 +6,12 @@
 #include <bson/view_errc.h>
 
 #if mlib_is_cxx()
-#include <span>
 #include <stdexcept>
 #include <string_view>
 
-extern template class std::span<const bson_byte>;
+#if mlib_have_cxx20()
+#include <span>
+#endif
 #endif
 
 typedef struct bson_view bson_view;
@@ -70,10 +71,12 @@ typedef struct bson_view {
      */
     [[nodiscard]] inline size_type byte_size() const noexcept { return ::bson_size(*this); }
 
+#if mlib_have_cxx20()
     /**
      * @brief Obtain a span over the bytes in the document
      */
     [[nodiscard]] std::span<const bson_byte> bytes() const noexcept;
+#endif
     /**
      * @brief Equivalent to @ref bson_begin()
      * @include <bson/iterator.h>
@@ -170,7 +173,9 @@ typedef struct bson_array_view {
      */
     [[nodiscard]] inline size_type byte_size() const noexcept { return ::bson_size(*this); }
 
+#if mlib_have_cxx20()
     [[nodiscard]] std::span<const bson_byte> bytes() const noexcept;
+#endif
 
     /**
      * @brief Equivalent to @ref bson_begin()
