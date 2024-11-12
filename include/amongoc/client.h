@@ -1,9 +1,9 @@
 #pragma once
 
-#include "./alloc.h"
 #include "./emitter.h"
 #include "./loop.h"
 
+#include <mlib/alloc.h>
 #include <mlib/config.h>
 #include <mlib/str.h>
 
@@ -61,7 +61,7 @@ struct amongoc_client {
     amongoc_loop& get_event_loop() const noexcept { return *amongoc_client_get_event_loop(*this); }
 
     // Obtain the allocator associated with this connection (from the event loop)
-    amongoc::allocator<> get_allocator() const noexcept {
+    mlib::allocator<> get_allocator() const noexcept {
         return this->get_event_loop().get_allocator();
     }
 #endif

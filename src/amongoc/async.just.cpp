@@ -6,8 +6,8 @@ using namespace amongoc;
 
 emitter amongoc_just(status st, box value, mlib_allocator alloc_) noexcept {
     // Make unique outside of just_1 to reduce code size of just_1
-    auto&&      uniq = mlib_fwd(value).as_unique();
-    allocator<> alloc{alloc_};
+    auto&&            uniq = mlib_fwd(value).as_unique();
+    mlib::allocator<> alloc{alloc_};
 
     // Accepts the status getter and compressed box and produces the final emitter
     auto just_2 = [&]<typename GetStatus, typename Compressed>(GetStatus    get_st,

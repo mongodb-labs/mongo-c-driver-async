@@ -29,11 +29,11 @@ template <writable_stream Stream>
 class client {
 public:
     client() = default;
-    explicit client(Stream&& strm, allocator<> a)
+    explicit client(Stream&& strm, mlib::allocator<> a)
         : _stream(mlib_fwd(strm))
         , _alloc(a) {}
 
-    allocator<> get_allocator() const noexcept { return _alloc; }
+    mlib::allocator<> get_allocator() const noexcept { return _alloc; }
 
     template <message_type Message>
     co_task<any_message> request(Message&& msg) {
@@ -41,9 +41,9 @@ public:
     }
 
 private:
-    Stream       _stream;
-    allocator<>  _alloc;
-    std::int32_t _request_id = 0;
+    Stream            _stream;
+    mlib::allocator<> _alloc;
+    std::int32_t      _request_id = 0;
 
     static co_task<any_message> request(client& self, message_type auto msg) {
         co_await wire::send_message(self.get_allocator(),

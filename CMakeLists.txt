@@ -141,7 +141,10 @@ if(BUILD_TESTING)
     add_executable(amongoc-test ${test_sources})
     target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2)
     target_include_directories(amongoc-test PRIVATE src)
-    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST)
+    # Add a test that compiles as C++17 and includes all of our headers
+    add_executable(cxx17-test tests/cxx17.test.cpp)
+    target_link_libraries(cxx17-test PRIVATE amongoc::amongoc)
+    set_property(TARGET cxx17-test PROPERTY CXX_STANDARD 17)
 
     # Generate URI tests
     include(GenURITests)

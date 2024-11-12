@@ -22,12 +22,12 @@ const bson::document& wire::any_message::expect_one_body_section_op_msg() const&
         [&](body_section<bson::document> const& sec) -> const bson::document& { return sec.body; });
 }
 
-vector<asio::const_buffer> any_message::buffers(allocator<> a) const {
+vector<asio::const_buffer> any_message::buffers(mlib::allocator<> a) const {
     return visit_content(
         [&](const auto& c) -> const_buffer_sequence decltype(auto) { return c.buffers(a); });
 }
 
-vector<asio::const_buffer> any_section::buffers(allocator<> a) const {
+vector<asio::const_buffer> any_section::buffers(mlib::allocator<> a) const {
     vector<asio::const_buffer> bufs{a};
     this->visit([&](auto&& sec) {
         auto k = asio::const_buffer(&sec.kind(), 1);

@@ -1,10 +1,10 @@
 #include <amongoc/async.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/client.h>
 #include <amongoc/default_loop.h>
-#include <amongoc/emitter_result.h>
+#include <amongoc/emitter_result.hpp>
 #include <amongoc/loop_fixture.test.hpp>
-#include <amongoc/operation.h>
+#include <amongoc/operation.hpp>
 #include <amongoc/status.h>
 
 #include <mlib/alloc.h>

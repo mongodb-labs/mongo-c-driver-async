@@ -1,9 +1,9 @@
 #pragma once
 
 #include <amongoc/coroutine.hpp>
-#include <amongoc/loop.h>
 #include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
+#include <amongoc/tcp_conn.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/client.hpp>
 #include <amongoc/wire/message.hpp>
@@ -47,7 +47,7 @@ private:
     struct pool_impl;
 
     // A forward-list of member implementations. Used for fast splicing under lock
-    using member_impl_list = std::forward_list<member_impl, allocator<member_impl>>;
+    using member_impl_list = std::forward_list<member_impl, mlib::allocator<member_impl>>;
 
 public:
     /**
@@ -70,7 +70,7 @@ public:
             return _request(*this, _wire_client(), mlib_fwd(m));
         }
 
-        allocator<> get_allocator() const noexcept;
+        mlib::allocator<> get_allocator() const noexcept;
 
     private:
         friend connection_pool;
@@ -117,7 +117,7 @@ public:
     explicit pool_client(connection_pool& pool) noexcept
         : _pool(&pool) {}
 
-    allocator<> get_allocator() const noexcept { return _pool->get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return _pool->get_allocator(); }
 
     co_task<wire::any_message> request(wire::message_type auto msg) {
         return _request(*this, mlib_fwd(msg));

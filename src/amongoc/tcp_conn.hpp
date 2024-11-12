@@ -9,14 +9,14 @@
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
 
-#include <amongoc/alloc.h>
-#include <amongoc/box.h>
-#include <amongoc/emitter_result.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter_result.hpp>
 #include <amongoc/handler.h>
 #include <amongoc/loop.h>
 #include <amongoc/wire/buffer.hpp>
 
 #include <mlib/algorithm.hpp>
+#include <mlib/alloc.h>
 #include <mlib/object_t.hpp>
 
 #include <asio/buffer.hpp>
@@ -61,7 +61,7 @@ struct tcp_connection_rw_stream {
     using executor_type = amongoc_loop_asio_executor;
 
     // Obtain an allocator for the stream. Pulls the allocator from the event loop
-    allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
 
     // A completion handler for a unique_handle that calls an Asio callback
     template <typename C>

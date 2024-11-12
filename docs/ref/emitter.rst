@@ -138,7 +138,7 @@ Header: ``amongoc/emitter.h``
       an `emitter_result` argument.
 
 
-.. header-file:: amongoc/emitter_result.h
+.. header-file:: amongoc/emitter_result.hpp
 
   Contains the definition of `emitter_result`
 
@@ -146,7 +146,7 @@ Header: ``amongoc/emitter.h``
 
   **(C++)** Encapsulates the pair of status+value when an emitter completes.
 
-  :header: :header-file:`amongoc/emitter_result.h`
+  :header: :header-file:`amongoc/emitter_result.hpp`
 
   .. function::
     emitter_result()  [[1]]

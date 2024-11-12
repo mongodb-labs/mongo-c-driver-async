@@ -138,7 +138,7 @@ wire::client<tcp_connection_rw_stream>& connection_pool::member::_wire_client() 
     return _single_impl.front()._client;
 }
 
-allocator<> connection_pool::member::get_allocator() const noexcept {
+mlib::allocator<> connection_pool::member::get_allocator() const noexcept {
     return _impl()->handshake.get_allocator();
 }
 

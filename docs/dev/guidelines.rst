@@ -353,7 +353,11 @@ C++ Compatibility
 *****************
 
 All public headers that have a ``.h`` extension **must** be able to be compiled
-as C *and* as C++. To write a C++-only header, use the ``.hpp`` file extension.
+as C11 *and* as C++17. Usage of C++20 features should either be moved to a
+``.hpp`` header or guarded with ``mlib_have_cxx20()``.
+
+To write a C++-only header, use the ``.hpp`` file extension. The ``.hpp``
+headers *may* use C++20.
 
 
 Inclusion of C++ APIs in C Headers

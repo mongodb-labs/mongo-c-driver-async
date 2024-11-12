@@ -30,11 +30,11 @@ struct tcp_connection_rw_stream;
  */
 struct handshake_response {
     // Initialize with an allocator
-    explicit handshake_response(allocator<> a) noexcept
+    explicit handshake_response(mlib::allocator<> a) noexcept
         : topologyVersion(a) {}
 
     // Get the allocator for this object
-    allocator<> get_allocator() const noexcept { return topologyVersion.get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return topologyVersion.get_allocator(); }
 
     // The type of points-in-time
     using time_point = std::chrono::utc_time<std::chrono::milliseconds>;
@@ -78,13 +78,13 @@ struct handshake_response {
      * @param a The allocator for message data
      * @param msg A BSON document that contains the handshake response
      */
-    static handshake_response parse(allocator<> a, bson_view msg);
+    static handshake_response parse(mlib::allocator<> a, bson_view msg);
 };
 
 /**
  * @brief Create a handshake message document
  */
-bson::document create_handshake_command(allocator<>                     a,
+bson::document create_handshake_command(mlib::allocator<>               a,
                                         std::optional<std::string_view> application_name);
 
 /**

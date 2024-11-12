@@ -6,10 +6,11 @@
 #include "./nano/then.hpp"
 
 #include <amongoc/async.h>
-#include <amongoc/box.h>
-#include <amongoc/emitter.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter.hpp>
 #include <amongoc/handler.h>
-#include <amongoc/operation.h>
+#include <amongoc/loop.hpp>
+#include <amongoc/operation.hpp>
 
 #include <new>
 
@@ -53,7 +54,7 @@ emitter amongoc_schedule_later(amongoc_loop* loop, std::timespec duration_us) {
 }
 
 emitter amongoc_schedule(amongoc_loop* loop) {
-    return as_emitter(get_allocator(*loop),
+    return as_emitter(loop->get_allocator(),
                       loop->schedule() | amongoc::then([](auto) { return emitter_result(); }))
         .release();
 }
@@ -71,13 +72,13 @@ amongoc_operation amongoc_tie(amongoc_emitter em,
             // saving an allocation.
             return mlib_fwd(em)
                 .as_unique()
-                .bind_allocator_connect(allocator<>(alloc), [](emitter_result&&) {})
+                .bind_allocator_connect(mlib::allocator<>(alloc), [](emitter_result&&) {})
                 .release();
         } else {
             // Only storing the value
             return mlib_fwd(em)
                 .as_unique()
-                .bind_allocator_connect(allocator<>(alloc),
+                .bind_allocator_connect(mlib::allocator<>(alloc),
                                         [value](emitter_result&& res) {
                                             *value = mlib_fwd(res).value.release();
                                         })
@@ -88,14 +89,14 @@ amongoc_operation amongoc_tie(amongoc_emitter em,
             // We are only storing the status
             return mlib_fwd(em)
                 .as_unique()
-                .bind_allocator_connect(allocator<>(alloc),
+                .bind_allocator_connect(mlib::allocator<>(alloc),
                                         [status](emitter_result&& res) { *status = res.status; })
                 .release();
         } else {
             // Storing both the value and the status
             return mlib_fwd(em)
                 .as_unique()
-                .bind_allocator_connect(allocator<>(alloc),
+                .bind_allocator_connect(mlib::allocator<>(alloc),
                                         [status, value](emitter_result&& res) {
                                             *status = res.status;
                                             *value  = mlib_fwd(res).value.release();

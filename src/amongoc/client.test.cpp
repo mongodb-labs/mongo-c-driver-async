@@ -1,14 +1,13 @@
-#include <amongoc/alloc.h>
 #include <amongoc/async.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/client.h>
 #include <amongoc/default_loop.h>
-#include <amongoc/emitter.h>
+#include <amongoc/emitter.hpp>
 #include <amongoc/loop.h>
 #include <amongoc/loop_fixture.test.hpp>
 #include <amongoc/nano/concepts.hpp>
 #include <amongoc/nano/just.hpp>
-#include <amongoc/operation.h>
+#include <amongoc/operation.hpp>
 
 #include <bson/doc.h>
 #include <bson/mut.h>

@@ -1,5 +1,5 @@
 #include <amongoc/box.compress.hpp>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -68,7 +68,7 @@ TEST_CASE("Box/Unique nil") {
 }
 
 TEST_CASE("Box/With C++ Object") {
-    auto b = unique_box::from(allocator<>{mlib_default_allocator},
+    auto b = unique_box::from(mlib::allocator<>{mlib_default_allocator},
                               std::string("Hello, box world! I am a very long string that needs to "
                                           "be dynamically allocated."))
                  .release();
@@ -84,7 +84,7 @@ TEST_CASE("Box/Compress dynamic") {
     struct very_large {
         char f[256];
     };
-    auto b = unique_box::from(allocator<>(::mlib_default_allocator), very_large{});
+    auto b = unique_box::from(mlib::allocator<>(::mlib_default_allocator), very_large{});
     mlib_fwd(b).compress([](auto c) {
         CHECK(sizeof(c) == sizeof(void*));
         (void)mlib_fwd(c).recover();  // Recover the box to destroy it

@@ -8,12 +8,12 @@
  */
 #pragma once
 
-#include "./alloc.h"
 #include "./box.h"
 #include "./emitter.h"
 #include "./loop.h"
 #include "./status.h"
 
+#include <mlib/alloc.h>
 #include <mlib/config.h>
 
 mlib_extern_c_begin();

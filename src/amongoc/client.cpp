@@ -1,11 +1,11 @@
 
 #include "./client/impl.hpp"
 
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/client.h>
 #include <amongoc/connection_pool.hpp>
 #include <amongoc/coroutine.hpp>
-#include <amongoc/emitter.h>
+#include <amongoc/emitter.hpp>
 #include <amongoc/loop.h>
 #include <amongoc/loop.hpp>
 #include <amongoc/nano/nano.hpp>

@@ -1,8 +1,8 @@
 #include "./pool.hpp"
 
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/default_loop.h>
-#include <amongoc/handler.h>
+#include <amongoc/handler.hpp>
 #include <amongoc/loop.h>
 #include <amongoc/status.h>
 
@@ -40,12 +40,12 @@ template <>
 constexpr bool amongoc::enable_trivially_relocatable_v<tcp_resolve_results> = true;
 
 template <typename T>
-using pool = object_pool<T, allocator<T>>;
+using pool = object_pool<T, mlib::allocator<T>>;
 
 namespace {
 
 // Takes an arbitrary value and wraps it in an amongoc_box
-auto as_box = [](allocator<> alloc) {
+auto as_box = [](mlib::allocator<> alloc) {
     return [alloc](auto&& x) { return unique_box::from(alloc, mlib_fwd(x)); };
 };
 
@@ -97,7 +97,7 @@ public:
     asio::cancellation_slot get_cancellation_slot() const noexcept { return _slot; }
 
     // Expose the memory allocator of the loop to Asio
-    using allocator_type = allocator<>;
+    using allocator_type = mlib::allocator<>;
     allocator_type get_allocator() const noexcept { return _handler.get_allocator(); }
 
 private:
@@ -120,9 +120,9 @@ explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_han
 
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
-    allocator<> _alloc;
+    mlib::allocator<> _alloc;
 
-    asio::io_context ioc;
+    asio::io_context ioc{};
 
     pool<asio::cancellation_signal> _cancel_signals{_alloc};
     pool<tcp::resolver>             _resolvers{_alloc};
@@ -262,7 +262,8 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
     try {
 
         loop->userdata
-            = unique_box::make<default_loop>(allocator<>{alloc}, allocator<>{alloc}).release();
+            = unique_box::make<default_loop>(mlib::allocator<>{alloc}, mlib::allocator<>{alloc})
+                  .release();
         loop->vtable = &default_loop_vtable;
         return amongoc_okay;
     } catch (std::bad_alloc const&) {

@@ -1,5 +1,6 @@
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 
+#include <cstdio>
 #include <utility>
 
 bool some_condition() { return false; }

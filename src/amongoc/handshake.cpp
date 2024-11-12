@@ -14,7 +14,7 @@
 
 using namespace amongoc;
 
-amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bson_view msg) {
+amongoc::handshake_response amongoc::handshake_response::parse(mlib::allocator<> a, bson_view msg) {
     handshake_response ret{a};
 
     using namespace bson::parse;
@@ -80,7 +80,7 @@ amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bs
     return ret;
 }
 
-bson::document amongoc::create_handshake_command(allocator<>                     alloc,
+bson::document amongoc::create_handshake_command(mlib::allocator<>               alloc,
                                                  std::optional<std::string_view> app_name) {
     using namespace bson::make;
 #undef linux

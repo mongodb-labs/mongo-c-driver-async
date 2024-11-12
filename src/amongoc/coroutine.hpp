@@ -20,19 +20,20 @@
 #include <mlib/object_t.hpp>
 
 // C library headers
-#include <amongoc/alloc.h>
 #include <amongoc/async.h>
-#include <amongoc/box.h>
-#include <amongoc/emitter.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter.hpp>
 #include <amongoc/handler.h>
 #include <amongoc/loop.h>
 #include <amongoc/nano/query.hpp>
 #include <amongoc/nano/result.hpp>
 #include <amongoc/nano/simple.hpp>  // Required for as_handler used by emitter.h
-#include <amongoc/operation.h>
+#include <amongoc/operation.hpp>
 #include <amongoc/relocation.hpp>
 #include <amongoc/status.h>
 #include <amongoc/wire/error.hpp>
+
+#include <mlib/alloc.h>
 
 #include <cstddef>
 #include <cstdio>
@@ -261,7 +262,7 @@ nanosender_awaiter<S> operator co_await(S && s) {
 class coroutine_promise_allocator_mixin {
 public:
     // Allocate the coroutine state using our mlib_allocator
-    void* operator new(std::size_t n, allocator<char> const& alloc, const auto&...) noexcept {
+    void* operator new(std::size_t n, mlib::allocator<char> const& alloc, const auto&...) noexcept {
         char* storage;
         try {
             storage = alloc.allocate(n + sizeof(alloc_state));
@@ -278,7 +279,9 @@ public:
 
     // Allocate using the allocator from the event loop
     void* operator new(std::size_t n, amongoc_loop* loop, auto const&...) noexcept {
-        return operator new(n, loop ? loop->get_allocator() : allocator<>{mlib_default_allocator});
+        return operator new(n,
+                            loop ? loop->get_allocator()
+                                 : mlib::allocator<>{mlib_default_allocator});
     }
 
     // Allocate where the first parameter provides an allocator
@@ -302,27 +305,27 @@ public:
     }
 
     coroutine_promise_allocator_mixin(amongoc_loop* loop, auto&&...)
-        : _alloc(loop ? loop->get_allocator() : allocator<>{mlib_default_allocator}) {}
+        : _alloc(loop ? loop->get_allocator() : mlib::allocator<>{mlib_default_allocator}) {}
 
-    coroutine_promise_allocator_mixin(const allocator<>& a, auto&&...)
+    coroutine_promise_allocator_mixin(const mlib::allocator<>& a, auto&&...)
         : _alloc(a) {}
 
     template <mlib::has_mlib_allocator X>
     coroutine_promise_allocator_mixin(const X& x, auto&&...)
-        : _alloc(amongoc::get_allocator(x)) {}
+        : _alloc(mlib::get_allocator(x)) {}
 
     template <mlib::has_mlib_allocator P>
     coroutine_promise_allocator_mixin(const P* x, auto&&...)
-        : _alloc(amongoc::get_allocator(*x)) {}
+        : _alloc(mlib::get_allocator(*x)) {}
 
     // Expose the allocator associated with the coroutine
-    allocator<> get_allocator() const noexcept { return _alloc; }
+    mlib::allocator<> get_allocator() const noexcept { return _alloc; }
 
 private:
-    allocator<> _alloc;
+    mlib::allocator<> _alloc;
 
     struct alloc_state {
-        allocator<char> alloc;
+        mlib::allocator<char> alloc;
         alignas(std::max_align_t) char tail[1] = {0};
     };
 };

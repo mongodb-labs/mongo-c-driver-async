@@ -6,10 +6,10 @@
 #include "./util.hpp"
 
 #include <amongoc/async.h>
-#include <amongoc/box.h>
-#include <amongoc/emitter.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter.hpp>
 #include <amongoc/handler.h>
-#include <amongoc/operation.h>
+#include <amongoc/operation.hpp>
 #include <amongoc/status.h>
 
 #include <mlib/alloc.h>

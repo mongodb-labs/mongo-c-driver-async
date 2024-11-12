@@ -1,6 +1,6 @@
 #include "./coroutine.hpp"
 
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/handler.h>
 
 #include <mlib/alloc.h>

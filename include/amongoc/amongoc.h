@@ -1,7 +1,6 @@
 #pragma once
 
 #include "./aggregate.h"
-#include "./alloc.h"
 #include "./async.h"
 #include "./box.h"
 #include "./bson/doc.h"

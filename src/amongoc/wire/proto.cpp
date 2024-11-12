@@ -24,9 +24,12 @@ static_assert(wire::message_type<wire::any_op_msg_message>);
 static_assert(wire::message_type<wire::any_message>);
 
 // Common send-message case
-template co_task<mlib::unit>
-wire::send_message(allocator<>, tcp_connection_rw_stream&, int, const wire::one_bson_view_op_msg);
-template co_task<wire::any_message> wire::recv_message(allocator<>, tcp_connection_rw_stream&);
+template co_task<mlib::unit>        wire::send_message(mlib::allocator<>,
+                                                tcp_connection_rw_stream&,
+                                                int,
+                                                const wire::one_bson_view_op_msg);
+template co_task<wire::any_message> wire::recv_message(mlib::allocator<>,
+                                                       tcp_connection_rw_stream&);
 
 void wire::trace::message_header(std::string_view prefix,
                                  std::size_t      messageLength,

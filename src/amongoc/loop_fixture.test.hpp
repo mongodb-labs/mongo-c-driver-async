@@ -1,11 +1,11 @@
 #pragma once
 
 #include <amongoc/async.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/default_loop.h>
-#include <amongoc/emitter.h>
-#include <amongoc/emitter_result.h>
-#include <amongoc/operation.h>
+#include <amongoc/emitter.hpp>
+#include <amongoc/emitter_result.hpp>
+#include <amongoc/operation.hpp>
 
 #include <mlib/alloc.h>
 

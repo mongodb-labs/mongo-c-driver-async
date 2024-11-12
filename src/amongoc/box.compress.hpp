@@ -1,7 +1,7 @@
 #pragma once
 
-#include <amongoc/box.h>
-#include <amongoc/emitter.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter.hpp>
 #include <amongoc/handler.h>
 
 #include <array>

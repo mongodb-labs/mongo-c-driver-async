@@ -34,10 +34,11 @@ TEST_CASE("Async/Transform with the C API") {
                       })
              .as_unique();
     unique_box       got = amongoc::nil();
-    unique_operation op  = std::move(em).bind_allocator_connect(allocator<>(mlib_default_allocator),
-                                                               [&](emitter_result&& b) {
-                                                                   got = std::move(b).value;
-                                                               });
+    unique_operation op
+        = std::move(em).bind_allocator_connect(mlib::allocator<>(mlib_default_allocator),
+                                               [&](emitter_result&& b) {
+                                                   got = std::move(b).value;
+                                               });
     op.start();
     CHECK(got.as<int>() == 123);
 }

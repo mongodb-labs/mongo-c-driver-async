@@ -1,9 +1,7 @@
 #pragma once
 
-#include "./box.h"
+#include "./box.hpp"
 #include "./status.h"
-
-#if mlib_is_cxx()
 
 namespace amongoc {
 
@@ -33,5 +31,3 @@ public:
 };
 
 }  // namespace amongoc
-
-#endif

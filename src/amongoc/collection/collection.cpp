@@ -1,5 +1,5 @@
 #include <amongoc/aggregate.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/client.h>
 #include <amongoc/collection.h>
 #include <amongoc/collection/impl.hpp>

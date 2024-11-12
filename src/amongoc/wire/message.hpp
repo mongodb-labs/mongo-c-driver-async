@@ -1,12 +1,13 @@
 #pragma once
 
-#include <amongoc/alloc.h>
 #include <amongoc/vector.hpp>
 #include <amongoc/wire/buffer.hpp>
 #include <amongoc/wire/integer.hpp>
 
 #include <bson/doc.h>
 #include <bson/view.h>
+
+#include <mlib/alloc.h>
 
 #include <asio/buffer.hpp>
 
@@ -18,7 +19,7 @@ namespace amongoc::wire {
  * @brief A type that provides an interface for wire messages
  */
 template <typename T>
-concept message_type = requires(const T& req, allocator<> a) {
+concept message_type = requires(const T& req, mlib::allocator<> a) {
     // The object must provide an opcode
     { req.opcode() } -> std::convertible_to<std::int32_t>;
     // The object must provide a buffer sequence to be attached to the message
@@ -29,7 +30,7 @@ concept message_type = requires(const T& req, allocator<> a) {
  * @brief A type that provides section content for OP_MSG messages
  */
 template <typename T>
-concept section_type = requires(const T& sec, allocator<> const a) {
+concept section_type = requires(const T& sec, mlib::allocator<> const a) {
     // Must provide a kind byte to be attached to the section. This is a reference because it will
     // be passed by-address through the stream
     { sec.kind() } noexcept -> std::same_as<std::uint8_t const&>;
@@ -50,7 +51,7 @@ struct body_section {
     // Kind byte for body messages
     static constexpr std::uint8_t kind_byte = 0;
 
-    asio::const_buffers_1 buffers(allocator<>) const noexcept {
+    asio::const_buffers_1 buffers(mlib::allocator<>) const noexcept {
         return asio::buffer(body.data(), body.byte_size());
     }
 
@@ -86,7 +87,7 @@ public:
         return 2013;  // OP_MSG
     }
 
-    const_buffer_sequence auto buffers(allocator<> a) const noexcept {
+    const_buffer_sequence auto buffers(mlib::allocator<> a) const noexcept {
         return _buffers(a, _sections);
     }
 
@@ -94,7 +95,7 @@ public:
     const Sections& sections() const noexcept { return _sections; }
 
 private:
-    vector<asio::const_buffer> _buffers(allocator<> a, auto& sections) const noexcept {
+    vector<asio::const_buffer> _buffers(mlib::allocator<> a, auto& sections) const noexcept {
         vector<asio::const_buffer> bufs{a};
         auto                       flag_bits_buf = asio::buffer(_flag_bits);
         bufs.push_back(flag_bits_buf);
@@ -111,13 +112,14 @@ private:
     // need to dynamically allocate our buffers
     template <typename BSON, std::size_t N>
     std::array<asio::const_buffer, 1 + (N * 2)>
-    _buffers(allocator<> a, const std::array<body_section<BSON>, N>& sections) const noexcept {
+    _buffers(mlib::allocator<>                        a,
+             const std::array<body_section<BSON>, N>& sections) const noexcept {
         return _buffers_1(a, sections, std::make_index_sequence<N>{});
     }
 
     template <typename BSON, std::size_t N, std::size_t... Ns>
     std::array<asio::const_buffer, 1 + (N * 2)>
-    _buffers_1(allocator<>                              a,
+    _buffers_1(mlib::allocator<>                        a,
                const std::array<body_section<BSON>, N>& sections,
                std::index_sequence<Ns...>) const noexcept {
         std::array<asio::const_buffer, 1 + (N * 2)> buffers{};
@@ -159,7 +161,7 @@ public:
         return visit([&](auto&& x) -> decltype(auto) { return x.kind(); });
     }
 
-    vector<asio::const_buffer> buffers(allocator<> a) const;
+    vector<asio::const_buffer> buffers(mlib::allocator<> a) const;
 
     /**
      * @brief Read an unknown-typed message section from a dynamic buffer
@@ -168,7 +170,7 @@ public:
      * @param a
      * @return any_section
      */
-    static any_section read(dynamic_buffer_v1 auto&& dbuf, allocator<> a) {
+    static any_section read(dynamic_buffer_v1 auto&& dbuf, mlib::allocator<> a) {
         const_buffer_sequence auto data = dbuf.data();
         if (asio::buffer_size(data) < 1) {
             throw std::system_error(std::make_error_code(std::errc::protocol_error), "short read");
@@ -228,7 +230,7 @@ public:
 
     std::int32_t opcode() const noexcept;
 
-    vector<asio::const_buffer> buffers(allocator<> a) const;
+    vector<asio::const_buffer> buffers(mlib::allocator<> a) const;
 
     const bson::document& expect_one_body_section_op_msg() const& noexcept;
     bson::document&       expect_one_body_section_op_msg() & noexcept {
