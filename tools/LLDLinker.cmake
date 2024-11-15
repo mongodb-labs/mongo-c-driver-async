@@ -56,5 +56,7 @@ endif()
 
 if(MONGO_USE_LLD)
     message(STATUS "Linking using LLVM lld. Disable by setting MONGO_USE_LLD to OFF")
-    add_link_options(-fuse-ld=lld)
+    add_link_options(
+        $<$<NOT:$<BOOL:$<TARGET_PROPERTY:INTERPROCEDURAL_OPTIMIZATION>>>:-fuse-ld=lld>
+    )
 endif()
