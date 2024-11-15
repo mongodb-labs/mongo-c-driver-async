@@ -26,5 +26,6 @@ Reference
   bson/index
   str
   vec
+  time
 
   glossary
