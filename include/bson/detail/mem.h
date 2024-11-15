@@ -90,7 +90,7 @@ mlib_constexpr uint64_t _bson_read_u64le(const bson_byte* bytes) mlib_noexcept {
         return u64;
     } else {
         // Optimize to a memcpy
-        uint64_t n;
+        uint64_t n = 0;
         memcpy(&n, bytes, sizeof n);
         return n;
     }
