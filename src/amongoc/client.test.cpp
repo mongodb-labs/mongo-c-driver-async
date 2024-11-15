@@ -86,7 +86,7 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Simple request") {
             bson::document doc{mlib_default_allocator};
             bson::mutator(doc).emplace_back("hello", 1.0);
             bson::mutator(doc).emplace_back("$db", "test");
-            auto s1 = amongoc_client_command(client_box->as<amongoc_client>(), doc).as_unique();
+            auto s1 = amongoc_client_command(client_box->as<amongoc_client*>(), doc).as_unique();
             req_op  = std::move(s1).bind_allocator_connect(  //
                 mlib::allocator<>{mlib_default_allocator},
                 [&](emitter_result&& res) {

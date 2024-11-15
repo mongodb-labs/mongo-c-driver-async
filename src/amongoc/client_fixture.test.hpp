@@ -18,7 +18,7 @@
 namespace amongoc::testing {
 
 struct client_fixture : loop_fixture {
-    amongoc_client client{nullptr};
+    amongoc_client* client;
 
     ~client_fixture() { amongoc_client_delete(client); }
 
@@ -32,7 +32,7 @@ struct client_fixture : loop_fixture {
         if (r.status.is_error()) {
             throw std::system_error(r.status.as_error_code(), r.status.message());
         }
-        this->client = r.value.take<amongoc_client>();
+        this->client = r.value.take<amongoc_client*>();
     }
 };
 

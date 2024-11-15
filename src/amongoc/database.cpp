@@ -1,10 +1,10 @@
+#include "./database.hpp"
+
 #include <amongoc/aggregate.h>
 #include <amongoc/box.hpp>
 #include <amongoc/client.h>
-#include <amongoc/client/impl.hpp>
+#include <amongoc/client.hpp>
 #include <amongoc/collection.h>
-#include <amongoc/database.h>
-#include <amongoc/database/impl.hpp>
 #include <amongoc/string.hpp>
 
 #include <bson/make.hpp>
@@ -17,10 +17,10 @@
 
 using namespace amongoc;
 
-amongoc_database* _amongoc_database_new(amongoc_client cl, mlib_str_view db_name) noexcept try {
+amongoc_database* _amongoc_database_new(amongoc_client* cl, mlib_str_view db_name) noexcept try {
     auto ptr
-        = cl.get_allocator().rebind<amongoc_database>().new_(cl,
-                                                             string(db_name, cl.get_allocator()));
+        = cl->get_allocator().rebind<amongoc_database>().new_(*cl,
+                                                              string(db_name, cl->get_allocator()));
     return ptr;
 } catch (const std::bad_alloc&) {
     return {};
@@ -34,8 +34,8 @@ const char* amongoc_database_get_name(amongoc_database const* db) noexcept {
     return db->database_name.data();
 }
 
-amongoc_client amongoc_database_get_client(amongoc_database const* db) noexcept {
-    return db->client;
+amongoc_client* amongoc_database_get_client(amongoc_database const* db) noexcept {
+    return &db->client;
 }
 
 amongoc_emitter _amongoc_aggregate_on(::amongoc_database*             db,
@@ -67,7 +67,7 @@ amongoc_emitter amongoc_database_aggregate(amongoc_database*               db,
               optional_pair("let", params->let))
               .build(db->get_allocator());
     co_await ramp_end;
-    const bson::document         resp = co_await db->client.impl->simple_request(command);
+    const bson::document         resp = co_await db->client.simple_request(command);
     mlib::unique<amongoc_cursor> curs;
     using namespace bson::parse;
     bson_view batch{};

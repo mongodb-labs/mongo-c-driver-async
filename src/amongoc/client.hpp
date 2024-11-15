@@ -1,13 +1,11 @@
 #pragma once
 
+#include <amongoc/client.h>
 #include <amongoc/connection_pool.hpp>
-#include <amongoc/loop.h>
 #include <amongoc/uri.hpp>
-#include <amongoc/wire/client.hpp>
-#include <amongoc/wire/message.hpp>
 
-struct _amongoc_client_impl {
-    explicit _amongoc_client_impl(amongoc_loop& loop, amongoc::connection_uri&& uri)
+struct amongoc_client {
+    explicit amongoc_client(amongoc_loop& loop, amongoc::connection_uri&& uri)
         : _pool(loop, mlib_fwd(uri)) {}
 
     amongoc::connection_pool _pool;
@@ -22,4 +20,6 @@ struct _amongoc_client_impl {
     amongoc::co_task<bson::document> simple_request(bson_view doc) noexcept {
         return amongoc::wire::simple_request(this->checking_wire_client(), doc);
     }
+
+    mlib::allocator<> get_allocator() const noexcept { return _pool.get_allocator(); }
 };

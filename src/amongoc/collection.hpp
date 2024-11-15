@@ -1,8 +1,8 @@
 #pragma once
 
-#include <amongoc/client.h>
-#include <amongoc/client/impl.hpp>
 #include <amongoc/collection.h>
+//
+#include <amongoc/client.hpp>
 #include <amongoc/string.hpp>
 
 #include <bson/make.hpp>
@@ -10,9 +10,9 @@
 #include <mlib/alloc.h>
 
 struct amongoc_collection {
-    ::amongoc_client client;
-    amongoc::string  database_name;
-    amongoc::string  collection_name;
+    ::amongoc_client& client;
+    amongoc::string   database_name;
+    amongoc::string   collection_name;
 
     mlib::allocator<> get_allocator() const noexcept { return client.get_allocator(); }
 
@@ -34,6 +34,6 @@ struct amongoc_collection {
     }
 
     amongoc::co_task<bson::document> simple_request(bson_view doc) const noexcept {
-        return client.impl->simple_request(doc);
+        return client.simple_request(doc);
     }
 };

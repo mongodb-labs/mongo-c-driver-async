@@ -9,7 +9,7 @@
  */
 typedef struct app_state {
     // The connection to a server
-    amongoc_client client;
+    amongoc_client* client;
 } app_state;
 
 /**
@@ -40,7 +40,7 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
  * @brief Handle the connection to a server. Sends a "hello" message
  *
  * @param state_ptr Pointer to the `app_state`
- * @param cl_box An `amongoc_client`
+ * @param cl_box An `amongoc_client*`
  * @return amongoc_emitter
  */
 amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box cl_box) {

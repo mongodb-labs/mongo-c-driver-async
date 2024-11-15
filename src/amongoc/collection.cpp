@@ -1,8 +1,8 @@
+#include "./collection.hpp"
+
 #include <amongoc/aggregate.h>
 #include <amongoc/box.hpp>
 #include <amongoc/client.h>
-#include <amongoc/collection.h>
-#include <amongoc/collection/impl.hpp>
 #include <amongoc/nano/util.hpp>
 #include <amongoc/status.h>
 #include <amongoc/write_error.h>
@@ -12,6 +12,7 @@
 
 #include <mlib/alloc.h>
 #include <mlib/delete.h>
+#include <mlib/time.h>
 #include <mlib/unique.hpp>
 #include <mlib/utility.hpp>
 
@@ -97,14 +98,14 @@ _parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
     return mlib::unique(std::move(curs));
 }
 
-::amongoc_collection* _amongoc_collection_new(amongoc_client cl,
-                                              mlib_str_view  db_name,
-                                              mlib_str_view  coll_name) noexcept try {
-    auto ptr
-        = cl.get_allocator().rebind<amongoc_collection>().new_(cl,
-                                                               string(db_name, cl.get_allocator()),
-                                                               string(coll_name,
-                                                                      cl.get_allocator()));
+::amongoc_collection* _amongoc_collection_new(amongoc_client* cl,
+                                              mlib_str_view   db_name,
+                                              mlib_str_view   coll_name) noexcept try {
+    auto ptr = cl->get_allocator().rebind<amongoc_collection>().new_(*cl,
+                                                                     string(db_name,
+                                                                            cl->get_allocator()),
+                                                                     string(coll_name,
+                                                                            cl->get_allocator()));
     return ptr;
 } catch (const std::bad_alloc&) {
     return nullptr;
@@ -117,8 +118,8 @@ void amongoc_collection_delete(amongoc_collection* coll) noexcept {
 extern inline mlib_allocator
 amongoc_collection_get_allocator(amongoc_collection const* coll) noexcept;
 
-amongoc_client amongoc_collection_get_client(amongoc_collection const* coll) noexcept {
-    return coll->client;
+amongoc_client* amongoc_collection_get_client(amongoc_collection const* coll) noexcept {
+    return &coll->client;
 }
 
 emitter amongoc_collection_drop(amongoc_collection*                   coll,
@@ -185,7 +186,7 @@ emitter amongoc_count_documents(amongoc_collection*         coll,
                    doc(pair("$group", doc(pair("_id", 1), pair("n", doc(pair("$sum", 1)))))))),
         // Default cursor
         pair("cursor", doc()),
-        optional_pair("maxTimeMS", ::mlib_count_milliseconds(params->max_time)),
+        optional_pair("maxTimeMS", ::mlib_milliseconds_count(params->max_time)),
         optional_pair("hint", params->hint),
         optional_pair("collation", params->collation),
         optional_pair("comment", params->comment));
@@ -284,7 +285,7 @@ emitter amongoc_estimated_document_count(amongoc_collection*         coll,
 
     auto command = coll->make_command("count",
                                       optional_pair("maxTimeMS",
-                                                    ::mlib_count_milliseconds(params->max_time)),
+                                                    ::mlib_milliseconds_count(params->max_time)),
                                       optional_pair("comment", params->comment));
     co_await ramp_end;
     const auto resp = co_await coll->simple_request(command);
@@ -318,7 +319,7 @@ emitter amongoc_find(amongoc_collection*        coll,
         // If the limit is set to a negative value, generate a single batch
         pair("singleBatch", params->limit < 0),
         optional_pair("comment", params->comment),
-        optional_pair("maxTimeMS", ::mlib_count_milliseconds(params->max_time)),
+        optional_pair("maxTimeMS", ::mlib_milliseconds_count(params->max_time)),
         optional_pair("max", params->max),
         optional_pair("min", params->min),
         pair("returnKey", params->return_key),

@@ -32,9 +32,9 @@ mlib_extern_c_begin();
  */
 #define amongoc_collection_new(Client, DbName, CollName)                                           \
     _amongoc_collection_new(Client, mlib_as_str_view(DbName), mlib_as_str_view(CollName))
-amongoc_collection* _amongoc_collection_new(amongoc_client cl,
-                                            mlib_str_view  db_name,
-                                            mlib_str_view  coll_name) mlib_noexcept;
+amongoc_collection* _amongoc_collection_new(amongoc_client* cl,
+                                            mlib_str_view   db_name,
+                                            mlib_str_view   coll_name) mlib_noexcept;
 
 /**
  * @brief Delete a collection handle. Is a no-op for null handles.
@@ -45,7 +45,7 @@ mlib_assoc_deleter(amongoc_collection*, amongoc_collection_delete);
 /**
  * @brief Obtain the client handle associated with the collection
  */
-amongoc_client amongoc_collection_get_client(amongoc_collection const*) mlib_noexcept;
+amongoc_client* amongoc_collection_get_client(amongoc_collection const*) mlib_noexcept;
 
 /**
  * @brief Get the allocator associated with the given collection
