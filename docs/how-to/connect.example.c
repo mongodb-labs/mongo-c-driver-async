@@ -15,7 +15,7 @@ typedef struct app_state {
 /**
  * @brief Write the content of a BSON document in JSON-like format to the given output
  */
-static void print_bson(FILE* into, bson_view doc, const char* indent);
+static void print_bson(FILE* into, bson_view doc, mlib_str_view indent);
 
 /** after_hello()
  * @brief Handle the `hello` response from the server
@@ -29,7 +29,7 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
     bson_view resp = bson_as_view(amongoc_box_cast(bson_doc, resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
-    print_bson(stdout, resp, "");
+    print_bson(stdout, resp, mlib_as_str_view(""));
     fputs("\n", stdout);
     amongoc_box_destroy(resp_data);
     return amongoc_nil;
@@ -112,20 +112,11 @@ int main(int argc, char const* const* argv) {
 }
 // end.
 
-// Concat two strings, allocating storage dynamically (must free the returned string)
-static char* astrcat(const char* a, const char* b) {
-    size_t len = strlen(a) + strlen(b);
-    char*  buf = (char*)calloc(len + 1, 1);
-    strcpy(buf, a);
-    strcat(buf, b);
-    return buf;
-}
-
-static void print_bson(FILE* into, bson_view doc, const char* indent) {
+static void print_bson(FILE* into, bson_view doc, mlib_str_view indent) {
     fprintf(into, "{\n");
     bson_foreach(it, doc) {
         mlib_str_view str = bson_key(it);
-        fprintf(into, "%s  \"%s\": ", indent, str.data);
+        fprintf(into, "%*s  \"%s\": ", (int)indent.len, indent.data, str.data);
         bson_value_ref val = bson_iterator_value(it);
         switch (val.type) {
         case bson_type_eod:
@@ -137,10 +128,10 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
             break;
         case bson_type_document:
         case bson_type_array: {
-            char*     i2     = astrcat(indent, "  ");
+            mlib_str  i2     = mlib_str_append(indent, "  ");
             bson_view subdoc = bson_iterator_value(it).document;
-            print_bson(into, subdoc, i2);
-            free(i2);
+            print_bson(into, subdoc, mlib_as_str_view(i2));
+            mlib_str_delete(i2);
             fprintf(into, ",\n");
             break;
         }
@@ -175,5 +166,5 @@ static void print_bson(FILE* into, bson_view doc, const char* indent) {
             break;
         }
     }
-    fprintf(into, "%s}", indent);
+    fprintf(into, "%*s}", (int)indent.len, indent.data);
 }
