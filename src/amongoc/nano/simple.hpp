@@ -153,7 +153,7 @@ struct cxx_recv_as_c_handler {
                     // Expose the associated allocator to the hnadler
                     return [](amongoc_handler const* self,
                               ::mlib_allocator) noexcept -> ::mlib_allocator {
-                        allocator<> a = mlib::get_allocator(
+                        mlib::allocator<> a = mlib::get_allocator(
                             self->userdata.view.as<cxx_recv_as_c_handler>()._recv);
                         return a.c_allocator();
                     };
@@ -176,9 +176,10 @@ unique_handler as_handler(R&& cxx_recv) {
     using adaptor_type = cxx_recv_as_c_handler<R>;
     amongoc_handler ret;
     /// TODO: What to do if allocation fails here? Let it throw?
-    allocator<> alloc = mlib::get_allocator(cxx_recv, allocator<>(::mlib_default_allocator));
-    ret.userdata      = unique_box::from(alloc, adaptor_type{mlib_fwd(cxx_recv)}).release();
-    ret.vtable        = &adaptor_type::handler_vtable;
+    mlib::allocator<> alloc
+        = mlib::get_allocator(cxx_recv, mlib::allocator<>(::mlib_default_allocator));
+    ret.userdata = unique_box::from(alloc, adaptor_type{mlib_fwd(cxx_recv)}).release();
+    ret.vtable   = &adaptor_type::handler_vtable;
     return mlib_fwd(ret).as_unique();
 };
 
@@ -191,7 +192,7 @@ unique_handler as_handler(R&& cxx_recv) {
  * @return A new emitter that adapts the nanosender to the C API
  */
 template <nanosender S>
-unique_emitter as_emitter(allocator<> alloc, S&& sender) noexcept {
+unique_emitter as_emitter(mlib::allocator<> alloc, S&& sender) noexcept {
     // The composed operation type with a unique_handler. This line will also
     // enforce that the nanosender sends a type that is compatible with the
     // unique_handler::operator()
@@ -221,7 +222,7 @@ unique_emitter as_emitter(allocator<> alloc, S&& sender) noexcept {
 }
 
 // Emitters and handlers are valid senders/receiver, but we don't want to double-wrap them
-unique_handler as_handler(unique_handler&&)              = delete;
-unique_emitter as_emitter(allocator<>, unique_emitter&&) = delete;
+unique_handler as_handler(unique_handler&&)                    = delete;
+unique_emitter as_emitter(mlib::allocator<>, unique_emitter&&) = delete;
 
 }  // namespace amongoc
