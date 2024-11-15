@@ -141,6 +141,11 @@ if(BUILD_TESTING)
     add_executable(amongoc-test ${test_sources})
     target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2)
     target_include_directories(amongoc-test PRIVATE src)
+    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
+        PROPERTIES SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
+        )
+    target_compile_features(amongoc-test PRIVATE cxx_std_23)
+
     # Add a test that compiles as C++17 and includes all of our headers
     add_executable(cxx17-test tests/cxx17.test.cpp)
     target_link_libraries(cxx17-test PRIVATE amongoc::amongoc)
