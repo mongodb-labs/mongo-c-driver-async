@@ -206,6 +206,7 @@ foreach(filepath IN LISTS examples)
     message(STATUS "Example: ${name}")
     set(exe "${name}.example")
     add_executable("${exe}" ${filepath})
+    target_compile_features(${exe} PRIVATE cxx_std_23)
     target_link_libraries(${exe} amongoc::amongoc)
 endforeach()
 
