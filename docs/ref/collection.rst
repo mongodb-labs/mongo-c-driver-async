@@ -1,5 +1,5 @@
 #####################
-Header: |this-header|
+Collection & Data API
 #####################
 
 .. header-file:: amongoc/collection.h
@@ -69,3 +69,25 @@ Types
 .. struct:: amongoc_write_error_vec
 
   A :doc:`vector type </ref/vec>` of `amongoc_write_error`
+
+
+Functions & Macros
+##################
+
+.. function:: amongoc_collection* amongoc_collection_new(amongoc_client client, __string_convertible db_name, __string_convertible coll_name)
+
+  Create a new handle to a database collection. Does not perform any I/O, just
+  creates a client-side handle.
+
+  :param client: A valid client for the new collection handle. The client object
+    must outlive the returned collection handle.
+  :param db_name: Name of the database in the MongoDB server that will own the
+    collection.
+  :param coll_name: The name of the collection in the database.
+
+  The returned collection handle must eventually be given to `amongoc_collection_delete`
+
+
+.. function:: void amongoc_collection_delete(amongoc_collection* coll)
+
+  Release any client-side resources associated with the collection handle.

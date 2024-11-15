@@ -1,6 +1,6 @@
-######################
-Type: `amongoc_client`
-######################
+##########
+Client API
+##########
 
 .. |this-header| replace:: :header-file:`amongoc/client.h`
 .. header-file:: amongoc/client.h

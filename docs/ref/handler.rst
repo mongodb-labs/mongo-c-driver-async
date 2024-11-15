@@ -1,13 +1,20 @@
-#############################
-Header: ``amongoc/handler.h``
-#############################
+############
+Handler APIs
+############
 
 .. |this-header| replace:: :header-file:`amongoc/handler.h`
-.. header-file:: amongoc/handler.h
+.. header-file::
+  amongoc/handler.h
+  amongoc/handler.hpp
+
+  Contains APIs for working with :term:`handlers <handler>`.
 
 
-Handlers
-########
+Types
+#####
+
+C Types
+*******
 
 .. struct:: amongoc_handler
 
@@ -103,6 +110,106 @@ Handlers
 
     .. note:: Don't call this directly. Use: `amongoc_handler_get_allocator`
 
+C++ Types
+*********
+
+.. class:: amongoc::unique_handler
+
+  Provides a move-only wrapper around `amongoc_handler`, preventing programmer
+  error and ensuring desctruction of the associated object.
+
+  :header: :header-file:`amongoc/handler.hpp`
+
+  .. function:: handler_stop_token get_stop_token() const
+
+    Obtain a stop token associated with the handler object.
+
+  .. function:: allocator<> get_allocator() const
+
+    Obtain the allocator associated with the handler.
+
+    :C API: `amongoc_handler_get_allocator`
+
+    .. seealso:: :ref:`handler.allocator`
+
+  .. function:: static unique_handler from(allocator<> a, auto&& fn)
+
+    Create a :class:`unique_handler` from an invocable object. The object `fn`
+    must be invocable with an `emitter_result` argument.
+
+    :param a: An allocator used to allocate the handler's state, and may be
+      associated with the new handler.
+    :param fn: The invocable object that will be called as the completion
+      callback for the handler.
+    :allocation: Allocation of the handler's state data will be performed using
+      `a`. **If** the invocable `fn` has an associated `mlib::allocator` |A'|,
+      then the returned handler will use |A'| as its associated allocator,
+      otherwise it will use `a`.
+
+    .. important::
+
+      Note that the `amongoc_handler_vtable::register_stop` function will not be
+      defined, so the new handler will not have cancellation support.
+
+  .. function:: void complete(amongoc_status st, unique_box&& value)
+
+    :C API: `amongoc_handler_complete`
+
+  .. function:: unique_box register_stop(void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]]))
+
+    :C API: `amongoc_register_stop`
+
+    .. warning::
+
+      The returned box must be destroyed before the associated handler is
+      destroyed: The box may contain state that refers to the handler object.
+
+  .. function:: amongoc_handler release() &&
+
+    Relinquish ownership of the managed object and return it to the caller. This
+    function is used to interface with C APIs that |attr.transfer| an
+    `amongoc_handler`.
+
+  .. function:: void operator()(emitter_result&& r)
+
+    Invokes :expr:`complete(r.status, std__move(r).value)`
+
+
+.. class:: handler_stop_token
+
+  Implements a *stopptable token* type for use with an `amongoc_handler`. This
+  type is compatible with the standard library stoppable token interface.
+
+  :header: :header-file:`amongoc/handler.hpp`
+
+  .. function:: handler_stop_token(const amongoc_handler&)
+
+    Create a stop token that is bound to the given handler.
+
+  .. function:: bool stop_possible() const
+
+    Return ``true`` if the associated handler has stop registration methods.
+
+  .. function:: bool stop_requested() const
+
+    Always returns ``false`` (this stop token only supports callback-based stopping)
+
+  .. class:: template <typename F> callback_type
+
+    The stop-callback type to be used with this stop token.
+
+    .. function:: callback_type(handler_stop_token, F&& fn)
+
+      Construct the stop callback associated with this token, which will invoke
+      `fn` when a stop is requested
+
+    .. function:: ~callback_type()
+
+      Disconnects the stop callback from the stop state.
+
+
+Functions & Macros
+##################
 
 .. function:: void amongoc_handler_complete(amongoc_handler* [[type(T)]] hnd, amongoc_status st, amongoc_box [[transfer, type(T)]] res)
 
@@ -160,109 +267,6 @@ Handlers
     is unused, otherwise it will be the responsibility of an `amongoc_operation`
     to destroy the handler.
 
-
-C++ APIs
-########
-
-.. rubric:: Namespace ``amongoc``
-.. namespace:: amongoc
-
-.. class:: unique_handler
-
-  Provides a move-only wrapper around `amongoc_handler`, preventing programmer
-  error and ensuring desctruction of the associated object.
-
-  :header: |this-header|
-
-  .. function:: handler_stop_token get_stop_token() const
-
-    Obtain a stop token associated with the handler object.
-
-  .. function:: allocator<> get_allocator() const
-
-    Obtain the allocator associated with the handler.
-
-    :C API: `amongoc_handler_get_allocator`
-
-    .. seealso:: :ref:`handler.allocator`
-
-  .. function:: static unique_handler from(allocator<> a, auto&& fn)
-
-    Create a :class:`unique_handler` from an invocable object. The object `fn`
-    must be invocable with an `emitter_result` argument.
-
-    :param a: An allocator used to allocate the handler's state, and may be
-      associated with the new handler.
-    :param fn: The invocable object that will be called as the completion
-      callback for the handler.
-    :allocation: Allocation of the handler's state data will be performed using
-      `a`. **If** the invocable `fn` has an associated `mlib::allocator` |A'|,
-      then the returned handler will use |A'| as its associated allocator,
-      otherwise it will use `a`.
-
-    .. important::
-
-      Note that the `amongoc_handler_vtable::register_stop` function will not be
-      defined, so the new handler will not have cancellation support.
-
-  .. function:: void complete(amongoc_status st, unique_box&& value)
-
-    :C API: `amongoc_handler_complete`
-
-  .. function:: unique_box register_stop(void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]]))
-
-    :C API: `amongoc_register_stop`
-
-    .. warning::
-
-      The returned box must be destroyed before the associated handler is
-      destroyed: The box may contain state that refers to the handler object.
-
-  .. function:: amongoc_handler release() &&
-
-    Relinquish ownership of the managed object and return it to the caller. This
-    function is used to interface with C APIs that |attr.transfer| an
-    `amongoc_handler`.
-
-  .. function:: void operator()(emitter_result&& r)
-
-    Invokes :cpp:`complete(r.status, std::move(r).value)`
-
-
-.. class:: handler_stop_token
-
-  Implements a *stopptable token* type for use with an `amongoc_handler`. This
-  type is compatible with the standard library stoppable token interface.
-
-  :header: |this-header|
-
-  .. function:: handler_stop_token(const amongoc_handler&)
-
-    Create a stop token that is bound to the given handler.
-
-  .. function:: bool stop_possible() const
-
-    Return ``true`` if the associated handler has stop registration methods.
-
-  .. function:: bool stop_requested() const
-
-    Always returns ``false`` (this stop token only supports callback-based stopping)
-
-  .. class:: template <typename F> callback_type
-
-    The stop-callback type to be used with this stop token.
-
-    .. function:: callback_type(handler_stop_token, F&& fn)
-
-      Construct the stop callback associated with this token, which will invoke
-      `fn` when a stop is requested
-
-    .. function:: ~callback_type()
-
-      Disconnects the stop callback from the stop state.
-
-
-.. namespace:: 0
 
 .. _handler.allocator:
 

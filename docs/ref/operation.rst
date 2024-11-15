@@ -1,10 +1,19 @@
-###############################
-Header: ``amongoc/operation.h``
-###############################
+#############
+Operation API
+#############
 
-.. header-file:: amongoc/operation.h
+.. header-file::
+  amongoc/operation.h
+  amongoc/operation.hpp
 
-  Operation state utilities.
+  :term:`Operation state` utilities.
+
+
+Types
+#####
+
+C Types
+*******
 
 .. struct:: amongoc_operation
 
@@ -34,25 +43,17 @@ Header: ``amongoc/operation.h``
 
   The operation-launching callback for the operation.
 
-.. function:: void amongoc_start(amongoc_operation* op)
 
-  Launch the operation defined by the given operation object.
+C++ Types
+*********
 
-.. function:: void amongoc_operation_delete(amongoc_operation [[transfer]] op)
-
-  Destroy an operation object.
-
-  .. note::
-
-    It is very important that the associated operation is *NOT* in-progress!
-
-.. namespace:: amongoc
-
-.. class:: unique_operation
+.. class:: amongoc::unique_operation
 
   Provides move-only ownership semantics around an `amongoc_operation`,
   preventing programmer error and ensuring destruction when the operation leaves
   scope.
+
+  :header: :header-file:`amongoc/operation.hpp`
 
   .. function:: unique_operation(amongoc_operation&&)
 
@@ -78,10 +79,29 @@ Header: ``amongoc/operation.h``
 
     :C API: `amongoc_start`
 
-  .. function:: amongoc_operation release()
+  .. function:: amongoc_operation release() &&
 
     Relinquish ownership of the wrapped operation and return it to the caller.
     This function is used to interface with C APIs that want to |attr.transfer|
     an `amongoc_operation`.
 
-.. namespace:: 0
+
+Functions & Macros
+##################
+
+.. function:: void amongoc_start(amongoc_operation* op)
+
+  Launch the operation defined by the given operation object.
+
+  :header: :header-file:`amongoc/operation.h`
+
+.. function:: void amongoc_operation_delete(amongoc_operation [[transfer]] op)
+
+  Destroy an operation object.
+
+  :header: :header-file:`amongoc/operation.h`
+
+  .. note::
+
+    It is very important that the associated operation is *NOT* in-progress!
+

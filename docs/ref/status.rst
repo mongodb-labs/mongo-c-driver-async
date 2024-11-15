@@ -1,9 +1,14 @@
-Header: ``amongoc/status.h``
-############################
+############
+Status Codes
+############
 
 .. header-file:: amongoc/status.h
 
   Types and functions for handling generic status codes
+
+
+Types
+#####
 
 .. struct:: amongoc_status
 
@@ -60,6 +65,10 @@ Header: ``amongoc/status.h``
   .. function:: bool is_error() const noexcept
 
     :C API: `amongoc_is_error`
+
+
+Functions & Macros
+##################
 
 .. function:: bool amongoc_is_error(amongoc_status st)
 
@@ -118,16 +127,9 @@ Header: ``amongoc/status.h``
 
   .. note:: |macro-impl|.
 
-C++ APIs
-********
-
-.. type:: amongoc::status = ::amongoc_status
-
-  Alias of `::amongoc_status`
-
 
 Status Categories
-*****************
+#################
 
 .. struct:: amongoc_status_category_vtable
 
@@ -293,8 +295,7 @@ Built-In |amongoc| Categories
 C++ Exception Type
 ##################
 
-.. namespace:: amongoc
-.. class:: exception : public std::runtime_error
+.. class:: amongoc::exception : public std::runtime_error
 
   A C++ exception type that carries an `amongoc_status` value.
 

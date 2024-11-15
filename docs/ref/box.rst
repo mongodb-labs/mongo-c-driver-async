@@ -1,6 +1,6 @@
-####################################
-Header: :header-file:`amongoc/box.h`
-####################################
+#######################
+Dynamically Types Boxes
+#######################
 
 .. header-file:: amongoc/box.h
 

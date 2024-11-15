@@ -1,6 +1,6 @@
-#########################################
-Header: :header-file:`amongoc/database.h`
-#########################################
+###################
+Database Handle API
+###################
 
 .. header-file:: amongoc/database.h
 

@@ -1,6 +1,6 @@
-##################################################
-Header: |this-header| -- Asynchronous Utility APIs
-##################################################
+#########################
+Asynchronous Utility APIs
+#########################
 
 .. |this-header| replace:: :header-file:`amongoc/async.h`
 .. header-file:: amongoc/async.h
