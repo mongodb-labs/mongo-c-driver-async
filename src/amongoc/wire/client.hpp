@@ -57,11 +57,6 @@ private:
 template <writable_stream S>
 explicit client(S&&, auto&&...) -> client<S>;
 
-extern template class client<tcp_connection_rw_stream&>;
-
-extern template co_task<any_message>
-client<tcp_connection_rw_stream&>::request(one_bson_view_op_msg&&);
-
 /**
  * @brief Pass a wire client by reference
  */
