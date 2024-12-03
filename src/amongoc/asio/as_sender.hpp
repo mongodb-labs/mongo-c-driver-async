@@ -50,6 +50,38 @@ public:
 };
 
 /**
+ * @brief Handle completion with either success or an error code
+ */
+template <typename Init>
+class asio_nanosender<Init, void(std::error_code)> {
+public:
+    Init _init;
+    using sends_type = result<mlib::unit, std::error_code>;
+
+    template <nanoreceiver_of<sends_type> R>
+    constexpr nanooperation auto connect(R&& recv) && {
+        return operation<R>{std::move(_init), mlib_fwd(recv)};
+    }
+
+    template <typename R>
+    struct operation {
+        Init _init;
+        R    _recv;
+
+        constexpr void start() noexcept {
+            auto h = [this](std::error_code ec) {
+                if (ec) {
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
+                } else {
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::success()));
+                }
+            };
+            static_cast<Init&&>(_init)(std::move(h));
+        }
+    };
+};
+
+/**
  * @brief Handle completion with one result value and an error code
  *
  * @tparam T The success result type
