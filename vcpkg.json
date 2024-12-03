@@ -2,11 +2,17 @@
   "name": "amongoc",
   "version": "0.1.0",
   "dependencies": [
-    "asio",
+    {
+      "name": "asio",
+      "features": [
+        "openssl"
+      ]
+    },
+    "boost-container",
     "boost-url",
     "catch2",
     "fmt",
     "neo-fun",
-    "boost-container"
+    "openssl"
   ]
 }

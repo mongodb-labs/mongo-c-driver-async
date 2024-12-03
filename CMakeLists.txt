@@ -14,6 +14,7 @@ find_package(asio CONFIG REQUIRED)
 find_package(neo-fun CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED URL Container)
 find_package(fmt CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 find_package(Threads REQUIRED)
 
@@ -118,20 +119,16 @@ target_compile_features(amongoc PUBLIC cxx_std_23)
 # Link deps and platform libs.
 target_link_libraries(amongoc
     PUBLIC
-        asio::asio
-        fmt::fmt
         amongoc::detail::c_platform
-        Boost::url
-        Boost::container
         Threads::Threads
-        fmt::fmt
     PRIVATE
+        fmt::fmt
+        Boost::container
+        Boost::url
+        $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
+        OpenSSL::SSL
     )
-
-add_executable(bson-use-test tests/use-bson.test.c)
-target_link_libraries(bson-use-test PRIVATE amongoc::amongoc)
-
 if(BUILD_TESTING)
     # Add Catch integrations
     find_package(Catch2 CONFIG REQUIRED)

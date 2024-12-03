@@ -83,6 +83,7 @@ Functions & Macros
     The defintion of what constitutes an error depends on the
     `amongoc_status::category`.
 
+
 .. function:: bool amongoc_is_cancellation(amongoc_status st)
 
   Test whether the given status `st` represents a cancellation.
@@ -195,6 +196,7 @@ Built-In |amongoc| Categories
     const amongoc_status_category_vtable amongoc_io_category
     const amongoc_status_category_vtable amongoc_server_category
     const amongoc_status_category_vtable amongoc_client_category
+    const amongoc_status_category_vtable amongoc_tls_category
     const amongoc_status_category_vtable amongoc_unknown_category
 
   The above `amongoc_status_category_vtable` objects are the built-in status
@@ -249,6 +251,12 @@ Built-In |amongoc| Categories
     likely cause undesired behavior, often from client/server incompatibilities.
     These error values are named in :enum:`amongoc_client_errc`.
 
+  .. index:: pair: status category; amongoc.tls
+
+  *tls* (``amongoc.tls``)
+    Error conditions related to TLS. Often the corresponding integer value comes
+    from OpenSSL. Error reason values are stored in `amongoc_tls_errc`
+
   .. index:: pair: status category; amongoc.unknown
 
   *unknown* (``amongoc.unknown``)
@@ -260,6 +268,9 @@ Built-In |amongoc| Categories
     "``amongoc.unknown:<n>``" where ``<n>`` is the numeric value of the error
     code.
 
+
+Status Code Enumerations
+========================
 
 .. index:: ! pair: status codes; amongoc.server
 .. enum:: amongoc_server_errc
@@ -290,6 +301,39 @@ Built-In |amongoc| Categories
 
     Issued during update CRUD operations where the update specification document
     is invalid.
+
+
+.. index:: ! pair: status codes; amongoc.tls
+.. enum:: amongoc_tls_errc
+
+  This enum corresponds to reason error codes related to TLS.
+
+  .. important::
+
+    Note that the `amongoc_status::code` value will not necessarily directly
+    compare equal to any enumerator value in this enum. Instead, the reason
+    should be extracted using `amongoc_status_tls_reason`, which extracts the
+    reason portion of the status code from the status.
+
+  Enumerators with an ``_ossl_`` in their identifier correspond to the OpenSSL
+  error reasons from ``<openssl/sslerr.h>``.
+
+  .. enumerator::
+    amongoc_tls_errc_okay = 0
+
+    This represents a non-error condition.
+
+    There are many additional enumerators for this category, but they are not
+    listed here. Most enumerators correspond to OpenSSL reason codes.
+
+
+.. function:: amongoc_tls_errc amongoc_status_tls_reason(amongoc_status st)
+
+  Extract the TLS reason integer value from a status code.
+
+  If `st` does not have the `amongoc_tls_category` category, this will return
+  `amongoc_tls_errc::amongoc_tls_errc_okay` (non-error). Otherwise, it will
+  return a non-zero `amongoc_tls_errc` that specifies the error reason.
 
 
 C++ Exception Type

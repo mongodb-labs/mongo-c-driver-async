@@ -30,16 +30,27 @@ struct amongoc_status_category_vtable {
     bool (*is_timeout)(int code);
 };
 
-mlib_extern_c_end();
+// An X-list of status category names, invoked as: `X(Identifier, C++ class)
+#define AMONGOC_STATUS_CATEGORY_X_LIST()                                                           \
+    X(generic)                                                                                     \
+    X(system)                                                                                      \
+    X(netdb)                                                                                       \
+    X(addrinfo)                                                                                    \
+    X(io)                                                                                          \
+    X(server)                                                                                      \
+    X(client)                                                                                      \
+    X(tls)                                                                                         \
+    X(unknown)
 
-extern const struct amongoc_status_category_vtable amongoc_generic_category;
-extern const struct amongoc_status_category_vtable amongoc_system_category;
-extern const struct amongoc_status_category_vtable amongoc_netdb_category;
-extern const struct amongoc_status_category_vtable amongoc_addrinfo_category;
-extern const struct amongoc_status_category_vtable amongoc_io_category;
-extern const struct amongoc_status_category_vtable amongoc_server_category;
-extern const struct amongoc_status_category_vtable amongoc_client_category;
-extern const struct amongoc_status_category_vtable amongoc_unknown_category;
+#define X(Ident)                                                                                   \
+    /* C category global instance */                                                               \
+    extern const struct amongoc_status_category_vtable MLIB_PASTE_3(amongoc_, Ident, _category);   \
+    /* C++ category getter */                                                                      \
+    MLIB_IF_CXX(namespace amongoc {                                                                \
+        extern "C++" std::error_category const& MLIB_PASTE(Ident, _category)() noexcept;           \
+    })
+AMONGOC_STATUS_CATEGORY_X_LIST()
+#undef X
 
 enum amongoc_io_errc {
     amongoc_errc_connection_closed = 1,
@@ -394,24 +405,373 @@ enum amongoc_server_errc {
     amongoc_server_errc_ClientMarkedKilled                                          = 46841,
 };
 
+/**
+ * @brief Error codes related to TLS.
+ *
+ * The `ossl_` codes correspond to the reason codes in `sslerr.h` from OpenSSL
+ */
+enum amongoc_tls_errc {
+    amongoc_tls_errc_okay                                                = 0,
+    amongoc_tls_errc_ossl_application_data_after_close_notify            = 291,
+    amongoc_tls_errc_ossl_app_data_in_handshake                          = 100,
+    amongoc_tls_errc_ossl_attempt_to_reuse_session_in_different_context  = 272,
+    amongoc_tls_errc_ossl_at_least_tls_1_2_needed_in_suiteb_mode         = 158,
+    amongoc_tls_errc_ossl_bad_certificate                                = 348,
+    amongoc_tls_errc_ossl_bad_change_cipher_spec                         = 103,
+    amongoc_tls_errc_ossl_bad_cipher                                     = 186,
+    amongoc_tls_errc_ossl_bad_compression_algorithm                      = 326,
+    amongoc_tls_errc_ossl_bad_data                                       = 390,
+    amongoc_tls_errc_ossl_bad_data_returned_by_callback                  = 106,
+    amongoc_tls_errc_ossl_bad_decompression                              = 107,
+    amongoc_tls_errc_ossl_bad_dh_value                                   = 102,
+    amongoc_tls_errc_ossl_bad_digest_length                              = 111,
+    amongoc_tls_errc_ossl_bad_early_data                                 = 233,
+    amongoc_tls_errc_ossl_bad_ecc_cert                                   = 304,
+    amongoc_tls_errc_ossl_bad_ecpoint                                    = 306,
+    amongoc_tls_errc_ossl_bad_extension                                  = 110,
+    amongoc_tls_errc_ossl_bad_handshake_length                           = 332,
+    amongoc_tls_errc_ossl_bad_handshake_state                            = 236,
+    amongoc_tls_errc_ossl_bad_hello_request                              = 105,
+    amongoc_tls_errc_ossl_bad_hrr_version                                = 263,
+    amongoc_tls_errc_ossl_bad_key_share                                  = 108,
+    amongoc_tls_errc_ossl_bad_key_update                                 = 122,
+    amongoc_tls_errc_ossl_bad_legacy_version                             = 292,
+    amongoc_tls_errc_ossl_bad_length                                     = 271,
+    amongoc_tls_errc_ossl_bad_packet                                     = 240,
+    amongoc_tls_errc_ossl_bad_packet_length                              = 115,
+    amongoc_tls_errc_ossl_bad_protocol_version_number                    = 116,
+    amongoc_tls_errc_ossl_bad_psk                                        = 219,
+    amongoc_tls_errc_ossl_bad_psk_identity                               = 114,
+    amongoc_tls_errc_ossl_bad_record_type                                = 443,
+    amongoc_tls_errc_ossl_bad_rsa_encrypt                                = 119,
+    amongoc_tls_errc_ossl_bad_signature                                  = 123,
+    amongoc_tls_errc_ossl_bad_srp_a_length                               = 347,
+    amongoc_tls_errc_ossl_bad_srp_parameters                             = 371,
+    amongoc_tls_errc_ossl_bad_srtp_mki_value                             = 352,
+    amongoc_tls_errc_ossl_bad_srtp_protection_profile_list               = 353,
+    amongoc_tls_errc_ossl_bad_ssl_filetype                               = 124,
+    amongoc_tls_errc_ossl_bad_value                                      = 384,
+    amongoc_tls_errc_ossl_bad_write_retry                                = 127,
+    amongoc_tls_errc_ossl_binder_does_not_verify                         = 253,
+    amongoc_tls_errc_ossl_bio_not_set                                    = 128,
+    amongoc_tls_errc_ossl_block_cipher_pad_is_wrong                      = 129,
+    amongoc_tls_errc_ossl_bn_lib                                         = 130,
+    amongoc_tls_errc_ossl_callback_failed                                = 234,
+    amongoc_tls_errc_ossl_cannot_change_cipher                           = 109,
+    amongoc_tls_errc_ossl_cannot_get_group_name                          = 299,
+    amongoc_tls_errc_ossl_ca_dn_length_mismatch                          = 131,
+    amongoc_tls_errc_ossl_ca_key_too_small                               = 397,
+    amongoc_tls_errc_ossl_ca_md_too_weak                                 = 398,
+    amongoc_tls_errc_ossl_ccs_received_early                             = 133,
+    amongoc_tls_errc_ossl_certificate_verify_failed                      = 134,
+    amongoc_tls_errc_ossl_cert_cb_error                                  = 377,
+    amongoc_tls_errc_ossl_cert_length_mismatch                           = 135,
+    amongoc_tls_errc_ossl_ciphersuite_digest_has_changed                 = 218,
+    amongoc_tls_errc_ossl_cipher_code_wrong_length                       = 137,
+    amongoc_tls_errc_ossl_clienthello_tlsext                             = 226,
+    amongoc_tls_errc_ossl_compressed_length_too_long                     = 140,
+    amongoc_tls_errc_ossl_compression_disabled                           = 343,
+    amongoc_tls_errc_ossl_compression_failure                            = 141,
+    amongoc_tls_errc_ossl_compression_id_not_within_private_range        = 307,
+    amongoc_tls_errc_ossl_compression_library_error                      = 142,
+    amongoc_tls_errc_ossl_connection_type_not_set                        = 144,
+    amongoc_tls_errc_ossl_conn_use_only                                  = 356,
+    amongoc_tls_errc_ossl_context_not_dane_enabled                       = 167,
+    amongoc_tls_errc_ossl_cookie_gen_callback_failure                    = 400,
+    amongoc_tls_errc_ossl_cookie_mismatch                                = 308,
+    amongoc_tls_errc_ossl_copy_parameters_failed                         = 296,
+    amongoc_tls_errc_ossl_custom_ext_handler_already_installed           = 206,
+    amongoc_tls_errc_ossl_dane_already_enabled                           = 172,
+    amongoc_tls_errc_ossl_dane_cannot_override_mtype_full                = 173,
+    amongoc_tls_errc_ossl_dane_not_enabled                               = 175,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_certificate                      = 180,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_certificate_usage                = 184,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_data_length                      = 189,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_digest_length                    = 192,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_matching_type                    = 200,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_public_key                       = 201,
+    amongoc_tls_errc_ossl_dane_tlsa_bad_selector                         = 202,
+    amongoc_tls_errc_ossl_dane_tlsa_null_data                            = 203,
+    amongoc_tls_errc_ossl_data_between_ccs_and_finished                  = 145,
+    amongoc_tls_errc_ossl_data_length_too_long                           = 146,
+    amongoc_tls_errc_ossl_decryption_failed                              = 147,
+    amongoc_tls_errc_ossl_decryption_failed_or_bad_record_mac            = 281,
+    amongoc_tls_errc_ossl_dh_key_too_small                               = 394,
+    amongoc_tls_errc_ossl_dh_public_value_length_is_wrong                = 148,
+    amongoc_tls_errc_ossl_digest_check_failed                            = 149,
+    amongoc_tls_errc_ossl_dtls_message_too_big                           = 334,
+    amongoc_tls_errc_ossl_duplicate_compression_id                       = 309,
+    amongoc_tls_errc_ossl_ecc_cert_not_for_signing                       = 318,
+    amongoc_tls_errc_ossl_ecdh_required_for_suiteb_mode                  = 374,
+    amongoc_tls_errc_ossl_ee_key_too_small                               = 399,
+    amongoc_tls_errc_ossl_empty_raw_public_key                           = 349,
+    amongoc_tls_errc_ossl_empty_srtp_protection_profile_list             = 354,
+    amongoc_tls_errc_ossl_encrypted_length_too_long                      = 150,
+    amongoc_tls_errc_ossl_error_in_received_cipher_list                  = 151,
+    amongoc_tls_errc_ossl_error_setting_tlsa_base_domain                 = 204,
+    amongoc_tls_errc_ossl_exceeds_max_fragment_size                      = 194,
+    amongoc_tls_errc_ossl_excessive_message_size                         = 152,
+    amongoc_tls_errc_ossl_extension_not_received                         = 279,
+    amongoc_tls_errc_ossl_extra_data_in_message                          = 153,
+    amongoc_tls_errc_ossl_ext_length_mismatch                            = 163,
+    amongoc_tls_errc_ossl_failed_to_get_parameter                        = 316,
+    amongoc_tls_errc_ossl_failed_to_init_async                           = 405,
+    amongoc_tls_errc_ossl_feature_negotiation_not_complete               = 417,
+    amongoc_tls_errc_ossl_feature_not_renegotiable                       = 413,
+    amongoc_tls_errc_ossl_fragmented_client_hello                        = 401,
+    amongoc_tls_errc_ossl_got_a_fin_before_a_ccs                         = 154,
+    amongoc_tls_errc_ossl_https_proxy_request                            = 155,
+    amongoc_tls_errc_ossl_http_request                                   = 156,
+    amongoc_tls_errc_ossl_illegal_point_compression                      = 162,
+    amongoc_tls_errc_ossl_illegal_suiteb_digest                          = 380,
+    amongoc_tls_errc_ossl_inappropriate_fallback                         = 373,
+    amongoc_tls_errc_ossl_inconsistent_compression                       = 340,
+    amongoc_tls_errc_ossl_inconsistent_early_data_alpn                   = 222,
+    amongoc_tls_errc_ossl_inconsistent_early_data_sni                    = 231,
+    amongoc_tls_errc_ossl_inconsistent_extms                             = 104,
+    amongoc_tls_errc_ossl_insufficient_security                          = 241,
+    amongoc_tls_errc_ossl_invalid_alert                                  = 205,
+    amongoc_tls_errc_ossl_invalid_ccs_message                            = 260,
+    amongoc_tls_errc_ossl_invalid_certificate_or_alg                     = 238,
+    amongoc_tls_errc_ossl_invalid_command                                = 280,
+    amongoc_tls_errc_ossl_invalid_compression_algorithm                  = 341,
+    amongoc_tls_errc_ossl_invalid_config                                 = 283,
+    amongoc_tls_errc_ossl_invalid_configuration_name                     = 113,
+    amongoc_tls_errc_ossl_invalid_context                                = 282,
+    amongoc_tls_errc_ossl_invalid_ct_validation_type                     = 212,
+    amongoc_tls_errc_ossl_invalid_key_update_type                        = 120,
+    amongoc_tls_errc_ossl_invalid_max_early_data                         = 174,
+    amongoc_tls_errc_ossl_invalid_null_cmd_name                          = 385,
+    amongoc_tls_errc_ossl_invalid_raw_public_key                         = 350,
+    amongoc_tls_errc_ossl_invalid_record                                 = 317,
+    amongoc_tls_errc_ossl_invalid_sequence_number                        = 402,
+    amongoc_tls_errc_ossl_invalid_serverinfo_data                        = 388,
+    amongoc_tls_errc_ossl_invalid_session_id                             = 999,
+    amongoc_tls_errc_ossl_invalid_srp_username                           = 357,
+    amongoc_tls_errc_ossl_invalid_status_response                        = 328,
+    amongoc_tls_errc_ossl_invalid_ticket_keys_length                     = 325,
+    amongoc_tls_errc_ossl_legacy_sigalg_disallowed_or_unsupported        = 333,
+    amongoc_tls_errc_ossl_length_mismatch                                = 159,
+    amongoc_tls_errc_ossl_length_too_long                                = 404,
+    amongoc_tls_errc_ossl_length_too_short                               = 160,
+    amongoc_tls_errc_ossl_library_bug                                    = 274,
+    amongoc_tls_errc_ossl_library_has_no_ciphers                         = 161,
+    amongoc_tls_errc_ossl_maximum_encrypted_pkts_reached                 = 395,
+    amongoc_tls_errc_ossl_missing_dsa_signing_cert                       = 165,
+    amongoc_tls_errc_ossl_missing_ecdsa_signing_cert                     = 381,
+    amongoc_tls_errc_ossl_missing_fatal                                  = 256,
+    amongoc_tls_errc_ossl_missing_parameters                             = 290,
+    amongoc_tls_errc_ossl_missing_psk_kex_modes_extension                = 310,
+    amongoc_tls_errc_ossl_missing_rsa_certificate                        = 168,
+    amongoc_tls_errc_ossl_missing_rsa_encrypting_cert                    = 169,
+    amongoc_tls_errc_ossl_missing_rsa_signing_cert                       = 170,
+    amongoc_tls_errc_ossl_missing_sigalgs_extension                      = 112,
+    amongoc_tls_errc_ossl_missing_signing_cert                           = 221,
+    amongoc_tls_errc_ossl_missing_srp_param                              = 358,
+    amongoc_tls_errc_ossl_missing_supported_groups_extension             = 209,
+    amongoc_tls_errc_ossl_missing_tmp_dh_key                             = 171,
+    amongoc_tls_errc_ossl_missing_tmp_ecdh_key                           = 311,
+    amongoc_tls_errc_ossl_mixed_handshake_and_non_handshake_data         = 293,
+    amongoc_tls_errc_ossl_not_on_record_boundary                         = 182,
+    amongoc_tls_errc_ossl_not_replacing_certificate                      = 289,
+    amongoc_tls_errc_ossl_not_server                                     = 284,
+    amongoc_tls_errc_ossl_no_application_protocol                        = 235,
+    amongoc_tls_errc_ossl_no_certificates_returned                       = 176,
+    amongoc_tls_errc_ossl_no_certificate_assigned                        = 177,
+    amongoc_tls_errc_ossl_no_certificate_set                             = 179,
+    amongoc_tls_errc_ossl_no_change_following_hrr                        = 214,
+    amongoc_tls_errc_ossl_no_ciphers_available                           = 181,
+    amongoc_tls_errc_ossl_no_ciphers_specified                           = 183,
+    amongoc_tls_errc_ossl_no_cipher_match                                = 185,
+    amongoc_tls_errc_ossl_no_client_cert_method                          = 331,
+    amongoc_tls_errc_ossl_no_compression_specified                       = 187,
+    amongoc_tls_errc_ossl_no_cookie_callback_set                         = 287,
+    amongoc_tls_errc_ossl_no_gost_certificate_sent_by_peer               = 330,
+    amongoc_tls_errc_ossl_no_method_specified                            = 188,
+    amongoc_tls_errc_ossl_no_pem_extensions                              = 389,
+    amongoc_tls_errc_ossl_no_private_key_assigned                        = 190,
+    amongoc_tls_errc_ossl_no_protocols_available                         = 191,
+    amongoc_tls_errc_ossl_no_renegotiation                               = 339,
+    amongoc_tls_errc_ossl_no_required_digest                             = 324,
+    amongoc_tls_errc_ossl_no_shared_cipher                               = 193,
+    amongoc_tls_errc_ossl_no_shared_groups                               = 410,
+    amongoc_tls_errc_ossl_no_shared_signature_algorithms                 = 376,
+    amongoc_tls_errc_ossl_no_srtp_profiles                               = 359,
+    amongoc_tls_errc_ossl_no_stream                                      = 355,
+    amongoc_tls_errc_ossl_no_suitable_digest_algorithm                   = 297,
+    amongoc_tls_errc_ossl_no_suitable_groups                             = 295,
+    amongoc_tls_errc_ossl_no_suitable_key_share                          = 101,
+    amongoc_tls_errc_ossl_no_suitable_record_layer                       = 322,
+    amongoc_tls_errc_ossl_no_suitable_signature_algorithm                = 118,
+    amongoc_tls_errc_ossl_no_valid_scts                                  = 216,
+    amongoc_tls_errc_ossl_no_verify_cookie_callback                      = 403,
+    amongoc_tls_errc_ossl_null_ssl_ctx                                   = 195,
+    amongoc_tls_errc_ossl_null_ssl_method_passed                         = 196,
+    amongoc_tls_errc_ossl_ocsp_callback_failure                          = 305,
+    amongoc_tls_errc_ossl_old_session_cipher_not_returned                = 197,
+    amongoc_tls_errc_ossl_old_session_compression_algorithm_not_returned = 344,
+    amongoc_tls_errc_ossl_overflow_error                                 = 237,
+    amongoc_tls_errc_ossl_packet_length_too_long                         = 198,
+    amongoc_tls_errc_ossl_parse_tlsext                                   = 227,
+    amongoc_tls_errc_ossl_path_too_long                                  = 270,
+    amongoc_tls_errc_ossl_peer_did_not_return_a_certificate              = 199,
+    amongoc_tls_errc_ossl_pem_name_bad_prefix                            = 391,
+    amongoc_tls_errc_ossl_pem_name_too_short                             = 392,
+    amongoc_tls_errc_ossl_pipeline_failure                               = 406,
+    amongoc_tls_errc_ossl_poll_request_not_supported                     = 418,
+    amongoc_tls_errc_ossl_post_handshake_auth_encoding_err               = 278,
+    amongoc_tls_errc_ossl_private_key_mismatch                           = 288,
+    amongoc_tls_errc_ossl_protocol_is_shutdown                           = 207,
+    amongoc_tls_errc_ossl_psk_identity_not_found                         = 223,
+    amongoc_tls_errc_ossl_psk_no_client_cb                               = 224,
+    amongoc_tls_errc_ossl_psk_no_server_cb                               = 225,
+    amongoc_tls_errc_ossl_quic_handshake_layer_error                     = 393,
+    amongoc_tls_errc_ossl_quic_network_error                             = 387,
+    amongoc_tls_errc_ossl_quic_protocol_error                            = 382,
+    amongoc_tls_errc_ossl_read_bio_not_set                               = 211,
+    amongoc_tls_errc_ossl_read_timeout_expired                           = 312,
+    amongoc_tls_errc_ossl_records_not_released                           = 321,
+    amongoc_tls_errc_ossl_record_layer_failure                           = 313,
+    amongoc_tls_errc_ossl_record_length_mismatch                         = 213,
+    amongoc_tls_errc_ossl_record_too_small                               = 298,
+    amongoc_tls_errc_ossl_remote_peer_address_not_set                    = 346,
+    amongoc_tls_errc_ossl_renegotiate_ext_too_long                       = 335,
+    amongoc_tls_errc_ossl_renegotiation_encoding_err                     = 336,
+    amongoc_tls_errc_ossl_renegotiation_mismatch                         = 337,
+    amongoc_tls_errc_ossl_request_pending                                = 285,
+    amongoc_tls_errc_ossl_request_sent                                   = 286,
+    amongoc_tls_errc_ossl_required_cipher_missing                        = 215,
+    amongoc_tls_errc_ossl_required_compression_algorithm_missing         = 342,
+    amongoc_tls_errc_ossl_scsv_received_when_renegotiating               = 345,
+    amongoc_tls_errc_ossl_sct_verification_failed                        = 208,
+    amongoc_tls_errc_ossl_sequence_ctr_wrapped                           = 327,
+    amongoc_tls_errc_ossl_serverhello_tlsext                             = 275,
+    amongoc_tls_errc_ossl_session_id_context_uninitialized               = 277,
+    amongoc_tls_errc_ossl_shutdown_while_in_init                         = 407,
+    amongoc_tls_errc_ossl_signature_algorithms_error                     = 360,
+    amongoc_tls_errc_ossl_signature_for_non_signing_certificate          = 220,
+    amongoc_tls_errc_ossl_srp_a_calc                                     = 361,
+    amongoc_tls_errc_ossl_srtp_could_not_allocate_profiles               = 362,
+    amongoc_tls_errc_ossl_srtp_protection_profile_list_too_long          = 363,
+    amongoc_tls_errc_ossl_srtp_unknown_protection_profile                = 364,
+    amongoc_tls_errc_ossl_ssl3_ext_invalid_max_fragment_length           = 232,
+    amongoc_tls_errc_ossl_ssl3_ext_invalid_servername                    = 319,
+    amongoc_tls_errc_ossl_ssl3_ext_invalid_servername_type               = 320,
+    amongoc_tls_errc_ossl_ssl3_session_id_too_long                       = 300,
+    amongoc_tls_errc_ossl_sslv3_alert_bad_certificate                    = 1042,
+    amongoc_tls_errc_ossl_sslv3_alert_bad_record_mac                     = 1020,
+    amongoc_tls_errc_ossl_sslv3_alert_certificate_expired                = 1045,
+    amongoc_tls_errc_ossl_sslv3_alert_certificate_revoked                = 1044,
+    amongoc_tls_errc_ossl_sslv3_alert_certificate_unknown                = 1046,
+    amongoc_tls_errc_ossl_sslv3_alert_decompression_failure              = 1030,
+    amongoc_tls_errc_ossl_sslv3_alert_handshake_failure                  = 1040,
+    amongoc_tls_errc_ossl_sslv3_alert_illegal_parameter                  = 1047,
+    amongoc_tls_errc_ossl_sslv3_alert_no_certificate                     = 1041,
+    amongoc_tls_errc_ossl_sslv3_alert_unexpected_message                 = 1010,
+    amongoc_tls_errc_ossl_sslv3_alert_unsupported_certificate            = 1043,
+    amongoc_tls_errc_ossl_ssl_command_section_empty                      = 117,
+    amongoc_tls_errc_ossl_ssl_command_section_not_found                  = 125,
+    amongoc_tls_errc_ossl_ssl_ctx_has_no_default_ssl_version             = 228,
+    amongoc_tls_errc_ossl_ssl_handshake_failure                          = 229,
+    amongoc_tls_errc_ossl_ssl_library_has_no_ciphers                     = 230,
+    amongoc_tls_errc_ossl_ssl_negative_length                            = 372,
+    amongoc_tls_errc_ossl_ssl_section_empty                              = 126,
+    amongoc_tls_errc_ossl_ssl_section_not_found                          = 136,
+    amongoc_tls_errc_ossl_ssl_session_id_callback_failed                 = 301,
+    amongoc_tls_errc_ossl_ssl_session_id_conflict                        = 302,
+    amongoc_tls_errc_ossl_ssl_session_id_context_too_long                = 273,
+    amongoc_tls_errc_ossl_ssl_session_id_has_bad_length                  = 303,
+    amongoc_tls_errc_ossl_ssl_session_id_too_long                        = 408,
+    amongoc_tls_errc_ossl_ssl_session_version_mismatch                   = 210,
+    amongoc_tls_errc_ossl_still_in_init                                  = 121,
+    amongoc_tls_errc_ossl_stream_count_limited                           = 411,
+    amongoc_tls_errc_ossl_stream_finished                                = 365,
+    amongoc_tls_errc_ossl_stream_recv_only                               = 366,
+    amongoc_tls_errc_ossl_stream_reset                                   = 375,
+    amongoc_tls_errc_ossl_stream_send_only                               = 379,
+    amongoc_tls_errc_ossl_tlsv13_alert_certificate_required              = 1116,
+    amongoc_tls_errc_ossl_tlsv13_alert_missing_extension                 = 1109,
+    amongoc_tls_errc_ossl_tlsv1_alert_access_denied                      = 1049,
+    amongoc_tls_errc_ossl_tlsv1_alert_decode_error                       = 1050,
+    amongoc_tls_errc_ossl_tlsv1_alert_decryption_failed                  = 1021,
+    amongoc_tls_errc_ossl_tlsv1_alert_decrypt_error                      = 1051,
+    amongoc_tls_errc_ossl_tlsv1_alert_export_restriction                 = 1060,
+    amongoc_tls_errc_ossl_tlsv1_alert_inappropriate_fallback             = 1086,
+    amongoc_tls_errc_ossl_tlsv1_alert_insufficient_security              = 1071,
+    amongoc_tls_errc_ossl_tlsv1_alert_internal_error                     = 1080,
+    amongoc_tls_errc_ossl_tlsv1_alert_no_application_protocol            = 1120,
+    amongoc_tls_errc_ossl_tlsv1_alert_no_renegotiation                   = 1100,
+    amongoc_tls_errc_ossl_tlsv1_alert_protocol_version                   = 1070,
+    amongoc_tls_errc_ossl_tlsv1_alert_record_overflow                    = 1022,
+    amongoc_tls_errc_ossl_tlsv1_alert_unknown_ca                         = 1048,
+    amongoc_tls_errc_ossl_tlsv1_alert_unknown_psk_identity               = 1115,
+    amongoc_tls_errc_ossl_tlsv1_alert_user_cancelled                     = 1090,
+    amongoc_tls_errc_ossl_tlsv1_bad_certificate_hash_value               = 1114,
+    amongoc_tls_errc_ossl_tlsv1_bad_certificate_status_response          = 1113,
+    amongoc_tls_errc_ossl_tlsv1_certificate_unobtainable                 = 1111,
+    amongoc_tls_errc_ossl_tlsv1_unrecognized_name                        = 1112,
+    amongoc_tls_errc_ossl_tlsv1_unsupported_extension                    = 1110,
+    amongoc_tls_errc_ossl_tls_illegal_exporter_label                     = 367,
+    amongoc_tls_errc_ossl_tls_invalid_ecpointformat_list                 = 157,
+    amongoc_tls_errc_ossl_too_many_key_updates                           = 132,
+    amongoc_tls_errc_ossl_too_many_warn_alerts                           = 409,
+    amongoc_tls_errc_ossl_too_much_early_data                            = 164,
+    amongoc_tls_errc_ossl_unable_to_find_ecdh_parameters                 = 314,
+    amongoc_tls_errc_ossl_unable_to_find_public_key_parameters           = 239,
+    amongoc_tls_errc_ossl_unable_to_load_ssl3_md5_routines               = 242,
+    amongoc_tls_errc_ossl_unable_to_load_ssl3_sha1_routines              = 243,
+    amongoc_tls_errc_ossl_unexpected_ccs_message                         = 262,
+    amongoc_tls_errc_ossl_unexpected_end_of_early_data                   = 178,
+    amongoc_tls_errc_ossl_unexpected_eof_while_reading                   = 294,
+    amongoc_tls_errc_ossl_unexpected_message                             = 244,
+    amongoc_tls_errc_ossl_unexpected_record                              = 245,
+    amongoc_tls_errc_ossl_uninitialized                                  = 276,
+    amongoc_tls_errc_ossl_unknown_alert_type                             = 246,
+    amongoc_tls_errc_ossl_unknown_certificate_type                       = 247,
+    amongoc_tls_errc_ossl_unknown_cipher_returned                        = 248,
+    amongoc_tls_errc_ossl_unknown_cipher_type                            = 249,
+    amongoc_tls_errc_ossl_unknown_cmd_name                               = 386,
+    amongoc_tls_errc_ossl_unknown_command                                = 139,
+    amongoc_tls_errc_ossl_unknown_digest                                 = 368,
+    amongoc_tls_errc_ossl_unknown_key_exchange_type                      = 250,
+    amongoc_tls_errc_ossl_unknown_mandatory_parameter                    = 323,
+    amongoc_tls_errc_ossl_unknown_pkey_type                              = 251,
+    amongoc_tls_errc_ossl_unknown_protocol                               = 252,
+    amongoc_tls_errc_ossl_unknown_ssl_version                            = 254,
+    amongoc_tls_errc_ossl_unknown_state                                  = 255,
+    amongoc_tls_errc_ossl_unsafe_legacy_renegotiation_disabled           = 338,
+    amongoc_tls_errc_ossl_unsolicited_extension                          = 217,
+    amongoc_tls_errc_ossl_unsupported_compression_algorithm              = 257,
+    amongoc_tls_errc_ossl_unsupported_config_value                       = 414,
+    amongoc_tls_errc_ossl_unsupported_config_value_class                 = 415,
+    amongoc_tls_errc_ossl_unsupported_config_value_op                    = 416,
+    amongoc_tls_errc_ossl_unsupported_elliptic_curve                     = 315,
+    amongoc_tls_errc_ossl_unsupported_protocol                           = 258,
+    amongoc_tls_errc_ossl_unsupported_ssl_version                        = 259,
+    amongoc_tls_errc_ossl_unsupported_status_type                        = 329,
+    amongoc_tls_errc_ossl_unsupported_write_flag                         = 412,
+    amongoc_tls_errc_ossl_use_srtp_not_negotiated                        = 369,
+    amongoc_tls_errc_ossl_version_too_high                               = 166,
+    amongoc_tls_errc_ossl_version_too_low                                = 396,
+    amongoc_tls_errc_ossl_wrong_certificate_type                         = 383,
+    amongoc_tls_errc_ossl_wrong_cipher_returned                          = 261,
+    amongoc_tls_errc_ossl_wrong_curve                                    = 378,
+    amongoc_tls_errc_ossl_wrong_rpk_type                                 = 351,
+    amongoc_tls_errc_ossl_wrong_signature_length                         = 264,
+    amongoc_tls_errc_ossl_wrong_signature_size                           = 265,
+    amongoc_tls_errc_ossl_wrong_signature_type                           = 370,
+    amongoc_tls_errc_ossl_wrong_ssl_version                              = 266,
+    amongoc_tls_errc_ossl_wrong_version_number                           = 267,
+    amongoc_tls_errc_ossl_x509_lib                                       = 268,
+    amongoc_tls_errc_ossl_x509_verification_setup_problems               = 269,
+};
+
 struct amongoc_status {
     struct amongoc_status_category_vtable const* category;
     // The error code integer value
     int code;
 
 #if mlib_is_cxx()
-    amongoc_status() noexcept
-        : category(&amongoc_generic_category)
-        , code(0) {}
-
-    amongoc_status(struct amongoc_status_category_vtable const* cat, int code) noexcept
-        : category(cat)
-        , code(code) {}
-
-    // Allow conversion from literal zero
-    amongoc_status(decltype(nullptr)) noexcept
-        : amongoc_status() {}
-
     // Construct an amongoc_status from a std::error_code
     static amongoc_status from(std::error_code const&) noexcept;
     static amongoc_status from(std::errc ec) noexcept { return from(std::make_error_code(ec)); }
@@ -439,8 +799,6 @@ struct amongoc_status {
     }
 #endif
 };
-
-mlib_extern_c_begin();
 
 /**
  * @brief Test whether the given status code represents an error condition.
@@ -479,6 +837,15 @@ static inline char* amongoc_status_strdup_message(amongoc_status s) {
     return s.category->strdup_message(s.code);
 }
 
+/**
+ * @brief Obtain the reason code if-and-only-if the given status corresponds to a TLS error
+ *
+ * @param st A status code which may be a TLS error
+ * @return amongoc_tls_errc Returns `amongoc_tls_errc_okay` (zero) if the status is not from TLS,
+ * otherwise returns the non-zero reason code.
+ */
+enum amongoc_tls_errc amongoc_status_tls_reason(amongoc_status st) mlib_noexcept;
+
 mlib_always_inline amongoc_status const* _amongocStatusGetOkayStatus(void) mlib_noexcept {
     static const amongoc_status ret = {&amongoc_generic_category, 0};
     return &ret;
@@ -509,10 +876,6 @@ public:
 private:
     amongoc_status _status;
 };
-
-const std::error_category& io_category() noexcept;
-const std::error_category& server_category() noexcept;
-const std::error_category& client_category() noexcept;
 
 }  // namespace amongoc
 
