@@ -1,8 +1,8 @@
 #pragma once
 
-#include "./alloc.h"
-
+#include <mlib/alloc.h>
 #include <mlib/config.h>
+#include <mlib/delete.h>
 
 #include <stdalign.h>
 #include <stdbool.h>
@@ -12,7 +12,10 @@
 #include <string.h>
 
 #if mlib_is_cxx()
-#include <memory>
+#include <amongoc/relocation.hpp>
+
+#include <mlib/unique.hpp>
+
 #include <new>
 #include <type_traits>
 #endif
@@ -56,7 +59,7 @@
  */
 typedef struct amongoc_box amongoc_box;
 
-typedef void (*amongoc_box_destructor)(void*) mlib_noexcept;
+typedef void (*amongoc_box_destructor)(void*);
 
 /// The total size of an amongoc_box object
 enum {
@@ -97,47 +100,7 @@ struct _amongoc_box_storage {
     unsigned char inline_size : 6;
 };
 
-#if mlib_is_cxx()
-namespace amongoc {
-
-class unique_box;
-
-/**
- * @brief Trait variable that tags types which are trivially-relocatable
- */
-template <typename T>
-constexpr bool enable_trivially_relocatable_v
-    = (std::is_trivially_destructible_v<T> and std::is_trivially_move_constructible_v<T>)
-    or requires { requires static_cast<bool>(T::enable_trivially_relocatable); };
-
-template <typename T, typename D>
-constexpr bool enable_trivially_relocatable_v<std::unique_ptr<T, D>>
-    = enable_trivially_relocatable_v<D>;
-
-template <typename T>
-constexpr bool enable_trivially_relocatable_v<std::shared_ptr<T>> = true;
-
-/**
- * @brief Match types which can be stored inline within an amongoc_box.
- *
- * The type must meet the following properties:
- *
- * 1. Must qualify as trivially-relocatable. This is the default for any type that
- *    is trivially destructible and trivially move-constructible.
- * 2. Must be either:
- *    a. Trivially destructible AND no larger than AMONGOC_BOX_SMALL_SIZE
- *    b. OR no larger than AMONGOC_BOX_SMALL_SIZE_WITH_DTOR
- */
-template <typename T>
-concept box_inlinable_type = enable_trivially_relocatable_v<T>
-    and ((std::is_trivially_destructible_v<T> and sizeof(T) <= AMONGOC_BOX_SMALL_SIZE)
-         or (sizeof(T) <= AMONGOC_BOX_SMALL_SIZE_WITH_DTOR));
-
-// Use within the public section of a class body to declare whether a type is trivially relocatable
-#define AMONGOC_TRIVIALLY_RELOCATABLE_THIS(B) enum { enable_trivially_relocatable = B }
-
-}  // namespace amongoc
-#endif
+MLIB_IF_CXX(namespace amongoc { struct unique_box; })
 
 typedef struct amongoc_view amongoc_view;
 struct amongoc_view {
@@ -194,11 +157,11 @@ mlib_extern_c_begin();
  * This function is intentionally static-inline, as any inliner, dead-code-eliminator, and constant
  * propagator worth its salt will replace these with trivial memset/calloc/memcpy calls.
  */
-static inline void* _amongocBoxInitStorage(amongoc_box*           box,
-                                           bool                   allow_inline,
-                                           size_t                 size,
-                                           amongoc_box_destructor dtor,
-                                           mlib_allocator         alloc) mlib_noexcept {
+inline void* _amongocBoxInitStorage(amongoc_box*           box,
+                                    bool                   allow_inline,
+                                    size_t                 size,
+                                    amongoc_box_destructor dtor,
+                                    mlib_allocator         alloc) mlib_noexcept {
     if (allow_inline && !dtor && size <= AMONGOC_BOX_SMALL_SIZE) {
         // Store as a trivial object with no destructor
         box->_storage.is_dynamic  = 0;
@@ -245,7 +208,7 @@ static inline void* _amongocBoxInitStorage(amongoc_box*           box,
  *
  * @param box The box to be freed
  */
-static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
+inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
     if (box._storage.is_dynamic) {
         mlib_deallocate(box._storage.u.dynamic->alloc,
                         box._storage.u.dynamic,
@@ -257,7 +220,9 @@ static inline void amongoc_box_free_storage(amongoc_box box) mlib_noexcept {
  * @internal
  * @brief Obtain a pointer to the value stored within a box
  */
-static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_noexcept {
+inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_noexcept {
+    mlib_diagnostic_push();
+    mlib_gnu_warning_disable("-Warray-bounds");
     if (stor->is_dynamic) {
         return stor->u.dynamic->object;
     } else {
@@ -267,6 +232,7 @@ static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_n
             return stor->u.trivial_inline.bytes;
         }
     }
+    mlib_diagnostic_pop();
 }
 
 /**
@@ -276,7 +242,7 @@ static inline void* _amongocBoxDataPtr(struct _amongoc_box_storage* stor) mlib_n
  *
  * @param box The box to destroy
  */
-static inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
+inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
     if (box._storage.has_dtor) {
         // Box has a destructor function
         if (box._storage.is_dynamic) {
@@ -292,6 +258,8 @@ static inline void amongoc_box_destroy(amongoc_box box) mlib_noexcept {
     }
     amongoc_box_free_storage(box);
 }
+
+mlib_assoc_deleter(amongoc_box, amongoc_box_destroy);
 
 mlib_extern_c_end();
 
@@ -339,7 +307,33 @@ mlib_extern_c_end();
 /**
  * @brief Obtain a pointer to the stored data within an amongoc_box or amongoc_view
  */
-#define amongoc_box_data(Box) (_amongocBoxDataPtr(&(Box)._storage))
+#define amongoc_box_data(Box) _amongocBoxData((Box))
+#define _amongocBoxData(B)                                                                         \
+    mlib_generic(_amongocBoxDataCxx, _amongocBoxConstDataPtr, &(B), const amongoc_box*: _amongocBoxConstDataPtr, amongoc_box*: _amongocBoxMutDataPtr, amongoc_view*: _amongocViewDataPtr)(&(B))
+
+inline const void* _amongocBoxConstDataPtr(const amongoc_box* b) mlib_noexcept {
+    return _amongocBoxDataPtr((struct _amongoc_box_storage*)&b->_storage);
+}
+
+inline const void* _amongocViewDataPtr(const amongoc_view* b) mlib_noexcept {
+    return _amongocBoxDataPtr((struct _amongoc_box_storage*)&b->_storage);
+}
+
+inline void* _amongocBoxMutDataPtr(amongoc_box* b) mlib_noexcept {
+    return _amongocBoxDataPtr(&b->_storage);
+}
+
+#if mlib_is_cxx()
+inline void* _amongocBoxDataCxx(amongoc_box* b) noexcept {
+    return _amongocBoxDataPtr(&b->_storage);
+}
+inline const void* _amongocBoxDataCxx(const amongoc_box* b) noexcept {
+    return _amongocBoxDataPtr(const_cast<_amongoc_box_storage*>(&b->_storage));
+}
+inline const void* _amongocBoxDataCxx(const amongoc_view* b) noexcept {
+    return _amongocBoxDataPtr(const_cast<_amongoc_box_storage*>(&b->_storage));
+}
+#endif  // C++
 
 /**
  * @brief Cast an amongoc_box expression to a contained type T
@@ -347,25 +341,23 @@ mlib_extern_c_end();
  * Syntax:
  *
  * ```
- * amongoc_box_cast(T)(some_box)
+ * amongoc_box_cast(T, some_box)
  * ```
  *
  * Expands to an l-value expression of type T
  */
-#define amongoc_box_cast(T) (*(T*) _amongocBoxCastOpen
-#define _amongocBoxCastOpen(Box) (amongoc_box_data(Box)))
+#define amongoc_box_cast(T, Box) mlib_parenthesized_expression(*(T*)(amongoc_box_data(Box)))
+
+mlib_extern_c mlib_always_inline const amongoc_box* _amongocBoxGetNil() mlib_noexcept {
+    static const amongoc_box box = {MLIB_IF_NOT_CXX(0)};
+    return &box;
+}
 
 /**
  * @brief A special amongoc_box value that represents no value. It is safe to
  * discard this value.
  */
-#define amongoc_nil (mlib_init(amongoc_box){})
-
-static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
-    memcpy(dst, _amongocBoxDataPtr(&box->_storage), sz);
-    amongoc_box_free_storage(*box);
-    *box = amongoc_nil;
-}
+#define amongoc_nil mlib_parenthesized_expression(*_amongocBoxGetNil())
 
 /**
  * @brief "Take" the object from a box, storing it in the destination target, and
@@ -378,15 +370,12 @@ static inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box
  *
  * @note DO NOT use this for C++ types! Use `unique_box::take`
  */
-#define amongoc_box_take(Dest, Box) (_amongoc_box_take_impl(&(Dest), (sizeof(Dest)), &(Box)))
-
-/**
- * @brief Declare an amongoc_box destructor function that invokes an underlying destructor function
- * on the value owned by the amongoc_box
- */
-#define amongoc_box_declare_dtor_shim(FuncName, Type, RealName)                                    \
-    static inline void FuncName(amongoc_box a) { RealName(amongoc_box_cast(Type)(a)); }            \
-    static_assert(1, "");
+#define amongoc_box_take(Dest, Box) _amongoc_box_take_impl(&(Dest), (sizeof(Dest)), &(Box))
+inline void _amongoc_box_take_impl(void* dst, size_t sz, amongoc_box* box) mlib_noexcept {
+    memcpy(dst, amongoc_box_data(*box), sz);
+    amongoc_box_free_storage(*box);
+    *box = amongoc_nil;
+}
 
 #define DECLARE_BOX_EZ(Name, Type)                                                                 \
     static inline amongoc_box amongoc_box_##Name(Type val) mlib_noexcept {                         \
@@ -417,196 +406,3 @@ DECLARE_BOX_EZ(uint32, uint32_t)
 DECLARE_BOX_EZ(int64, int64_t)
 DECLARE_BOX_EZ(uint64, uint64_t)
 #undef DECLARE_BOX_EZ
-
-#if mlib_is_cxx()
-
-namespace amongoc {
-
-using box = amongoc_box;
-
-class unique_box {
-public:
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
-    // Move-construct from a box
-    explicit unique_box(amongoc_box&& b) noexcept
-        : _box(b) {
-        b = amongoc_nil;
-    }
-
-    unique_box(unique_box&& other) noexcept
-        : _box(other._box) {
-        other._box = amongoc_nil;
-    }
-
-    unique_box& operator=(unique_box&& other) noexcept {
-        amongoc_box_destroy(_box);
-        _box       = other._box;
-        other._box = amongoc_nil;
-        return *this;
-    }
-
-    ~unique_box() { amongoc_box_destroy(_box); }
-
-    template <typename T>
-    T& as() noexcept {
-        return amongoc_box_cast(T)(_box);
-    }
-
-    operator amongoc_view() const noexcept { return _box.view; }
-
-    /**
-     * @brief Release ownership of the box, returning the C-style `amongoc_box`
-     */
-    [[nodiscard]] amongoc_box release() && noexcept {
-        box r = _box;
-        _box  = amongoc_nil;
-        return r;
-    }
-
-    template <typename T>
-    T take() noexcept {
-        T ret = (T&&)as<T>();
-        amongoc_box_free_storage(((unique_box&&)*this).release());
-        return ret;
-    }
-
-    void*       data() noexcept { return amongoc_box_data(_box); };
-    const void* data() const noexcept {
-        return amongoc_box_data(const_cast<unique_box&>(*this)._box);
-    };
-
-    /**
-     * @brief Construct a new box value by decay-copying the given value
-     *
-     * @param value The value to be decay-copied into a new box
-     * @return amongoc_box The newly constructed box that contains the value
-     */
-    template <typename T>
-    static unique_box from(allocator<> alloc, T&& value) {
-        return make<std::decay_t<T>>(alloc, mlib_fwd(value));
-    }
-
-    // Prevent users from accidentally box-ing a box
-    static void from(allocator<>, box&)               = delete;
-    static void from(allocator<>, box&&)              = delete;
-    static void from(allocator<>, box const&)         = delete;
-    static void from(allocator<>, box const&&)        = delete;
-    static void from(allocator<>, unique_box&)        = delete;
-    static void from(allocator<>, unique_box&&)       = delete;
-    static void from(allocator<>, unique_box const&)  = delete;
-    static void from(allocator<>, unique_box const&&) = delete;
-
-    /**
-     * @brief Create a box that contains a `T` with an explicit destructor object type
-     *
-     * @tparam T The type to be boxed. MUST be trivially-destructible
-     * @tparam D A stateless default-constructible destructor object
-     * @param obj The object to be copied into the box
-     */
-    template <typename T, typename D>
-    static unique_box from(allocator<> alloc, T obj, D) noexcept(box_inlinable_type<T>) {
-        static_assert(std::is_trivially_destructible_v<T>,
-                      "Creating a box with an explicit destructor requires that the object be "
-                      "trivially destructible itself");
-        static_assert(std::is_empty_v<D>, "The box destructor must be a stateless object type");
-        // The destructor function that will be imbued in the box
-        auto dtor = [](void* p) noexcept -> void {
-            D d{};
-            d(*static_cast<T*>(p));
-        };
-        amongoc_box ret;
-        // Make storage
-        T* ptr = ret.prepare_storage<T>(alloc, dtor);
-        alloc.rebind<T>().construct(ptr, mlib_fwd(obj));
-        return mlib_fwd(ret).as_unique();
-    }
-
-    /**
-     * @brief Create a new box that contains a `T`, constructed from the given
-     * arguments.
-     *
-     * @tparam T The type to be constructed into a box
-     * @param args The constructor arguments
-     */
-    template <typename T, typename... Args>
-    static unique_box make(allocator<> alloc, Args&&... args)
-        noexcept(noexcept(T(mlib_fwd(args)...)) and box_inlinable_type<T>) {
-        unique_box ret{amongoc_nil};
-        T*         ptr;
-        // Conditionally add a destructor to the box based on whether the type
-        // actually has a destructor.
-        if constexpr (std::is_trivially_destructible_v<T>) {
-            // No destructor needed. This gives more space within the box for the small-object
-            // optimization
-            ptr = ret._box.prepare_storage<T>(alloc, nullptr);
-        } else {
-            // Add a destructor function that just invokes the destructor on the object
-            ptr = ret._box.prepare_storage<T>(alloc, indirect_destroy<T>);
-        }
-        // Placement-new the object into storage
-        if constexpr (amongoc::box_inlinable_type<T> or noexcept(T(mlib_fwd(args)...))) {
-            // No exception handling required: The constructor cannot throw OR we didn't allocate
-            // any dynamic storage and there is nothing that would need to be freed
-            alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
-        } else {
-            // We will need to free the storage if the constructor throws
-            try {
-                alloc.rebind<T>().construct(ptr, mlib_fwd(args)...);
-            } catch (...) {
-                amongoc_box_free_storage(ret._box);
-                throw;
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * @internal
-     * @brief An internal API to visit a compressed box. See `box.compress.hpp` for information
-     *
-     * @tparam Sz Candidate compression sizes
-     * @param fn The visitor function
-     * @return auto Returns the result of invoking the visitor
-     */
-    template <std::size_t... Sz, typename F>
-    decltype(auto) compress(F&& fn) &&;
-
-private:
-    // The managed box
-    amongoc_box _box;
-
-    template <typename T>
-    static void indirect_destroy(void* p) noexcept {
-        static_cast<T*>(p)->~T();
-    }
-};
-
-}  // namespace amongoc
-
-template <typename T>
-T& amongoc_view::as() const noexcept {
-    return amongoc_box_cast(T)((amongoc_view&)*this);
-}
-
-template <typename T>
-T* amongoc_box::prepare_storage(mlib::allocator<> alloc, amongoc_box_destructor dtor) {
-    T* p;
-    if constexpr (amongoc::enable_trivially_relocatable_v<T>) {
-        // The box can be safely stored inline, since moving the box will relocate the corresponding
-        // object
-        p = amongoc_box_init(*this, T, dtor, alloc.c_allocator());
-    } else {
-        // Box type cannot be safely stored inline, so dynamically allocate it:
-        p = amongoc_box_init_noinline(*this, T, dtor, alloc.c_allocator());
-    }
-    if (p == nullptr) {
-        throw std::bad_alloc();
-    }
-    return p;
-}
-
-amongoc::unique_box amongoc_box::as_unique() && noexcept {
-    return amongoc::unique_box((amongoc_box&&)(*this));
-}
-
-#endif

@@ -43,10 +43,8 @@ TEST_CASE_METHOD(testing::loop_fixture, "Pool/Create Simple") {
 
 co_task<mlib::unit> do_hangup_test(connection_pool& pool) {
     auto           conn = wire::retrying_client(amongoc::pool_client(pool), 5);
-    bson::document cmd;
-    using bson::make::array;
-    using bson::make::doc;
-    using std::pair;
+    bson::document cmd{::mlib_default_allocator};
+    using namespace bson::make;
     cmd = doc(pair("configureFailPoint", "failCommand"),
               pair("$db", "admin"),
               pair("mode", doc(pair("times", 3))),

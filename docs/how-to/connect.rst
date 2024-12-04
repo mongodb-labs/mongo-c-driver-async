@@ -143,7 +143,7 @@ from the box and store it in our application state:
   :start-at: after_connect_say_hello(amongoc_box
   :end-at: take
 
-The :c:macro:`amongoc_box_take` macro is used to transfer the ownership from a
+The `amongoc_box_take` macro is used to transfer the ownership from a
 type-erased `amongoc_box` into a typed storage for the object that it holds. The
 object that was owned by the box is now owned by the storage destination.
 
@@ -226,7 +226,7 @@ We now launch the composed operation using `amongoc_start`. This will enqueue
 work on the event loop. We then give the event loop control to run the program
 using `amongoc_default_loop_run`. After the event loop returns, all asynchronous
 work has completed, and we destroy the operation with
-`amongoc_operation_destroy`. This will free resources associated with the
+`amongoc_operation_delete`. This will free resources associated with the
 operation.
 
 We also now have a copy of the connection that was created with

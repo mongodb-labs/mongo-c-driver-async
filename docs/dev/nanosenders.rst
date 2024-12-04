@@ -65,6 +65,10 @@ Concepts
       :cpp:`nanosender_traits<std::remove_cvref_t<S>>::connect(std::move(s), std::move(recv))`
       -- Must create a `nanooperation` by connecting the nanosender `s` to the nanoreceiver `recv`
 
+.. concept:: template <typename S, typename T> nanosender_of
+
+  Matches a `nanosender` `S` whose :expr:`sends_t<S>` is convertible to `T`.
+
 .. concept:: template <typename R, typename T> nanoreceiver_of = std::invocable<R, T>
 
   The object must be invocable with the given value as its sole argument. The
@@ -189,8 +193,8 @@ Classes
     The stored value will be perfect-forwarded and supports reference types for
     `T`:
 
-    - If given an lvalue |x|, then `just` will store an lvalue reference to
-      |x|. When it completes, the receiver will be passed an lvalue reference
+    - If given an :term:`lvalue` |x|, then `just` will store an lvalue reference
+      to |x|. When it completes, the receiver will be passed an lvalue reference
       to that |x|.
     - If given an r-value of type `T`, then `just` will hold a copy of that value.
     - If `just` is copy-connected, then the held `T` will be copied into the
@@ -201,8 +205,8 @@ Classes
 
   .. hint::
 
-    Beware that passing an lvalue via CTAD to `just()` will cause the `just` to
-    hold a reference to that lvalue::
+    Beware that passing an :term:`lvalue` via CTAD to `just()` will cause the
+    `just` to hold a reference to that lvalue::
 
       auto foo() {
         std::string h = "Hello!";

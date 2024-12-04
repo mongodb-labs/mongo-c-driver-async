@@ -2,6 +2,8 @@
 
 #include <bson/view.h>
 
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
+
 #include <array>
 #include <cstddef>
 

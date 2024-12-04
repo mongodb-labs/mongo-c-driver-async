@@ -6,21 +6,20 @@
  */
 #pragma once
 
-#include "./nano/concepts.hpp"
 #include "./nano/result.hpp"
 #include "./nano/simple.hpp"
 
-#include <amongoc/alloc.h>
-#include <amongoc/box.h>
-#include <amongoc/emitter_result.h>
+#include <amongoc/box.hpp>
+#include <amongoc/emitter_result.hpp>
 #include <amongoc/handler.h>
 #include <amongoc/loop.h>
 #include <amongoc/wire/buffer.hpp>
 
 #include <mlib/algorithm.hpp>
+#include <mlib/alloc.h>
+#include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
-#include <asio/awaitable.hpp>
 #include <asio/buffer.hpp>
 #include <boost/container/static_vector.hpp>
 
@@ -63,12 +62,12 @@ struct tcp_connection_rw_stream {
     using executor_type = amongoc_loop_asio_executor;
 
     // Obtain an allocator for the stream. Pulls the allocator from the event loop
-    allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
 
-    // A completion handler for a unique_handle that calls an Asio callback
+    // A completion handler for a unique_handler that calls an Asio callback
     template <typename C>
     struct transfer_completer {
-        C cb;
+        mlib_no_unique_address C cb;
 
         void operator()(emitter_result&& res_nbytes) {
             std::move(cb)(res_nbytes.status.as_error_code(), res_nbytes.value.as<std::size_t>());

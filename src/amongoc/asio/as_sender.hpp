@@ -8,8 +8,9 @@
 #include <amongoc/nano/concepts.hpp>
 #include <amongoc/nano/result.hpp>
 
+#include <mlib/config.h>
+
 #include <asio/async_result.hpp>
-#include <asio/bind_cancellation_slot.hpp>
 #include <asio/error_code.hpp>
 
 namespace amongoc {
@@ -29,7 +30,7 @@ class asio_nanosender;
 template <typename Init>
 class asio_nanosender<Init, void()> {
 public:
-    Init _init;
+    mlib_no_unique_address Init _init;
     using sends_type = mlib::unit;
 
     template <nanoreceiver_of<sends_type> R>
@@ -39,12 +40,44 @@ public:
 
     template <typename R>
     struct operation {
-        Init _init;
-        R    _recv;
+        mlib_no_unique_address Init _init;
+        mlib_no_unique_address R    _recv;
 
         constexpr void start() noexcept {
             auto h = [this] { mlib::invoke(static_cast<R&&>(_recv), sends_type()); };
             static_cast<Init&&>(_init)(h);
+        }
+    };
+};
+
+/**
+ * @brief Handle completion with either success or an error code
+ */
+template <typename Init>
+class asio_nanosender<Init, void(std::error_code)> {
+public:
+    mlib_no_unique_address Init _init;
+    using sends_type = result<mlib::unit, std::error_code>;
+
+    template <nanoreceiver_of<sends_type> R>
+    constexpr nanooperation auto connect(R&& recv) && {
+        return operation<R>{std::move(_init), mlib_fwd(recv)};
+    }
+
+    template <typename R>
+    struct operation {
+        mlib_no_unique_address Init _init;
+        mlib_no_unique_address R    _recv;
+
+        constexpr void start() noexcept {
+            auto h = [this](std::error_code ec) {
+                if (ec) {
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::error(ec)));
+                } else {
+                    mlib::invoke(static_cast<R&&>(_recv), sends_type(amongoc::success()));
+                }
+            };
+            static_cast<Init&&>(_init)(std::move(h));
         }
     };
 };
@@ -59,7 +92,7 @@ public:
 template <typename Init, typename T>
 class asio_nanosender<Init, void(std::error_code, T)> {
 public:
-    Init _init;
+    mlib_no_unique_address Init _init;
     using sends_type = result<T, std::error_code>;
 
     template <nanoreceiver_of<sends_type> R>
@@ -69,8 +102,8 @@ public:
 
     template <typename R>
     struct operation {
-        Init _init;
-        R    _recv;
+        mlib_no_unique_address Init _init;
+        mlib_no_unique_address R    _recv;
 
         constexpr void start() noexcept {
             auto h = [this](std::error_code ec, T value) {

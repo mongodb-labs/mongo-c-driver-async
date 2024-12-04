@@ -72,15 +72,12 @@ standard algorithms.
 Decoding Data
 #############
 
-Given an iterator referring to a valid element, we can ask its type using
-`bson_iterator_type` and we can decode it using the iterator decoding functions:
+Given an iterator referring to a valid element, we can decode it using the
+`bson_iterator_value` function:
 
 .. literalinclude:: bson.example.cpp
   :start-after: [get-value]
   :end-before: end.
-
-There are several decoding functions. Refer to :ref:`iter.access` for a complete
-list.
 
 
 Example: Seek a Subdocument Element and Iterate It

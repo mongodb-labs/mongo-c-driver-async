@@ -12,16 +12,28 @@ BSON Reading
 Types
 #####
 
-.. struct:: bson_view
+.. struct::
+  [[zero_initializable]] bson_array_view
+  [[zero_initializable]] bson_view
 
-  This types represents null-able read-only view of a BSON document or array
-  object. The object is pointer-sized, trivial, and zero-initializable.
+  These types represents null-able read-only view of a BSON document or array
+  object. The object is pointer-sized, trivial, and zero-initializable. The
+  `bson_array_view` has the same interface as `bson_view`, but disambiguates
+  between arrays and documents at compile-time.
 
+  :zero-initializable:
+    |attr.zero-init| Represents a null view: A view that does not refer to any
+    document, equivalent to `bson_view_null`. One can call `bson_data` to test
+    for a null view. Using a null view is undefined behavior for most other
+    operations.
   :header: :header-file:`bson/view.h`
 
   .. note:: This type should not be created manually. It should be created using
-    `bson_as_view`, `bson_view_from_data`, `bson_iterator_document`, or
-    :c:macro:`BSON_VIEW_NULL`.
+    `bson_as_view`, `bson_view_from_data`, or `bson_view_null`.
+
+
+  C++ Members
+  ***********
 
   .. type::
     iterator = ::bson_iterator
@@ -57,9 +69,12 @@ Types
 
     Determine whether the given document object is empty
 
-  .. function:: iterator find(std::string_view) const
+  .. function:: iterator find(std__string_view) const
 
-    Return an iterator referring to the
+    Return an iterator referring to the first element in :expr:`*this` with the
+    given key.
+
+    :C API: `bson_find`
 
   .. function::
     size_type byte_size() const
@@ -119,92 +134,30 @@ Types
     (C++) explicit conversion operators for BSON byte values.
 
 
-Element Value Types
-*******************
+.. type::
+  __bson_viewable
 
-The following custom struct types are defined for decoding certain element values.
+  A parameter annotated as `__bson_viewable` accepts any type that can be viewed
+  with the BSON iteration APIs. This includes:
 
-.. struct:: bson_datetime
-
-  :header: :header-file:`bson/view.h`
-
-  .. member:: int64_t utf_ms_offset
-
-    The offset from the Unix epoch as a count of milliseconds
+  - `bson_view`
+  - `bson_doc`
+  - `bson_array_view`
+  - `bson_mut`
 
 
-.. struct:: bson_code
+Constants
+#########
 
-  :header: :header-file:`bson/view.h`
+.. var::
+  const bson_view bson_view_null
+  const bson_array_view bson_array_view_null
 
-  .. member:: bson_utf8_view utf8
+  Null views of BSON documents. They refer to no object. These are equivalent to
+  zero-initialized objects. A null view can be detected by checking if
+  `bson_data` returns a null pointer.
 
-    The code string
-
-.. struct:: bson_symbol
-
-  :header: :header-file:`bson/view.h`
-
-  .. member:: bson_utf8_view utf8
-
-    The symbol spelling string
-
-.. struct:: bson_timestamp
-
-  :header: :header-file:`bson/view.h`
-
-  .. member::
-    uint32_t increment
-    uint32_t timestamp
-
-.. struct:: bson_regex
-
-  :header: :header-file:`bson/view.h`
-
-  .. member::
-    const char* regex
-    const char* options
-    uint32_t regex_len
-    uint32_t options_len
-
-    The regular expression string and options string, and their corresponding string
-    lengths.
-
-.. struct:: bson_dbpointer
-
-  :header: :header-file:`bson/view.h`
-
-  .. member::
-    const char* collection
-    uint32_t collection_len
-
-    The collection name string and its corresponding string length
-
-  .. member:: bson_oid oid
-
-    The object ID within the collection
-
-.. struct:: bson_oid
-
-  :header: :header-file:`bson/view.h`
-
-  .. member:: uint8_t bytes[12]
-
-    The twelve octets of the object ID
-
-.. struct:: bson_binary
-
-  :header: :header-file:`bson/view.h`
-
-  .. member::
-    const bson_byte* data;
-    uint32_t data_len;
-
-    Pointer to the binary data of the object, and the length of that data.
-
-  .. member:: uint8_t subtype
-
-    The binary data subtype tag
+  .. note:: |macro-impl|
 
 
 Functions & Macros
@@ -214,11 +167,11 @@ View Inspection
 ***************
 
 .. function::
-  bson_view bson_as_view(auto B)
+  bson_view bson_as_view(__bson_viewable [[nullable]] B)
 
   Obtain a `bson_view` for the given document-like object. This is also used by
-  other function-like macros to coerce `bson_mut` and `bson_doc` to `bson_view`
-  automatically.
+  other :term:`function-like macro`\ s to coerce `bson_mut` and `bson_doc` to
+  `bson_view` automatically.
 
   :param B: A `bson_mut`, `bson_doc`, or `bson_view`.
   :return: A new `bson_view` that views the document associated with ``B``.
@@ -239,7 +192,7 @@ View Inspection
   :param error: An optional output parameter that will describe the error encountered
     while decoding a BSON document from `data`.
   :return: A `bson_view` that views the document at `data`, or a null view if an
-    error occured. Checking for null can be done with :c:macro:`bson_data`.
+    error occured. Checking for null can be done with `bson_data`.
   :header: :header-file:`bson/view.h`
 
   The returned view is valid until:
@@ -264,11 +217,12 @@ View Inspection
 
 
 .. function::
-  const bson_byte* bson_data(auto B)
-  bson_byte* bson_mut_data(auto B)
+  const bson_byte* bson_data(__bson_viewable [[nullable]] B)
+  bson_byte* bson_mut_data(__bson_viewable [[nullable]] B)
 
   Obtain a pointer to `bson_byte` referring to the first byte in the given
-  document.
+  document. |attr.nullable| If the given object is a null view/document, this
+  returns a null pointer.
 
   :header: :header-file:`bson/iterator.h`
 
@@ -279,8 +233,8 @@ View Inspection
 
 
 .. function::
-  uint32_t bson_size(auto B)
-  int32_t bson_ssize(auto B)
+  uint32_t bson_size(__bson_viewable B)
+  int32_t bson_ssize(__bson_viewable B)
 
   Obtain the size of the given document object, in bytes.
 

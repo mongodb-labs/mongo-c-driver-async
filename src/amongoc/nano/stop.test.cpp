@@ -4,6 +4,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <functional>
 #include <thread>
 
 using namespace amongoc;
@@ -89,8 +90,8 @@ TEST_CASE("Stop/Racing Stop") {
         }));
         std::thread thr{[&] {
             bool stopped = stop.request_stop();
-            assert(stopped);
-            assert(did_stop);
+            CHECK(stopped);
+            CHECK(did_stop);
         }};
         while (not stop.stop_requested()) {
             ;  // spin

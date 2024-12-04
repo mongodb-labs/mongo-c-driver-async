@@ -1,13 +1,20 @@
-#############################
-Header: ``amongoc/handler.h``
-#############################
+############
+Handler APIs
+############
 
 .. |this-header| replace:: :header-file:`amongoc/handler.h`
-.. header-file:: amongoc/handler.h
+.. header-file::
+  amongoc/handler.h
+  amongoc/handler.hpp
+
+  Contains APIs for working with :term:`handlers <handler>`.
 
 
-Handlers
-########
+Types
+#####
+
+C Types
+*******
 
 .. struct:: amongoc_handler
 
@@ -103,76 +110,15 @@ Handlers
 
     .. note:: Don't call this directly. Use: `amongoc_handler_get_allocator`
 
+C++ Types
+*********
 
-.. function:: void amongoc_handler_complete(amongoc_handler* [[type(T)]] hnd, amongoc_status st, amongoc_box [[transfer, type(T)]] res)
-
-  Invoke the completion callback for the handler.
-
-  :C++ API: `amongoc::unique_handler::complete`
-  :param hnd: The handler to be completed.
-  :param st: The status of the operation.
-  :param res: |attr.transfer| The final result value for the operation. Even though
-    the parameter is marked with |attr.type| that matches the handler `hnd`, it is
-    likely that he handler must also accept `amongoc_nil` in the case that `st`
-    represents failure. Exceptions to this rule will be documented.
-  :header: |this-header|
-
-  .. important:: A handler object should be completed *at most once*.
-
-
-.. function::
-  amongoc_box amongoc_register_stop(const amongoc_handler* h, void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]]))
-
-  Register a stop callback with the handler. This function has no effect if
-  `amongoc_handler_vtable::register_stop` is not set.
-
-  :C++ API: `amongoc::unique_handler::register_stop`
-  :param h: The handler object with which to register the callback
-  :param userdata: Arbitrary pointer that will be passed to `callback` at a later point.
-  :param callback: The callback function that should cancel the associated operation.
-  :return: An `amongoc_box` cookie object that when destroyed will unregister the
-    callback from the handler. The type of value contained by this box is
-    unspecified.
-  :header: |this-header|
-
-.. function::
-  mlib_allocator amongoc_handler_get_allocator(amongoc_handler const* h, mlib_allocator dflt)
-
-  Obtain the allocator associated with an handler object.
-
-  :C++ API: `amongoc::unique_handler::get_allocator`
-  :param h: Pointer to an `amongoc_handler`
-  :param dflt: The fallback allocator to be returned if `h` does not have an
-    associated allocator.
-  :header: |this-header|
-
-  .. seealso:: :ref:`handler.allocator`
-
-.. function:: void amongoc_handler_destroy(amongoc_handler [[transfer]] h)
-
-  Destroy a handler object.
-
-  :C++ API: Use `amongoc::unique_handler`
-  :header: |this-header|
-
-  .. note:: Don't call this function on a handler that has been transferred
-    elsewhere. This function will usually only be needed when a handler
-    is unused, otherwise it will be the responsibility of an `amongoc_operation`
-    to destroy the handler.
-
-
-C++ APIs
-########
-
-.. rubric:: Namespace ``amongoc``
-.. namespace:: amongoc
-
-.. class:: unique_handler
+.. class:: amongoc::unique_handler
 
   Provides a move-only wrapper around `amongoc_handler`, preventing programmer
   error and ensuring desctruction of the associated object.
 
-  :header: |this-header|
+  :header: :header-file:`amongoc/handler.hpp`
 
   .. function:: handler_stop_token get_stop_token() const
 
@@ -226,7 +172,7 @@ C++ APIs
 
   .. function:: void operator()(emitter_result&& r)
 
-    Invokes :cpp:`complete(r.status, std::move(r).value)`
+    Invokes :expr:`complete(r.status, std__move(r).value)`
 
 
 .. class:: handler_stop_token
@@ -234,7 +180,7 @@ C++ APIs
   Implements a *stopptable token* type for use with an `amongoc_handler`. This
   type is compatible with the standard library stoppable token interface.
 
-  :header: |this-header|
+  :header: :header-file:`amongoc/handler.hpp`
 
   .. function:: handler_stop_token(const amongoc_handler&)
 
@@ -262,7 +208,65 @@ C++ APIs
       Disconnects the stop callback from the stop state.
 
 
-.. namespace:: 0
+Functions & Macros
+##################
+
+.. function:: void amongoc_handler_complete(amongoc_handler* [[type(T)]] hnd, amongoc_status st, amongoc_box [[transfer, type(T)]] res)
+
+  Invoke the completion callback for the handler.
+
+  :C++ API: `amongoc::unique_handler::complete`
+  :param hnd: The handler to be completed.
+  :param st: The status of the operation.
+  :param res: |attr.transfer| The final result value for the operation. Even though
+    the parameter is marked with |attr.type| that matches the handler `hnd`, it is
+    likely that he handler must also accept `amongoc_nil` in the case that `st`
+    represents failure. Exceptions to this rule will be documented.
+  :header: |this-header|
+
+  .. important:: A handler object should be completed *at most once*.
+
+
+.. function::
+  amongoc_box amongoc_register_stop(const amongoc_handler* h, void* [[type(V)]] userdata, void(*callback)(void* [[type(V)]]))
+
+  Register a stop callback with the handler. This function has no effect if
+  `amongoc_handler_vtable::register_stop` is not set.
+
+  :C++ API: `amongoc::unique_handler::register_stop`
+  :param h: The handler object with which to register the callback
+  :param userdata: Arbitrary pointer that will be passed to `callback` at a later point.
+  :param callback: The callback function that should cancel the associated operation.
+  :return: An `amongoc_box` cookie object that when destroyed will unregister the
+    callback from the handler. The type of value contained by this box is
+    unspecified.
+  :header: |this-header|
+
+.. function::
+  mlib_allocator amongoc_handler_get_allocator(amongoc_handler const* h, mlib_allocator dflt)
+
+  Obtain the allocator associated with an handler object.
+
+  :C++ API: `amongoc::unique_handler::get_allocator`
+  :param h: Pointer to an `amongoc_handler`
+  :param dflt: The fallback allocator to be returned if `h` does not have an
+    associated allocator.
+  :header: |this-header|
+
+  .. seealso:: :ref:`handler.allocator`
+
+.. function:: void amongoc_handler_delete(amongoc_handler [[transfer]] h)
+
+  Destroy a handler object.
+
+  :C++ API: Use `amongoc::unique_handler`
+  :header: |this-header|
+
+  .. note:: Don't call this function on a handler that has been transferred
+    elsewhere. This function will usually only be needed when a handler
+    is unused, otherwise it will be the responsibility of an `amongoc_operation`
+    to destroy the handler.
+
 
 .. _handler.allocator:
 

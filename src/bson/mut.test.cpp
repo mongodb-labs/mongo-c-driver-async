@@ -6,7 +6,11 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstdint>
+
 using bson::document;
+
+static_assert(::bson_u32_string_create(UINT32_MAX).buf == std::string_view("4294967295"));
 
 TEST_CASE("bson/build/empty") {
     document doc{mlib_default_allocator};
@@ -63,7 +67,7 @@ TEST_CASE("bson/build/insert") {
     auto it = doc.begin();
     REQUIRE(it != doc.end());
     CHECK(it->key() == "foo");
-    CHECK(std::string_view(it->utf8()) == "bar");
+    CHECK(std::string_view(it->value().utf8) == "bar");
 }
 
 TEST_CASE("bson/build/subdoc") {
@@ -73,8 +77,24 @@ TEST_CASE("bson/build/subdoc") {
     child.emplace_back("bar", "baz");
     auto it = doc.begin();
     REQUIRE(it->type() == bson_type_document);
-    auto s     = it->document();
+    auto s     = it->value().document;
     auto subit = s.begin();
     CHECK(subit->key() == "bar");
-    CHECK(subit->utf8() == "baz");
+    CHECK(subit->value().utf8 == "baz");
+    it = child.parent_iterator();
+    CHECK(it->type() == bson_type_document);
+    CHECK(it->key() == "foo");
+}
+
+TEST_CASE("bson/build/insert iter reference") {
+    document doc{::mlib_default_allocator};
+    auto     m1 = bson::mutator(doc);
+    m1.emplace_back("foo", "bar");
+    document other{::mlib_default_allocator};
+    CHECK(other.empty());
+    // We can push-back a pair formed from the iterator reference
+    bson::mutator(other).push_back(*doc.begin());
+    CHECK_FALSE(other.empty());
+    CHECK(other.begin()->key() == "foo");
+    CHECK(other.begin()->value().get_utf8() == "bar");
 }

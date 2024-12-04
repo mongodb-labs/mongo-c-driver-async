@@ -4,11 +4,11 @@
 #include "./nano/tie.hpp"
 
 #include <amongoc/async.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/default_loop.h>
-#include <amongoc/emitter.h>
+#include <amongoc/emitter.hpp>
 #include <amongoc/loop.h>
-#include <amongoc/operation.h>
+#include <amongoc/operation.hpp>
 
 #include <mlib/alloc.h>
 
@@ -47,7 +47,9 @@ TEST_CASE("Coroutine/Discard After Connect") {
     // Discard the connected operation. Should not leak memory
 }
 
-co_task<int> cxx_coro(allocator<> = allocator<>{mlib_default_allocator}) { co_return 42; }
+co_task<int> cxx_coro(mlib::allocator<> = mlib::allocator<>{mlib_default_allocator}) {
+    co_return 42;
+}
 
 TEST_CASE("Coroutine/co_task") {
     auto co  = cxx_coro();
@@ -74,9 +76,11 @@ TEST_CASE("Coroutine/Discard co_task operation") {
     CHECK(got == 0);
 }
 
-co_task<std::unique_ptr<int>> returns_unique(allocator<>) { co_return std::make_unique<int>(42); }
+co_task<std::unique_ptr<int>> returns_unique(mlib::allocator<>) {
+    co_return std::make_unique<int>(42);
+}
 
-co_task<std::unique_ptr<int>> nested_returns_unique(allocator<> a) {
+co_task<std::unique_ptr<int>> nested_returns_unique(mlib::allocator<> a) {
     auto co   = returns_unique(a);
     auto iptr = co_await std::move(co);
     *iptr += 81;
@@ -85,7 +89,8 @@ co_task<std::unique_ptr<int>> nested_returns_unique(allocator<> a) {
 
 TEST_CASE("Coroutine/co_task nested awaiting") {
     co_task<std::unique_ptr<int>>::result_type iptr;
-    auto op = nested_returns_unique(allocator<>{mlib_default_allocator}).as_sender() | tie(iptr);
+    auto                                       op
+        = nested_returns_unique(mlib::allocator<>{mlib_default_allocator}).as_sender() | tie(iptr);
     op.start();
     CHECK(**iptr == 123);
 }
@@ -94,12 +99,12 @@ struct my_error {
     int value;
 };
 
-co_task<int> throws_an_error(allocator<>) {
+co_task<int> throws_an_error(mlib::allocator<>) {
     throw my_error{1729};
     co_return 42;
 }
 
-co_task<int> catches_an_error(allocator<> a) {
+co_task<int> catches_an_error(mlib::allocator<> a) {
     try {
         co_return co_await throws_an_error(a);
     } catch (my_error e) {
@@ -109,30 +114,30 @@ co_task<int> catches_an_error(allocator<> a) {
 
 TEST_CASE("Coroutine/Exception propagation") {
     co_task<int>::result_type got = 0;
-    auto op = catches_an_error(allocator<>{mlib_default_allocator}).as_sender() | tie(got);
+    auto op = catches_an_error(mlib::allocator<>{mlib_default_allocator}).as_sender() | tie(got);
     CHECK(*got == 0);
     op.start();
     CHECK(*got == 1729);
 }
 
-co_task<int> immediate_awaits(allocator<>) { co_return co_await just(42); }
+co_task<int> immediate_awaits(mlib::allocator<>) { co_return co_await just(42); }
 
 TEST_CASE("Coroutine/immediate await") {
     co_task<int>::result_type got = 0;
-    auto op = immediate_awaits(allocator<>{mlib_default_allocator}).as_sender() | tie(got);
+    auto op = immediate_awaits(mlib::allocator<>{mlib_default_allocator}).as_sender() | tie(got);
     CHECK(*got == 0);
     op.start();
     CHECK(*got == 42);
 }
 
-emitter throws_early(allocator<>) {
+emitter throws_early(mlib::allocator<>) {
     throw std::system_error(std::make_error_code(std::errc::address_in_use));
     co_await ramp_end;
 }
 
 TEST_CASE("Coroutine/Throw before suspend") {
     auto   em = throws_early(::mlib_default_allocator);
-    status st;
+    status st = ::amongoc_okay;
     auto   op = ::amongoc_tie(em, &st, nullptr, ::mlib_default_allocator).as_unique();
     op.start();
     CHECK(st.as_error_code() == std::errc::address_in_use);

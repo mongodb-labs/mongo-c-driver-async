@@ -1,6 +1,8 @@
 #include <amongoc/status.h>
 
 #include <asio/error.hpp>
+#include <fmt/format.h>
+#include <openssl/err.h>
 
 #include <cerrno>
 #include <cstring>
@@ -8,54 +10,16 @@
 
 using namespace amongoc;
 
-status status::from(const std::error_code& ec) noexcept {
-    if (ec.category() == std::generic_category()) {
-        return {&amongoc_generic_category, ec.value()};
-    } else if (ec.category() == std::system_category()
-               or ec.category() == asio::error::get_system_category()) {
-        return {&amongoc_system_category, ec.value()};
-    } else if (ec.category() == asio::error::get_netdb_category()) {
-        return {&amongoc_netdb_category, ec.value()};
-    } else if (ec.category() == asio::error::get_addrinfo_category()) {
-        return {&amongoc_addrinfo_category, ec.value()};
-    } else if (ec.category() == io_category()) {
-        return {&amongoc_io_category, ec.value()};
-    } else if (ec.category() == server_category()) {
-        return {&amongoc_server_category, ec.value()};
-    } else if (ec.category() == asio::error::get_misc_category()) {
-        // TODO: Convert these to more comprehensible errors.
-        switch (static_cast<asio::error::misc_errors>(ec.value())) {
-        case asio::error::already_open:
-            return {&amongoc_generic_category, EISCONN};
-        case asio::error::eof:
-            return {&amongoc_io_category, amongoc_errc_connection_closed};
-        case asio::error::not_found:
-            return {&amongoc_generic_category, ENOENT};
-        case asio::error::fd_set_failure:
-            return {&amongoc_generic_category, EINVAL};
-            break;
-        }
-    }
-    return {&amongoc_unknown_category, ec.value()};
-}
-
-std::string status::message() const noexcept {
-    auto        s = amongoc_status_strdup_message(*this);
-    std::string str(s);
-    free(s);
-    return str;
-}
+extern inline amongoc_status const* _amongocStatusGetOkayStatus(void) noexcept;
 
 namespace {
 
 class unknown_error_category : public std::error_category {
     const char* name() const noexcept override { return "amongoc.unknown"; }
     std::string message(int ec) const noexcept override {
-        return "amongoc.unknown:" + std::to_string(ec);
+        return fmt::format("amongoc.unknown:{}", ec);
     }
-};
-
-unknown_error_category unknown_category_inst;
+} unknown_category_inst;
 
 struct io_category_cls : std::error_category {
     const char* name() const noexcept override { return "amongoc.io"; }
@@ -66,10 +30,10 @@ struct io_category_cls : std::error_category {
         case amongoc_errc_short_read:
             return "short read";
         default:
-            return "amongoc.io:" + std::to_string(ec);
+            return fmt::format("amongoc.io:{}", ec);
         }
     }
-};
+} io_category_inst;
 
 struct server_category_cls : std::error_category {
     const char* name() const noexcept override { return "amongoc.server"; }
@@ -77,7 +41,7 @@ struct server_category_cls : std::error_category {
         std::string_view sv = _message_cstr(ec);
         if (sv.empty()) {
             // Unknown error code
-            return "amongoc.server:" + std::to_string(ec);
+            return fmt::format("amongoc.server:{}", ec);
         }
         return std::string(sv);
     }
@@ -766,89 +730,149 @@ struct server_category_cls : std::error_category {
         }
         return "";
     }
+} server_category_inst;
+
+struct client_category_cls : std::error_category {
+    const char* name() const noexcept override { return "amongoc.client"; }
+    std::string message(int ec) const noexcept override {
+        switch (static_cast<::amongoc_client_errc>(ec)) {
+        case amongoc_client_errc_okay:
+            return "no error";
+        case amongoc_client_errc_invalid_update_document:
+            return "invalid document for an ‘update’ operation";
+        }
+        return fmt::format("amongoc.client:{}", ec);
+    }
+} client_category_inst;
+
+struct tls_category_cls : std::error_category {
+    const char* name() const noexcept override { return "amongoc.tls"; }
+    std::string message(int ec) const noexcept override {
+        const char* msg = ::ERR_error_string(static_cast<unsigned long>(ec), nullptr);
+        return msg ? msg : fmt::format("amongoc.tls:{}", ec);
+    }
+} tls_category_inst;
+
+// Inherit some status attributes from a C++ category
+template <auto GetCategory>
+struct from_cxx_category {
+    static const char* name() noexcept { return GetCategory().name(); }
+    static char*       message(int c) {
+        std::string msg = GetCategory().message(c);
+        return ::strdup(msg.data());
+    }
 };
 
-io_category_cls     io_category_inst;
-server_category_cls server_category_inst;
+struct generic_category_attrs : from_cxx_category<std::generic_category> {
+    static bool is_timeout(int e) { return e == ETIMEDOUT; }
+    static bool is_cancellation(int e) { return e == ECANCELED; }
+};
+struct system_category_attrs : from_cxx_category<std::system_category> {
+    static bool is_timeout(int e) { return e == ETIMEDOUT; }
+    static bool is_cancellation(int e) { return e == ECANCELED; }
+};
+
+struct netdb_category_attrs : from_cxx_category<asio::error::get_netdb_category> {};
+struct addrinfo_category_attrs : from_cxx_category<asio::error::get_addrinfo_category> {};
+struct io_category_attrs : from_cxx_category<amongoc::io_category> {};
+struct server_category_attrs : from_cxx_category<amongoc::server_category> {};
+struct client_category_attrs : from_cxx_category<amongoc::client_category> {};
+struct tls_category_attrs : from_cxx_category<amongoc::tls_category> {};
+struct unknown_category_attrs : from_cxx_category<amongoc::unknown_category> {};
+
+template <typename>
+constexpr auto get_is_error = nullptr;
+template <typename T>
+    requires requires { T::is_error(42); }
+constexpr auto get_is_error<T> = &T::is_error;
+template <typename>
+constexpr auto get_is_timeout = nullptr;
+template <typename T>
+    requires requires { T::is_timeout(42); }
+constexpr auto get_is_timeout<T> = &T::is_timeout;
+template <typename>
+constexpr auto get_is_cancellation = nullptr;
+template <typename T>
+    requires requires { T::is_cancellation(42); }
+constexpr auto get_is_cancellation<T> = &T::is_cancellation;
 
 }  // namespace
 
-const std::error_category& amongoc::io_category() noexcept { return io_category_inst; }
-const std::error_category& amongoc::server_category() noexcept { return server_category_inst; }
+#define X(Ident)                                                                                   \
+    DefCategory(Ident, MLIB_PASTE_3(amongoc_, Ident, _category), MLIB_PASTE(Ident, _category_attrs))
+#define DefCategory(Ident, GlobalName, Attrs)                                                      \
+    /* Definition of the category global instance */                                               \
+    constexpr ::amongoc_status_category_vtable MLIB_PASTE_3(amongoc_, Ident, _category) = {        \
+        .name            = &Attrs::name,                                                           \
+        .strdup_message  = &Attrs::message,                                                        \
+        .is_error        = get_is_error<Attrs>,                                                    \
+        .is_cancellation = get_is_cancellation<Attrs>,                                             \
+        .is_timeout      = get_is_timeout<Attrs>,                                                  \
+    };
+AMONGOC_STATUS_CATEGORY_X_LIST();
+#undef X
+#undef DefCategory
 
-constexpr amongoc_status_category_vtable amongoc_generic_category = {
-    .name            = [] { return "amongoc.generic"; },
-    .strdup_message  = [](int c) { return strdup(std::generic_category().message(c).data()); },
-    .is_error        = nullptr,
-    .is_cancellation = [](int c) { return c == ECANCELED; },
-    .is_timeout      = [](int c) { return c == ETIMEDOUT; },
-};
+std::string status::message() const noexcept {
+    auto        s = amongoc_status_strdup_message(*this);
+    std::string str(s);
+    free(s);
+    return str;
+}
 
-constexpr amongoc_status_category_vtable amongoc_system_category = {
-    .name           = [] { return "amongoc.system"; },
-    .strdup_message = [](int c) { return strdup(std::system_category().message(c).data()); },
-    // TODO: On Windows, this will not be sufficient
-    .is_error        = nullptr,
-    .is_cancellation = [](int c) { return c == ECANCELED; },
-    .is_timeout      = [](int c) { return c == ETIMEDOUT; },
-};
-
-constexpr amongoc_status_category_vtable amongoc_netdb_category = {
-    .name = [] { return "amongoc.netdb"; },
-    .strdup_message
-    = [](int c) { return strdup(asio::error::get_netdb_category().message(c).data()); },
-    .is_error        = nullptr,
-    .is_cancellation = nullptr,
-    .is_timeout      = nullptr,
-};
-
-constexpr amongoc_status_category_vtable amongoc_addrinfo_category = {
-    .name = [] { return "amongoc.addrinfo"; },
-    .strdup_message
-    = [](int c) { return strdup(asio::error::get_addrinfo_category().message(c).data()); },
-    .is_error        = nullptr,
-    .is_cancellation = nullptr,
-    .is_timeout      = nullptr,
-};
-
-constexpr amongoc_status_category_vtable amongoc_io_category = {
-    .name            = [] { return io_category_inst.name(); },
-    .strdup_message  = [](int c) { return strdup(amongoc::io_category().message(c).data()); },
-    .is_error        = nullptr,
-    .is_cancellation = nullptr,
-    .is_timeout      = nullptr,
-};
-
-constexpr amongoc_status_category_vtable amongoc_server_category = {
-    .name            = [] { return server_category_inst.name(); },
-    .strdup_message  = [](int c) { return strdup(server_category_inst.message(c).data()); },
-    .is_error        = nullptr,
-    .is_cancellation = nullptr,
-    .is_timeout      = nullptr,
-};
-
-constexpr amongoc_status_category_vtable amongoc_unknown_category = {
-    .name           = [] { return "amongoc.unknown"; },
-    .strdup_message = [](int c) { return strdup(("amongoc.unknown:" + std::to_string(c)).data()); },
-    .is_error       = nullptr,
-    .is_cancellation = nullptr,
-    .is_timeout      = nullptr,
-};
+status status::from(const std::error_code& ec) noexcept {
+    if (ec.category() == asio::error::get_misc_category()) {
+        // TODO: Convert these to more comprehensible errors.
+        switch (static_cast<asio::error::misc_errors>(ec.value())) {
+        case asio::error::already_open:
+            return {&amongoc_generic_category, EISCONN};
+        case asio::error::eof:
+            return {&amongoc_io_category, amongoc_errc_connection_closed};
+        case asio::error::not_found:
+            return {&amongoc_generic_category, ENOENT};
+        case asio::error::fd_set_failure:
+            return {&amongoc_generic_category, EINVAL};
+            break;
+        }
+    }
+#define X(Ident)                                                                                   \
+    if (ec.category() == amongoc::MLIB_PASTE(Ident, _category)()) {                                \
+        return {&MLIB_PASTE_3(amongoc_, Ident, _category), ec.value()};                            \
+    }
+    AMONGOC_STATUS_CATEGORY_X_LIST()
+#undef X
+    return {&amongoc_unknown_category, ec.value()};
+}
 
 std::error_code status::as_error_code() const noexcept {
-    if (category == &amongoc_generic_category) {
-        return std::error_code(code, std::generic_category());
-    } else if (category == &amongoc_system_category) {
-        return std::error_code(code, std::system_category());
-    } else if (category == &amongoc_netdb_category) {
-        return std::error_code(code, asio::error::get_netdb_category());
-    } else if (category == &amongoc_addrinfo_category) {
-        return std::error_code(code, asio::error::get_addrinfo_category());
-    } else if (category == &amongoc_io_category) {
-        return std::error_code(code, io_category());
-    } else if (category == &amongoc_server_category) {
-        return std::error_code(code, server_category());
-    } else {
-        return std::error_code(this->code, unknown_category_inst);
+#define X(Ident)                                                                                   \
+    if (this->category == &::MLIB_PASTE_3(amongoc_, Ident, _category)) {                           \
+        return std::error_code(this->code, amongoc::MLIB_PASTE(Ident, _category)());               \
     }
+    AMONGOC_STATUS_CATEGORY_X_LIST()
+#undef X
+    return std::error_code(this->code, unknown_category_inst);
+}
+
+#define DECL_CXX_CAT_GETTER(Ident, CxxExpression)                                                  \
+    std::error_category const& amongoc::MLIB_PASTE(Ident, _category)() noexcept {                  \
+        return CxxExpression;                                                                      \
+    }                                                                                              \
+    static_assert(true)
+DECL_CXX_CAT_GETTER(generic, std::generic_category());
+DECL_CXX_CAT_GETTER(system, std::system_category());
+DECL_CXX_CAT_GETTER(netdb, asio::error::get_netdb_category());
+DECL_CXX_CAT_GETTER(addrinfo, asio::error::get_addrinfo_category());
+DECL_CXX_CAT_GETTER(io, io_category_inst);
+DECL_CXX_CAT_GETTER(server, server_category_inst);
+DECL_CXX_CAT_GETTER(client, client_category_inst);
+DECL_CXX_CAT_GETTER(tls, tls_category_inst);
+DECL_CXX_CAT_GETTER(unknown, unknown_category_inst);
+#undef DECL_CXX_CAT_GETTER
+
+::amongoc_tls_errc amongoc_status_tls_reason(amongoc_status st) noexcept {
+    if (st.category != &::amongoc_tls_category) {
+        return ::amongoc_tls_errc_okay;
+    }
+    return static_cast<::amongoc_tls_errc>(::ERR_GET_REASON(static_cast<unsigned long>(st.code)));
 }

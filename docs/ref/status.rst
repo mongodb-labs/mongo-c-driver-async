@@ -1,15 +1,25 @@
-Header: ``amongoc/status.h``
-############################
+############
+Status Codes
+############
 
 .. header-file:: amongoc/status.h
 
   Types and functions for handling generic status codes
+
+
+Types
+#####
 
 .. struct:: amongoc_status
 
   An augmented status code object.
 
   .. note:: This API is inspired by the C++ `std__error_code` API
+
+  :zero-initialized: A |zero-initialized| `amongoc_status` has **no defined
+    semantics**. If you want a default "okay" status, use `amongoc_okay`. To
+    create a constant-initialized okay status, use :cpp:`{&amongoc_generic_category, 0}`
+    as an initializer.
 
   .. member:: const amongoc_status_category_vtable* category
 
@@ -56,6 +66,10 @@ Header: ``amongoc/status.h``
 
     :C API: `amongoc_is_error`
 
+
+Functions & Macros
+##################
+
 .. function:: bool amongoc_is_error(amongoc_status st)
 
   Test whether the given status `st` represents an error condition.
@@ -68,6 +82,7 @@ Header: ``amongoc/status.h``
 
     The defintion of what constitutes an error depends on the
     `amongoc_status::category`.
+
 
 .. function:: bool amongoc_is_cancellation(amongoc_status st)
 
@@ -107,26 +122,15 @@ Header: ``amongoc/status.h``
   :C++ API: `amongoc_status::message`
 
 
-.. var:: amongoc_status amongoc_okay
+.. var:: const amongoc_status amongoc_okay
 
   A generic status with a code zero. This represents a generic non-error status.
 
-  .. note:: This is implemented as a macro for C compatibility, and is therefore an r-value expression.
-
-C++ APIs
-********
-
-.. rubric:: Namespace: ``amongoc``
-.. namespace:: amongoc
-.. type:: status = ::amongoc_status
-
-  Alias of `::amongoc_status`
-
-.. namespace:: 0
+  .. note:: |macro-impl|.
 
 
 Status Categories
-*****************
+#################
 
 .. struct:: amongoc_status_category_vtable
 
@@ -191,6 +195,8 @@ Built-In |amongoc| Categories
     const amongoc_status_category_vtable amongoc_addrinfo_category
     const amongoc_status_category_vtable amongoc_io_category
     const amongoc_status_category_vtable amongoc_server_category
+    const amongoc_status_category_vtable amongoc_client_category
+    const amongoc_status_category_vtable amongoc_tls_category
     const amongoc_status_category_vtable amongoc_unknown_category
 
   The above `amongoc_status_category_vtable` objects are the built-in status
@@ -233,9 +239,23 @@ Built-In |amongoc| Categories
 
   .. index:: pair: status category; amongoc.server
 
-  *server*
+  *server* (``amongoc.server``)
     These error conditions correspond to error codes returned from a MongoDB
     server. These values are named in :enum:`amongoc_server_errc`.
+
+  .. index:: ! pair: status category; amongoc.client
+
+  *client* (``amongoc.client``)
+    These error conditions correspond to erroneous use of client-side APIs.
+    These arise to prevent communication with a server in a way that would
+    likely cause undesired behavior, often from client/server incompatibilities.
+    These error values are named in :enum:`amongoc_client_errc`.
+
+  .. index:: pair: status category; amongoc.tls
+
+  *tls* (``amongoc.tls``)
+    Error conditions related to TLS. Often the corresponding integer value comes
+    from OpenSSL. Error reason values are stored in `amongoc_tls_errc`
 
   .. index:: pair: status category; amongoc.unknown
 
@@ -249,6 +269,10 @@ Built-In |amongoc| Categories
     code.
 
 
+Status Code Enumerations
+========================
+
+.. index:: ! pair: status codes; amongoc.server
 .. enum:: amongoc_server_errc
 
   This enum contains error code values corresponding to their numeric value
@@ -263,12 +287,59 @@ Built-In |amongoc| Categories
   .. note:: This enum is not exhaustive, and it is possible for a server to
     return an error code that does not have a corresponding enumerator.
 
+.. index:: ! pair: status codes; amongoc.client
+.. enum:: amongoc_client_errc
+
+  This enum corresponds to error codes that may arise for the
+  `amongoc_client_category` status category.
+
+  .. enumerator:: amongoc_client_errc_okay = 0
+
+    Represents no error
+
+  .. enumerator:: amongoc_client_errc_invalid_update_document
+
+    Issued during update CRUD operations where the update specification document
+    is invalid.
+
+
+.. index:: ! pair: status codes; amongoc.tls
+.. enum:: amongoc_tls_errc
+
+  This enum corresponds to reason error codes related to TLS.
+
+  .. important::
+
+    Note that the `amongoc_status::code` value will not necessarily directly
+    compare equal to any enumerator value in this enum. Instead, the reason
+    should be extracted using `amongoc_status_tls_reason`, which extracts the
+    reason portion of the status code from the status.
+
+  Enumerators with an ``_ossl_`` in their identifier correspond to the OpenSSL
+  error reasons from ``<openssl/sslerr.h>``.
+
+  .. enumerator::
+    amongoc_tls_errc_okay = 0
+
+    This represents a non-error condition.
+
+    There are many additional enumerators for this category, but they are not
+    listed here. Most enumerators correspond to OpenSSL reason codes.
+
+
+.. function:: amongoc_tls_errc amongoc_status_tls_reason(amongoc_status st)
+
+  Extract the TLS reason integer value from a status code.
+
+  If `st` does not have the `amongoc_tls_category` category, this will return
+  `amongoc_tls_errc::amongoc_tls_errc_okay` (non-error). Otherwise, it will
+  return a non-zero `amongoc_tls_errc` that specifies the error reason.
+
 
 C++ Exception Type
 ##################
 
-.. namespace:: amongoc
-.. class:: exception : public std::runtime_error
+.. class:: amongoc::exception : public std::runtime_error
 
   A C++ exception type that carries an `amongoc_status` value.
 

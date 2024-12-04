@@ -11,10 +11,12 @@ import os
 import re
 import zlib
 from pathlib import Path
-from typing import Callable, Iterable, Literal, NamedTuple
+from typing import Any, Callable, Iterable, Literal, NamedTuple
 
 from sphinx import addnodes
 from sphinx.application import Sphinx
+from sphinx.domains import Domain, ObjType
+from sphinx.roles import XRefRole
 from sphinx.environment import BuildEnvironment
 
 project = "amongoc"
@@ -83,7 +85,18 @@ CPPREF_INVENTORY: list[InvItem] = [
     InvItem(["std__ptrdiff_t"], "cpp:type", "cpp/types/ptrdiff_t", "std::ptrdiff_t"),
     InvItem(["std__byte"], "cpp:type", "cpp/types/byte", "std::byte"),
     InvItem(["std__forward_iterator"], "cpp:concept", "cpp/iterator/forward_iterator", "std::forward_iterator"),
+    InvItem(["std__ranges__forward_range"], "cpp:concept", "cpp/ranges/forward_range", "std::ranges::forward_range"),
     InvItem(["timespec"], "cpp:class", "c/chrono/timespec"),
+    InvItem(["c/language/value_category"], "std:doc", "c/language/value_category", "Value categories (C)"),
+    InvItem(["c/preprocessor/replace"], "std:doc", "c/preprocessor/replace", "Replacing test macros (C)"),
+    InvItem(["cpp/language/value_category"], "std:doc", "cpp/language/value_category", "Value categories (C++)"),
+    InvItem(["cpp/language/language_linkage"], "std:doc", "cpp/language/language_linkage", "Language linkage (C++)"),
+    InvItem(
+        ["cpp/language/elaborated_type_specifier"],
+        "std:doc",
+        "cpp/language/elaborated_type_specifier",
+        "Elaborated type specifier (C++)",
+    ),
     *itertools.chain.from_iterable(
         (
             InvItem([itype], "cpp:type", "c/types/integer", itype),
@@ -143,6 +156,7 @@ generate_sphinx_inventory(CPPREF_GENERATED_INV, "cppreference", "0", CPPREF_INVE
 intersphinx_mapping = {
     "cmake": ("https://cmake.org/cmake/help/latest", None),
     "cppref": ("https://en.cppreference.com/w/", CPPREF_GENERATED_INV),
+    "mongodb": ("https://www.mongodb.com/docs/manual", None),
 }
 
 templates_path = ["_templates"]
@@ -182,10 +196,15 @@ rst_prolog = """
 .. role:: project-name(literal)
     :class: project-name
 
+.. role:: dbcommand(mongodb:dbcommand)
+
 .. |amongoc| replace:: :project-name:`amongoc`
 .. |attr.transfer| replace:: :doc-attr:`[[transfer]]`
 .. |attr.type| replace:: :doc-attr:`[[type(…)]] <[[type(T)]]>`
 .. |attr.storage| replace:: :doc-attr:`[[storage]]`
+.. |attr.nullable| replace:: :doc-attr:`[[nullable]]`
+.. |attr.zero-init| replace:: :doc-attr:`[[zero_initializable]]`
+.. |zero-initialized| replace:: :ref:`zero-initialized <zero-init>`
 .. |C++ API| replace:: :strong:`(C++ API)`
 
 .. |devdocs-page| replace::
@@ -193,16 +212,24 @@ rst_prolog = """
     This page is for |amongoc| developers and the documented components and
     behavior are not part of any public API guarantees.
 
+.. |inline| replace:: :cpp:`inline`
+.. |extern| replace:: :cpp:`extern`
+.. |static| replace:: :cpp:`static`
+.. |const| replace:: :cpp:`const`
+.. |void| replace:: :cpp:`void`
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
 .. |D| replace:: :math:`D`
 .. |D'| replace:: :math:`D'`
 .. |E| replace:: :math:`E`
+.. |F| replace:: :math:`F`
 .. |H| replace:: :math:`H`
 .. |I| replace:: :math:`I`
+.. |M| replace:: :math:`M`
 .. |Q| replace:: :math:`Q`
 .. |R| replace:: :math:`R`
+.. |R_1| replace:: :math:`R_1`
 .. |S| replace:: :math:`S`
 .. |T| replace:: :math:`T`
 .. |V| replace:: :math:`V`
@@ -211,8 +238,11 @@ rst_prolog = """
 .. |O'| replace:: :math:`O'`
 .. |S_ret| replace:: :math:`S_{\\tt ret}`
 .. |x| replace:: :math:`x`
+.. |true| replace:: :cpp:`true`
+.. |false| replace:: :cpp:`false`
 
-.. |macro-impl| replace:: This is implemented as a function-like preprocessor macro
+.. |macro-impl| replace:: This is implemented as a C preprocessor macro
+.. |iff| replace:: *if-and-only-if*
 
 """
 
@@ -268,6 +298,19 @@ def parse_earthly_artifact(env: BuildEnvironment, sig: str, signode: addnodes.de
     return sig
 
 
+class MongoDBDomain(Domain):
+    name = "mongodb"
+    object_types = {
+        "dbcommand": ObjType("Database Command", "dbcommand"),
+    }
+    roles = {
+        "dbcommand": XRefRole(),
+    }
+
+    def merge_domaindata(self, docnames: list[str], otherdata: dict[str, Any]) -> None:
+        pass
+
+
 def setup(app: Sphinx):
     app.add_object_type(  # type: ignore
         "header-file",
@@ -300,3 +343,4 @@ def setup(app: Sphinx):
         indextemplate="repository file; %s",
         parse_node=annotator("repository file"),
     )
+    app.add_domain(MongoDBDomain)

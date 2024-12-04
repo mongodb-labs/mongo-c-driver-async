@@ -1,18 +1,10 @@
 #pragma once
 
-#include "./alloc.h"
 #include "./box.h"
-#include "./emitter.h"
-#include "./emitter_result.h"
 #include "./handler.h"
-#include "./operation.h"
 #include "./status.h"
 
 #include <mlib/config.h>
-
-#if mlib_is_cxx()
-#include <concepts>
-#endif
 
 typedef struct amongoc_loop_vtable amongoc_loop_vtable;
 typedef struct amongoc_loop        amongoc_loop;
@@ -71,36 +63,9 @@ struct amongoc_loop {
 
 #if mlib_is_cxx()
     // Nanosender for schedule()
-    struct sched_snd {
-        amongoc_loop* loop;
+    struct sched_snd;
 
-        using sends_type = decltype(nullptr);
-
-        template <typename R>
-        struct op {
-            amongoc_loop*           loop;
-            [[no_unique_address]] R _recv;
-
-            void start() noexcept {
-                loop->vtable->call_soon(  //
-                    loop,
-                    amongoc_okay,
-                    amongoc_nil,
-                    amongoc::unique_handler::from(loop->get_allocator(),
-                                                  [this](amongoc::emitter_result&&) mutable {
-                                                      static_cast<R&&>(_recv)(nullptr);
-                                                  })
-                        .release());
-            }
-        };
-
-        template <typename R>
-        op<R> connect(R&& r) const noexcept {
-            return op<R>{loop, mlib_fwd(r)};
-        }
-    };
-
-    sched_snd schedule() noexcept { return {this}; }
+    constexpr sched_snd schedule() noexcept;
 
     mlib::allocator<> get_allocator() const noexcept {
         if (vtable->get_allocator) {
@@ -119,7 +84,7 @@ mlib_extern_c_begin();
  * @return mlib_allocator The allocator associated with the loop if the loop provides
  * one. Otherwise, returns `mlib_default_allocator`.
  */
-static inline mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
+inline mlib_allocator amongoc_loop_get_allocator(const amongoc_loop* loop) mlib_noexcept {
     if (loop->vtable->get_allocator) {
         return loop->vtable->get_allocator(loop);
     }

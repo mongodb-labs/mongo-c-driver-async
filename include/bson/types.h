@@ -1,5 +1,42 @@
 #pragma once
 
+#include <bson/byte.h>
+
+#include <mlib/config.h>
+#include <mlib/str.h>
+
+#if mlib_is_cxx()
+#include <span>
+#endif
+
+/**
+ * @brief Declares a X-macro invocation list for each BSON type. It has the following signature:
+ *
+ * X(<octet>, <view type>, <owner type>, <basename>, <safename>)
+ */
+#define BSON_TYPE_X_LIST                                                                           \
+    X(0, bson_eod, bson_eod, eod, eod)                                                             \
+    X(1, double, double, double, double_)                                                          \
+    X(2, mlib_str_view, mlib_str, utf8, utf8)                                                      \
+    X(3, bson_view, bson_doc, document, document)                                                  \
+    X(4, bson_array_view, bson_array, array, array)                                                \
+    X(5, bson_binary_view, bson_binary, binary, binary)                                            \
+    X(6, bson_undefined, bson_undefined, undefined, undefined)                                     \
+    X(7, bson_oid, bson_oid, oid, oid)                                                             \
+    X(8, bool, bool, bool, bool_)                                                                  \
+    X(9, bson_datetime, bson_datetime, datetime, datetime)                                         \
+    X(10, bson_null, bson_null, null, null)                                                        \
+    X(11, bson_regex_view, bson_regex, regex, regex)                                               \
+    X(12, bson_dbpointer_view, bson_dbpointer, dbpointer, dbpointer)                               \
+    X(13, bson_code_view, bson_code, code, code)                                                   \
+    X(14, bson_symbol_view, bson_symbol, symbol, symbol)                                           \
+    X(16, int32_t, int32_t, int32, int32)                                                          \
+    X(17, bson_timestamp, bson_timestamp, timestamp, timestamp)                                    \
+    X(18, int64_t, int64_t, int64, int64)                                                          \
+    X(19, bson_decimal128, bson_decimal128, decimal128, decimal128)                                \
+    X(0x7f, bson_maxkey, bson_maxkey, maxkey, maxkey)                                              \
+    X(0xff, bson_minkey, bson_minkey, minkey, minkey)
+
 /**
  * @brief The type of the value of a BSON element within a document
  */
@@ -23,7 +60,7 @@ typedef enum bson_type {
     /// A boolean value
     bson_type_bool = 0x08,
     /// A 64bit UTC timestamp (milliseconds since the Unix Epoch)
-    bson_type_date_time = 0x09,
+    bson_type_datetime = 0x09,
     /// A null value
     bson_type_null = 0x0A,
     /// A regular expression
@@ -49,3 +86,129 @@ typedef enum bson_type {
     /// Min key sentinel
     bson_type_minkey = 0xFF,
 } bson_type;
+
+/**
+ * @brief This is a special fake value type that is used at compile-time to disambiguate
+ * the special "no value" of a bson_value/bson_value_ref. It will never actually be
+ * read from or written into a BSON object.
+ */
+typedef struct bson_eod {
+    mlib_empty_aggregate_c_compat;
+#if mlib_have_cxx20()
+    bool operator==(const bson_eod&) const = default;
+#endif
+} bson_eod;
+
+typedef struct bson_undefined {
+    mlib_empty_aggregate_c_compat;
+#if mlib_have_cxx20()
+    bool operator==(const bson_undefined&) const = default;
+#endif
+} bson_undefined;
+
+typedef struct bson_null {
+    mlib_empty_aggregate_c_compat;
+#if mlib_have_cxx20()
+    bool operator==(const bson_null&) const = default;
+#endif
+} bson_null;
+
+typedef struct bson_maxkey {
+    mlib_empty_aggregate_c_compat;
+#if mlib_have_cxx20()
+    bool operator==(const bson_maxkey&) const = default;
+#endif
+} bson_maxkey;
+
+typedef struct bson_minkey {
+    mlib_empty_aggregate_c_compat;
+#if mlib_have_cxx20()
+    bool operator==(const bson_minkey&) const = default;
+#endif
+} bson_minkey;
+
+typedef struct bson_binary_view {
+    const bson_byte* data;
+    uint32_t         data_len;
+    uint8_t          subtype;
+#if mlib_have_cxx20()
+    constexpr std::span<const bson_byte> bytes_span() const noexcept {
+        return std::span{data, data_len};
+    }
+    bool operator==(const bson_binary_view&) const noexcept;
+#endif  //
+} bson_binary_view;
+
+typedef struct bson_oid {
+    uint8_t bytes[12];
+#if mlib_have_cxx20()
+    bool operator==(const bson_oid&) const = default;
+#endif
+} bson_oid;
+#define BSON_OID_ZERO (mlib_init(bson_oid){{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}})
+
+typedef struct bson_datetime {
+    int64_t utc_ms_offset;
+#if mlib_have_cxx20()
+    bool operator==(const bson_datetime&) const = default;
+#endif
+} bson_datetime;
+
+typedef struct bson_regex_view {
+    mlib_str_view regex;
+    mlib_str_view options;
+#if mlib_have_cxx20()
+    bool operator==(const bson_regex_view&) const = default;
+#endif
+} bson_regex_view;
+
+#define BSON_REGEX_NULL (mlib_init(bson_regex_view){mlib_str_view_null, mlib_str_view_null})
+
+typedef struct bson_dbpointer_view {
+    mlib_str_view collection;
+    bson_oid      object_id;
+#if mlib_have_cxx20()
+    bool operator==(const bson_dbpointer_view&) const = default;
+#endif
+} bson_dbpointer_view;
+
+#define BSON_DBPOINTER_NULL (mlib_init(bson_dbpointer_view){NULL, 0, BSON_OID_ZERO})
+
+typedef struct bson_code_view {
+    mlib_str_view utf8;
+#if mlib_have_cxx20()
+    bool operator==(const bson_code_view&) const = default;
+#endif
+} bson_code_view;
+
+typedef struct bson_symbol_view {
+    mlib_str_view utf8;
+#if mlib_have_cxx20()
+    bool operator==(const bson_symbol_view&) const = default;
+#endif
+} bson_symbol_view;
+
+typedef struct bson_timestamp {
+    uint32_t increment;
+    uint32_t utc_sec_offset;
+#if mlib_have_cxx20()
+    bool operator==(const bson_timestamp&) const = default;
+#endif
+} bson_timestamp;
+
+typedef struct bson_decimal128 {
+    uint8_t bytes[16];
+#if mlib_have_cxx20()
+    bool operator==(const bson_decimal128&) const = default;
+#endif
+} bson_decimal128;
+
+#if mlib_is_cxx()
+namespace bson {
+using null      = ::bson_null;
+using undefined = ::bson_undefined;
+using minkey    = ::bson_minkey;
+using maxkey    = ::bson_maxkey;
+
+}  // namespace bson
+#endif

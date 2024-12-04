@@ -1,16 +1,17 @@
 #pragma once
 
+#include "./buffer.hpp"
 #include "./error.hpp"
 #include "./integer.hpp"
+#include "./message.hpp"
 #include "./stream.hpp"
 
 #include <amongoc/asio/as_sender.hpp>
 #include <amongoc/coroutine.hpp>
 #include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
+#include <amongoc/tcp_conn.hpp>
 #include <amongoc/vector.hpp>
-#include <amongoc/wire/buffer.hpp>
-#include <amongoc/wire/message.hpp>
 
 #include <bson/doc.h>
 
@@ -30,7 +31,7 @@ namespace amongoc::wire {
 namespace trace {
 
 // Global toggle for enabling message tracing
-constexpr bool enabled = false;
+constexpr bool enabled = true;
 
 // Print information for a message header
 void message_header(std::string_view prefix,
@@ -96,7 +97,8 @@ void message_exception(const char* msg);
  * @param cont The content spec object
  */
 template <writable_stream Stream, message_type Content>
-co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const Content cont) {
+co_task<mlib::unit>
+send_message(mlib::allocator<> a, Stream& strm, int req_id, const Content cont) {
     // Get the buffers for the message
     const_buffer_sequence auto content_buffers = cont.buffers(a);
     const std::size_t          content_size    = asio::buffer_size(content_buffers);
@@ -126,6 +128,10 @@ co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const 
     co_return {};
 }
 
+// Common send-message case
+extern template co_task<mlib::unit>
+send_message(mlib::allocator<>, tcp_connection_rw_stream&, int, const one_bson_view_op_msg);
+
 /**
  * @brief Receive a wire protocol message from the given readable stream
  *
@@ -134,7 +140,7 @@ co_task<mlib::unit> send_message(allocator<> a, Stream& strm, int req_id, const 
  * @return An `any_message` object with the contents of the message
  */
 template <readable_stream Stream>
-co_task<any_message> recv_message(allocator<> a, Stream& strm) try {
+co_task<any_message> recv_message(mlib::allocator<> a, Stream& strm) try {
     std::array<std::uint8_t, 4 * 4> MsgHeader_chars;
     auto                            MsgHeader_dbuf = generic_dynamic_buffer_v1(MsgHeader_chars);
 
@@ -193,7 +199,7 @@ co_task<any_message> recv_message(allocator<> a, Stream& strm) try {
     throw;
 }
 
-// Externally compile this common specialization
-extern template co_task<any_message> recv_message(allocator<>, tcp_connection_rw_stream&);
+// Common recv-message case
+extern template co_task<any_message> recv_message(mlib::allocator<>, tcp_connection_rw_stream&);
 
 }  // namespace amongoc::wire

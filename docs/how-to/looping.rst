@@ -183,7 +183,7 @@ Running the Loop and Finalizing the Operation
 
 The call to `amongoc_default_loop_run` will execute the operations stored in
 the event loop and return when all operations are complete. We are then safe to
-destroy the operation with `amongoc_operation_destroy`, and we can discard the
+destroy the operation with `amongoc_operation_delete`, and we can discard the
 event loop with `amongoc_default_loop_destroy`.
 
 

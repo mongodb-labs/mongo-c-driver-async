@@ -14,15 +14,16 @@ common shorthands for behavioral guarantees of the annotated APIs.
 
 .. doc-attr:: [[transfer]]
 
-  If a function parameter is annotated with |attr.transfer|, it means that
-  passing an object by-value to that function will invalidate the value in the
-  caller's scope.
+  The |attr.transfer| has two significant points:
 
-  When an object is passed through a parameter that is marked with
-  |attr.transfer|, it becomes the responsibility of the called function to
-  manage the lifetime of the associated object. The function **must** eventually
-  pass the object to another function that has an |attr.transfer| attribute.\
-  [#box-trivial-note]_
+  1. If a function parameter is annotated with |attr.transfer|, it means that
+     passing an value to that function will invalidate the value in the caller's
+     scope.
+  2. When an object is passed through a parameter that is marked with
+     |attr.transfer|, it becomes the responsibility of the called function to
+     manage the lifetime of the associated object. The function **must**
+     eventually pass the object to another function that has an |attr.transfer|
+     attribute.\ [#box-trivial-note]_
 
 
 Example: POSIX ``close``
@@ -87,6 +88,58 @@ After passing an object to a |attr.transfer| function parameter, the only legal\
 object with a live value) or discarding (letting the object leave scope).
 
 
+|attr.nullable|
+###############
+
+.. doc-attr:: [[nullable]]
+
+  A parameter marked with |attr.nullable| indicates that passing a null-value
+  for the object is valid. For pointers, this indicates that passing
+  :cpp:`NULL`/:cpp:`nullptr` has well-defined behavior. Other pointer-like
+  objects may also have a null state, usually their |zero-initialized| state.
+
+  If a parameter is not marked |attr.nullable|, assume that passing a null
+  argument will introduce undefined behavior.
+
+
+|attr.zero-init|
+################
+
+.. doc-attr:: [[zero_initializable]]
+
+  When an aggregate type is annotated with |attr.zero-init|, it indicates that a
+  zero-initialized/empty-initialized instance of that aggregate type is a valid
+  object for certain operations. Usually, this corresponds to a null or zero
+  state. A type that is |attr.zero-init| should have a **Zero-initialized**
+  field describing the semantics of such a value.
+
+  For such an object, declaring a |static| instance with no explicit initializer
+  will be valid, as well as initializing using empty braces :cpp:`{}`, or using
+  `memset` to fill its object representation with zero-bytes.
+
+
+.. _zero-init:
+
+Zero Initialization / Empty Initialization
+******************************************
+
+`Zero initialization`__ (C++) and `empty initialization`__ (C) are similar
+concepts with similar behavior. For convenience, this documentation refers to
+*zero initialization* to mean either the C++ concept or *empty initialization*
+in C.
+
+In C++ and C23, a trivial aggregate may be initialized with an empty brace pair
+:cpp:`{ }` to achieve empt/zero-initialization (this is called *value
+initialization* in C++). In prior C versions, initializing with a brace pair and
+a single literal zero :cpp:`{ 0 }` will usually achieve the same effect. Some C
+compilers implement the C23 language feature as an extension in earlier C
+versions. An object declared |static| without an explicit initializer will
+always be zero-initialized at compile time.
+
+__ https://en.cppreference.com/w/cpp/language/zero_initialization
+__ https://en.cppreference.com/w/c/language/initialization
+
+
 |attr.type|
 ###########
 
@@ -99,7 +152,7 @@ object with a live value) or discarding (letting the object leave scope).
   - `amongoc_emitter` - Specifies the success result type of the emitter.
   - `amongoc_handler` - Specifies the result type expected by the handler.
   - `amongoc_box` and `amongoc_view` - Specifies the type that is contained
-    within the box for use with :c:macro:`amongoc_box_cast`
+    within the box for use with `amongoc_box_cast`
   - ``void*`` - Specifies the pointed-to type for the pointer.
 
 
@@ -124,6 +177,31 @@ object with a live value) or discarding (letting the object leave scope).
 
   For any methods not declared with :doc-attr:`[[optional]]`, assume that the
   method is required.
+
+
+The `__type` Parameter
+######################
+
+.. type:: __type
+
+  Certain :term:`function-like macro`\ s are documented as functions, and they
+  may be annotated with a `__type` parameter. This indicates that the
+  corresponding macro argument should be a compile-time type specifier rather
+  than a runtime value.
+
+
+Unspecified Types
+#################
+
+.. type:: __unspecified
+
+  This documentation type indicates a private type that is not part of the
+  public API, although an annotated struct field may be part of the public API.
+
+  Dereferencing a pointer-to or accessing the members of an `__unspecified` type
+  is not guaranteed to have well-defined behavior. A pointer-to-`__unspecified`
+  should be considered a stronger-typed |void|.
+
 
 .. rubric:: Footnotes
 

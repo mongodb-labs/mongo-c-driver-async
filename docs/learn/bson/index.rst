@@ -6,6 +6,7 @@ BSON Handling
 
 .. toctree::
   :caption: Topics
+  :maxdepth: 2
 
   lifetime
   inserting

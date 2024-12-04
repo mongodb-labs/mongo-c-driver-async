@@ -1,10 +1,19 @@
-###############################
-Header: ``amongoc/operation.h``
-###############################
+#############
+Operation API
+#############
 
-.. header-file:: amongoc/operation.h
+.. header-file::
+  amongoc/operation.h
+  amongoc/operation.hpp
 
-  Operation state utilities.
+  :term:`Operation state` utilities.
+
+
+Types
+#####
+
+C Types
+*******
 
 .. struct:: amongoc_operation
 
@@ -34,25 +43,17 @@ Header: ``amongoc/operation.h``
 
   The operation-launching callback for the operation.
 
-.. function:: void amongoc_start(amongoc_operation* op)
 
-  Launch the operation defined by the given operation object.
+C++ Types
+*********
 
-.. function:: void amongoc_operation_destroy(amongoc_operation [[transfer]] op)
-
-  Destroy an operation object.
-
-  .. note::
-
-    It is very important that the associated operation is *NOT* in-progress!
-
-.. namespace:: amongoc
-
-.. class:: unique_operation
+.. class:: amongoc::unique_operation
 
   Provides move-only ownership semantics around an `amongoc_operation`,
   preventing programmer error and ensuring destruction when the operation leaves
   scope.
+
+  :header: :header-file:`amongoc/operation.hpp`
 
   .. function:: unique_operation(amongoc_operation&&)
 
@@ -60,7 +61,7 @@ Header: ``amongoc/operation.h``
 
   .. function:: ~unique_operation()
 
-    Calls `amongoc_operation_destroy` on the operation.
+    Calls `amongoc_operation_delete` on the operation.
 
   .. function:: template <typename F> unique_operation from_starter(unique_handler&& h, F&& fn)
 
@@ -69,8 +70,8 @@ Header: ``amongoc/operation.h``
 
     :param h: The handler object to be attached to the operation.
     :param fn: The starter invocable that will be invoked whent he operation is
-      is started. A l-value reference to the stored handler will be passed as the
-      sole argument to the starter function.
+      is started. An lvalue reference to the stored handler will be passed as
+      the sole argument to the starter function.
     :allocation: The operation state will be allocated using
       :ref:`the allocator associated with the handler <handler.allocator>` `h`.
 
@@ -78,10 +79,29 @@ Header: ``amongoc/operation.h``
 
     :C API: `amongoc_start`
 
-  .. function:: amongoc_operation release()
+  .. function:: amongoc_operation release() &&
 
     Relinquish ownership of the wrapped operation and return it to the caller.
     This function is used to interface with C APIs that want to |attr.transfer|
     an `amongoc_operation`.
 
-.. namespace:: 0
+
+Functions & Macros
+##################
+
+.. function:: void amongoc_start(amongoc_operation* op)
+
+  Launch the operation defined by the given operation object.
+
+  :header: :header-file:`amongoc/operation.h`
+
+.. function:: void amongoc_operation_delete(amongoc_operation [[transfer]] op)
+
+  Destroy an operation object.
+
+  :header: :header-file:`amongoc/operation.h`
+
+  .. note::
+
+    It is very important that the associated operation is *NOT* in-progress!
+

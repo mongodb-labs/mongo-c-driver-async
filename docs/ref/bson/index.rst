@@ -12,8 +12,9 @@ The BSON library is divided into three main components:
   :caption: Contents
   :maxdepth: 2
 
+  types
+  value
   view
   iter
   doc
   mut
-  utf8

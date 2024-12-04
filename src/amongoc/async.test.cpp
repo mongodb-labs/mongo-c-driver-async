@@ -29,15 +29,16 @@ TEST_CASE("Async/Transform with the C API") {
                       mlib_terminating_allocator,
                       amongoc_nil,
                       [](box, status*, box value) noexcept {
-                          amongoc_box_cast(int)(value) = 81 + amongoc_box_cast(int)(value);
+                          amongoc_box_cast(int, value) = 81 + amongoc_box_cast(int, value);
                           return value;
                       })
              .as_unique();
-    unique_box       got{amongoc_nil};
-    unique_operation op = std::move(em).bind_allocator_connect(allocator<>(mlib_default_allocator),
-                                                               [&](emitter_result&& b) {
-                                                                   got = std::move(b).value;
-                                                               });
+    unique_box       got = amongoc::nil();
+    unique_operation op
+        = std::move(em).bind_allocator_connect(mlib::allocator<>(mlib_default_allocator),
+                                               [&](emitter_result&& b) {
+                                                   got = std::move(b).value;
+                                               });
     op.start();
     CHECK(got.as<int>() == 123);
 }
@@ -51,8 +52,8 @@ TEST_CASE("Async/Timeout") {
     emitter big_delay = amongoc_schedule_later(&loop, dur);
     // Half second timeout:
     auto   timed = amongoc_timeout(&loop, big_delay, timespec{0, 500'000'000}).as_unique();
-    status got;
-    auto   op = std::move(timed).bind_allocator_connect(mlib::terminating_allocator,
+    status got   = ::amongoc_okay;
+    auto   op    = std::move(timed).bind_allocator_connect(mlib::terminating_allocator,
                                                       [&](emitter_result&& r) { got = r.status; });
     op.start();
     auto start = std::chrono::steady_clock::now();
@@ -73,7 +74,7 @@ TEST_CASE("Async/then_just") {
                            amongoc_box_int(1729),
                            mlib_default_allocator)
              .as_unique();
-    status st;
+    status st = ::amongoc_okay;
     box    val;
     auto   op = amongoc_tie(mlib_fwd(em).release(), &st, &val, mlib_default_allocator).as_unique();
     op.start();
@@ -87,7 +88,7 @@ TEST_CASE("Async/then_just") {
 emitter waits(amongoc_loop& loop) {
     co_await ramp_end;
     co_await amongoc_schedule_later(&loop, timespec{0, 1000 * 5}).as_unique();
-    co_return amongoc_nil.as_unique();
+    co_return 0;
 }
 
 TEST_CASE("Async/let") {
@@ -105,13 +106,13 @@ TEST_CASE("Async/let") {
     auto        op  = amongoc_tie(mlib_fwd(em).release(), nullptr, &fin, mlib_default_allocator);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
-    amongoc_operation_destroy(op);
+    amongoc_operation_delete(op);
     amongoc_default_loop_destroy(&loop);
 }
 
 TEST_CASE("Async/Alloc failure") {
     auto           em = amongoc_alloc_failure();
-    amongoc_status st;
+    amongoc_status st = ::amongoc_okay;
     auto           op = amongoc_tie(em, &st, nullptr, mlib_default_allocator).as_unique();
     op.start();
     CHECK(st.code == ENOMEM);

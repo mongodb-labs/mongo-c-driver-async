@@ -4,6 +4,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <functional>
+
 using namespace amongoc;
 
 static_assert(nanosender<then_t<just<int>, std::function<double(int)>>>);

@@ -1,11 +1,11 @@
 #pragma once
 
 #include <amongoc/async.h>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/default_loop.h>
-#include <amongoc/emitter.h>
-#include <amongoc/emitter_result.h>
-#include <amongoc/operation.h>
+#include <amongoc/emitter.hpp>
+#include <amongoc/emitter_result.hpp>
+#include <amongoc/operation.hpp>
 
 #include <mlib/alloc.h>
 
@@ -26,12 +26,12 @@ struct loop_fixture {
      * it won't work!
      */
     emitter_result run_to_completion(amongoc_emitter em) noexcept {
-        emitter_result ret;
-        amongoc_box    box;
-        auto           op = ::amongoc_tie(em, &ret.status, &box, ::mlib_default_allocator);
-        ::amongoc_start(&op);
+        emitter_result   ret;
+        amongoc_box      box;
+        unique_operation op = ::amongoc_tie(em, &ret.status, &box, ::mlib_default_allocator);
+        op.start();
         loop.run();
-        ::amongoc_operation_destroy(op);
+        op.reset();
         ret.value = mlib_fwd(box).as_unique();
         return ret;
     }

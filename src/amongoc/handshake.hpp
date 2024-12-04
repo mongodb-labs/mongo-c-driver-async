@@ -18,7 +18,7 @@
 
 namespace amongoc {
 
-class tcp_connection_rw_stream;
+struct tcp_connection_rw_stream;
 
 /**
  * @brief A parsed handshake response message.
@@ -30,11 +30,11 @@ class tcp_connection_rw_stream;
  */
 struct handshake_response {
     // Initialize with an allocator
-    explicit handshake_response(allocator<> a) noexcept
+    explicit handshake_response(mlib::allocator<> a) noexcept
         : topologyVersion(a) {}
 
     // Get the allocator for this object
-    allocator<> get_allocator() const noexcept { return topologyVersion.get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return topologyVersion.get_allocator(); }
 
     // The type of points-in-time
     using time_point = std::chrono::utc_time<std::chrono::milliseconds>;
@@ -48,9 +48,9 @@ struct handshake_response {
     std::size_t          maxWriteBatchSize   = 100'000;
     time_point           localTime;
     std::chrono::minutes logicalSessionTimeoutMinutes{0};
-    int                  connectionId;
-    int                  minWireVersion{0};
-    int                  maxWireVersion{0};
+    std::int32_t         connectionId;
+    std::int32_t         minWireVersion{0};
+    std::int32_t         maxWireVersion{0};
     bool                 readOnly{false};
     vector<string>       compression{get_allocator()};
     vector<string>       saslSupportedMechs{get_allocator()};
@@ -78,13 +78,13 @@ struct handshake_response {
      * @param a The allocator for message data
      * @param msg A BSON document that contains the handshake response
      */
-    static handshake_response parse(allocator<> a, bson_view msg);
+    static handshake_response parse(mlib::allocator<> a, bson_view msg);
 };
 
 /**
  * @brief Create a handshake message document
  */
-bson::document create_handshake_command(allocator<>                     a,
+bson::document create_handshake_command(mlib::allocator<>               a,
                                         std::optional<std::string_view> application_name);
 
 /**

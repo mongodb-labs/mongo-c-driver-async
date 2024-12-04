@@ -1,8 +1,8 @@
 #include "./pool.hpp"
 
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 #include <amongoc/default_loop.h>
-#include <amongoc/handler.h>
+#include <amongoc/handler.hpp>
 #include <amongoc/loop.h>
 #include <amongoc/status.h>
 
@@ -26,12 +26,8 @@
 
 #include <chrono>
 #include <cstddef>
-#include <forward_list>
-#include <list>
 #include <memory>
 #include <new>
-#include <ratio>
-#include <set>
 
 using namespace amongoc;
 
@@ -44,12 +40,12 @@ template <>
 constexpr bool amongoc::enable_trivially_relocatable_v<tcp_resolve_results> = true;
 
 template <typename T>
-using pool = object_pool<T, allocator<T>>;
+using pool = object_pool<T, mlib::allocator<T>>;
 
 namespace {
 
 // Takes an arbitrary value and wraps it in an amongoc_box
-auto as_box = [](allocator<> alloc) {
+auto as_box = [](mlib::allocator<> alloc) {
     return [alloc](auto&& x) { return unique_box::from(alloc, mlib_fwd(x)); };
 };
 
@@ -84,7 +80,7 @@ public:
         // Destroy the stop registration, because completing the handler may destroy the
         // associated stop state.
         // XXX: Research why this wasn't needed until the coroutine refactor on 9/22/2024
-        _stop_cookie = amongoc_nil.as_unique();
+        _stop_cookie = nil();
         _handler.complete(status::from(ec), std::move(_transform)(mlib::unit{}));
     }
 
@@ -92,7 +88,7 @@ public:
     void operator()(asio::error_code ec, auto&& res) {
         // Destroy the stop registration, because completing the handler may destroy the
         // associated stop state
-        _stop_cookie = amongoc_nil.as_unique();
+        _stop_cookie = nil();
         _handler.complete(status::from(ec), std::move(_transform)(mlib_fwd(res)));
     }
 
@@ -101,7 +97,7 @@ public:
     asio::cancellation_slot get_cancellation_slot() const noexcept { return _slot; }
 
     // Expose the memory allocator of the loop to Asio
-    using allocator_type = allocator<>;
+    using allocator_type = mlib::allocator<>;
     allocator_type get_allocator() const noexcept { return _handler.get_allocator(); }
 
 private:
@@ -116,7 +112,7 @@ private:
     asio::cancellation_slot _slot = _signal->slot();
 
     // The cookie for the registration of our stop callback.
-    unique_box _stop_cookie = amongoc_nil.as_unique();
+    unique_box _stop_cookie = nil();
 };
 
 template <typename Tr>
@@ -124,9 +120,9 @@ explicit adapt_handler(unique_handler, Tr&&, cancellation_ticket&&) -> adapt_han
 
 // Implementation of the default event loop, based on asio::io_context
 struct default_loop {
-    allocator<> _alloc;
+    mlib::allocator<> _alloc;
 
-    asio::io_context ioc;
+    asio::io_context ioc{};
 
     pool<asio::cancellation_signal> _cancel_signals{_alloc};
     pool<tcp::resolver>             _resolvers{_alloc};
@@ -135,7 +131,7 @@ struct default_loop {
     // TODO: Define behavior when the below operations fail to allocate memory.
 
     void call_soon(status st, box res, amongoc_handler h) {
-        auto a = h.get_allocator();
+        mlib::allocator<> a = ::amongoc_handler_get_allocator(&h, ::mlib_default_allocator);
         asio::post(ioc,
                    mlib::bind_allocator(a,
                                         [st,
@@ -194,8 +190,8 @@ struct default_loop {
         boost::container::static_vector<asio::const_buffer, 16> buf_vec;
         mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
                                buf_vec);
-        auto a  = on_write.get_allocator();
-        auto uh = mlib_fwd(on_write).as_unique();
+        mlib::allocator<> a  = ::amongoc_handler_get_allocator(&on_write, ::mlib_default_allocator);
+        auto              uh = mlib_fwd(on_write).as_unique();
         sock.as<tcp::socket>().async_write_some(buf_vec,
                                                 adapt_handler(mlib_fwd(uh),
                                                               as_box(a),
@@ -209,8 +205,8 @@ struct default_loop {
         boost::container::static_vector<asio::mutable_buffer, 16> buf_vec;
         mlib::copy_to_capacity(std::views::transform(std::span(bufs, nbufs), _amc_buf_to_asio_buf),
                                buf_vec);
-        auto a  = on_read.get_allocator();
-        auto uh = mlib_fwd(on_read).as_unique();
+        mlib::allocator<> a  = ::amongoc_handler_get_allocator(&on_read, ::mlib_default_allocator);
+        auto              uh = mlib_fwd(on_read).as_unique();
         sock.as<tcp::socket>().async_read_some(buf_vec,
                                                adapt_handler(mlib_fwd(uh),
                                                              as_box(a),
@@ -239,7 +235,7 @@ struct adapt_memfun_x<F, void (default_loop::*)(Args...)> {
     // A free function that takes a type-erased default_loop and invokes the bound member function.
     // Presents a signature based on the signature of the target member function
     static void ap(amongoc_loop* self, Args... args) noexcept {
-        return (amongoc_box_cast(default_loop)(self->userdata).*F)(mlib_fwd(args)...);
+        return (amongoc_box_cast(default_loop, self->userdata).*F)(mlib_fwd(args)...);
     }
 };
 
@@ -266,7 +262,8 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
     try {
 
         loop->userdata
-            = unique_box::make<default_loop>(allocator<>{alloc}, allocator<>{alloc}).release();
+            = unique_box::make<default_loop>(mlib::allocator<>{alloc}, mlib::allocator<>{alloc})
+                  .release();
         loop->vtable = &default_loop_vtable;
         return amongoc_okay;
     } catch (std::bad_alloc const&) {
@@ -275,7 +272,7 @@ amongoc_status amongoc_default_loop_init_with_allocator(amongoc_loop*  loop,
 }
 
 void amongoc_default_loop_run(amongoc_loop* loop) noexcept {
-    auto& ioc = amongoc_box_cast(default_loop)(loop->userdata).ioc;
+    auto& ioc = amongoc_box_cast(default_loop, loop->userdata).ioc;
     // Restart the IO context, allowing us to call run() more than once
     ioc.restart();
     ioc.run();

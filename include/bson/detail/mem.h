@@ -90,7 +90,7 @@ mlib_constexpr uint64_t _bson_read_u64le(const bson_byte* bytes) mlib_noexcept {
         return u64;
     } else {
         // Optimize to a memcpy
-        uint64_t n;
+        uint64_t n = 0;
         memcpy(&n, bytes, sizeof n);
         return n;
     }
@@ -173,6 +173,34 @@ _bson_memcpy_u8(bson_byte* dst, const uint8_t* src, size_t len) mlib_noexcept {
         memcpy(dst, src, len);
     }
     return dst + len;
+}
+
+/**
+ * @internal
+ * @brief Accepts a pointer-to-const `bson_byte` and returns it.
+ *
+ * Used as a type guard in the bson_data() macro
+ */
+mlib_constexpr const bson_byte* _bson_data_as_const(const bson_byte* p) mlib_noexcept { return p; }
+
+// Equivalent to as_const, but accepts non-const
+mlib_constexpr bson_byte* _bson_data_as_mut(bson_byte* p) mlib_noexcept { return p; }
+
+mlib_constexpr uint32_t _bson_byte_size(const bson_byte* p) mlib_noexcept {
+    // A null document has length=0
+    if (!p) {
+        return 0;
+    }
+    // The length of a document is contained in a four-bytes little-endian
+    // encoded integer. This size includes the header, the document body, and the
+    // null terminator byte on the document.
+    return _bson_read_u32le(p);
+}
+
+// We implement ssize() as a separate function rather than a cast so that the
+// scope operator in `::bson_ssize()` works correctly.
+mlib_constexpr int32_t _bson_byte_ssize(const bson_byte* p) mlib_noexcept {
+    return (int32_t)_bson_byte_size(p);
 }
 
 mlib_extern_c_end();

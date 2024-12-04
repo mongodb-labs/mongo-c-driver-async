@@ -12,9 +12,9 @@ option(AMONGOC_FIND_DEPENDENCIES "${__help}" ON)
 mark_as_advanced(AMONGOC_FIND_DEPENDENCIES)
 if(AMONGOC_FIND_DEPENDENCIES)
     include(CMakeFindDependencyMacro)
-    find_dependency(asio)
     find_dependency(Boost CONFIG COMPONENTS URL Container)
     find_dependency(fmt)
+    find_dependency(OpenSSL)
 endif()
 
 # Target exports file that is install alongside this package-config file

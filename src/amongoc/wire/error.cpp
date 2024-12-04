@@ -7,6 +7,11 @@
 
 #include <system_error>
 
+amongoc::wire::server_error::server_error(bson::document msg)
+    : system_error(std::error_code(msg.find("code")->value().as_int32(), server_category()),
+                   std::string(std::string_view(msg.find("errmsg")->value().utf8)))
+    , _body(mlib_fwd(msg)) {}
+
 void amongoc::wire::throw_protocol_error(std::string_view msg) {
     throw std::system_error(std::make_error_code(std::errc::protocol_error), std::string(msg));
 }
@@ -17,14 +22,11 @@ void amongoc::wire::throw_if_section_error(amongoc::wire::body_section<bson::doc
         // No "ok" field, no error to check
         return;
     }
-    if (ok->as_bool()) {
-        // The messaeg is okay
+    if (ok->value().as_bool()) {
+        // The message is okay
         return;
     }
-    auto code = sec.body.find("code");
-    auto ec   = code->as_int32();
-    auto emsg = sec.body.find("errmsg")->utf8();
-    throw std::system_error(std::error_code(ec, amongoc::server_category()), std::string(emsg));
+    throw server_error(sec.body);
 }
 
 void amongoc::wire::throw_if_section_error(const any_section& sec) {

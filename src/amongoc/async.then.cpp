@@ -29,7 +29,7 @@ struct then_continuation {
 template <bool ForwardErrors, typename CompressedEmitter, typename CompressedUserdata>
 static unique_emitter _then(CompressedEmitter&&      em,
                             CompressedUserdata&&     ud,
-                            allocator<> const&       alloc,
+                            mlib::allocator<> const& alloc,
                             amongoc_then_transformer tr) {
     return as_emitter(alloc,
                       amongoc::then(mlib_fwd(em),
@@ -43,7 +43,7 @@ emitter amongoc_then(emitter                  in,
                      mlib_allocator           alloc_,
                      box                      userdata_,
                      amongoc_then_transformer tr) noexcept {
-    auto alloc = allocator<>{alloc_};
+    auto alloc = mlib::allocator<>{alloc_};
     return mlib_fwd(in)
         .as_unique()
         .compress<0, 8, 16>([&](auto&& in) -> unique_emitter {
@@ -84,7 +84,7 @@ emitter amongoc_then_just(amongoc_emitter          in,
     } else {
         // We are replacing both the status and value. We need to pass the status
         // and the value to the then() algorithm.
-        allocator<> cx_alloc{alloc};
+        mlib::allocator<> cx_alloc{alloc};
         return mlib_fwd(value).as_unique().compress<0, 8, 16>([&]<typename Compressed>(
                                                                   Compressed&& compressed)
                                                                   -> emitter {

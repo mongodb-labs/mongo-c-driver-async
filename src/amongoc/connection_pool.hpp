@@ -1,14 +1,16 @@
 #pragma once
 
 #include <amongoc/coroutine.hpp>
-#include <amongoc/loop.h>
 #include <amongoc/loop.hpp>
 #include <amongoc/string.hpp>
+#include <amongoc/tcp_conn.hpp>
 #include <amongoc/uri.hpp>
 #include <amongoc/wire/client.hpp>
+#include <amongoc/wire/message.hpp>
 #include <amongoc/wire/proto.hpp>
 
 #include <mlib/alloc.h>
+#include <mlib/allocate_unique.hpp>
 #include <mlib/utility.hpp>
 
 #include <forward_list>
@@ -45,7 +47,7 @@ private:
     struct pool_impl;
 
     // A forward-list of member implementations. Used for fast splicing under lock
-    using member_impl_list = std::forward_list<member_impl, allocator<member_impl>>;
+    using member_impl_list = std::forward_list<member_impl, mlib::allocator<member_impl>>;
 
 public:
     /**
@@ -68,7 +70,7 @@ public:
             return _request(*this, _wire_client(), mlib_fwd(m));
         }
 
-        allocator<> get_allocator() const noexcept;
+        mlib::allocator<> get_allocator() const noexcept;
 
     private:
         friend connection_pool;
@@ -115,9 +117,9 @@ public:
     explicit pool_client(connection_pool& pool) noexcept
         : _pool(&pool) {}
 
-    allocator<> get_allocator() const noexcept { return _pool->get_allocator(); }
+    mlib::allocator<> get_allocator() const noexcept { return _pool->get_allocator(); }
 
-    co_task<wire::any_message> request(wire::message_type auto&& msg) {
+    co_task<wire::any_message> request(wire::message_type auto msg) {
         return _request(*this, mlib_fwd(msg));
     }
 
@@ -137,5 +139,26 @@ private:
         co_return co_await self._pool_member->request(mlib_fwd(msg));
     }
 };
+
+namespace wire {
+
+using checking_pool_client = wire::checking_client<amongoc::pool_client>;
+
+}  // namespace wire
+
+// Very common entry points for issuing client requests. extern-declaring these can save several
+// seconds of compile-time by eliding the instantiation of a large template heirarchy
+extern template co_task<wire::any_message> pool_client::request(wire::one_bson_view_op_msg);
+
+namespace wire {
+extern template struct checking_client<amongoc::pool_client>;
+extern template co_task<bson::document> simple_request(amongoc::pool_client, bson_view);
+extern template co_task<bson::document> simple_request(wire::checking_client<amongoc::pool_client>,
+                                                       bson_view);
+
+extern template co_task<any_message>
+wire::checking_client<amongoc::pool_client>::request(one_bson_view_op_msg&&);
+
+}  // namespace wire
 
 }  // namespace amongoc

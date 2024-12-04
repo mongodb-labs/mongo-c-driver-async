@@ -23,7 +23,7 @@ void c_create() {
 
 void cxx_create() {
     // Will be destroyed automatically
-    bson::document doc;
+    bson::document doc{::mlib_default_allocator};
 }
 // end.
 
@@ -104,7 +104,7 @@ void prepend_something() {
 void subdoc_modify() {
     bson_doc      doc     = bson_new();
     bson_mut      top_mut = bson_mutate(&doc);
-    bson_iterator it      = bson_insert(&top_mut, "child", BSON_VIEW_NULL);
+    bson_iterator it      = bson_insert(&top_mut, "child", bson_view_null);
     /* Content:
         {
             "child": {}
@@ -176,11 +176,13 @@ void cxx_for(bson_view data) {
 // ex: [get-value]
 void get_double(bson_view v) {
     bson_iterator it = bson_begin(v);
-    if (bson_iterator_type(it) != bson_type_utf8) {
+    assert(!bson_stop(it));
+    bson_value_ref val = bson_iterator_value(it);
+    if (val.type != bson_type_utf8) {
         fputs("Expected a UTF-8 element", stderr);
         return;
     }
-    printf("Element '%s' has value '%s'\n", bson_key(it).data, bson_iterator_utf8(it).data);
+    printf("Element '%s' has value '%*s'\n", bson_key(it).data, (int)val.utf8.len, val.utf8.data);
 }
 // end.
 
@@ -196,23 +198,16 @@ bool subdoc_iter(bson_view top) {
         return false;
     }
 
+    bson_value_ref val = bson_iterator_value(it);
+
     // Check that it is actually an array
-    if (bson_iterator_type(it) != bson_type_array) {
+    if (val.type != bson_type_array) {
         fputs("Expected an array element", stderr);
         return false;
     }
 
-    // Decode the array as a subdocument:
-    bson_view_errc err;
-    bson_view      array = bson_iterator_document(it, &err);
-    if (bson_data(array) == NULL) {
-        // Decoding the subdocument failed
-        fprintf(stderr, "Failed to decode child document [error %d]", err);
-        return false;
-    }
-
     // Iterate over each element of the array
-    bson_foreach(sub_iter, array) {
+    bson_foreach(sub_iter, val.array) {
         if (bson_iterator_get_error(sub_iter)) {
             // Iterating over a child element encountered an error
             fprintf(stderr,

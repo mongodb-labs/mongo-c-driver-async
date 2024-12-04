@@ -36,7 +36,7 @@ Most C API functions follow the naming scheme:
     For functions that act on a single value, where ``<subject>`` is a noun or
     noun phrase that designates the kind of its subject parameter. Examples:
 
-    - `amongoc_emitter_discard`
+    - `amongoc_emitter_delete`
     - `amongoc_handler_complete`
     - `amongoc_default_loop_run`
 

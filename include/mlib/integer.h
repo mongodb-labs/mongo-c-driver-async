@@ -388,7 +388,8 @@ mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
  * The math is performed in terms of 64-bit integers, encoded by mlib_integer,
  * which also keeps track of any overflows or arithmetic errors during
  * computation. Any operation that overflows will set a flag indicating the
- * overflow, and return a result as if the value would wrap the int64_t range.
+ * overflow. The "Sat" operations will perform saturating arithmetic, and other
+ * operations will perform wrapping arithmetic.
  *
  * If an operaion produces a result R from operating on two expressions X and Y,
  * then R will inherit flags from X and Y, in addition to any flags introduced
@@ -401,13 +402,13 @@ mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
  * The following subexpressions may be given as arguments. The bracketed name
  * indicates the error flag behavior of the operation:
  *
- *    • add(...)
+ *    • add(...) / addSat(...)
  *       ◇ Add a set of values
  *       ∅ [mlib_integer_add_overflow]
  *    • sub(...)
  *       ◇ Subtract values (left-associative)
  *       ∅ [mlib_integer_sub_overflow]
- *    • mul(...)
+ *    • mul(...) / mulSat(...)
  *       ◇ Multiply values
  *       ∅ [mlib_integer_mul_overflow]
  *    • div(N, D)
@@ -508,9 +509,11 @@ mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
 #define _mlibMathEval(...) _mlibMath MLIB_NOTHING()(__VA_ARGS__)
 
 // Four basic operations:
-#define _mlibMathSubExpr_add(A, B) _mlib_math_add(_mlibMathEval(A), _mlibMathEval(B))
+#define _mlibMathSubExpr_add(A, B) _mlib_math_add(_mlibMathEval(A), _mlibMathEval(B), false)
+#define _mlibMathSubExpr_addSat(A, B) _mlib_math_add(_mlibMathEval(A), _mlibMathEval(B), true)
 #define _mlibMathSubExpr_sub(A, B) _mlib_math_sub(_mlibMathEval(A), _mlibMathEval(B))
-#define _mlibMathSubExpr_mul(A, B) _mlib_math_mul(_mlibMathEval(A), _mlibMathEval(B))
+#define _mlibMathSubExpr_mul(A, B) _mlib_math_mul(_mlibMathEval(A), _mlibMathEval(B), false)
+#define _mlibMathSubExpr_mulSat(A, B) _mlib_math_mul(_mlibMathEval(A), _mlibMathEval(B), true)
 #define _mlibMathSubExpr_div(a, b) _mlib_math_div(_mlibMathEval(a), _mlibMathEval(b))
 //  Negate the given argument (subtract from zero)
 #define _mlibMathSubExpr_neg(n) _mlibMathEval(sub(0, n))
@@ -522,6 +525,9 @@ mlib_constexpr bool _mlib_i64_sub_would_overflow(int64_t left, int64_t right) {
 #define _mlibMathSubExpr_value(x) x
 #define _mlibMathSubExpr_V(x) x
 
+#define _mlibMathSubExpr_10 _mlibMathEval MLIB_NOTHING()(fromInt(10))
+#define _mlibMathSubExpr_100 _mlibMathEval MLIB_NOTHING()(fromInt(100))
+#define _mlibMathSubExpr_1000 _mlibMathEval MLIB_NOTHING()(fromInt(1000))
 #define _mlibMathSubExpr_1024 _mlibMathEval MLIB_NOTHING()(fromInt(1024))
 #define _mlibMathSubExpr_512 _mlibMathEval MLIB_NOTHING()(fromInt(512))
 #define _mlibMathSubExpr_256 _mlibMathEval MLIB_NOTHING()(fromInt(256))
@@ -632,22 +638,24 @@ typedef struct mlib_integer {
 } mlib_integer;
 
 // Unset the given status flags on the given integer
-mlib_constexpr mlib_integer _mlib_math_clear_flags(mlib_integer v, enum mlib_integer_flags flags) {
+mlib_constexpr mlib_integer _mlib_math_clear_flags(mlib_integer            v,
+                                                   enum mlib_integer_flags flags) mlib_noexcept {
     v.flags = (enum mlib_integer_flags)(v.flags & ~flags);
     return v;
 }
 
 // Set additional status flags on the given integer (does not clear any bits)
-mlib_constexpr mlib_integer _mlib_math_set_flags(mlib_integer v, enum mlib_integer_flags flags) {
+mlib_constexpr mlib_integer _mlib_math_set_flags(mlib_integer            v,
+                                                 enum mlib_integer_flags flags) mlib_noexcept {
     v.flags = (enum mlib_integer_flags)(flags | v.flags);
     return v;
 }
 
-mlib_constexpr mlib_integer _mlib_math_from_i64(int64_t val) {
+mlib_constexpr mlib_integer _mlib_math_from_i64(int64_t val) mlib_noexcept {
     return (mlib_integer){val, mlib_integer_okay};
 }
 
-mlib_constexpr mlib_integer _mlib_math_from_u64(uint64_t val) {
+mlib_constexpr mlib_integer _mlib_math_from_u64(uint64_t val) mlib_noexcept {
     mlib_integer v = _mlib_math_from_i64((int64_t)val);
     if (val > INT64_MAX) {
         v = _mlib_math_set_flags(v, mlib_integer_bounds);
@@ -655,17 +663,28 @@ mlib_constexpr mlib_integer _mlib_math_from_u64(uint64_t val) {
     return v;
 }
 
-mlib_constexpr mlib_integer _mlib_math_add(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_add(mlib_integer l,
+                                           mlib_integer r,
+                                           bool         saturate) mlib_noexcept {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_add_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_add_overflow);
+        if (saturate) {
+            // Do saturating arithmetic instead of wrapping
+            if (l.i64 > 0) {
+                l.i64 = INT64_MAX;
+            } else {
+                l.i64 = INT64_MIN;
+            }
+            return l;
+        }
     }
     uint64_t ret = (uint64_t)l.i64 + (uint64_t)r.i64;
     l.i64        = (int64_t)ret;
     return l;
 }
 
-mlib_constexpr mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) mlib_noexcept {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_sub_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_sub_overflow);
@@ -675,10 +694,22 @@ mlib_constexpr mlib_integer _mlib_math_sub(mlib_integer l, mlib_integer r) {
     return l;
 }
 
-mlib_constexpr mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
+mlib_constexpr mlib_integer _mlib_math_mul(mlib_integer l,
+                                           mlib_integer r,
+                                           bool         saturate) mlib_noexcept {
     l = _mlib_math_set_flags(l, r.flags);
     if (_mlib_i64_mul_would_overflow(l.i64, r.i64)) {
         l = _mlib_math_set_flags(l, mlib_integer_mul_overflow);
+        if (saturate) {
+            if ((l.i64 < 0) != (r.i64 < 0)) {
+                // Different signedness. Product is negative
+                l.i64 = INT64_MIN;
+            } else {
+                // Same sign. Product is positive.
+                l.i64 = INT64_MAX;
+            }
+            return l;
+        }
     }
     uint64_t ret = (uint64_t)l.i64 * (uint64_t)r.i64;
     l.i64        = (int64_t)ret;
@@ -687,7 +718,7 @@ mlib_constexpr mlib_integer _mlib_math_mul(mlib_integer l, mlib_integer r) {
 
 mlib_constexpr mlib_integer _mlib_math_check_bounds(mlib_integer min,
                                                     mlib_integer max,
-                                                    mlib_integer value) {
+                                                    mlib_integer value) mlib_noexcept {
     value = _mlib_math_set_flags(value, min.flags);
     value = _mlib_math_set_flags(value, max.flags);
     if (value.i64 < min.i64) {
@@ -700,7 +731,7 @@ mlib_constexpr mlib_integer _mlib_math_check_bounds(mlib_integer min,
     return value;
 }
 
-mlib_constexpr mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
+mlib_constexpr mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) mlib_noexcept {
     num = _mlib_math_set_flags(num, den.flags);
     if (den.i64 == 0) {
         num     = _mlib_math_set_flags(num, mlib_integer_zerodiv);
@@ -714,7 +745,8 @@ mlib_constexpr mlib_integer _mlib_math_div(mlib_integer num, mlib_integer den) {
     return num;
 }
 
-mlib_constexpr mlib_integer _mlib_math_strnlen(const char* string, mlib_integer maxlen) {
+mlib_constexpr mlib_integer _mlib_math_strnlen(const char*  string,
+                                               mlib_integer maxlen) mlib_noexcept {
     if (maxlen.flags) {
         // It is not safe to strlen() the string, since 'maxlen' may have a bogus
         // value.
@@ -738,7 +770,7 @@ mlib_constexpr mlib_integer _mlib_math_assert_not_flags(enum mlib_integer_flags 
                                                         mlib_integer            v,
                                                         const char* const       expr_str,
                                                         const char*             file,
-                                                        int                     line) {
+                                                        int line) mlib_noexcept {
     if (flags & v.flags) {
         fprintf(stderr,
                 "           mlibMath: assertNot FAILED\n"
@@ -766,7 +798,7 @@ struct mlib_math_fail_info {
 mlib_constexpr mlib_integer _mlibMathFillFailureInfo(volatile struct mlib_math_fail_info* info,
                                                      mlib_integer                         v,
                                                      const char*                          file,
-                                                     int                                  line) {
+                                                     int line) mlib_noexcept {
     if (v.flags) {
         info->i64   = v.i64;
         info->flags = v.flags;

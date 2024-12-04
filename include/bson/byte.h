@@ -22,5 +22,12 @@ typedef struct bson_byte {
     constexpr explicit operator std::byte() const noexcept { return std::byte(v); }
     constexpr explicit operator std::uint8_t() const noexcept { return v; }
     constexpr explicit operator char() const noexcept { return static_cast<char>(v); }
+
+    constexpr bool operator==(const bson_byte& other) const { return v == other.v; }
+    constexpr bool operator==(std::byte c) const noexcept { return std::byte{v} == c; }
+    constexpr bool operator==(std::uint8_t c) const noexcept { return v == c; }
 #endif
 } bson_byte;
+
+#define T bson_byte
+#include <mlib/vec.t.h>

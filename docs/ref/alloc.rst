@@ -1,6 +1,6 @@
-#####################
-Header: |this-header|
-#####################
+#########################
+Dynamic Memory Allocation
+#########################
 
 .. |this-header| replace:: :header-file:`mlib/alloc.h`
 .. header-file:: mlib/alloc.h
@@ -19,6 +19,8 @@ Types
   Provides support for customizing dynamic memory allocation.
 
   :header: |this-header|
+  :zero-initialized: A |zero-initialized| `mlib_allocator` is not valid for
+    **any operation** *except* with `mlib_deallocate` of a null pointer.
 
   Many |amongoc| APIs accept an `mlib_allocator` parameter, or otherwise consult
   other objects that carry an `mlib_allocator` (e.g. `amongoc_loop` has an
@@ -37,7 +39,7 @@ Types
 
     Arbitrary pointer to context for the allocator.
 
-  .. function:: void* reallocate(void* userdata, void* prev_ptr, size_t requested_size, size_t alignment, size_t previous_size, size_t* [[storage]] out_new_size)
+  .. function:: void* reallocate(void* userdata, void* [[nullable]] prev_ptr, size_t requested_size, size_t alignment, size_t previous_size, size_t* [[storage]] out_new_size)
 
     **(Function pointer member)**
 
@@ -46,7 +48,7 @@ Types
     Implements custom allocation for the allocator. The user must provide a
     non-null pointer to a function for the allocator.
 
-    :param userdata: The `mlib_allocator::userdata` pointer.
+    :param userdata: The `mlib_allocator_impl::userdata` pointer.
     :param prev_ptr: Pointer that was previously returned by `reallocate`
     :param requested_size: The requested amount of memory for the new region, **or**
       zero to request deallocation of `prev_ptr`.
@@ -146,7 +148,7 @@ Functions
 .. function::
   void* mlib_allocate(mlib_allocator alloc, size_t sz)
   void mlib_deallocate(mlib_allocator alloc, void* p, size_t sz)
-  void* mlib_reallocate(mlib_allactor alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
+  void* mlib_reallocate(mlib_allocator alloc, void* prev_ptr, size_t sz, size_t alignment, size_t prev_size, size_t* out_new_size)
 
   Attempt to allocate or deallocate memory using the allocator `alloc`.
 
@@ -159,11 +161,20 @@ Functions
     - For allocation functions: **upon success**: returns a pointer to the
       beginning of a newly allocated region of at least size `sz` and optional
       alignment `alignment`. **Upon failure**, returns :cpp:`nullptr`.
-
   :header: |this-header|
 
   The `mlib_reallocate` function is a wrapper around the
   `mlib_allocator_impl::reallocate` function.
+
+  .. important::
+
+    For `mlib_deallocate`: If the pointer `p` is null, then it is legal for
+    `alloc` to have a null `mlib_allocator::impl` member. **This is the only
+    legal use of a null allocator**.
+
+    This behavior is crafted specifically to support deletion of aggregate types
+    which store an allocator and a pointer as a member, so that deleting a
+    zero-initialized instance of that struct is a valid no-op.
 
 
 Constants
@@ -192,15 +203,13 @@ Constants
   standard error and :cpp:`abort()` will be called.
 
 
-C++ APIs (Namespace ``mlib``)
-#############################
-
-.. namespace:: mlib
+C++ APIs
+########
 
 Types
 *****
 
-.. class:: template <typename T = void> allocator
+.. class:: template <typename T = void> mlib::allocator
 
   Provides a C++ allocator interface for an `mlib_allocator`
 
@@ -232,8 +241,8 @@ Types
   .. function:: bool operator==(allocator) const
 
     Compare two allocators. Two `allocator`\ s are equal if the
-    `mlib_allocator::userdata` and `mlib_allocator::reallocate` pointers
-    are equal.
+    `mlib_allocator_impl::userdata` and `mlib_allocator_impl::reallocate`
+    pointers are equal.
 
   .. function:: mlib_allocator c_allocator() const
 
@@ -291,7 +300,7 @@ Types
 
 .. class::
   template <typename Alloc, typename T> \
-  bind_allocator
+  mlib::bind_allocator
 
   Create an object with a bound allocator.
 
@@ -324,7 +333,7 @@ Types
     Apply a query to the underlying object. (See: :doc:`/dev/queries`)
 
 
-.. struct:: alloc_deleter
+.. struct:: mlib::alloc_deleter
 
   A deleter type for use with `std::unique_ptr` that deletes an object using an
   `mlib::allocator`
@@ -332,7 +341,7 @@ Types
   :header: |this-header|
 
 .. type::
-  template <typename T> unique_ptr = std::unique_ptr<T, alloc_deleter>
+  template <typename T> mlib::unique_ptr = std::unique_ptr<T, alloc_deleter>
 
   A `std::unique_ptr` type that uses an `mlib::allocator`.
 
@@ -346,7 +355,7 @@ Functions
 
 .. function::
   template <typename T> \
-  unique_ptr<T> allocate_unique(allocator<> a, auto&&... args)
+  unique_ptr<T> mlib::allocate_unique(allocator<> a, auto&&... args)
 
   Construct an `mlib::unique_ptr\<T>` using the given allocator to manage the
   object.
@@ -357,7 +366,7 @@ Functions
 Constants
 *********
 
-.. var:: const allocator<> terminating_allocator{::mlib_terminating_allocator}
+.. var:: const allocator<> mlib::terminating_allocator{::mlib_terminating_allocator}
 
   A C++ version of the `mlib_terminating_allocator`
 

@@ -86,7 +86,7 @@ static unique_emitter _let(CompressedEmitter&&     in,
                                                                        GetAllocator>;
     nanosender_of<emitter_result> auto l
         = amongoc::let(mlib_fwd(in), C{tr, mlib_fwd(ud), get_alloc});
-    return as_emitter(allocator<>{get_alloc()}, mlib_fwd(l));
+    return as_emitter(mlib::allocator<>{get_alloc()}, mlib_fwd(l));
 }
 
 emitter amongoc_let(emitter                 in_,

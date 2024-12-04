@@ -1,11 +1,15 @@
 #pragma once
 
+#include <amongoc/loop.hpp>
 #include <amongoc/status.h>
+#include <amongoc/tls/stream.hpp>
 #include <amongoc/wire/error.hpp>
+#include <amongoc/wire/message.hpp>
 #include <amongoc/wire/proto.hpp>
 #include <amongoc/wire/stream.hpp>
 
 #include <mlib/alloc.h>
+#include <mlib/object_t.hpp>
 
 #include <system_error>
 
@@ -21,34 +25,79 @@ concept client_interface
 /**
  * @brief A wire client that wraps a write-stream and tracks request IDs.
  *
- * @tparam Stream The wrapped stream
+ * @tparam Stream The wrapped stream type
+ *
+ * A client wrapper can be TLS-enabled if it is constructed with a `tls::stream` that
+ * holds the underlying stream type
  */
 template <writable_stream Stream>
 class client {
 public:
     client() = default;
-    explicit client(Stream&& strm, allocator<> a)
-        : _stream(mlib_fwd(strm))
+    /**
+     * @brief Construct a new client that uses a plaintext stream
+     *
+     * @param strm The stream to be adopted
+     * @param a The allocator for the client
+     */
+    explicit client(Stream&& strm, mlib::allocator<> a)
+        : _stream_var(std::in_place_index<0>, mlib_fwd(strm))
         , _alloc(a) {}
 
-    allocator<> get_allocator() const noexcept { return _alloc; }
+    /**
+     * @brief Construct a new client that uses a TLS-enabled stream
+     *
+     * @param strm A TLS wrapper around the underlying stream
+     * @param a The allocator for the client
+     */
+    explicit client(tls::stream<Stream>&& strm, mlib::allocator<> a)
+        : _stream_var(std::in_place_index<1>, mlib_fwd(strm))
+        , _alloc(a) {}
 
+    // Get the associated allocator
+    mlib::allocator<> get_allocator() const noexcept { return _alloc; }
+
+    /**
+     * @brief Issue an asynchronous request on the client
+     *
+     * @param msg The message to be transmitted
+     * @return co_task<any_message> The response from the peer
+     */
     template <message_type Message>
     co_task<any_message> request(Message&& msg) {
-        return request(*this, mlib_fwd(msg));
+        // Unpack the variant stream and issue the request. This is the point where
+        // we branch between plaintext/TLS streams.
+        return std::visit(
+            [&](auto& stream) -> co_task<any_message> {
+                return _request(*this, mlib::unwrap_object(stream), mlib_fwd(msg));
+            },
+            _stream_var);
     }
 
 private:
-    Stream       _stream;
-    allocator<>  _alloc;
+    /**
+     * @brief Variant holding either a plaintext stream, or a TLS-wrapper around a plaintext stream.
+     */
+    std::variant<mlib::object_t<Stream>, amongoc::tls::stream<Stream>> _stream_var;
+
+    // The associated allocator
+    mlib::allocator<> _alloc;
+    // The request ID. Monotonically increasing with each request
     std::int32_t _request_id = 0;
 
-    static co_task<any_message> request(client& self, message_type auto msg) {
+    /**
+     * @brief Issue a request on the given associated stream
+     *
+     * @param self Reference to myself
+     * @param stream Reference to the stream. Either plaintext, or the TLS wrapper
+     * @param msg The message to be issued
+     */
+    static co_task<any_message> _request(client& self, auto& stream, message_type auto msg) {
         co_await wire::send_message(self.get_allocator(),
-                                    self._stream,
+                                    stream,
                                     self._request_id++,
                                     mlib_fwd(msg));
-        co_return co_await wire::recv_message(self.get_allocator(), self._stream);
+        co_return co_await wire::recv_message(self.get_allocator(), stream);
     }
 };
 
@@ -58,7 +107,7 @@ explicit client(S&&, auto&&...) -> client<S>;
 /**
  * @brief Pass a wire client by reference
  */
-template <client_interface C>
+template <typename C>
 struct client_ref {
     C& _client;
 
@@ -69,7 +118,7 @@ struct client_ref {
     mlib::allocator<> get_allocator() const noexcept { return mlib::get_allocator(_client); }
 };
 
-template <client_interface C>
+template <typename C>
 explicit client_ref(const C&) -> client_ref<C>;
 
 /**
@@ -89,7 +138,7 @@ co_task<bson::document> simple_request(client_interface auto cl, auto body) {
  *
  * @tparam Client The wrapped client
  */
-template <client_interface Client>
+template <typename Client>
 class retrying_client {
 public:
     retrying_client() = default;
@@ -122,7 +171,7 @@ private:
     }
 };
 
-template <client_interface C>
+template <typename C>
 explicit retrying_client(C&&, int = 0) -> retrying_client<C>;
 
 /**
@@ -131,7 +180,7 @@ explicit retrying_client(C&&, int = 0) -> retrying_client<C>;
  *
  * If the response contains an error, raises `std::system_error` with the `amongoc::server_category`
  */
-template <client_interface C>
+template <typename C>
 struct checking_client {
     C _client;
 
@@ -149,7 +198,7 @@ private:
     }
 };
 
-template <client_interface C>
+template <typename C>
 explicit checking_client(C&&) -> checking_client<C>;
 
 }  // namespace amongoc::wire

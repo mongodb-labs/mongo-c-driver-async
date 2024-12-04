@@ -16,41 +16,6 @@ Emitters & Handlers
 The asynchrony model in |amongoc| is defined by :term:`emitters <emitter>` and
 :term:`handlers <handler>`.
 
-.. glossary::
-
-  emitter
-
-    An *emitter* is the core of the |amongoc| async model. It is an object that
-    defines a prepared asynchronous operation (i.e. "what to do"), but does not
-    yet have a continuation. It must be *connected* to a :term:`handler` and
-    this will produce the :term:`operation state` object.
-
-    The |amongoc| emitter is defined by the `amongoc_emitter` type.
-
-    See: `Emitters`
-
-  handler
-
-    A *handler* is an object that defines the continuation of an asynchronous
-    operation (i.e. "what to do next"). A handler also tells an operation how to
-    handle cancellation.
-
-    Generally, an |amongoc| user won't be working with handlers directly, as
-    they are used as the building blocks for more complete asynchronous
-    algorithms.
-
-    The |amongoc| handler is defined by the `amongoc_handler` type.
-
-  operation state
-
-    The *operation state* is an object created by connecting an :term:`emitter`
-    to a :term:`handler`. It must be explicitly started to launch the operation.
-
-    This is defined by the `amongoc_operation` type. Typically, you will only
-    have a few of these in an application, possibly only one for the entire
-    program.
-
-
 .. _Emitters:
 
 Emitters
@@ -70,6 +35,20 @@ and the value of the result status.
 For example, the `amongoc_client_new` function returns an `amongoc_emitter`
 that resolves with an `amongoc_client` upon success (this is represented in
 the documentation with the |attr.type| attribute).
+
+.. _model.handlers:
+
+Handlers
+********
+
+.. tip::
+
+  Writing a valid |amongoc| :term:`handler` is somewhat subtle and requires
+  care. Usually, it is easier to use the library's asynchronous operation
+  composition APIs instead of writing a :term:`handler` directly.
+
+A :term:`handler` combines with a :term:`emitter` to form to tell that emitter
+how to continue after its associated asynchronous operation completes.
 
 
 Accessing an Emitter's Result

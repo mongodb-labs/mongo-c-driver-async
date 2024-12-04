@@ -51,7 +51,8 @@ Consider the following when writing documentation for |amongoc|:
     e. ``:precondition:``
     f. ``:postcondition:``
     g. ``:allocation:``
-    h. ``:header:``
+    h. ``:zero-initialized:`` (for use with aggregate types annotated with |attr.zero-init|)
+    i. ``:header:``
 
 13. **Don't** duplicate information from the description in the documentation
     fields. **Don't** include ``:param:`` and ``:return:`` fields if the entire
@@ -60,7 +61,7 @@ Consider the following when writing documentation for |amongoc|:
     obvious from the description or the API signature.
 14. **Don't** create multiple documentation entries for very similar function
     overloads. Instead, document them together under the same directive and
-    explain the differences between them. (e.g. :c:macro:`amongoc_box_init`)
+    explain the differences between them. (e.g. `amongoc_box_init`)
 15. Use admonition directives to announce important things that the reader might
     otherwise miss. Avoid using bold "**NOTE**" and "**WARNING**" inline in the
     text unless using an admonition would seriously break the flow of the text.

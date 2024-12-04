@@ -3,29 +3,34 @@ VERSION 0.8
 build-alpine:
     FROM alpine:3.20
     # Install build deps. Some deps are for vcpkg bootstrapping
-    RUN apk add build-base git cmake gcc g++ ninja make curl zip unzip tar pkgconfig linux-headers ccache
+    RUN apk add build-base git cmake gcc g++ ninja make curl zip unzip tar \
+            pkgconfig linux-headers ccache python3 perl bash
     DO +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-debian:
     FROM debian:12
     RUN apt-get update && \
-        apt-get -y install build-essential cmake git curl zip unzip tar ninja-build pkg-config
-    DO +BOOTSTRAP_BUILD_INSTALL_EXPORT
+        apt-get -y install build-essential cmake git curl zip unzip tar ninja-build \
+            pkg-config python3 ccache
+    # Spec test generation requires a Python newer than what is on Debian 12
+    DO +BOOTSTRAP_BUILD_INSTALL_EXPORT --BUILD_SPEC_TESTS=FALSE
 
 build-rl:
     FROM rockylinux:8
-    RUN dnf -y install zip unzip git gcc-toolset-12
+    RUN dnf -y install zip unzip git gcc-toolset-12 python3.12 epel-release && \
+        dnf -y install ccache
     LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
     RUN curl "$cmake_url" -Lo cmake.sh && \
         sh cmake.sh --exclude-subdir --prefix=/usr/local/ --skip-license
     LET ninja_url = "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip"
     RUN curl -L "$ninja_url" -o ninja.zip && \
         unzip ninja.zip -d /usr/local/bin/
+    CACHE ~/.ccache  # Epel Ccache still uses the old cache location
     DO +BOOTSTRAP_BUILD_INSTALL_EXPORT --launcher "scl run gcc-toolset-12 --"
 
 build-multi:
     FROM alpine
-    COPY +build-rl/ out/rl/
+    # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
     COPY +build-debian/ out/debian/
     COPY +build-alpine/ out/alpine/
     SAVE ARTIFACT out/* /
@@ -58,11 +63,12 @@ BOOTSTRAP_DEPS:
         pmm(VCPKG REVISION 2024.08.23)
         " > $src_tmp/CMakeLists.txt
     # Running CMake now will prepare our dependencies without configuring the rest of the project
+    CACHE ~/.cache/vcpkg
     RUN $launcher cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
 
 COPY_SRC:
     FUNCTION
-    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ .
+    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ tests/ .
 
 BUILD:
     FUNCTION
@@ -70,11 +76,14 @@ BUILD:
     ARG cpack_out
     ARG launcher
     DO +COPY_SRC
-    CACHE ~/.cache
-    CACHE ~/.ccache
+    CACHE ~/.cache/ccache
+    ARG BUILD_TESTING=TRUE
+    ARG BUILD_SPEC_TESTS=TRUE
     RUN $launcher cmake -S . -B _build -G "Ninja Multi-Config" \
         -D CMAKE_CROSS_CONFIGS="Debug;Release" \
         -D CMAKE_INSTALL_PREFIX=$prefix \
+        -D BUILD_TESTING=$BUILD_TESTING \
+        -D BUILD_SPEC_TESTS=$BUILD_SPEC_TESTS \
         -D CMAKE_DEFAULT_CONFIGS=all
     RUN $launcher cmake --build _build
     IF test "$install_prefix" != ""

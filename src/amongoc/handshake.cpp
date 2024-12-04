@@ -5,6 +5,7 @@
 #include <bson/doc.h>
 #include <bson/make.hpp>
 #include <bson/parse.hpp>
+#include <bson/value.h>
 #include <bson/view.h>
 
 #include <cstddef>
@@ -13,81 +14,75 @@
 
 using namespace amongoc;
 
-amongoc::handshake_response amongoc::handshake_response::parse(allocator<> a, bson_view msg) {
+amongoc::handshake_response amongoc::handshake_response::parse(mlib::allocator<> a, bson_view msg) {
     handshake_response ret{a};
 
-    using bson::parse::doc;
-    using bson::parse::each;
-    using bson::parse::field;
-    using bson::parse::integral;
-    using bson::parse::must;
-    using bson::parse::store;
-    using bson::parse::type;
+    using namespace bson::parse;
 
-    auto store_string = [&](auto& into) {
-        return type<std::string_view>([&](std::string_view sv) -> bson::parse::accepted {
-            into = string(sv, a);
-            return {};
-        });
-    };
     auto store_size = [&](std::size_t& out) {
-        return [&](bson::parse::reference const& el) {
-            out = static_cast<std::size_t>(el.as_int64());
-            return bson::parse::accepted{};
+        return [&](bson::parse::reference const& el) -> basic_result {
+            out = static_cast<std::size_t>(el.value().as_int64());
+            return {};
         };
     };
+
+    // Copy a string or string view, imbuing it with our allocator
+    auto copy_string = after(construct<string>{}, constant(a));
+
+    // Create a rule that stores a string view to a string, using our allocator to copy
+    auto store_string = [&](string& into) {
+        return type<std::string_view>(action(atop(assign(into), copy_string)));
+    };
+
+    // A rule that appends an array of strings to an output vector
     auto append_strings = [&](vector<string>& vec) {
-        return type<bson::view>(
-            each(type<std::string_view>([&](std::string_view sv) -> bson::parse::accepted {
+        return type<bson_array_view>(
+            each(type<std::string_view>([&](std::string_view sv) -> basic_result {
                 vec.emplace_back(sv);
                 return {};
             })));
     };
 
-    auto parse = doc{
-        must(field("isWritablePrimary", type<bool>(store(ret.isWritablePrimary)))),
-        must(field("topologyVersion", bson::parse::just_accept{})),  // TODO
-        must(field("maxBsonObjectSize", must(store_size(ret.maxBsonObjectSize)))),
-        must(field("maxMessageSizeBytes", must(store_size(ret.maxMessageSizeBytes)))),
-        must(field("maxWriteBatchSize", must(store_size(ret.maxWriteBatchSize)))),
-        must(field("localTime", bson::parse::just_accept{})),                     // TODO
-        must(field("logicalSessionTimeoutMinutes", bson::parse::just_accept{})),  // TODO
-        must(field("connectionId", must(integral(store(ret.connectionId))))),
-        must(field("minWireVersion", must(integral(store(ret.minWireVersion))))),
-        must(field("maxWireVersion", must(integral(store(ret.maxWireVersion))))),
-        must(field("readOnly", must(integral(store(ret.readOnly))))),
-        field("compression", must(append_strings(ret.compression))),
-        field("saslSupportedMechs", must(append_strings(ret.saslSupportedMechs))),
-        field("hosts", must(append_strings(ret.hosts))),
-        field("setName", must(store_string(ret.setName))),
-        field("setVersion", must(store_string(ret.setVersion))),
-        field("secondary", must(integral(store(ret.setVersion)))),
-        field("passives", must(append_strings(ret.passives))),
-        field("arbiters", must(append_strings(ret.arbiters))),
-        field("primary", must(store_string(ret.primary))),
-        field("arbiterOnly", must(integral(store(ret.arbiterOnly)))),
-        field("passive", must(integral(store(ret.passive)))),
-        field("hidden", must(integral(store(ret.hidden)))),
-        field("me", must(store_string(ret.me))),
-        field("electionId", must(store_string(ret.electionId))),
-        field("msg", must(store_string(ret.msg))),
-        bson::parse::just_accept{},
-    };
-    auto result = parse(msg);
-    if (not bson::parse::did_accept(result)) {
-        auto err = bson::parse::describe_error(result);
-        wire::throw_protocol_error(err);
-    }
+    must_parse(  //
+        msg,
+        doc{
+            require("isWritablePrimary", store(ret.isWritablePrimary)),
+            require("topologyVersion", bson::parse::just_accept{}),  // TODO
+            require("maxBsonObjectSize", must(store_size(ret.maxBsonObjectSize))),
+            require("maxMessageSizeBytes", must(store_size(ret.maxMessageSizeBytes))),
+            require("maxWriteBatchSize", must(store_size(ret.maxWriteBatchSize))),
+            require("localTime", bson::parse::just_accept{}),                     // TODO
+            require("logicalSessionTimeoutMinutes", bson::parse::just_accept{}),  // TODO
+            require("connectionId", must(integer(store(ret.connectionId)))),
+            require("minWireVersion", must(integer(store(ret.minWireVersion)))),
+            require("maxWireVersion", must(integer(store(ret.maxWireVersion)))),
+            require("readOnly", must(store(ret.readOnly))),
+            field("compression", must(append_strings(ret.compression))),
+            field("saslSupportedMechs", must(append_strings(ret.saslSupportedMechs))),
+            field("hosts", must(append_strings(ret.hosts))),
+            field("setName", must(store_string(ret.setName))),
+            field("setVersion", must(store_string(ret.setVersion))),
+            field("secondary", must(integer(store(ret.setVersion)))),
+            field("secondary", must(integer(store(ret.setVersion)))),
+            field("passives", must(append_strings(ret.passives))),
+            field("arbiters", must(append_strings(ret.arbiters))),
+            field("primary", must(store_string(ret.primary))),
+            field("arbiterOnly", must(integer(store(ret.arbiterOnly)))),
+            field("passive", must(integer(store(ret.passive)))),
+            field("hidden", must(integer(store(ret.hidden)))),
+            field("me", must(store_string(ret.me))),
+            field("electionId", must(store_string(ret.electionId))),
+            field("msg", must(store_string(ret.msg))),
+            // TODO: lastWrite, tags
+            bson::parse::just_accept{},
+        });
 
-    // TODO: lastWrite, tags
     return ret;
 }
 
-bson::document amongoc::create_handshake_command(allocator<>                     alloc,
+bson::document amongoc::create_handshake_command(mlib::allocator<>               alloc,
                                                  std::optional<std::string_view> app_name) {
-    using bson::make::conditional;
-    using bson::make::doc;
-    using std::pair;
+    using namespace bson::make;
 #undef linux
     auto os_type = [] {
         switch (neo::operating_system) {

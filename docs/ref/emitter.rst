@@ -1,13 +1,28 @@
-#############################
-Header: ``amongoc/emitter.h``
-#############################
+###########
+Emitter API
+###########
 
-.. header-file:: amongoc/emitter.h
+.. header-file::
+  amongoc/emitter.h
+  amongoc/emitter.hpp
 
-.. struct:: amongoc_emitter
+  Contains types and functions for working with :term:`emitters <emitter>`
+
+.. header-file:: amongoc/emitter_result.hpp
+
+  Contains the definition of `amongoc::emitter_result`
+
+Types
+#####
+
+C Types
+*******
+
+.. struct:: [[zero_initializable]] amongoc_emitter
 
   `amongoc_emitter` is the core of the |amongoc| asynchronous design.
 
+  :C++ API: `amongoc::unique_emitter`
   :header: :header-file:`amongoc/emitter.h`
 
   .. type:: T
@@ -32,9 +47,10 @@ Header: ``amongoc/emitter.h``
 
     Virtual method table for the emitter.
 
-  .. function:: as_unique() &&
+  .. function:: amongoc::unique_emitter as_unique() &&
 
-    Move the emitter into an `amongoc::unique_emitter` to be managed automatically
+    (C++) Move the emitter into an `amongoc::unique_emitter` to be managed
+    automatically.
 
 .. struct:: amongoc_emitter_vtable
 
@@ -60,40 +76,19 @@ Header: ``amongoc/emitter.h``
       `amongoc_start` on the returned operation object.
 
       If the returned operation object is destroyed with
-      `amongoc_operation_destroy` without ever being started with
+      `amongoc_operation_delete` without ever being started with
       `amongoc_start`, then there must be no observable effect.
 
 
-.. function:: amongoc_operation amongoc_emitter_connect_handler(amongoc_emitter [[transfer, type(T)]] em, amongoc_handler [[transfer, type(T)]] hnd)
+C++ Types
+*********
 
-  Connect an emitter with a handler. Calls `amongoc_emitter_vtable::connect`.
-
-  :C++ API: `amongoc::unique_emitter::connect`
-  :header: :header-file:`amongoc/emitter.h`
-
-  .. hint::
-
-    This is a very low-level API. In general, users should be composing emitters
-    using high-level APIs such as those in the :header-file:`amongoc/async.h`
-    header.
-
-.. function:: void amongoc_emitter_discard(amongoc_emitter [[transfer]] em)
-
-  Discard an unused emitter object without connecting it to anything. The
-  associated asynchronous operation will never be launched, but associated
-  prepared data will be freed.
-
-  :C++ API: Use `amongoc::unique_emitter`
-  :header: :header-file:`amongoc/emitter.h`
-
-.. namespace:: amongoc
-.. rubric:: Namespace ``amongoc``
-.. class:: unique_emitter
+.. class:: amongoc::unique_emitter
 
   Provides move-only ownership semantics around an `amongoc_emitter`, preventing
   programmer error and ensuring destruction if the emitter is discarded.
 
-  :header: :header-file:`amongoc/emitter.h`
+  :header: :header-file:`amongoc/emitter.hpp`
 
   .. function:: unique_emitter(amongoc_emitter&&)
 
@@ -111,10 +106,11 @@ Header: ``amongoc/emitter.h``
     This function is used to interface with C APIs that want to |attr.transfer|
     an `amongoc_emitter`.
 
-  .. function:: template <typename F> static unique_emitter from_connector(F&& fn)
+  .. function:: template <typename F> static unique_emitter from_connector(mlib::allocator<> alloc, F&& fn)
 
     Create an emitter from a connector function object.
 
+    :param alloc: The allocator to use for the state.
     :param fn: The object must support a call signature of
       :expr:`unique_operation(unique_handler)`. That is: It must be callable
       with a `unique_handler` argument and return a new `unique_operation`
@@ -134,19 +130,15 @@ Header: ``amongoc/emitter.h``
     with that new handler.
 
     :param a: The allocator to be bound with the new handler. See: :ref:`handler.allocator`
-    :param fn: The function that impelments the handler callback. Must accept
+    :param fn: The function that implements the handler callback. Must accept
       an `emitter_result` argument.
 
 
-.. header-file:: amongoc/emitter_result.h
+.. class:: amongoc::emitter_result
 
-  Contains the definition of `emitter_result`
+  Encapsulates the pair of status+value when an emitter completes.
 
-.. class:: emitter_result
-
-  **(C++)** Encapsulates the pair of status+value when an emitter completes.
-
-  :header: :header-file:`amongoc/emitter_result.h`
+  :header: :header-file:`amongoc/emitter_result.hpp`
 
   .. function::
     emitter_result()  [[1]]
@@ -167,4 +159,28 @@ Header: ``amongoc/emitter.h``
 
     The result status and result value for an emitter.
 
-.. namespace:: 0
+
+Functions & Macros
+##################
+
+.. function:: amongoc_operation amongoc_emitter_connect_handler(amongoc_emitter [[transfer, type(T)]] em, amongoc_handler [[transfer, type(T)]] hnd)
+
+  Connect an emitter with a handler. Calls `amongoc_emitter_vtable::connect`.
+
+  :C++ API: `amongoc::unique_emitter::connect`
+  :header: :header-file:`amongoc/emitter.h`
+
+  .. hint::
+
+    This is a very low-level API. In general, users should be composing emitters
+    using high-level APIs such as those in the :header-file:`amongoc/async.h`
+    header.
+
+.. function:: void amongoc_emitter_delete(amongoc_emitter [[transfer]] em)
+
+  Discard an unused emitter object without connecting it to anything. The
+  associated asynchronous operation will never be launched, but associated
+  prepared data will be freed.
+
+  :C++ API: Use `amongoc::unique_emitter`
+  :header: :header-file:`amongoc/emitter.h`

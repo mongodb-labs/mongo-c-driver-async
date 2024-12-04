@@ -17,8 +17,8 @@ TEST_CASE("Status/From an Error") {
 }
 
 TEST_CASE("Status/As an Error") {
-    amongoc_status st;
-    st.code = ENOMEM;
-    auto ec = st.as_error_code();
+    amongoc_status st = ::amongoc_okay;
+    st.code           = ENOMEM;
+    auto ec           = st.as_error_code();
     CHECK(ec == std::errc::not_enough_memory);
 }

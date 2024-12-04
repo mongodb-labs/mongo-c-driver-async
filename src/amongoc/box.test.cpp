@@ -1,5 +1,5 @@
 #include <amongoc/box.compress.hpp>
-#include <amongoc/box.h>
+#include <amongoc/box.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -10,7 +10,6 @@ using namespace amongoc;
 struct simple_empty {};
 
 static_assert(box_inlinable_type<simple_empty>);
-static_assert(box_inlinable_type<std::unique_ptr<int>>);
 static_assert(box_inlinable_type<std::string_view>);
 static_assert(box_inlinable_type<int*>);
 
@@ -29,7 +28,7 @@ static_assert(not box_inlinable_type<not_trivial>);
 struct explicitly_relocatable {
     ~explicitly_relocatable() {}
 
-    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true);
+    AMONGOC_TRIVIALLY_RELOCATABLE_THIS(true, explicitly_relocatable);
 };
 
 static_assert(box_inlinable_type<explicitly_relocatable>);
@@ -37,7 +36,8 @@ static_assert(box_inlinable_type<explicitly_relocatable>);
 TEST_CASE("Box/Store an Object") {
     amongoc_box b;
     *amongoc_box_init(b, int) = 42;
-    CHECK(amongoc_box_cast(int)(b) == 42);
+    CHECK(amongoc_box_cast(int, b) == 42);
+    CHECK(::amongoc_box_cast(int, b) == 42);
 }
 
 TEST_CASE("Box/Destroy Nothing") {
@@ -61,8 +61,14 @@ TEST_CASE("Box/Simple Destructor") {
     CHECK(did_destroy);
 }
 
+TEST_CASE("Box/Unique nil") {
+    // Just construct the nil box and destroy it.
+    auto b = amongoc::nil();
+    b.data();
+}
+
 TEST_CASE("Box/With C++ Object") {
-    auto b = unique_box::from(allocator<>{mlib_default_allocator},
+    auto b = unique_box::from(mlib::allocator<>{mlib_default_allocator},
                               std::string("Hello, box world! I am a very long string that needs to "
                                           "be dynamically allocated."))
                  .release();
@@ -78,7 +84,7 @@ TEST_CASE("Box/Compress dynamic") {
     struct very_large {
         char f[256];
     };
-    auto b = unique_box::from(allocator<>(::mlib_default_allocator), very_large{});
+    auto b = unique_box::from(mlib::allocator<>(::mlib_default_allocator), very_large{});
     mlib_fwd(b).compress([](auto c) {
         CHECK(sizeof(c) == sizeof(void*));
         (void)mlib_fwd(c).recover();  // Recover the box to destroy it

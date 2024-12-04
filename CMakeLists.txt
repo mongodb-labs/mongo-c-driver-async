@@ -14,6 +14,7 @@ find_package(asio CONFIG REQUIRED)
 find_package(neo-fun CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED URL Container)
 find_package(fmt CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 find_package(Threads REQUIRED)
 
@@ -113,25 +114,21 @@ target_sources(amongoc
 # Enable C++23 features on the target
 # We currently only use C++23 for `auto(). Future revisions
 # can remove these requirements for greater portability.
-target_compile_features(amongoc PUBLIC cxx_std_23)
+target_compile_features(amongoc PRIVATE cxx_std_23)
 
 # Link deps and platform libs.
 target_link_libraries(amongoc
     PUBLIC
-        asio::asio
-        fmt::fmt
         amongoc::detail::c_platform
-        Boost::url
-        Boost::container
         Threads::Threads
-        fmt::fmt
     PRIVATE
+        fmt::fmt
+        Boost::container
+        Boost::url
+        $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
+        OpenSSL::SSL
     )
-
-add_executable(bson-use-test tests/use-bson.test.c)
-target_link_libraries(bson-use-test PRIVATE amongoc::amongoc)
-
 if(BUILD_TESTING)
     # Add Catch integrations
     find_package(Catch2 CONFIG REQUIRED)
@@ -141,7 +138,19 @@ if(BUILD_TESTING)
     add_executable(amongoc-test ${test_sources})
     target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2)
     target_include_directories(amongoc-test PRIVATE src)
-    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST)
+    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
+        PROPERTIES SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
+        )
+    target_compile_features(amongoc-test PRIVATE cxx_std_23)
+
+    # A test case that simply invokes each BSON API
+    add_executable(bson-use-test tests/use-bson.test.c)
+    target_link_libraries(bson-use-test PRIVATE amongoc::amongoc)
+
+    # Add a test that compiles as C++17 and includes all of our headers
+    add_executable(cxx17-test tests/cxx17.test.cpp)
+    target_link_libraries(cxx17-test PRIVATE amongoc::amongoc)
+    set_property(TARGET cxx17-test PROPERTY CXX_STANDARD 17)
 
     # Generate URI tests
     include(GenURITests)
@@ -203,6 +212,7 @@ foreach(filepath IN LISTS examples)
     message(STATUS "Example: ${name}")
     set(exe "${name}.example")
     add_executable("${exe}" ${filepath})
+    target_compile_features(${exe} PRIVATE cxx_std_23)
     target_link_libraries(${exe} amongoc::amongoc)
 endforeach()
 

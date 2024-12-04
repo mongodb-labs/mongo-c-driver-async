@@ -48,7 +48,7 @@ struct uri_host {
  * @brief Parameters for a URI's authentication
  */
 struct uri_auth {
-    explicit uri_auth(allocator<> a) noexcept
+    explicit uri_auth(mlib::allocator<> a) noexcept
         : username(a) {}
 
     // URI username
@@ -69,7 +69,7 @@ struct uri_auth {
  * spelling within the URI string.
  */
 struct connection_params {
-    explicit connection_params(allocator<> a) noexcept
+    explicit connection_params(mlib::allocator<> a) noexcept
         // Only construct one object using the allocator. Other parameter objects will inherit this
         // allocator
         : compressors(a) {}
@@ -130,7 +130,7 @@ struct connection_params {
 class connection_uri {
 public:
     // Default-construct an empty URI using the given allocator
-    explicit connection_uri(allocator<> a) noexcept
+    explicit connection_uri(mlib::allocator<> a) noexcept
         : hosts(a) {}
 
     /**
@@ -152,7 +152,7 @@ public:
      */
     static result<connection_uri> parse(std::string_view                        uri,
                                         event_emitter<uri_warning_event> const& ev,
-                                        allocator<>                             alloc) noexcept;
+                                        mlib::allocator<>                       alloc) noexcept;
 
     // Obtain the allocator associated with this object
     mlib::allocator<> get_allocator() const noexcept { return hosts.get_allocator(); }

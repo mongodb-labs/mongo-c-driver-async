@@ -1,6 +1,7 @@
 #include "./build.test.hpp"
 
 #include <bson/doc.h>
+#include <bson/iter_errc.h>
 #include <bson/types.h>
 #include <bson/view.h>
 
@@ -32,8 +33,8 @@ TEST_CASE("bson/view/regex/Normal") {
     auto it = v.begin();
     CHECK(it->key() == "r");
     CHECK(it->type() == bson_type_regex);
-    CHECK(it->regex().regex == "foo"sv);
-    CHECK(it->regex().options == ""sv);
+    CHECK(it->value().get_regex().regex == "foo"sv);
+    CHECK(it->value().get_regex().options == ""sv);
 }
 
 TEST_CASE("bson/view/regex/Misisng null") {
@@ -83,8 +84,8 @@ TEST_CASE("bson/view/regex/Two empty strings") {
     auto v  = bson::view::from_data(dat, sizeof dat);
     auto it = v.begin();
     CHECK(it->type() == bson_type_regex);
-    CHECK(it->regex().regex == ""sv);
-    CHECK(it->regex().options == ""sv);
+    CHECK(it->value().get_regex().regex == ""sv);
+    CHECK(it->value().get_regex().options == ""sv);
     CHECK((++it) == v.end());
 }
 
@@ -114,11 +115,39 @@ TEST_CASE("bson/view/regex/Extra null") {
     auto v  = bson::view::from_data(dat, sizeof dat);
     auto it = v.begin();
     CHECK(it->type() == bson_type_regex);
-    CHECK(it->regex().regex == "foo"sv);
+    CHECK(it->value().get_regex().regex == "foo"sv);
     // The second null caused our options to truncate
-    CHECK(it->regex().options == ""sv);
+    CHECK(it->value().get_regex().options == ""sv);
     ++it;
     CHECK(it.error() == bson_iter_errc_invalid_type);
+}
+
+TEST_CASE("bson/view/subdoc/too large") {
+    // clang-format off
+    bson_byte dat[] = {
+        13, 0, 0, 0,
+        bson_type_document, 'r', 0,
+        50, 0, 0, 0, 0, // fifty bytes is too many
+        0,
+    };
+    // clang-format on
+    auto v  = bson::view::from_data(dat, sizeof dat);
+    auto it = v.begin();
+    CHECK(it.error() == bson_iter_errc_invalid_length);
+}
+
+TEST_CASE("bson/view/subdoc/missing null") {
+    // clang-format off
+    bson_byte dat[] = {
+        13, 0, 0, 0,
+        bson_type_document, 'r', 0,
+        5, 0, 0, 0, 42, // "42" should be zero for a null terminator
+        0,
+    };
+    // clang-format on
+    auto v  = bson::view::from_data(dat, sizeof dat);
+    auto it = v.begin();
+    CHECK(it.error() == bson_iter_errc_invalid_document);
 }
 
 /**
@@ -142,7 +171,7 @@ TEST_CASE("bson/view/foreach/break") {
     };
     // clang-format on
     auto          v = bson::view::from_data(dat, sizeof dat);
-    bson_iterator last_seen;
+    bson_iterator last_seen{};
     int           nth = 0;
     // There are three elements, but we stop at two
     bson_foreach(iter, v) {
@@ -181,10 +210,10 @@ TEST_CASE("bson/view/foreach/error iterator") {
     auto v  = bson::view::from_data(dat, sizeof dat);
     auto it = v.begin();
     CHECK(it->key() == "r");
-    CHECK(it->utf8() == "foo");
+    CHECK(it->value().get_utf8() == "foo");
     ++it;
     CHECK(it->key() == "b");
-    CHECK(it->int64() == 42);
+    CHECK(it->value().get_int64() == 42);
     ++it;
     CHECK(it.has_error());
 
@@ -226,5 +255,26 @@ TEST_CASE("bson/view/foreach/Once evaluation") {
     bson_foreach(it, get()) {
         (void)it;
         // Empty
+    }
+}
+
+TEST_CASE("bson/view/structured binding pair") {
+    // clang-format off
+    bson_byte dat[] = {
+        13, 0, 0, 0,
+        bson_type_regex, 'r', 0,
+        // rx
+        'f', 'o', 'o', 0,
+        // opts
+        0,
+        0,
+    };
+    // clang-format on
+    auto v = bson::view::from_data(dat, sizeof dat);
+    for (auto [key, val] : v) {
+        CHECK(key == "r");
+        CHECK(val.type == bson_type_regex);
+        CHECK(val.get_regex().regex == "foo");
+        CHECK(val.get_regex().options == "foo");
     }
 }

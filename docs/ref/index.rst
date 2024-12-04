@@ -18,7 +18,14 @@ Reference
   async
   alloc
   client
+  database
+  collection
   loop
   handler
 
   bson/index
+  str
+  vec
+  time
+
+  glossary
