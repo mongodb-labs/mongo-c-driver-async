@@ -74,9 +74,10 @@ void stream_base::operation_base::reenter(std::error_code ec) noexcept {
 
     if (auto n_pending = ::BIO_ctrl_pending(_stream._bio.get())) {
         // OpenSSL has some data that it wants to send to the peer
-        auto dbuf   = asio::dynamic_buffer(_stream._pending_output);
-        auto buf    = dbuf.prepare(n_pending);
-        auto nbytes = ::BIO_read(_stream._bio.get(), buf.data(), buf.size());
+        auto dbuf = asio::dynamic_buffer(_stream._pending_output);
+        auto buf  = dbuf.prepare(n_pending);
+        // Move from the BIO into the output buffer that we will send
+        auto nbytes [[maybe_unused]] = ::BIO_read(_stream._bio.get(), buf.data(), buf.size());
         assert(nbytes == static_cast<int>(n_pending));
         return _stream.do_write_some(io_callback{_stream, *this, false});
     } else if (SSL_want_read(_stream._ssl.get())) {
