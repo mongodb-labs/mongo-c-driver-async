@@ -13,6 +13,9 @@
   coroutines
   result
   queries
+  asio
+  tls
+
   documenting
 
   bson-building
