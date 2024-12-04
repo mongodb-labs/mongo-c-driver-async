@@ -32,6 +32,9 @@ Types
     The "reference" semantics apply to the non-trivial types such as strings
     and document references.
 
+  Members
+  *******
+
   .. member:: bson_type type
 
     The active type of the viewed value. The special type tag `bson_type_eod`
@@ -66,6 +69,9 @@ Types
 
       The various values that can be viewed by the reference. Each field
       corresponds to a value of the `type` member.
+
+  C++ Members
+  ***********
 
   .. function::
     static bson_value_ref from(__bson_value_convertible V)
@@ -202,7 +208,7 @@ Functions & Macros
 ##################
 
 .. function::
-  void bson_value_delete(bson_value [[transfer]] val)
+  void bson_value_delete(bson_value [[transfer, nullable]] val)
 
   Delete any resources associated with the given BSON value.
 
@@ -217,7 +223,8 @@ Functions & Macros
 .. function::
   bson_value bson_value_copy(__bson_value_convertible V)
 
-  Create a copy of `V` stored in a dynamically typed `bson_value`.
+  Create a copy of `V` stored in a dynamically typed `bson_value`. The returned
+  value must eventually be destroyed.
 
 
 .. _iter.coerce:
@@ -237,13 +244,13 @@ Functions & Macros
 
   .. rubric:: Notes on behavior:
 
-  - For coercing a boolean element to a number, a |true| element becomes :cpp:`1`,
-    and |false| becomes :cpp:`0`.
+  - For coercing a boolean element to a number, a |true| element becomes
+    :cpp:`1`, and |false| becomes :cpp:`0`.
   - Coercing between double, int32, and int64 will do the coercing according to
     the language's conversion rules. (e.g. an **int64** converted to a
     **double** will first extract an `int64_t` and then convert it to a
     :cpp:`double`)
-  - For coercing to a ``bool`` with `bson_iterator_as_bool`, the following
+  - For coercing to a ``bool`` with `bson_value_as_bool`, the following
     applies:
 
     - If the element is a numeric type, a |true| value will be returned if

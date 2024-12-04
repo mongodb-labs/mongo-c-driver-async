@@ -160,14 +160,15 @@ Type: `amongoc_loop`
 The Default Event Loop
 ######################
 
-amongoc provides a default event loop in ``<amongoc/default_loop.h>``. This is a
-simple single-threaded event loop that provides all the base operations.
+|amongoc| provides a default event loop in
+:header-file:`amongoc/default_loop.h`. This is a simple single-threaded event
+loop that provides all the base operations.
 
 .. function:: void amongoc_default_loop_init(amongoc_loop* [[storage]] loop)
 
   Initialize a new default event loop.
 
-  :param loop: Pointer to storage for a new `amongoc_loop`
+  :param loop: Pointer to |attr.storage| for a new `amongoc_loop`
   :header: :header-file:`amongoc/default_loop.h`
 
   Each call to this function must be followed by a later call to

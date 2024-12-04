@@ -29,8 +29,11 @@ Types
   :header: :header-file:`bson/view.h`
 
   .. note:: This type should not be created manually. It should be created using
-    `bson_as_view`, `bson_view_from_data`, `bson_iterator_document`, or
-    `bson_view_null`.
+    `bson_as_view`, `bson_view_from_data`, or `bson_view_null`.
+
+
+  C++ Members
+  ***********
 
   .. type::
     iterator = ::bson_iterator
