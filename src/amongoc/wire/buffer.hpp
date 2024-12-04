@@ -12,7 +12,6 @@
 
 #include <asio/buffer.hpp>
 #include <asio/buffers_iterator.hpp>
-#include <neo/iterator_facade.hpp>
 
 #include <cstddef>
 #include <iterator>
@@ -144,7 +143,7 @@ constexpr const_buffer_sequence decltype(auto) buffer_sequence_as_range(B&& bufs
  * @param bufs the buffers to be viewed
  */
 template <const_buffer_sequence B>
-constexpr mlib::byte_range auto buffers_subrange(const B& bufs) {
+constexpr mlib::byte_range auto bytes_of_buffers(const B& bufs) {
     // Optimize for cases that the object is a single buffer.
     if constexpr (single_mutable_buffer<B>) {
         asio::mutable_buffer mb = bufs;
@@ -167,8 +166,8 @@ constexpr mlib::byte_range auto buffers_subrange(const B& bufs) {
  * @note Only use this for operations that are guaranteed to never overrun the buffer range
  */
 template <const_buffer_sequence B>
-constexpr mlib::byte_range auto buffers_unbounded(const B& bufs) {
-    auto it = std::ranges::begin(buffers_subrange(bufs));
+constexpr mlib::byte_range auto unbounded_bytes_of_buffers(const B& bufs) {
+    mlib::byte_iterator auto const it = std::ranges::begin(wire::bytes_of_buffers(bufs));
     return std::ranges::subrange(it, std::unreachable_sentinel);
 }
 

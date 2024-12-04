@@ -38,8 +38,8 @@ constexpr std::ranges::iterator_t<O> write_int_le(O&& out_rng, I value) {
  */
 template <std::integral I>
 void write_int_le(dynamic_buffer_v1 auto&& dbuf, I value) {
-    auto out     = dbuf.prepare(sizeof value);
-    auto out_rng = buffers_subrange(out);
+    mutable_buffer_sequence auto out     = dbuf.prepare(sizeof value);
+    mlib::byte_range auto        out_rng = wire::bytes_of_buffers(out);
     write_int_le(out_rng, value);
     dbuf.commit(sizeof value);
 }
@@ -52,9 +52,9 @@ void write_int_le(dynamic_buffer_v1 auto&& dbuf, I value) {
  */
 template <typename I>
 I read_int_le(dynamic_buffer_v1 auto&& dbuf) {
-    const_buffer_sequence auto data = dbuf.data();
-    auto                       subr = buffers_subrange(data);
-    I                          v    = mlib::read_int_le<I>(subr).value;
+    const_buffer_sequence auto  data  = dbuf.data();
+    mlib::byte_range auto const bytes = wire::bytes_of_buffers(data);
+    I                           v     = mlib::read_int_le<I>(bytes).value;
     dbuf.consume(sizeof(I));
     return v;
 }

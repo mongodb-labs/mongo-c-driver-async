@@ -11,6 +11,7 @@
 
 #include <asio/buffer.hpp>
 
+#include <utility>
 #include <variant>
 
 namespace amongoc::wire {
@@ -175,7 +176,7 @@ public:
         if (asio::buffer_size(data) < 1) {
             throw std::system_error(std::make_error_code(std::errc::protocol_error), "short read");
         }
-        auto kind = static_cast<std::uint8_t>(*buffers_unbounded(data).begin());
+        auto kind = static_cast<std::uint8_t>(*wire::unbounded_bytes_of_buffers(data).begin());
         dbuf.consume(1);
         data = dbuf.data();
         switch (kind) {
@@ -185,7 +186,8 @@ public:
                 throw std::system_error(std::make_error_code(std::errc::protocol_error),
                                         "short read");
             }
-            const auto bson_len = mlib::read_int_le<std::uint32_t>(buffers_unbounded(data)).value;
+            const auto bson_len
+                = mlib::read_int_le<std::uint32_t>(wire::unbounded_bytes_of_buffers(data)).value;
             if (asio::buffer_size(data) < bson_len) {
                 throw std::system_error(std::make_error_code(std::errc::protocol_error),
                                         "short read");
