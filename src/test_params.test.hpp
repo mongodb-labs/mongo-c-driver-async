@@ -36,7 +36,11 @@ struct parameters_type {
             SKIP("No MongoDB URI was set (pass --mongodb-uri or set $AMONGOC_TEST_MONGODB_URI)");
         }
         auto s = *mongodb_uri;
-        s.append("?appName=" + this->app_name);
+        if (s.contains("?")) {
+            s.append("&appName=" + this->app_name);
+        } else {
+            s.append("?appName=" + this->app_name);
+        }
         return s;
     }
 };
