@@ -143,6 +143,10 @@ if(BUILD_TESTING)
         )
     target_compile_features(amongoc-test PRIVATE cxx_std_23)
 
+    # A test case that simply invokes each BSON API
+    add_executable(bson-use-test tests/use-bson.test.c)
+    target_link_libraries(bson-use-test PRIVATE amongoc::amongoc)
+
     # Add a test that compiles as C++17 and includes all of our headers
     add_executable(cxx17-test tests/cxx17.test.cpp)
     target_link_libraries(cxx17-test PRIVATE amongoc::amongoc)
