@@ -9,6 +9,9 @@
 
 namespace amongoc::wire {
 
+/**
+ * @brief An exception type based on `std::system_error` that carries the server message body
+ */
 class server_error : public std::system_error {
 public:
     explicit server_error(bson::document body);
@@ -19,6 +22,11 @@ private:
     bson::document _body;
 };
 
+/**
+ * @brief Throws a std::system_error with `std::errc::protocol_error` as an error code
+ *
+ * @param msg The message string to be attached to the exception
+ */
 [[noreturn]]
 void throw_protocol_error(std::string_view msg);
 

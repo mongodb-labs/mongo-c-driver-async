@@ -35,7 +35,7 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Good") {
         std::string s = testing::parameters.require_uri();
         em            = amongoc_client_new(&loop.get(), s.data()).as_unique();
     }
-    status got_ec;
+    status got_ec  = ::amongoc_okay;
     bool   did_run = false;
     auto   op      = std::move(em).connect(
         unique_handler::from(mlib::terminating_allocator, [&](emitter_result&& r) {
@@ -44,6 +44,7 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Good") {
         }));
     op.start();
     loop.run();
+    CAPTURE(got_ec.message());
     CHECK(got_ec.code == 0);
     CHECK(did_run);
 }
@@ -52,8 +53,8 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Invalid hostname") {
     // Connecting to an invalid TLD will fail
     auto s
         = amongoc_client_new(&loop.get(), "mongodb://asdfasdfaczxv.invalidtld:27017").as_unique();
-    status got_ec;
-    auto   op = std::move(s).connect(
+    status got_ec = ::amongoc_okay;
+    auto   op     = std::move(s).connect(
         unique_handler::from(mlib::terminating_allocator,
                              [&](emitter_result&& r) { got_ec = r.status; }));
     op.start();
@@ -63,10 +64,10 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Invalid hostname") {
 
 TEST_CASE_METHOD(testing::loop_fixture, "Client/Timeout") {
     // Connecting to a host that will drop our TCP request. Timeout after 500ms
-    auto   conn = amongoc_client_new(&loop.get(), "mongodb://example.com:27017");
-    auto   s    = amongoc_timeout(&loop.get(), conn, timespec{0, 500'000'000}).as_unique();
-    status got_ec;
-    auto   op = std::move(s).bind_allocator_connect(mlib::terminating_allocator,
+    auto   conn   = amongoc_client_new(&loop.get(), "mongodb://example.com:27017");
+    auto   s      = amongoc_timeout(&loop.get(), conn, timespec{0, 500'000'000}).as_unique();
+    status got_ec = amongoc_okay;
+    auto   op     = std::move(s).bind_allocator_connect(mlib::terminating_allocator,
                                                   [&](emitter_result&& r) { got_ec = r.status; });
     op.start();
     loop.run();
@@ -77,7 +78,7 @@ TEST_CASE_METHOD(testing::loop_fixture, "Client/Timeout") {
 TEST_CASE_METHOD(testing::loop_fixture, "Client/Simple request") {
     auto s = amongoc_client_new(&loop.get(), testing::parameters.require_uri().data()).as_unique();
     std::optional<unique_box> client_box;
-    status                    req_ec;
+    status                    req_ec = ::amongoc_okay;
     unique_operation          req_op;
     bool                      did_run = false;
     auto op = std::move(s).bind_allocator_connect(mlib_default_allocator, [&](emitter_result&& r) {

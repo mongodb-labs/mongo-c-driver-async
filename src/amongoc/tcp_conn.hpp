@@ -17,6 +17,7 @@
 
 #include <mlib/algorithm.hpp>
 #include <mlib/alloc.h>
+#include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
 #include <asio/buffer.hpp>
@@ -63,10 +64,10 @@ struct tcp_connection_rw_stream {
     // Obtain an allocator for the stream. Pulls the allocator from the event loop
     mlib::allocator<> get_allocator() const noexcept { return loop->get_allocator(); }
 
-    // A completion handler for a unique_handle that calls an Asio callback
+    // A completion handler for a unique_handler that calls an Asio callback
     template <typename C>
     struct transfer_completer {
-        C cb;
+        mlib_no_unique_address C cb;
 
         void operator()(emitter_result&& res_nbytes) {
             std::move(cb)(res_nbytes.status.as_error_code(), res_nbytes.value.as<std::size_t>());

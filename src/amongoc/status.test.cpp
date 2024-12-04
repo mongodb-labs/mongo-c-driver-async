@@ -10,12 +10,6 @@ TEST_CASE("Status/Okay") {
     CHECK(st.category == &amongoc_generic_category);
 }
 
-TEST_CASE("Status/Default C++ init") {
-    amongoc_status st{};
-    CHECK(st.code == 0);
-    CHECK(st.category == &amongoc_generic_category);
-}
-
 TEST_CASE("Status/From an Error") {
     auto st = amongoc_status::from(std::make_error_code(std::errc::io_error));
     CHECK(st.category == &amongoc_generic_category);
@@ -23,8 +17,8 @@ TEST_CASE("Status/From an Error") {
 }
 
 TEST_CASE("Status/As an Error") {
-    amongoc_status st;
-    st.code = ENOMEM;
-    auto ec = st.as_error_code();
+    amongoc_status st = ::amongoc_okay;
+    st.code           = ENOMEM;
+    auto ec           = st.as_error_code();
     CHECK(ec == std::errc::not_enough_memory);
 }

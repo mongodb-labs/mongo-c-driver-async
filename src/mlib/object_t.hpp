@@ -118,7 +118,7 @@ struct unwrap_object_fn {
     }
 
     template <typename Ref>
-    constexpr Ref operator()(reference_object<Ref> const& ref) const noexcept {
+    constexpr Ref operator()(reference_object<Ref> ref) const noexcept {
         return static_cast<Ref>(ref);
     }
 

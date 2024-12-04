@@ -6,8 +6,17 @@
 
 namespace mlib {
 
+/**
+ * @brief Match an iterator that yields byte-sized objects that are explicit-convertible to
+ * `std::byte`
+ */
 template <typename T>
-concept byte_iterator = std::input_iterator<T> and sizeof(std::iter_value_t<T>) == 1
+concept byte_iterator =
+    // Must be an iterator
+    std::input_iterator<T>
+    // Value type must be byte-sized
+    and sizeof(std::iter_value_t<T>) == 1
+    // Reference must be explicit-convertible to `std::byte`
     and requires(std::iter_reference_t<T> b) { static_cast<std::byte>(b); };
 
 /**
@@ -61,4 +70,5 @@ constexpr decoded_integer<Int, std::ranges::iterator_t<R>> read_int_le(R&& rng) 
     }
     return {static_cast<Int>(u), it};
 }
+
 }  // namespace mlib

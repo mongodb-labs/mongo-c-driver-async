@@ -433,9 +433,10 @@ emitter amongoc_insert_ex(amongoc_collection*          coll,
     auto       res
         = _parse_write_result(resp, &amongoc_write_result::inserted_count, coll->get_allocator());
 
-    status st;
-    st.category = &amongoc_crud_category;
-    st.code     = res->write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
+    status st{
+        &amongoc_crud_category,
+        res->write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay,
+    };
 
     res->acknowledged = true;
     co_return emitter_result(st, unique_box::from(coll->get_allocator(), mlib_fwd(res)));
@@ -509,7 +510,7 @@ emitter amongoc_update_ex(amongoc_collection*          coll,
     auto       res
         = ::_parse_write_result(resp, &amongoc_write_result::matched_count, coll->get_allocator());
 
-    status st;
+    status st   = ::amongoc_okay;
     st.category = &amongoc_crud_category;
     st.code     = res->write_errors.size ? ::amongoc_crud_write_errors : ::amongoc_crud_okay;
 
