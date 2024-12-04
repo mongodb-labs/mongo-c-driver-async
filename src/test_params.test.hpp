@@ -6,7 +6,6 @@
 
 #include <cstdlib>
 #include <optional>
-#include <random>
 #include <string>
 
 namespace amongoc::testing {
