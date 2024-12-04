@@ -77,6 +77,9 @@ inline constexpr struct delete_unique_fn {
 } delete_unique;
 
 #if mlib_have_cxx20()
+template <typename T>
+concept unique_deletable = requires(T& inst) { mlib::delete_unique(inst); };
+
 /**
  * @brief A deleter that detects an ADL-visible `mlib_delete_this()` function
  */
@@ -104,11 +107,6 @@ struct delete_members {
         (delete_unique(inst.*MemPointers), ...);
     }
 };
-
-#if mlib_have_cxx20()
-template <typename T>
-concept unique_deletable = requires(T& inst) { mlib::delete_unique(inst); };
-#endif
 
 /**
  * @brief An invocable object that holds a compile-time constant invocable (usually a function
