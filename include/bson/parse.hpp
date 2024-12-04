@@ -779,7 +779,7 @@ struct doc_impl::part<reject_others> {
     // We are done if we are ever tested on any element
     constexpr bool done_looking() const noexcept { return this->got_key.has_value(); }
 
-    constexpr basic_result handle_element(const reference& elem) {
+    basic_result handle_element(const reference& elem) {
         got_key.emplace(elem.key());
         return {pstate::reject};
     }
