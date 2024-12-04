@@ -65,6 +65,10 @@ Concepts
       :cpp:`nanosender_traits<std::remove_cvref_t<S>>::connect(std::move(s), std::move(recv))`
       -- Must create a `nanooperation` by connecting the nanosender `s` to the nanoreceiver `recv`
 
+.. concept:: template <typename S, typename T> nanosender_of
+
+  Matches a `nanosender` `S` whose :expr:`sends_t<S>` is convertible to `T`.
+
 .. concept:: template <typename R, typename T> nanoreceiver_of = std::invocable<R, T>
 
   The object must be invocable with the given value as its sole argument. The
