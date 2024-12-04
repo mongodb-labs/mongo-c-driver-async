@@ -114,7 +114,7 @@ target_sources(amongoc
 # Enable C++23 features on the target
 # We currently only use C++23 for `auto(). Future revisions
 # can remove these requirements for greater portability.
-target_compile_features(amongoc PUBLIC cxx_std_23)
+target_compile_features(amongoc PRIVATE cxx_std_23)
 
 # Link deps and platform libs.
 target_link_libraries(amongoc
