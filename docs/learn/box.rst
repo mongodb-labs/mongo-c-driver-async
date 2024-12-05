@@ -4,7 +4,7 @@ Storing Values in a Type-Erased Box
 
 The `amongoc_box` type is used throughout |amongoc| for storing dynamically
 typed values in a way that arbitrary code can execute a destructor on the box if
-necessary. The box type larger than a pointer, but is significantly more
+necessary. The box type is larger than a pointer, but is significantly more
 efficient for storing small objects without requiring dynamic memory allocation.
 An unknown box should be treated as an opaque pointer to an arbitrary object.
 
@@ -132,8 +132,8 @@ executing any destructor function associated with the box.
 
 
 
-Using `unique_box` in C++
-#########################
+Using `amongoc::unique_box` in C++
+##################################
 
 While `amongoc_box` is perfectly usable from C++ code, it may be more convenient
 to use `amongoc::unique_box`, which is a move-only type that will automatically

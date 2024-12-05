@@ -9,9 +9,9 @@ Naming
 ######
 
 All C types, macros, functions declared by |amongoc| are prefixed with
-``amongoc_`` or ``mlib_``. All public C++ APIs are written within the
-``amongoc`` or ``mlib`` namespaces. All public APIs (including macros and
-enumerators) are written in ``snake_case`` with lowercase letters.
+``amongoc_``, ``bson_``, or ``mlib_``. All public C++ APIs are written within
+the ``amongoc``, ``bson_``, or ``mlib`` namespaces. All public APIs (including
+macros and enumerators) are written in ``snake_case`` with lowercase letters.
 
 All public C API structs, unless otherwise noted, are ``typedef``\ 'd to their
 own name, meaning that the ``struct`` tag is unnecessary.
@@ -30,6 +30,8 @@ Most C API functions follow the naming scheme:
     - `amongoc_let`
     - `amongoc_start`
     - `amongoc_is_error`
+    - `bson_begin`
+    - `bson_next`
     - `mlib_allocate`
 
 ``<namespace>_<subject>_<verb>``
