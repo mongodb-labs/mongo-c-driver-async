@@ -18,6 +18,9 @@ from sphinx.application import Sphinx
 from sphinx.domains import Domain, ObjType
 from sphinx.roles import XRefRole
 from sphinx.environment import BuildEnvironment
+from pygments.lexer import inherit, words
+from pygments.lexers.c_cpp import CppLexer  # type: ignore
+from pygments import token
 
 project = "amongoc"
 copyright = "2024, MongoDB"
@@ -311,6 +314,100 @@ class MongoDBDomain(Domain):
         pass
 
 
+# Special identifiers that we want to be lexed and highlighted:
+_TYPES = [
+    *(
+        f"amongoc_{t}"
+        for t in (
+            "box",
+            "status",
+            "loop",
+            "emitter",
+            "operation",
+            "handler",
+            "default_loop",
+            "client",
+            "collection",
+        )
+    ),
+    *(
+        f"bson_{t}"
+        for t in (
+            "doc",
+            "view",
+            "mut",
+            "value",
+            "value_ref",
+            "iterator",
+        )
+    ),
+    *(
+        f"mlib_{t}"
+        for t in (
+            "str",
+            "str_view",
+            "duration",
+        )
+    ),
+]
+_FUNCS = [
+    *(
+        f"amongoc_{f}"
+        for f in (
+            "just",
+            "let",
+            "start",
+            "tie",
+            "then",
+            "timeout",
+            "schedule_later",
+            "is_error",
+        )
+    ),
+    *(
+        f"bson_{f}"
+        for f in (
+            "new",
+            "delete",
+            "as_view",
+            "mutate",
+            "insert",
+            "data",
+            "size",
+            "ssize",
+            "begin",
+            "end",
+            "key",
+            "key_eq",
+        )
+    ),
+]
+_CONSTANTS = [
+    *(f"amongoc_{c}" for c in ("okay", "nil")),
+    *(f"mlib_{c}" for c in ("default_allocator", "terminating_allocator")),
+    *(f"bson_{c}" for c in ("view_null", "array_view_null")),
+]
+
+
+class CustomCppLexer(CppLexer):
+    tokens = {
+        "keywords": [
+            (words(_CONSTANTS, suffix=r"\b"), token.Name.Constant),
+            (words(_TYPES, suffix=r"\b"), token.Keyword.Type),
+            (words(_FUNCS, suffix=r"\b"), token.Name.Function),
+            # Lex every other name of the form `<type>_<words>` as a function name
+            (rf"{words(_TYPES).get()}_\w+\b", token.Name.Function),  # type: ignore
+            # Enumerators
+            (r"amongoc_async_\w+\b", token.Name.Constant),
+            (r"amongoc_\w_errc_\w+\b", token.Name.Constant),
+            (r"bson_type_\w+\b", token.Name.Constant),
+            # Other macro
+            (r"bson_foreach\w*\b", token.Keyword),
+            inherit,
+        ],
+    }
+
+
 def setup(app: Sphinx):
     app.add_object_type(  # type: ignore
         "header-file",
@@ -344,3 +441,6 @@ def setup(app: Sphinx):
         parse_node=annotator("repository file"),
     )
     app.add_domain(MongoDBDomain)
+    app.add_lexer("c", CustomCppLexer)
+    app.add_lexer("cpp", CustomCppLexer)
+    app.add_lexer("c++", CustomCppLexer)
