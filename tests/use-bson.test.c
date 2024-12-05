@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
     struct bson_decimal128 dec;
     bson_dbpointer_view    dbp;
 
-    bson_value_ref vref = bson_as_value_ref(42);
+    bson_value_ref vref = bson_value_ref_from(42);
     bson_value     val  = bson_value_copy(42);
 
     // Viewing APIs
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
     bson_key(iter);
     bson_iterator_type(iter);
     bson_iterator_data(iter);
-    bson_as_view(mut);
+    bson_view_from(mut);
     bson_begin(doc);
     bson_end(doc);
     bson_iterator_eq(iter, iter);
@@ -110,26 +110,26 @@ int main(int argc, char** argv) {
     bson_mut_child(&mut, iter);
     bson_mut_parent_iterator(mut);
 
-    bson_as_value_ref(3.1);
-    bson_as_value_ref(3.1f);
-    bson_as_value_ref(u8str);
-    bson_as_value_ref(u8view);
-    bson_as_value_ref("hello");
-    bson_as_value_ref(view);
-    bson_as_value_ref(doc);
-    bson_as_value_ref(mut);
-    bson_as_value_ref(bin);
-    bson_as_value_ref(true);
-    bson_as_value_ref(dt);
-    bson_as_value_ref(rx);
-    bson_as_value_ref(dbp);
-    bson_as_value_ref(code);
-    bson_as_value_ref(sym);
-    bson_as_value_ref((int32_t)42);
-    bson_as_value_ref(ts);
-    bson_as_value_ref((int64_t)42);
-    bson_as_value_ref(dec);
-    bson_as_value_ref(val);
+    bson_value_ref_from(3.1);
+    bson_value_ref_from(3.1f);
+    bson_value_ref_from(u8str);
+    bson_value_ref_from(u8view);
+    bson_value_ref_from("hello");
+    bson_value_ref_from(view);
+    bson_value_ref_from(doc);
+    bson_value_ref_from(mut);
+    bson_value_ref_from(bin);
+    bson_value_ref_from(true);
+    bson_value_ref_from(dt);
+    bson_value_ref_from(rx);
+    bson_value_ref_from(dbp);
+    bson_value_ref_from(code);
+    bson_value_ref_from(sym);
+    bson_value_ref_from((int32_t)42);
+    bson_value_ref_from(ts);
+    bson_value_ref_from((int64_t)42);
+    bson_value_ref_from(dec);
+    bson_value_ref_from(val);
 
     bson_value_delete(bson_value_copy(3.1));
     bson_value_delete(bson_value_copy(3.1f));

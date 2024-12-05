@@ -135,7 +135,7 @@ the :doc:`view` and :doc:`iter` page, including:
 - `bson_end`
 - `bson_size`
 - `bson_data`
-- `bson_as_view`
+- `bson_view_from`
 
 .. function::
   uint32_t bson_doc_capacity(bson_doc d)
@@ -185,8 +185,8 @@ Create & Deletion
   3. Equivalent to :expr:`bson_new(5, mlib_default_allocator)`
   4. Equivalent to :expr:`bson_new(reserve, mlib_default_allocator)`
   5. Equivalent to :expr:`bson_new(5, alloc)`
-  6. Equivalent to :expr:`bson_new(bson_as_view(doc), bson_doc_get_allocator(doc))`.
-  7. Equivalent to :expr:`bson_new(bson_as_view(doc), mlib_default_allocator)`
+  6. Equivalent to :expr:`bson_new(bson_view_from(doc), bson_doc_get_allocator(doc))`.
+  7. Equivalent to :expr:`bson_new(bson_view_from(doc), mlib_default_allocator)`
 
   If the reserved size is five bytes (the default), then this function will not
   allocate any memory. It will only allocate memory if there is an attempt to

@@ -1,7 +1,10 @@
 #include <amongoc/amongoc.h>
 
+#include "bson/view.h"
 #include <bson/iterator.h>
 #include <bson/mut.h>
+
+#include "mlib/str.h"
 
 /**
  * @brief Shared state for the application. This is passed through the app as pointer stored
@@ -26,10 +29,10 @@ static void print_bson(FILE* into, bson_view doc, mlib_str_view indent);
  */
 amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
     (void)state_ptr;
-    bson_view resp = bson_as_view(amongoc_box_cast(bson_doc, resp_data));
+    bson_view resp = bson_view_from(amongoc_box_cast(bson_doc, resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
-    print_bson(stdout, resp, mlib_as_str_view(""));
+    print_bson(stdout, resp, mlib_str_view_from(""));
     fputs("\n", stdout);
     amongoc_box_destroy(resp_data);
     return amongoc_nil;
@@ -54,7 +57,7 @@ amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, a
     bson_insert(&mut, "hello", "1");
     bson_insert(&mut, "$db", "test");
     amongoc_emitter em = amongoc_client_command(amongoc_box_cast(app_state*, state_ptr)->client,
-                                                bson_as_view(mut));
+                                                bson_view_from(mut));
     bson_delete(doc);
 
     em = amongoc_then(em,
@@ -130,7 +133,7 @@ static void print_bson(FILE* into, bson_view doc, mlib_str_view indent) {
         case bson_type_array: {
             mlib_str  i2     = mlib_str_append(indent, "  ");
             bson_view subdoc = bson_iterator_value(it).document;
-            print_bson(into, subdoc, mlib_as_str_view(i2));
+            print_bson(into, subdoc, mlib_str_view_from(i2));
             mlib_str_delete(i2);
             fprintf(into, ",\n");
             break;

@@ -428,7 +428,7 @@ inline mlib_str_view bson_key(bson_iterator it) mlib_noexcept {
 /**
  * @brief Compare a bson_iterator's key with a string
  */
-#define bson_key_eq(Iterator, Key) _bson_key_eq((Iterator), mlib_as_str_view((Key)))
+#define bson_key_eq(Iterator, Key) _bson_key_eq((Iterator), mlib_str_view_from((Key)))
 inline bool _bson_key_eq(const bson_iterator it, mlib_str_view key) mlib_noexcept {
     BV_ASSERT(it._keylen >= 0);
     if (key.len > INT32_MAX || (int32_t)key.len != it._keylen) {
@@ -439,7 +439,7 @@ inline bool _bson_key_eq(const bson_iterator it, mlib_str_view key) mlib_noexcep
 }
 
 #define bson_foreach(IterName, Viewable)                                                           \
-    _bsonForEach(IterName, bson_as_view(Viewable), _bsonForEachOnlyOnce, _bsonForEachView)
+    _bsonForEach(IterName, bson_view_from(Viewable), _bsonForEachOnlyOnce, _bsonForEachView)
 #define bson_foreach_subrange(IterName, First, Last)                                               \
     _bsonForeachSubrange(IterName,                                                                 \
                          First,                                                                    \
@@ -490,7 +490,7 @@ inline bool _bson_key_eq(const bson_iterator it, mlib_str_view key) mlib_noexcep
 /**
  * @brief Find the first element within a document that has the given key
  */
-#define bson_find(Doc, Key) _bson_find(bson_data((Doc)), mlib_as_str_view((Key)))
+#define bson_find(Doc, Key) _bson_find(bson_data((Doc)), mlib_str_view_from((Key)))
 inline bson_iterator _bson_find(const bson_byte* v, mlib_str_view key) mlib_noexcept {
     bson_foreach_subrange(iter, _bson_begin(v), _bson_end(v)) {
         if (!bson_iterator_get_error(iter) && bson_key_eq(iter, key)) {

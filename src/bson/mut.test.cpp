@@ -1,6 +1,7 @@
 #include <bson/doc.h>
 #include <bson/mut.h>
 #include <bson/types.h>
+#include <bson/view.h>
 
 #include <mlib/alloc.h>
 
@@ -45,7 +46,7 @@ TEST_CASE("bson/doc/copy empty") {
 
 TEST_CASE("bson/doc/copy generic") {
     auto doc  = ::bson_new();
-    auto view = ::bson_as_view(doc);
+    auto view = ::bson_view_from(doc);
     auto mut  = ::bson_mutate(&doc);
     ::bson_new();
     ::bson_new(5);

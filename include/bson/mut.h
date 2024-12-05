@@ -328,7 +328,7 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
 #define _bsonInsertArgc_4(Mut, Pos, Key, Value) _bsonInsertAt(Mut, (Pos), (Key), Value)
 
 #define _bsonInsertAt(Mut, Position, Key, Value)                                                   \
-    _bson_insert_value((Mut), (Position), mlib_as_str_view(Key), bson_as_value_ref(Value))
+    _bson_insert_value((Mut), (Position), mlib_str_view_from(Key), bson_value_ref_from(Value))
 
 /**
  * @brief Replace the key string of an element within a document
@@ -339,7 +339,7 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
  * @return bson_iterator The iterator referring to the element after being
  * updated, or the end iterator in case of allocation failure
  */
-#define bson_set_key(Doc, Pos, Key) _bson_set_key((Doc), (Pos), mlib_as_str_view(Key))
+#define bson_set_key(Doc, Pos, Key) _bson_set_key((Doc), (Pos), mlib_str_view_from(Key))
 inline bson_iterator
 _bson_set_key(bson_mut* doc, bson_iterator pos, mlib_str_view newkey) mlib_noexcept {
     mlib_math_try();
@@ -418,7 +418,7 @@ bson_relabel_array_elements_at(bson_mut* doc, bson_iterator pos, uint32_t idx) m
     ptrdiff_t it_offset = bson_iterator_data(pos) - bson_data(*doc);
     for (; !bson_stop(pos); pos = bson_next(pos)) {
         struct bson_u32_string key = bson_u32_string_create(idx);
-        pos                        = bson_set_key(doc, pos, mlib_as_str_view(key.buf));
+        pos                        = bson_set_key(doc, pos, mlib_str_view_from(key.buf));
     }
     return _bson_recover_iterator(bson_data(*doc), it_offset);
 }
@@ -746,7 +746,7 @@ inline bson_iterator _bson_insert_value(bson_mut*      doc,
             return _bson_insert_value(doc,
                                       pos,
                                       key,
-                                      bson_as_value_ref(
+                                      bson_value_ref_from(
                                           bson_view_from_data(empty_doc, sizeof empty_doc, NULL)));
         }
         // We have a document to insert:
@@ -764,7 +764,7 @@ inline bson_iterator _bson_insert_value(bson_mut*      doc,
             // doc:
             const bson_byte empty_doc[5] = {{5}};
             bson_array_view arr          = {empty_doc};
-            return _bson_insert_value(doc, pos, key, bson_as_value_ref(arr));
+            return _bson_insert_value(doc, pos, key, bson_value_ref_from(arr));
         }
         // We have a document to insert:
         const uint32_t insert_size = bson_size(val.array);

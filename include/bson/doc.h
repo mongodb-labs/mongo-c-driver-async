@@ -293,7 +293,7 @@ inline bson_doc _bson_copy_mut_with_allocator(struct bson_mut other,
     return ret;
 }
 inline bson_doc _bson_copy_doc_with_allocator(bson_doc other, mlib_allocator alloc) mlib_noexcept {
-    return _bson_copy_view_with_allocator(bson_as_view(other), alloc);
+    return _bson_copy_view_with_allocator(bson_view_from(other), alloc);
 }
 
 // [[2]]
@@ -314,7 +314,7 @@ inline bson_doc _bson_copy_mut_with_default_allocator(struct bson_mut other) mli
 
 // [[6]]
 inline bson_doc _bson_copy_doc(bson_doc other) mlib_noexcept {
-    return _bson_copy_view_with_allocator(bson_as_view(other), bson_doc_get_allocator(other));
+    return _bson_copy_view_with_allocator(bson_view_from(other), bson_doc_get_allocator(other));
 }
 
 mlib_extern_c_end();
@@ -329,10 +329,10 @@ inline bson_doc _bson_new_generic(bson_view doc, ::mlib_allocator alloc) noexcep
     return ::_bson_copy_view_with_allocator(doc, alloc);
 }
 inline bson_doc _bson_new_generic(bson_doc doc, ::mlib_allocator alloc) noexcept {
-    return ::_bson_copy_view_with_allocator(bson_as_view(doc), alloc);
+    return ::_bson_copy_view_with_allocator(bson_view_from(doc), alloc);
 }
 inline bson_doc _bson_new_generic(struct bson_mut doc, ::mlib_allocator alloc) noexcept {
-    return ::_bson_copy_view_with_allocator(bson_as_view(doc), alloc);
+    return ::_bson_copy_view_with_allocator(bson_view_from(doc), alloc);
 }
 
 inline bson_doc _bson_new_generic(::mlib_allocator alloc) noexcept { return ::bson_new(5, alloc); }
@@ -341,13 +341,13 @@ inline bson_doc _bson_new_generic(std::uint32_t reserve) noexcept {
 }
 inline bson_doc _bson_new_generic() noexcept { return ::bson_new(5, ::mlib_default_allocator); }
 inline bson_doc _bson_new_generic(bson_doc doc) noexcept {
-    return ::bson_new(bson_as_view(doc), bson_doc_get_allocator(doc));
+    return ::bson_new(bson_view_from(doc), bson_doc_get_allocator(doc));
 }
 inline bson_doc _bson_new_generic(bson_view doc) noexcept {
-    return ::bson_new(bson_as_view(doc), ::mlib_default_allocator);
+    return ::bson_new(bson_view_from(doc), ::mlib_default_allocator);
 }
 inline bson_doc _bson_new_generic(bson_mut doc) noexcept {
-    return ::bson_new(bson_as_view(doc), ::mlib_default_allocator);
+    return ::bson_new(bson_view_from(doc), ::mlib_default_allocator);
 }
 #endif  // C++
 

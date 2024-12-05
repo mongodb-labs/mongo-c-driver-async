@@ -214,7 +214,7 @@ Functions & Macros
 
 
 .. function::
-  bson_value_ref bson_as_value_ref(__bson_value_convertible V)
+  bson_value_ref bson_value_ref_from(__bson_value_convertible V)
 
   Create a dynamically typed `bson_value_ref` that corresponds to a view of the
   given value.

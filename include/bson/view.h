@@ -278,7 +278,7 @@ inline bson_view bson_view_from_data(const bson_byte* const data,
 /**
  * @brief Obtain a bson_view for the given document-like entity.
  */
-#define bson_as_view(...) _bson_view_from_ptr(bson_data(__VA_ARGS__))
+#define bson_view_from(...) _bson_view_from_ptr(bson_data(__VA_ARGS__))
 inline bson_view _bson_view_from_ptr(const bson_byte* p) mlib_noexcept {
     if (!p) {
         return bson_view_null;

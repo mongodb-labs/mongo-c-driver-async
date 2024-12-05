@@ -7,12 +7,12 @@
         mlib_noexcept
 
 DECL_CONVERSION(double, bson_type_double, double_, arg);
-DECL_CONVERSION(mlib_str, bson_type_utf8, utf8, mlib_as_str_view(arg));
-DECL_CONVERSION(mlib_str_mut, bson_type_utf8, utf8, mlib_as_str_view(arg));
+DECL_CONVERSION(mlib_str, bson_type_utf8, utf8, mlib_str_view_from(arg));
+DECL_CONVERSION(mlib_str_mut, bson_type_utf8, utf8, mlib_str_view_from(arg));
 DECL_CONVERSION(mlib_str_view, bson_type_utf8, utf8, arg);
 DECL_CONVERSION(bson_view, bson_type_document, document, arg);
-DECL_CONVERSION(bson_doc, bson_type_document, document, bson_as_view(arg));
-DECL_CONVERSION(bson_mut, bson_type_document, document, bson_as_view(arg));
+DECL_CONVERSION(bson_doc, bson_type_document, document, bson_view_from(arg));
+DECL_CONVERSION(bson_mut, bson_type_document, document, bson_view_from(arg));
 DECL_CONVERSION(bson_array_view, bson_type_array, array, arg);
 DECL_CONVERSION(bson_binary_view, bson_type_binary, binary, arg);
 DECL_CONVERSION(bson_oid, bson_type_oid, oid, arg);

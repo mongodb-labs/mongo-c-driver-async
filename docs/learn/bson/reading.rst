@@ -8,8 +8,8 @@ Accessing BSON data is done with two types: `bson_view` and `bson_iterator`.
 Getting a View
 ##############
 
-For any function that expects a `bson_view`, a view can be created from a `bson_doc`
-or `bson_mut` using `bson_as_view`:
+For any function that expects a `bson_view`, a view can be created from a
+`bson_doc` or `bson_mut` using `bson_view_from`:
 
 .. literalinclude:: bson.example.cpp
   :start-after: [as-view]
