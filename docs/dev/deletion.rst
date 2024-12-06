@@ -72,19 +72,6 @@ Deletion APIs
     that performs the actual deletion operation.
 
 
-.. struct::
-  template <typename T> \
-  mlib::unique_deleter<T> : T::deleter
-
-  :requires: :expr:`typename T::deleter`
-  :header: :header-file:`mlib/delete.h`
-
-  This specialization of `unique_deleter` will be used if the type `T` contains
-  a nested type ``deleter``. That deleter will be used for deleting `T` objects.
-
-  .. tip:: This is intended for use with :c:macro:`mlib_declare_member_deleter`
-
-
 .. struct:: template <auto... MemPointers> mlib::delete_members
 
   This struct template creates a deletion invocable that deletes the members of
