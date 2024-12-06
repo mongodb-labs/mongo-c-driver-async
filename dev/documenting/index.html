@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Documenting amongoc &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/documenting';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Declaratively Building BSON Documents" href="../bson-building/" />
+    <link rel="prev" title="TLS Streams" href="../tls/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/documenting.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Documenting amongoc</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authorship-guide">Authorship Guide</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#external-cppreference-links">External <code class="docutils literal notranslate"><span class="pre">cppreference</span></code> Links</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplements">Supplements</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directive-header-file"><code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">header-file::</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directive-doc-attr"><code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">doc-attr::</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#role-header-file"><code class="docutils literal notranslate"><span class="pre">:header-file:</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#role-doc-attr"><code class="docutils literal notranslate"><span class="pre">:doc-attr:</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="documenting-amongoc">
+<h1>Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code><a class="headerlink" href="#documenting-amongoc" title="Link to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<section id="authorship-guide">
+<h2>Authorship Guide<a class="headerlink" href="#authorship-guide" title="Link to this heading">#</a></h2>
+<p>Consider the following when writing documentation for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>:</p>
+<ol class="arabic simple">
+<li><p>For user-facing documentation, follow the design rules of <a class="reference external" href="https://diataxis.fr/">Diátaxis</a> –
+Preserve the separation between the kinds of documentation. We also have this
+“developer documentation” section, which need not follow Diátaxis.</p></li>
+<li><p>For reference material, ensure the <a class="reference internal" href="../../ref/meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> attribute is always used
+if-and-only-if it applies to a function parameter.</p></li>
+<li><p>Be aware of the reStructuredText substitutions that are defined in the
+<code class="docutils literal notranslate"><span class="pre">rst_prolog</span></code> (see <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>).</p>
+<ol class="loweralpha simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">|amongoc|</span></code> when naming the project.</p></li>
+<li><p>Use e.g. <code class="docutils literal notranslate"><span class="pre">|attr.transfer|</span></code> (and other attribute substitutions) when
+refering to documentation attributes.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">:math:</span></code> substitutions to represent named values that are not
+named by function parameters or member variables.</p></li>
+<li><p>Include the <code class="docutils literal notranslate"><span class="pre">|devdocs-page|</span></code> warning at the top of every developer
+documentation page.</p></li>
+</ol>
+</li>
+<li><p>Don’t duplicate documentation for C APIs in their C++ wrappers. Instead link
+from the C++ API to the C API using a <code class="docutils literal notranslate"><span class="pre">:C</span> <span class="pre">API:</span></code> field. (e.g.
+<a class="reference internal" href="../../ref/handler/#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box" title="amongoc::unique_handler::complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler::complete()</span></code></a>)</p></li>
+<li><p>Include a link from C APIs to their C++ equivalent with a <code class="docutils literal notranslate"><span class="pre">:C++</span> <span class="pre">API:</span></code> field.</p></li>
+<li><p>Document the members of a type below its documentation fields and description.</p></li>
+<li><p>Separate API descriptions between <em>brief</em> description (one or two paragraphs)
+and an <em>expounding</em> description, if one is warranted.</p></li>
+<li><p>Add the <em>brief</em> description of an entity <em>above</em> its documentation fields.
+Add an <em>expounding</em> description <em>below</em> the documentation fields.</p></li>
+<li><p>If an API allocates memory and the API does not accept an allocator
+parameter, include an <code class="docutils literal notranslate"><span class="pre">:allocation:</span></code> field that specifies how memory
+allocation is performed (e.g. <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>).</p></li>
+<li><p>Document header files using <a class="reference internal" href="#directive-header-file" title="header-file directive"><code class="xref rst rst-dir docutils literal notranslate"><span class="pre">header-file</span></code></a> directive. Refer to them
+using the <a class="reference internal" href="#role-header-file" title="header-file role"><code class="xref rst rst-role docutils literal notranslate"><span class="pre">header-file</span></code></a> inline role.</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">:header:</span></code> field on an API component to link to the header file
+that defines it. Use the <a class="reference internal" href="#role-header-file" title="header-file role"><code class="xref rst rst-role docutils literal notranslate"><span class="pre">header-file</span></code></a> role to generate the link.</p></li>
+<li><p>When adding documentation fields to an API, use the following order:</p>
+<ol class="loweralpha simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">:C</span> <span class="pre">API:</span></code> / <code class="docutils literal notranslate"><span class="pre">:C++</span> <span class="pre">API:</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:param:</span></code> fields</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:return:</span></code> fields</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:throw:</span></code> fields</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:precondition:</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:postcondition:</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:allocation:</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:zero-initialized:</span></code> (for use with aggregate types annotated with <a class="reference internal" href="../../ref/meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">:header:</span></code></p></li>
+</ol>
+</li>
+<li><p><strong>Don’t</strong> duplicate information from the description in the documentation
+fields. <strong>Don’t</strong> include <code class="docutils literal notranslate"><span class="pre">:param:</span></code> and <code class="docutils literal notranslate"><span class="pre">:return:</span></code> fields if the entire
+API can be easily described in the description alone. These fields should
+instead be used to expression constraints about the values that are not
+obvious from the description or the API signature.</p></li>
+<li><p><strong>Don’t</strong> create multiple documentation entries for very similar function
+overloads. Instead, document them together under the same directive and
+explain the differences between them. (e.g. <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)</p></li>
+<li><p>Use admonition directives to announce important things that the reader might
+otherwise miss. Avoid using bold “<strong>NOTE</strong>” and “<strong>WARNING</strong>” inline in the
+text unless using an admonition would seriously break the flow of the text.</p></li>
+</ol>
+</section>
+<section id="external-cppreference-links">
+<h2>External <code class="docutils literal notranslate"><span class="pre">cppreference</span></code> Links<a class="headerlink" href="#external-cppreference-links" title="Link to this heading">#</a></h2>
+<p>We use a custom-generated Sphinx inventory for objects documented on
+cppreference, because at time of writing, <code class="docutils literal notranslate"><span class="pre">cppreference</span></code> does not have a
+Sphinx inventory of its own. This inventory is generated with code in
+<code class="docutils literal notranslate"><span class="pre">docs/conf.py</span></code> on-the-fly when documentation is buidt. Linking to external
+items requires that they are present in the custom inventory. If a link fails to
+generate, ensure it is present in the custom inventory.</p>
+<p>For objects that live in the C++ <code class="docutils literal notranslate"><span class="pre">std</span></code> namespace, use a <code class="docutils literal notranslate"><span class="pre">std__</span></code> prefix
+instead of the <code class="docutils literal notranslate"><span class="pre">std::</span></code> namespace. This works around a limitation in the Sphinx
+C++ domain that refuses to generate hyperlinks for the <code class="docutils literal notranslate"><span class="pre">std</span></code> namespace. The
+generated link text will use the <code class="docutils literal notranslate"><span class="pre">std::</span></code> prefix as long as the link’s display
+name is set correctly in the generated inventory:</p>
+<div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">cpp:function</span><span class="p">::</span> std__nullptr_t my_func(std__size_t sz)
+</pre></div>
+</div>
+</section>
+<section id="supplements">
+<h2>Supplements<a class="headerlink" href="#supplements" title="Link to this heading">#</a></h2>
+<dl class="rst directive">
+<dt class="sig sig-object rst" id="directive-header-file">
+<span class="sig-name descname"><span class="pre">..</span> <span class="pre">header-file::</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;filepath&gt;</span></span><a class="headerlink" href="#directive-header-file" title="Link to this definition">#</a></dt>
+<dd><p>Documents a header file at <code class="docutils literal notranslate"><span class="pre">filepath</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><em>Don’t</em> treat this like <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">class</span></code> and add the API components within the
+body of the directive, as that will lead to excessive indentation in the
+resulting document.</p>
+<p>Instead, use a back-reference on the API components by adding a <code class="docutils literal notranslate"><span class="pre">:header:</span></code>
+documentation field.</p>
+</div>
+</dd></dl>
+
+<dl class="rst directive">
+<dt class="sig sig-object rst" id="directive-doc-attr">
+<span class="sig-name descname"><span class="pre">..</span> <span class="pre">doc-attr::</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;attr&gt;</span></span><a class="headerlink" href="#directive-doc-attr" title="Link to this definition">#</a></dt>
+<dd><p>Documents a documentation-only attribute. (e.g. <a class="reference internal" href="../../ref/meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>, <a class="reference internal" href="../../ref/meta-attrs/#doc-attr-storage"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[storage]]</span></code></a>)</p>
+</dd></dl>
+
+<dl class="rst role">
+<dt class="sig sig-object rst" id="role-header-file">
+<span class="sig-name descname"><span class="pre">:header-file:</span></span><a class="headerlink" href="#role-header-file" title="Link to this definition">#</a></dt>
+<dd><p>This inline text role generates a link to a header file documented using the
+<a class="reference internal" href="#directive-header-file" title="header-file directive"><code class="xref rst rst-dir docutils literal notranslate"><span class="pre">header-file</span></code></a> directive.</p>
+</dd></dl>
+
+<dl class="rst role">
+<dt class="sig sig-object rst" id="role-doc-attr">
+<span class="sig-name descname"><span class="pre">:doc-attr:</span></span><a class="headerlink" href="#role-doc-attr" title="Link to this definition">#</a></dt>
+<dd><p>Creates a backlink to a documentation attribute from the <a class="reference internal" href="#directive-doc-attr" title="doc-attr directive"><code class="xref rst rst-dir docutils literal notranslate"><span class="pre">doc-attr</span></code></a>
+directive.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Prefer to use the <code class="docutils literal notranslate"><span class="pre">|attr.xyz|</span></code> substitutions from the <code class="docutils literal notranslate"><span class="pre">rst_prolog</span></code>, as using this role is cumbersome.</p>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../tls/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">TLS Streams</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../bson-building/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Declaratively Building BSON Documents</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authorship-guide">Authorship Guide</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#external-cppreference-links">External <code class="docutils literal notranslate"><span class="pre">cppreference</span></code> Links</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supplements">Supplements</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directive-header-file"><code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">header-file::</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#directive-doc-attr"><code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">doc-attr::</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#role-header-file"><code class="docutils literal notranslate"><span class="pre">:header-file:</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#role-doc-attr"><code class="docutils literal notranslate"><span class="pre">:doc-attr:</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

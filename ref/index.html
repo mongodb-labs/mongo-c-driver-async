@@ -1,0 +1,602 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reference &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/index';</script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Meta-Reference: Documentation Attributes" href="meta-attrs/" />
+    <link rel="prev" title="Creating Asynchronous Loops" href="../how-to/looping/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/ref/index.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Reference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="reference">
+<h1>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be sure to read <a class="reference internal" href="meta-attrs/"><span class="doc">Meta-Reference: Documentation Attributes</span></a></p>
+</div>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Components</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="meta-attrs/">Meta-Reference: Documentation Attributes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="meta-attrs/#non-standard-attributes">Non-Standard Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meta-attrs/#parameter-types">Parameter Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meta-attrs/#documentation-fields">Documentation Fields</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-patterns/#naming">Naming</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-patterns/#parameter-ordering">Parameter Ordering</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="building/">Configuring, Building, &amp; Using</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="building/#build-configuration">Build Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building/#third-party-dependencies">Third-Party Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building/#building-with-earthly">Building with Earthly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="building/#importing-in-cmake">Importing in CMake</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="box/">Dynamically Types Boxes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="box/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="box/#functions-macros">Functions &amp; Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="box/#constants">Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="box/#box-behavior">Box Behavior</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="status/">Status Codes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="status/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status/#functions-macros">Functions &amp; Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status/#status-categories">Status Categories</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status/#c-exception-type">C++ Exception Type</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="emitter/">Emitter API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="emitter/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="emitter/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="operation/">Operation API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="operation/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="operation/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="async/">Asynchronous Utility APIs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="async/#functions">Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="async/#constants">Constants</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="alloc/">Dynamic Memory Allocation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="alloc/#c-apis">C APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="alloc/#id1">C++ APIs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client/">Client API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client/#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="database/">Database Handle API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="database/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="collection/">Collection &amp; Data API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="coll-ops/">Collection Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collection/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collection/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="loop/#_CPPv420amongoc_const_buffer"><code class="docutils literal notranslate"><span class="pre">amongoc_const_buffer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/#_CPPv422amongoc_mutable_buffer"><code class="docutils literal notranslate"><span class="pre">amongoc_mutable_buffer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/#_CPPv412amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/#_CPPv426amongoc_loop_get_allocatorPK12amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_loop_get_allocator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/#_CPPv419amongoc_loop_vtable"><code class="docutils literal notranslate"><span class="pre">amongoc_loop_vtable</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="loop/#the-default-event-loop">The Default Event Loop</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="handler/">Handler APIs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="handler/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handler/#functions-macros">Functions &amp; Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="handler/#the-handler-associated-allocator">The Handler-Associated Allocator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bson/">BSON Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bson/types/">BSON Value Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/value/">BSON Values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/view/">BSON Reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/doc/">BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bson/mut/">BSON Modifying</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="str/">Strings &amp; String Views</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="str/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="str/#globals-constants">Globals &amp; Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="str/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="vec/">Vector Types</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv48item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv414item_vec_begin8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_begin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv412item_vec_end8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_end()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv417item_vec_max_sizev"><code class="docutils literal notranslate"><span class="pre">item_vec_max_size()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv412item_vec_new14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv414item_vec_new_n6size_tPb14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new_n()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv415item_vec_delete8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_delete()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv415item_vec_resizeP8item_vec6size_t"><code class="docutils literal notranslate"><span class="pre">item_vec_resize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vec/#_CPPv413item_vec_pushP8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_push()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="time/">Time Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="time/#types">Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time/#functions-macros">Functions &amp; Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="glossary/">Terminology</a></li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../how-to/looping/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Creating Asynchronous Loops</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="meta-attrs/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Meta-Reference: Documentation Attributes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

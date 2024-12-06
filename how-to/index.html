@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>How-to Guides &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/index';</script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="Connect to a Server" href="connect/" />
+    <link rel="prev" title="Storing Values in a Type-Erased Box" href="../learn/box/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">How-to Guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/how-to/index.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>How-to Guides</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="how-to-guides">
+<h1>How-to Guides<a class="headerlink" href="#how-to-guides" title="Link to this heading">#</a></h1>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="connect/">Connect to a Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="connect/#headers">Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#command-line-arguments">Command-Line Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#initializing-the-loop">Initializing the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#declare-the-app-state">Declare the App State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#create-a-client-with-a-timeout">Create a Client with a Timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#attach-the-first-continuation">Attach the First Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#the-first-continuation">The First Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#the-second-continuation">The Second Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#tie-the-final-result">Tie the Final Result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#start-the-operation-run-the-loop-and-clean-up">Start the Operation, Run the Loop, and Clean Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="connect/#print-the-final-result">Print the Final Result</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="looping/">Creating Asynchronous Loops</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="looping/#the-example-program">The Example Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="looping/#initiating-the-program">Initiating the Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="looping/#loop-stepping">Loop Stepping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="looping/#starting-and-running-the-loop">Starting and Running the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="looping/#error-handling-and-printing-the-final-result">Error Handling and Printing the Final Result</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../learn/box/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Storing Values in a Type-Erased Box</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="connect/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Connect to a Server</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

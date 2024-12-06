@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dynamically Types Boxes &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/box';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Status Codes" href="../status/" />
+    <link rel="prev" title="Configuring, Building, &amp; Using" href="../building/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/box.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dynamically Types Boxes</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N11amongoc_box4viewE"><code class="docutils literal notranslate"><span class="pre">view</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO11amongoc_box9as_uniqueEv"><code class="docutils literal notranslate"><span class="pre">as_unique()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_view"><code class="docutils literal notranslate"><span class="pre">amongoc_view</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN12amongoc_view2asER1Tv"><code class="docutils literal notranslate"><span class="pre">as()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413__box_or_view"><code class="docutils literal notranslate"><span class="pre">__box_or_view</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_destructor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3boxE"><code class="docutils literal notranslate"><span class="pre">box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxE"><code class="docutils literal notranslate"><span class="pre">unique_box</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_box10unique_boxERR11amongoc_box"><code class="docutils literal notranslate"><span class="pre">unique_box()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxD0Ev"><code class="docutils literal notranslate"><span class="pre">~unique_box()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxcv12amongoc_viewEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">amongoc_view()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv"><code class="docutils literal notranslate"><span class="pre">as()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args"><code class="docutils literal notranslate"><span class="pre">make()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO7amongoc10unique_box7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_box4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc10unique_box4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#box-creation-destruction">Box Creation / Destruction</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_destroy11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424amongoc_box_free_storage11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_free_storage()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspection">Inspection</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_cast6__type13__box_or_view"><code class="docutils literal notranslate"><span class="pre">amongoc_box_cast()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_data11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_dataK11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_data12amongoc_view"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_takeDa11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_take()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trivial-box-constructors">Trivial Box Constructors</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_pointerPKv"><code class="docutils literal notranslate"><span class="pre">amongoc_box_pointer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_floatf"><code class="docutils literal notranslate"><span class="pre">amongoc_box_float()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_doubled"><code class="docutils literal notranslate"><span class="pre">amongoc_box_double()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_charc"><code class="docutils literal notranslate"><span class="pre">amongoc_box_char()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_shorts"><code class="docutils literal notranslate"><span class="pre">amongoc_box_short()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_box_inti"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_box_unsignedj"><code class="docutils literal notranslate"><span class="pre">amongoc_box_unsigned()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_longl"><code class="docutils literal notranslate"><span class="pre">amongoc_box_long()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_ulongm"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ulong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_box_longlongx"><code class="docutils literal notranslate"><span class="pre">amongoc_box_longlong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_box_ulonglongy"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ulonglong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_size6size_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_ptrdiff9ptrdiff_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ptrdiff()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_int86int8_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int8()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_uint87uint8_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint8()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int167int16_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int16()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint168uint16_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint16()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int327int32_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint328uint32_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int647int64_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint648uint64_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3nilEv"><code class="docutils literal notranslate"><span class="pre">nil()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_nil"><code class="docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE"><code class="docutils literal notranslate"><span class="pre">enable_trivially_relocatable_v</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#box-behavior">Box Behavior</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-active-for-type-t">State: Active for type <span class="math notranslate nohighlight">\(T\)</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-dead">State: Dead</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consuming-operations">Consuming Operations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relocation">Relocation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#smallness">Smallness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-relocatable-types">Non-Relocatable Types</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#triviallity">Triviallity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#storage-alignment">Storage Alignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#q-can-i-query-the-state-of-a-box">Q: “Can I query the state of a box?”</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dynamically-types-boxes">
+<h1>Dynamically Types Boxes<a class="headerlink" href="#dynamically-types-boxes" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-amongoc-box.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/box.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-box.h" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="header-file-amongoc-box.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/box.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-box.hpp" title="Link to this definition">#</a></dt>
+<dd><p>This header defines types and functions for dealing with <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>, a
+generic container of arbitrary values.</p>
+</dd></dl>
+
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_box">
+<span id="_CPPv311amongoc_box"></span><span id="_CPPv211amongoc_box"></span><span id="amongoc_box"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box</span></span></span><a class="headerlink" href="#_CPPv411amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>A type-erased boxed value of arbitrary type. The box manages storage for the
+boxed value and may contain a destructor function that will be executed when
+the box is destroyed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> A zero-initialized <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> is
+equivalent to <a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>.</p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-amongoc-box.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/box.h</span></code></a></p>
+</dd>
+</dl>
+<p>When a box parameter or return value is documented with <a class="reference internal" href="../meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a>, this
+specifies the type that is expected to be contained within the box. The
+special type <code class="docutils literal notranslate"><span class="pre">[[type(nil)]]</span></code> refers to a the <a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a> special box
+value.</p>
+<p>In C code, use <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> to initialize box objects.</p>
+<p>When working with C++ code, prefer to use <a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box</span></code></a>, as it will
+prevent accidental copying and ensures the destructor is executed on the box
+when it goes out of scope.</p>
+<p class="rubric">Members</p>
+<p>All <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> data members other than <a class="reference internal" href="#_CPPv4N11amongoc_box4viewE" title="amongoc_box::view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">view</span></code></a> are private and should not be
+accessed or modified.</p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N11amongoc_box4viewE">
+<span id="_CPPv3N11amongoc_box4viewE"></span><span id="_CPPv2N11amongoc_box4viewE"></span><span id="amongoc_box::view__amongoc_view"></span><a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><span class="n"><span class="pre">amongoc_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">view</span></span></span><a class="headerlink" href="#_CPPv4N11amongoc_box4viewE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Accessing this member will yield an <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a> that refers to this box’s
+contents.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is only legal to access this member if <a class="reference internal" href="#box-active"><span class="std std-ref">the box is active</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NO11amongoc_box9as_uniqueEv">
+<span id="_CPPv3NO11amongoc_box9as_uniqueEv"></span><span id="_CPPv2NO11amongoc_box9as_uniqueEv"></span><span id="amongoc_box::as_uniqueO"></span><span class="sig-name descname"><span class="n"><span class="pre">as_unique</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">&amp;&amp;</span></span><a class="headerlink" href="#_CPPv4NO11amongoc_box9as_uniqueEv" title="Link to this definition">#</a><br /></dt>
+<dd><p><strong>(C++ API)</strong> Move the box into an <a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box</span></code></a> to be managed automatically.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_view">
+<span id="_CPPv312amongoc_view"></span><span id="_CPPv212amongoc_view"></span><span id="amongoc_view"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_view</span></span></span><a class="headerlink" href="#_CPPv412amongoc_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>A read-only view of an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-box.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/box.h</span></code></a></p>
+</dd>
+</dl>
+<p>An <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a> <span class="math notranslate nohighlight">\(V\)</span> is <em>valid</em> if it was created by accessing the
+<a class="reference internal" href="#_CPPv4N11amongoc_box4viewE" title="amongoc_box::view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box::view</span></code></a> member of an <a class="reference internal" href="#box-active"><span class="std std-ref">active</span></a> <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>
+<span class="math notranslate nohighlight">\(B\)</span>, and is only valid as long the original <span class="math notranslate nohighlight">\(B\)</span> remains active.
+<a class="reference internal" href="#box-consume"><span class="std std-ref">Consuming</span></a> a box <span class="math notranslate nohighlight">\(B\)</span> will invalidate all
+<a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a> objects that were created from <span class="math notranslate nohighlight">\(B\)</span>.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN12amongoc_view2asER1Tv">
+<span id="_CPPv3I0EN12amongoc_view2asEv"></span><span id="_CPPv2I0EN12amongoc_view2asEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I0EN12amongoc_view2asER1Tv" title="amongoc_view::as::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">as</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN12amongoc_view2asER1Tv" title="Link to this definition">#</a><br /></dt>
+<dd><p>The same as <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="amongoc::unique_box::as"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::as()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv413__box_or_view">
+<span id="_CPPv313__box_or_view"></span><span id="_CPPv213__box_or_view"></span><span id="__box_or_view"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__box_or_view</span></span></span><a class="headerlink" href="#_CPPv413__box_or_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special exposition-only parameter type representing either an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>
+or an <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv422amongoc_box_destructor">
+<span id="_CPPv322amongoc_box_destructor"></span><span id="_CPPv222amongoc_box_destructor"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_destructor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#_CPPv422amongoc_box_destructor" title="Link to this definition">#</a><br /></dt>
+<dd><p>Type of the destructor function that may be associated with a box. The
+function parameter <code class="docutils literal notranslate"><span class="pre">p</span></code> is a pointer to the object that was stored within
+the box.</p>
+<p>After the destructor function is invoked, any dynamic storage associated with
+the box will be released.</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3boxE">
+<span id="_CPPv3N7amongoc3boxE"></span><span id="_CPPv2N7amongoc3boxE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">box</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><a class="headerlink" href="#_CPPv4N7amongoc3boxE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#_CPPv4N7amongoc3boxE" title="amongoc::box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::box</span></code></a> is a type alias of <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">::amongoc_box</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-box.hpp"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/box.hpp</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc10unique_boxE">
+<span id="_CPPv3N7amongoc10unique_boxE"></span><span id="_CPPv2N7amongoc10unique_boxE"></span><span id="amongoc::unique_box"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique_box</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc10unique_boxE" title="Link to this definition">#</a><br /></dt>
+<dd><p><strong>(C++ API)</strong> Wraps an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>, restricting copying and ensuring destruction to
+prevent programmer error. The <a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_box</span></code></a> is move-only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-box.hpp"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/box.hpp</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_box</span></code></a> is not default-constructible. If you want a reasonable
+“nothing” box, using <a class="reference internal" href="#_CPPv4N7amongoc3nilEv" title="amongoc::nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::nil()</span></code></a> to initialize a new instance.</p>
+</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc10unique_box10unique_boxERR11amongoc_box">
+<span id="_CPPv3N7amongoc10unique_box10unique_boxERR11amongoc_box"></span><span id="_CPPv2N7amongoc10unique_box10unique_boxERR11amongoc_box"></span><span id="amongoc::unique_box::unique_box__amongoc_boxRR"></span><span class="sig-name descname"><span class="n"><span class="pre">unique_box</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc10unique_box10unique_boxERR11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>Take ownership of the given box. The box must be passed as an
+rvalue-reference to emphasize this ownership transfer. The moved-from box
+will be overwritten with <a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc10unique_boxD0Ev">
+<span id="_CPPv3N7amongoc10unique_boxD0Ev"></span><span id="_CPPv2N7amongoc10unique_boxD0Ev"></span><span id="amongoc::unique_box::~unique_box"></span><span class="sig-name descname"><span class="n"><span class="pre">~unique_box</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc10unique_boxD0Ev" title="Link to this definition">#</a><br /></dt>
+<dd><p>Destroy the underlying box.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc10unique_boxcv12amongoc_viewEv">
+<span id="_CPPv3N7amongoc10unique_boxcv12amongoc_viewEv"></span><span id="_CPPv2N7amongoc10unique_boxcv12amongoc_viewEv"></span><span id="amongoc::unique_box::castto-amongoc_view-operator"></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><span class="n"><span class="pre">amongoc_view</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc10unique_boxcv12amongoc_viewEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implicit conversion to an <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc10unique_box2asER1Tv">
+<span id="_CPPv3I0EN7amongoc10unique_box2asEv"></span><span id="_CPPv2I0EN7amongoc10unique_box2asEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="amongoc::unique_box::as::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">as</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain an lvalue reference to the contained value of type <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="amongoc::unique_box::as::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The <a class="reference internal" href="#box-active"><span class="std std-ref">box must be active</span></a> for the type <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="amongoc::unique_box::as::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+</dd>
+<dt class="field-even">C API<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_cast()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T">
+<span id="_CPPv3I0EN7amongoc10unique_box4fromEN4mlib9allocatorIEERR1T"></span><span id="_CPPv2I0EN7amongoc10unique_box4fromEN4mlib9allocatorIEERR1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../alloc/#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span>, <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_box</span></code></a> by decay-copying from the given value. This
+should be the preferred way to create box objects within C++ code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/new/bad_alloc" title="(in cppreference v0)"><span class="n">std::bad_alloc</span></a></span></span> – If memory allocation fails. This will never throw
+if the box is <a class="reference internal" href="#box-small"><span class="std std-ref">small</span></a>.</p>
+</dd>
+<dt class="field-even">Postcondition<span class="colon">:</span></dt>
+<dd class="field-even"><p>The returned box object is <a class="reference internal" href="#box-active"><span class="std std-ref">active</span></a> for
+the decayed type of <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">D</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../alloc/#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::D"><span class="n"><span class="pre">D</span></span></a>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="Link to this definition">#</a><br /><span class="k"><span class="pre">requires</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_trivially_destructible_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd><p>Create a new box object by copying the given value and imbuing it with a
+destructor based on <a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::D"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">D</span></code></a>. The type <a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> must be trivially destructible,
+because the box will instead use <a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::D"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">D</span></code></a> as a destructor.</p>
+<p>In general, the given destructor should be a stateless function-object type
+(e.g. a lambda expression with no captures) that accepts a <code class="docutils literal notranslate"><span class="pre">T&amp;</span></code> and
+destroys the object. Using anything else (e.g. a function pointer) will
+not work.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><a class="reference external" href="https://en.cppreference.com/w/cpp/memory/new/bad_alloc" title="(in cppreference v0)"><span class="n">std::bad_alloc</span></a></span></span> – If memory allocation fails. This will never throw
+if the box is <a class="reference internal" href="#box-small"><span class="std std-ref">small</span></a>.</p>
+</dd>
+<dt class="field-even">Postcondition<span class="colon">:</span></dt>
+<dd class="field-even"><p>The returned box object is <a class="reference internal" href="#box-active"><span class="std std-ref">active</span></a> for
+the type <a class="reference internal" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D" title="amongoc::unique_box::from::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args">
+<span id="_CPPv3I0DpEN7amongoc10unique_box4makeEN4mlib9allocatorIEEDpRR4Args"></span><span id="_CPPv2I0DpEN7amongoc10unique_box4makeEN4mlib9allocatorIEEDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">make</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../alloc/#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args" title="amongoc::unique_box::make::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args" title="Link to this definition">#</a><br /></dt>
+<dd><p>In-place construct a new instance of <a class="reference internal" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args" title="amongoc::unique_box::make::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> into a new box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – The allocator to be used for the box.</p></li>
+<li><p><strong>args</strong> – Constructor arguments for the new <a class="reference internal" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args" title="amongoc::unique_box::make::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NO7amongoc10unique_box7releaseEv">
+<span id="_CPPv3NO7amongoc10unique_box7releaseEv"></span><span id="_CPPv2NO7amongoc10unique_box7releaseEv"></span><span id="amongoc::unique_box::releaseO"></span><span class="p"><span class="pre">[[</span></span><span class="pre">nodiscard</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">&amp;&amp;</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NO7amongoc10unique_box7releaseEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Relinquish ownership of the underlying box and return it to the caller. This
+function is used to interface with C APIs that will <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> an
+<a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> by-value.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc10unique_box4dataEv">
+<span id="_CPPv3N7amongoc10unique_box4dataEv"></span><span id="_CPPv2N7amongoc10unique_box4dataEv"></span><span id="amongoc::unique_box::data"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#_CPPv4N7amongoc10unique_box4dataEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc10unique_box4dataEv">
+<span id="_CPPv3NK7amongoc10unique_box4dataEv"></span><span id="_CPPv2NK7amongoc10unique_box4dataEv"></span><span id="amongoc::unique_box::dataC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#_CPPv4NK7amongoc10unique_box4dataEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a pointer to the data stored in the box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv416amongoc_box_data12amongoc_view" title="amongoc_box_data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<section id="box-creation-destruction">
+<h3>Box Creation / Destruction<a class="headerlink" href="#box-creation-destruction" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_init11amongoc_box6__type">
+<span id="_CPPv316amongoc_box_init11amongoc_box6__type"></span><span id="_CPPv216amongoc_box_init11amongoc_box6__type"></span><span id="amongoc_box_init__amongoc_box.__type"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_init11amongoc_box6__type" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor">
+<span id="_CPPv316amongoc_box_init11amongoc_box6__type22amongoc_box_destructor"></span><span id="_CPPv216amongoc_box_init11amongoc_box6__type22amongoc_box_destructor"></span><span id="amongoc_box_init__amongoc_box.__type.amongoc_box_destructor"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span>, <a class="reference internal" href="#_CPPv422amongoc_box_destructor" title="amongoc_box_destructor"><span class="n"><span class="pre">amongoc_box_destructor</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator">
+<span id="_CPPv316amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"></span><span id="_CPPv216amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"></span><span id="amongoc_box_init__amongoc_box.__type.amongoc_box_destructor.mlib_allocator"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>,</dd>
+<dd><a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv422amongoc_box_destructor" title="amongoc_box_destructor"><span class="n"><span class="pre">amongoc_box_destructor</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtor</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv425amongoc_box_init_noinline11amongoc_box6__type">
+<span id="_CPPv325amongoc_box_init_noinline11amongoc_box6__type"></span><span id="_CPPv225amongoc_box_init_noinline11amongoc_box6__type"></span><span id="amongoc_box_init_noinline__amongoc_box.__type"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init_noinline</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor">
+<span id="_CPPv325amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor"></span><span id="_CPPv225amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor"></span><span id="amongoc_box_init_noinline__amongoc_box.__type.amongoc_box_destructor"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init_noinline</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>, <a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span>, <a class="reference internal" href="#_CPPv422amongoc_box_destructor" title="amongoc_box_destructor"><span class="n"><span class="pre">amongoc_box_destructor</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtor</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator">
+<span id="_CPPv325amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"></span><span id="_CPPv225amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"></span><span id="amongoc_box_init_noinline__amongoc_box.__type.amongoc_box_destructor.mlib_allocator"></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_init_noinline</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span>,</dd>
+<dd><a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv422amongoc_box_destructor" title="amongoc_box_destructor"><span class="n"><span class="pre">amongoc_box_destructor</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dtor</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Initialize a box to contain a <a class="reference internal" href="../meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a> storage for an instance of
+type <a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::from()</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>b</strong> – An modifiable <a class="reference internal" href="../glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> expression of type <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>. This
+is the box that will be initiatlized.</p></li>
+<li><p><strong>T</strong> – The type that should be stored within the box.</p></li>
+<li><p><strong>dtor</strong> – A destructor function that should be executed when the box is
+destroyed with <a class="reference internal" href="#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a>. The destructor function should be
+convertible to a function pointer: <a class="reference internal" href="#_CPPv422amongoc_box_destructor" title="amongoc_box_destructor"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destructor</span></code></a>. If
+omitted, the box will have no associated destructor.</p></li>
+<li><p><strong>alloc</strong> – An <a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> object to be used if the box requires
+dynamic allocation. If omitted, the default allocator will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns a non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code> pointer to <a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>. If memory allocation was
+required and fails, this returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code>. Note that a
+<a class="reference internal" href="#box-small"><span class="std std-ref">small</span></a> type used with <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> will not
+allocate, so the returned pointer in such a scenario will never be null.</p>
+</dd>
+</dl>
+<p>The <code class="docutils literal notranslate"><span class="pre">_noinline</span></code> variant will inhibit the small-object optimization, which is
+required if the object being stored is not relocatable (i.e. it must be
+address-stable).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The given box must be either <a class="reference internal" href="#box-dead"><span class="std std-ref">dead</span></a> or
+<a class="reference internal" href="#box-trivial"><span class="std std-ref">trivial</span></a>, or the behavior is undefined.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419amongoc_box_destroy11amongoc_box">
+<span id="_CPPv319amongoc_box_destroy11amongoc_box"></span><span id="_CPPv219amongoc_box_destroy11amongoc_box"></span><span id="amongoc_box_destroy__amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_destroy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419amongoc_box_destroy11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>Consume the given box and destroy its contents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>b</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The box that will be consumed and whose contained
+value will be destroyed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424amongoc_box_free_storage11amongoc_box">
+<span id="_CPPv324amongoc_box_free_storage11amongoc_box"></span><span id="_CPPv224amongoc_box_free_storage11amongoc_box"></span><span id="amongoc_box_free_storage__amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_free_storage</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424amongoc_box_free_storage11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not confuse this with <a class="reference internal" href="#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a></p>
+</div>
+<p>This function will release dynamically allocated storage associated with the
+given box without destroying the value that it may have contained.</p>
+<p>This function should be used when the value within the box is moved-from, and
+the box itself is no longer needed.</p>
+</dd></dl>
+
+</section>
+<section id="inspection">
+<h3>Inspection<a class="headerlink" href="#inspection" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_cast6__type13__box_or_view">
+<span id="_CPPv316amongoc_box_cast6__type13__box_or_view"></span><span id="_CPPv216amongoc_box_cast6__type13__box_or_view"></span><span id="amongoc_box_cast____type.__box_or_view"></span><a class="reference internal" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_cast</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../meta-attrs/#_CPPv46__type" title="__type"><span class="n"><span class="pre">__type</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">T</span></span>, <a class="reference internal" href="#_CPPv413__box_or_view" title="__box_or_view"><span class="n"><span class="pre">__box_or_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">box</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>T</strong> – The target type for the cast expression.</p>
+</dd>
+<dt class="field-even">C++ API<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv" title="amongoc::unique_box::as"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::as()</span></code></a> and <a class="reference internal" href="#_CPPv4I0EN12amongoc_view2asER1Tv" title="amongoc_view::as"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view::as()</span></code></a></p>
+</dd>
+</dl>
+<p>Perform a cast from an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> or <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a> to an
+<a class="reference internal" href="../glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> expression of type <a class="reference internal" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+<p>Note that because the result is an <a class="reference internal" href="../glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> expression, this cast
+expression can be used to manipulate the value stored in the box:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">changed_boxed_int</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Replace the boxed integer value with 42</span>
+<span class="w">  </span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the given box is not active for the type <a class="reference internal" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>, then the behavior is
+undefined.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_data11amongoc_box">
+<span id="_CPPv316amongoc_box_data11amongoc_box"></span><span id="_CPPv216amongoc_box_data11amongoc_box"></span><span id="amongoc_box_data__amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_data</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_data11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_dataK11amongoc_box">
+<span id="_CPPv316amongoc_box_dataK11amongoc_box"></span><span id="_CPPv216amongoc_box_dataK11amongoc_box"></span><span id="amongoc_box_data__amongoc_boxC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_data</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_dataK11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_data12amongoc_view">
+<span id="_CPPv316amongoc_box_data12amongoc_view"></span><span id="_CPPv216amongoc_box_data12amongoc_view"></span><span id="amongoc_box_data__amongoc_view"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_data</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><span class="n"><span class="pre">amongoc_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_data12amongoc_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a pointer to the object stored within a box <a class="reference internal" href="#_CPPv416amongoc_box_data12amongoc_view" title="amongoc_box_data::b"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">b</span></code></a>. Expands to an r-value
+of type <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">void</span><span class="o">*</span></code>. If <a class="reference internal" href="#_CPPv416amongoc_box_data12amongoc_view" title="amongoc_box_data::b"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">b</span></code></a> is a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code> box or an <a class="reference internal" href="#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a>, the
+returned pointer is a pointer-to-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4NK7amongoc10unique_box4dataEv" title="amongoc::unique_box::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::data()</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_takeDa11amongoc_box">
+<span id="_CPPv316amongoc_box_takeDa11amongoc_box"></span><span id="_CPPv216amongoc_box_takeDa11amongoc_box"></span><span id="amongoc_box_take__auto.amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_take</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">dest</span></span>, <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">box</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_takeDa11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>Moves the value stored in <a class="reference internal" href="#_CPPv416amongoc_box_takeDa11amongoc_box" title="amongoc_box_take::box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">box</span></code></a> to overwrite the object <a class="reference internal" href="#_CPPv416amongoc_box_takeDa11amongoc_box" title="amongoc_box_take::dest"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">dest</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dest</strong> – A non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code> <a class="reference internal" href="../glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> expression of type <span class="math notranslate nohighlight">\(T\)</span> that will
+receive the boxed value.</p></li>
+<li><p><strong>box</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> A non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code> box that is
+<a class="reference internal" href="#box-active"><span class="std std-ref">active</span></a> for the type <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This is useful to move an object from the type-erased box into a typed storage
+variable for more convenient access. The dynamic storage for <a class="reference internal" href="#_CPPv416amongoc_box_takeDa11amongoc_box" title="amongoc_box_take::box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">box</span></code></a> will be
+released, but the destructor for the box will not be executed. The object is
+now stored within <a class="reference internal" href="#_CPPv416amongoc_box_takeDa11amongoc_box" title="amongoc_box_take::dest"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">dest</span></code></a> and it is up to the caller to manage its lifetime.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">my_large_object</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">values</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<span class="p">};</span>
+
+<span class="c1">// ...</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">large</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">my_large_object</span><span class="w"> </span><span class="n">o</span><span class="p">;</span>
+<span class="w">  </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="n">o</span><span class="p">,</span><span class="w"> </span><span class="n">large</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// `o` now has the value from `large`, and dynamic storage for `large`</span>
+<span class="w">  </span><span class="c1">// has been released.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="trivial-box-constructors">
+<h3>Trivial Box Constructors<a class="headerlink" href="#trivial-box-constructors" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419amongoc_box_pointerPKv">
+<span id="_CPPv319amongoc_box_pointerPKv"></span><span id="_CPPv219amongoc_box_pointerPKv"></span><span id="amongoc_box_pointer__voidCP"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_pointer</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419amongoc_box_pointerPKv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_floatf">
+<span id="_CPPv317amongoc_box_floatf"></span><span id="_CPPv217amongoc_box_floatf"></span><span id="amongoc_box_float__float"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_float</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_floatf" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_box_doubled">
+<span id="_CPPv318amongoc_box_doubled"></span><span id="_CPPv218amongoc_box_doubled"></span><span id="amongoc_box_double__double"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_double</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_box_doubled" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_charc">
+<span id="_CPPv316amongoc_box_charc"></span><span id="_CPPv216amongoc_box_charc"></span><span id="amongoc_box_char__c"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_char</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_charc" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_shorts">
+<span id="_CPPv317amongoc_box_shorts"></span><span id="_CPPv217amongoc_box_shorts"></span><span id="amongoc_box_short__short"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_short</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">short</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_shorts" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv415amongoc_box_inti">
+<span id="_CPPv315amongoc_box_inti"></span><span id="_CPPv215amongoc_box_inti"></span><span id="amongoc_box_int__i"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_int</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415amongoc_box_inti" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv420amongoc_box_unsignedj">
+<span id="_CPPv320amongoc_box_unsignedj"></span><span id="_CPPv220amongoc_box_unsignedj"></span><span id="amongoc_box_unsigned__unsigned-i"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_unsigned</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420amongoc_box_unsignedj" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_longl">
+<span id="_CPPv316amongoc_box_longl"></span><span id="_CPPv216amongoc_box_longl"></span><span id="amongoc_box_long__l"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_long</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_longl" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_ulongm">
+<span id="_CPPv317amongoc_box_ulongm"></span><span id="_CPPv217amongoc_box_ulongm"></span><span id="amongoc_box_ulong__unsigned-l"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_ulong</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_ulongm" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv420amongoc_box_longlongx">
+<span id="_CPPv320amongoc_box_longlongx"></span><span id="_CPPv220amongoc_box_longlongx"></span><span id="amongoc_box_longlong__l-l"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_longlong</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420amongoc_box_longlongx" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv421amongoc_box_ulonglongy">
+<span id="_CPPv321amongoc_box_ulonglongy"></span><span id="_CPPv221amongoc_box_ulonglongy"></span><span id="amongoc_box_ulonglong__unsigned-l-l"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_ulonglong</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="kt"><span class="pre">long</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421amongoc_box_ulonglongy" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_size6size_t">
+<span id="_CPPv316amongoc_box_size6size_t"></span><span id="_CPPv216amongoc_box_size6size_t"></span><span id="amongoc_box_size__s"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_size</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_size6size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv419amongoc_box_ptrdiff9ptrdiff_t">
+<span id="_CPPv319amongoc_box_ptrdiff9ptrdiff_t"></span><span id="_CPPv219amongoc_box_ptrdiff9ptrdiff_t"></span><span id="amongoc_box_ptrdiff__ptrdiff_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_ptrdiff</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/ptrdiff_t" title="(in cppreference v0)"><span class="n"><span class="pre">ptrdiff_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419amongoc_box_ptrdiff9ptrdiff_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416amongoc_box_int86int8_t">
+<span id="_CPPv316amongoc_box_int86int8_t"></span><span id="_CPPv216amongoc_box_int86int8_t"></span><span id="amongoc_box_int8__int8_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_int8</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int8_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416amongoc_box_int86int8_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_uint87uint8_t">
+<span id="_CPPv317amongoc_box_uint87uint8_t"></span><span id="_CPPv217amongoc_box_uint87uint8_t"></span><span id="amongoc_box_uint8__uint8_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_uint8</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint8_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_uint87uint8_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_int167int16_t">
+<span id="_CPPv317amongoc_box_int167int16_t"></span><span id="_CPPv217amongoc_box_int167int16_t"></span><span id="amongoc_box_int16__int16_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_int16</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int16_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_int167int16_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_box_uint168uint16_t">
+<span id="_CPPv318amongoc_box_uint168uint16_t"></span><span id="_CPPv218amongoc_box_uint168uint16_t"></span><span id="amongoc_box_uint16__uint16_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_uint16</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint16_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_box_uint168uint16_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_int327int32_t">
+<span id="_CPPv317amongoc_box_int327int32_t"></span><span id="_CPPv217amongoc_box_int327int32_t"></span><span id="amongoc_box_int32__int32_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_int32</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int32_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_int327int32_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_box_uint328uint32_t">
+<span id="_CPPv318amongoc_box_uint328uint32_t"></span><span id="_CPPv218amongoc_box_uint328uint32_t"></span><span id="amongoc_box_uint32__uint32_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_uint32</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint32_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_box_uint328uint32_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv417amongoc_box_int647int64_t">
+<span id="_CPPv317amongoc_box_int647int64_t"></span><span id="_CPPv217amongoc_box_int647int64_t"></span><span id="amongoc_box_int64__int64_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_int64</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int64_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_box_int647int64_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_box_uint648uint64_t">
+<span id="_CPPv318amongoc_box_uint648uint64_t"></span><span id="_CPPv218amongoc_box_uint648uint64_t"></span><span id="amongoc_box_uint64__uint64_t"></span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_box_uint64</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint64_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_box_uint648uint64_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Convenience functions that initialize a new <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> with the type and
+value of the given argument.</p>
+<p>Note that all of the boxes returned by these functions are
+<a class="reference internal" href="#box-trivial"><span class="std std-ref">trivial</span></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3nilEv">
+<span id="_CPPv3N7amongoc3nilEv"></span><span id="_CPPv2N7amongoc3nilEv"></span><span id="amongoc::nil"></span><a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">nil</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4N7amongoc3nilEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Returns a unique box containing no value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">#</a></h2>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_nil">
+<span id="_CPPv311amongoc_nil"></span><span id="_CPPv211amongoc_nil"></span><span id="amongoc_nil__amongoc_boxC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_nil</span></span></span><a class="headerlink" href="#_CPPv411amongoc_nil" title="Link to this definition">#</a><br /></dt>
+<dd><p>A box value that contains no value. The resulting <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> is
+<a class="reference internal" href="#box-trivial"><span class="std std-ref">trivial</span></a>. Destroying a box constructed from <a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>
+is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N7amongoc3nilEv" title="amongoc::nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::nil()</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE">
+<span id="_CPPv3I0EN7amongoc30enable_trivially_relocatable_vE"></span><span id="_CPPv2I0EN7amongoc30enable_trivially_relocatable_vE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">enable_trivially_relocatable_v</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Trait variable template that determines whether <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::from()</span></code></a>
+will try to store an object inline within a box (omitting allocation).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">amongoc/relocation.hpp</span></code></p>
+</dd>
+</dl>
+<p>By default any objects that are both trivially destructible and trivially
+move-constructible are considered to be trivially relocatable.</p>
+<p>By the above rule all of the following are considered trivially relocatable:</p>
+<ul class="simple">
+<li><p>All built-in language types</p></li>
+<li><p>All pointer types</p></li>
+<li><p>All class types that have no non-trivial move/destroy operations (including
+all pure C structs)</p></li>
+<li><p>C++ closure objects that have no non-trivial move/destroy operations (this
+is based on the type of values that it captures).</p></li>
+</ul>
+<p>Additionally, if the type <a class="reference internal" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE" title="amongoc::enable_trivially_relocatable_v::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> has a nested type
+<code class="docutils literal notranslate"><span class="pre">enable_trivially_relocatable</span></code> that is defined to <a class="reference internal" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE" title="amongoc::enable_trivially_relocatable_v::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>, then the object will
+be treated as trivially relocatable.</p>
+</dd></dl>
+
+</section>
+<section id="box-behavior">
+<h2>Box Behavior<a class="headerlink" href="#box-behavior" title="Link to this heading">#</a></h2>
+<p>At any given time, an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> is either <em>active</em> for type T, or <em>dead</em>.</p>
+<section id="state-active-for-type-t">
+<span id="box-active"></span><h3>State: Active for type <span class="math notranslate nohighlight">\(T\)</span><a class="headerlink" href="#state-active-for-type-t" title="Link to this heading">#</a></h3>
+<p>A box <span class="math notranslate nohighlight">\(B\)</span> is <em>active</em> for type <span class="math notranslate nohighlight">\(T\)</span> if <strong>either</strong>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(B\)</span> was used with <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>/<a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a> with the type
+<span class="math notranslate nohighlight">\(T\)</span></p></li>
+<li><p><strong>OR</strong> <span class="math notranslate nohighlight">\(B\)</span> was created with a C++ API that constructs a box,</p></li>
+<li><p><strong>OR</strong> <span class="math notranslate nohighlight">\(B\)</span> is a by-value copy of an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> that was already
+active for type <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
+</ul>
+<p><strong>AND</strong>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(B\)</span> has not been <em>consumed</em> by any operation (i.e. passed through a
+<a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> parameter)</p></li>
+</ul>
+<p>If a box is active for type <span class="math notranslate nohighlight">\(T\)</span>, then it is legal to use it in
+<a class="reference internal" href="#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_cast()</span></code></a> with type <span class="math notranslate nohighlight">\(T\)</span>.</p>
+</section>
+<section id="state-dead">
+<span id="box-dead"></span><h3>State: Dead<a class="headerlink" href="#state-dead" title="Link to this heading">#</a></h3>
+<p>A box <span class="math notranslate nohighlight">\(B\)</span> is <em>dead</em> if either:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(B\)</span> is newly declared and uninitialized.</p></li>
+<li><p><strong>or</strong> <span class="math notranslate nohighlight">\(B\)</span> was used in any operation that <em>consumed</em> it.</p></li>
+</ul>
+</section>
+<section id="consuming-operations">
+<span id="box-consume"></span><h3>Consuming Operations<a class="headerlink" href="#consuming-operations" title="Link to this heading">#</a></h3>
+<p>A box <span class="math notranslate nohighlight">\(B\)</span> is <em>consumed</em> by any of the following operations:</p>
+<ul class="simple">
+<li><p>Passing <span class="math notranslate nohighlight">\(B\)</span> by-value to any function parameter marked with
+<a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>.</p></li>
+<li><p>Returning <span class="math notranslate nohighlight">\(B\)</span> by-value from a function.</p></li>
+<li><p>Copy-assigning <span class="math notranslate nohighlight">\(B\)</span> into another l-value expression of type <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="relocation">
+<h3>Relocation<a class="headerlink" href="#relocation" title="Link to this heading">#</a></h3>
+<p>The <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> should be considered <em>trivially relocatable</em>. That is: A
+byte-wise copy of the object <em>can</em> be considered a moved-to <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>,
+invalidating the box that was copied-from (i.e.
+<a class="reference internal" href="#box-consume"><span class="std std-ref">consuming it</span></a>).</p>
+</section>
+<section id="smallness">
+<span id="box-small"></span><h3>Smallness<a class="headerlink" href="#smallness" title="Link to this heading">#</a></h3>
+<p><a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> considers some objects to be “small”. If those objects are small,
+then it is guaranteed that <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> will not allocate memory for storing
+those objects.</p>
+<p>The only types <strong>guaranteed</strong> to be considered “small” are objects no larger
+than two pointers.</p>
+</section>
+<section id="non-relocatable-types">
+<h3>Non-Relocatable Types<a class="headerlink" href="#non-relocatable-types" title="Link to this heading">#</a></h3>
+<p>To store an object that cannot be trivially relocated within an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>,
+one should use <a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a>, which forcibly disables the
+small-object optimization within the created box.</p>
+<p>The C++ APIs <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::from()</span></code></a> will automatically handle this
+distiction by consulting <a class="reference internal" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE" title="amongoc::enable_trivially_relocatable_v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::enable_trivially_relocatable_v</span></code></a>.</p>
+</section>
+<section id="triviallity">
+<span id="box-trivial"></span><h3>Triviallity<a class="headerlink" href="#triviallity" title="Link to this heading">#</a></h3>
+<p>An <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> is said to be <em>trivial</em> if the type it contains is
+<a class="reference internal" href="#box-small"><span class="std std-ref">small</span></a> and the box has no associated destructor.</p>
+<p>When a box is <em>trivial</em>, some usage requirements relax:</p>
+<ol class="arabic simple">
+<li><p>A trivial box may be copied arbitrarily without invalidating other copies,
+and each copy has a distinct identity.</p></li>
+<li><p>It is safe to discard a trivial box (allow it to leave scope) without ever
+calling <a class="reference internal" href="#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a>.</p></li>
+<li><p>It is safe to overwrite or reinitialize the box (e.g. <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)
+with a new value without first destroying the box.</p></li>
+</ol>
+<p>In general: the semantics of the <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> attribute do not apply to
+trivial boxes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is not sufficient that the box is simply small or contains a primitive
+type: It is possible that such a box has a destructor that needs to execute on
+the primitive’s value (e.g. POSIX <code class="docutils literal notranslate"><span class="pre">close</span></code> is a destructor for an <code class="docutils literal notranslate"><span class="pre">int</span></code>).</p>
+</div>
+</section>
+<section id="storage-alignment">
+<h3>Storage Alignment<a class="headerlink" href="#storage-alignment" title="Link to this heading">#</a></h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>At the current time, boxes allocate and store values using the default
+maximum-alignment defined by the compiler. There is not yet support for types
+that require additional alignment.</p>
+</div>
+</section>
+<section id="q-can-i-query-the-state-of-a-box">
+<h3>Q: “Can I query the state of a box?”<a class="headerlink" href="#q-can-i-query-the-state-of-a-box" title="Link to this heading">#</a></h3>
+<p>In general, <em>no</em>. The properties of a box (i.e. type, state, triviallity,
+smallness, whether it is nil, and whether it has a destructor) are stored as
+implementation details. <strong>Code should be designed to treat all live boxes as
+non-trivial</strong> unless they are known to be otherwise.</p>
+<p>Attributes of boxes may be carried in other channels, e.g through an associated
+<a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> parameter, but it is up to the particular box+status pair to
+define the semantics thereof.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../building/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Configuring, Building, &amp; Using</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../status/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Status Codes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N11amongoc_box4viewE"><code class="docutils literal notranslate"><span class="pre">view</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO11amongoc_box9as_uniqueEv"><code class="docutils literal notranslate"><span class="pre">as_unique()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_view"><code class="docutils literal notranslate"><span class="pre">amongoc_view</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN12amongoc_view2asER1Tv"><code class="docutils literal notranslate"><span class="pre">as()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413__box_or_view"><code class="docutils literal notranslate"><span class="pre">__box_or_view</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_destructor</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3boxE"><code class="docutils literal notranslate"><span class="pre">box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxE"><code class="docutils literal notranslate"><span class="pre">unique_box</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_box10unique_boxERR11amongoc_box"><code class="docutils literal notranslate"><span class="pre">unique_box()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxD0Ev"><code class="docutils literal notranslate"><span class="pre">~unique_box()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_boxcv12amongoc_viewEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">amongoc_view()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc10unique_box2asER1Tv"><code class="docutils literal notranslate"><span class="pre">as()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQNSt27is_trivially_destructible_vI1TEEEN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEE1T1D"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0DpEN7amongoc10unique_box4makeE10unique_boxN4mlib9allocatorIEEDpRR4Args"><code class="docutils literal notranslate"><span class="pre">make()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO7amongoc10unique_box7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc10unique_box4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc10unique_box4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#box-creation-destruction">Box Creation / Destruction</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_destroy11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424amongoc_box_free_storage11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_free_storage()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inspection">Inspection</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_cast6__type13__box_or_view"><code class="docutils literal notranslate"><span class="pre">amongoc_box_cast()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_data11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_dataK11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_data12amongoc_view"><code class="docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_takeDa11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_box_take()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trivial-box-constructors">Trivial Box Constructors</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_pointerPKv"><code class="docutils literal notranslate"><span class="pre">amongoc_box_pointer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_floatf"><code class="docutils literal notranslate"><span class="pre">amongoc_box_float()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_doubled"><code class="docutils literal notranslate"><span class="pre">amongoc_box_double()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_charc"><code class="docutils literal notranslate"><span class="pre">amongoc_box_char()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_shorts"><code class="docutils literal notranslate"><span class="pre">amongoc_box_short()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_box_inti"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_box_unsignedj"><code class="docutils literal notranslate"><span class="pre">amongoc_box_unsigned()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_longl"><code class="docutils literal notranslate"><span class="pre">amongoc_box_long()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_ulongm"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ulong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_box_longlongx"><code class="docutils literal notranslate"><span class="pre">amongoc_box_longlong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_box_ulonglongy"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ulonglong()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_size6size_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419amongoc_box_ptrdiff9ptrdiff_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_ptrdiff()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_box_int86int8_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int8()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_uint87uint8_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint8()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int167int16_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int16()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint168uint16_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint16()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int327int32_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint328uint32_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_box_int647int64_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_int64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_box_uint648uint64_t"><code class="docutils literal notranslate"><span class="pre">amongoc_box_uint64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3nilEv"><code class="docutils literal notranslate"><span class="pre">nil()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_nil"><code class="docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE"><code class="docutils literal notranslate"><span class="pre">enable_trivially_relocatable_v</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#box-behavior">Box Behavior</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-active-for-type-t">State: Active for type <span class="math notranslate nohighlight">\(T\)</span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#state-dead">State: Dead</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consuming-operations">Consuming Operations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#relocation">Relocation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#smallness">Smallness</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-relocatable-types">Non-Relocatable Types</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#triviallity">Triviallity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#storage-alignment">Storage Alignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#q-can-i-query-the-state-of-a-box">Q: “Can I query the state of a box?”</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

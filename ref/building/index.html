@@ -1,0 +1,722 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Configuring, Building, &amp; Using &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/building';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Dynamically Types Boxes" href="../box/" />
+    <link rel="prev" title="amongoc API Patterns" href="../api-patterns/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/building.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Configuring, Building, & Using</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-dependencies">Third-Party Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-earthly">Building with Earthly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-in-cmake">Importing in CMake</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-imported-target">Using the Imported Target</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-imports">Dependency Imports</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="configuring-building-using">
+<h1>Configuring, Building, &amp; Using<a class="headerlink" href="#configuring-building-using" title="Link to this heading">#</a></h1>
+<p>Building <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is supported with the following build tools:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cmake.org/">CMake</a> 3.25 or newer</p></li>
+<li><p>GCC ≥12.0 <strong>or</strong> Clang ≥17.0</p></li>
+<li><p><a class="reference external" href="https://earthly.dev/">Earthly</a> 0.8 or newer (for <a class="reference internal" href="#building-earthly"><span class="std std-ref">building with Earthly</span></a>)</p></li>
+</ul>
+<section id="build-configuration">
+<h2>Build Configuration<a class="headerlink" href="#build-configuration" title="Link to this heading">#</a></h2>
+<p>The following <a class="reference external" href="https://cmake.org/">CMake</a> configuration options are supported:</p>
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:AMONGOC_INSTALL_CMAKEDIR">
+<span class="sig-name descname"><span class="pre">AMONGOC_INSTALL_CMAKEDIR</span></span><a class="headerlink" href="#variable:AMONGOC_INSTALL_CMAKEDIR" title="Link to this definition">#</a></dt>
+<dd><p>Set the installation path for CMake package files that are to be found using
+<span class="target" id="index-0-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.1)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="code highlight sh docutils literal highlight-sh"><span class="si">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="si">}</span>/cmake</code></p>
+</dd>
+</dl>
+<p>This is based on the similar variables that are used in
+<span class="target" id="index-0-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.1)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:MONGO_SANITIZE">
+<span class="sig-name descname"><span class="pre">MONGO_SANITIZE</span></span><a class="headerlink" href="#variable:MONGO_SANITIZE" title="Link to this definition">#</a></dt>
+<dd><p>A comma-separated list of sanitizers to enable for the build. Note that if
+this is enabled, then the exported library will attempt to link to the
+sanitizer libraries as well.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:MONGO_USE_CCACHE">
+<span class="sig-name descname"><span class="pre">MONGO_USE_CCACHE</span></span><a class="headerlink" href="#variable:MONGO_USE_CCACHE" title="Link to this definition">#</a></dt>
+<dd><p>If enabled, the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> build will use <code class="docutils literal notranslate"><span class="pre">ccache</span></code> for compilation. This
+defaults to <code class="docutils literal notranslate"><span class="pre">ON</span></code> if a suitable <code class="docutils literal notranslate"><span class="pre">ccache</span></code> executable is found.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:MONGO_USE_LLD">
+<span class="sig-name descname"><span class="pre">MONGO_USE_LLD</span></span><a class="headerlink" href="#variable:MONGO_USE_LLD" title="Link to this definition">#</a></dt>
+<dd><p>If enabled, thne <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> build will link using the LLD linker instead of the
+default.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:BUILD_TESTING">
+<span class="sig-name descname"><span class="pre">BUILD_TESTING</span></span><a class="headerlink" href="#variable:BUILD_TESTING" title="Link to this definition">#</a></dt>
+<dd><p>This variables comes from the <span class="target" id="index-0-module:module:CTest"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest" title="(in CMake v3.31.1)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">CTest</span></code></a> CMake
+module and can toggle the generation/building of tests.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:CMAKE_INSTALL_LIBDIR">
+<span class="sig-name descname"><span class="pre">CMAKE_INSTALL_LIBDIR</span></span><a class="headerlink" href="#variable:CMAKE_INSTALL_LIBDIR" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object cmake" id="variable:CMAKE_INSTALL_BINDIR">
+<span class="sig-name descname"><span class="pre">CMAKE_INSTALL_BINDIR</span></span><a class="headerlink" href="#variable:CMAKE_INSTALL_BINDIR" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object cmake" id="variable:CMAKE_INSTALL_INCLUDEDIR">
+<span class="sig-name descname"><span class="pre">CMAKE_INSTALL_INCLUDEDIR</span></span><a class="headerlink" href="#variable:CMAKE_INSTALL_INCLUDEDIR" title="Link to this definition">#</a></dt>
+<dd><p>These variables come from
+<span class="target" id="index-1-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.1)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a> and control
+the paths to installed files for separate package components. Refer to that
+module for details.</p>
+</dd></dl>
+
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:AMONGOC_USE_PMM">
+<span class="sig-name descname"><span class="pre">AMONGOC_USE_PMM</span></span><a class="headerlink" href="#variable:AMONGOC_USE_PMM" title="Link to this definition">#</a></dt>
+<dd><p>Toggle usage of <a class="reference external" href="https://github.com/vector-of-bool/pmm">PMM</a> to automatically download and import dependencies at
+configure-time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">ON</span></code></p>
+</dd>
+</dl>
+<p>If this toggle is enabled, then <a class="reference external" href="https://vcpkg.io/">vcpkg</a> will be executed during CMake
+configuration to download and build the dependencies required by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>.</p>
+<p>If you want to manage dependencies yourself, disable this toggle. You will
+need to ensure that the
+<a class="reference internal" href="#building-cmake-deps"><span class="std std-ref">configure-time dependencies</span></a> are available to
+<span class="target" id="index-1-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.1)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a>.</p>
+</dd></dl>
+
+</section>
+<section id="third-party-dependencies">
+<span id="building-cmake-deps"></span><h2>Third-Party Dependencies<a class="headerlink" href="#third-party-dependencies" title="Link to this heading">#</a></h2>
+<aside class="sidebar">
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>At time of writing, <a class="reference external" href="https://github.com/vector-of-bool/neo-fun">neo-fun</a> does not ship an installable CMake package and
+is installed using a custom <a class="reference external" href="https://vcpkg.io/">vcpkg</a> port in <code class="docutils literal notranslate"><span class="pre">etc/vcpkg-ports/neo-fun</span></code>.</p>
+</div>
+</aside>
+<p>The following external libraries are required by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>:</p>
+<ul class="simple">
+<li><p>OpenSSL</p></li>
+<li><p><a class="reference external" href="https://www.boost.io/libraries/url/">Boost.URL</a></p></li>
+<li><p><a class="reference external" href="https://fmt.dev/">{fmt}</a></p></li>
+<li><p><a class="reference external" href="https://github.com/catchorg/Catch2">Catch2</a> - Only required for testing and only imported if
+<span class="target" id="index-0-variable:BUILD_TESTING"></span><a class="reference internal" href="#variable:BUILD_TESTING" title="BUILD_TESTING"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">BUILD_TESTING</span></code></a> is enabled.</p></li>
+<li><p><a class="reference external" href="https://think-async.com/Asio/">Asio</a> - Used for asynchronous I/O (Build-time only) (Note: Not <code class="docutils literal notranslate"><span class="pre">Boost.Asio</span></code>!)</p></li>
+<li><p><a class="reference external" href="https://github.com/vector-of-bool/neo-fun">neo-fun</a> (Build-time only)</p></li>
+</ul>
+</section>
+<section id="building-with-earthly">
+<span id="building-earthly"></span><h2>Building with Earthly<a class="headerlink" href="#building-with-earthly" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="https://earthly.dev/">Earthly</a> is a container-based build automation tool. <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> ships with an</p>
+<dl class="std file">
+<dt class="sig sig-object std" id="file-Earthfile">
+<span class="sig-name descname"><span class="pre">Earthfile</span></span><span class="w"> </span><em class="property"><span class="pre">(repository</span> <span class="pre">file)</span></em><a class="headerlink" href="#file-Earthfile" title="Link to this definition">#</a></dt>
+<dd><p>The configuration file building and package with <a class="reference external" href="https://earthly.dev/">Earthly</a>.</p>
+<dl class="std earthly-target" id="build-targets">
+<dt class="sig sig-object std" id="earthly-target-build-alpine">
+<span class="sig-name descname"><span class="pre">+build-alpine</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-alpine" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="earthly-target-build-debian">
+<span class="sig-name descname"><span class="pre">+build-debian</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-debian" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="earthly-target-build-rl">
+<span class="sig-name descname"><span class="pre">+build-rl</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-rl" title="Link to this definition">#</a></dt>
+<dd><p>Build targets that build for Alpine Linux (with libmusl), Debian, and
+RockyLinux (for RedHat-compatible binaries).</p>
+<p>The Alpine and Debian build uses the system’s default toolchain. The
+RockyLinux build uses the RedHat devtoolset to obtain an up-to-date compiler
+for producing RedHat-compatible binaries.</p>
+<dl class="std earthly-artifact">
+<dt class="sig sig-object std" id="earthly-artifact-build-xyz-pkg">
+<span class="sig-prename descclassname"><span class="pre">+build-xyz</span></span><span class="sig-name descname"><span class="pre">/pkg</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">artifact)</span></em><a class="headerlink" href="#earthly-artifact-build-xyz-pkg" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="earthly-artifact-build-xyz-install">
+<span class="sig-prename descclassname"><span class="pre">+build-xyz</span></span><span class="sig-name descname"><span class="pre">/install</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">artifact)</span></em><a class="headerlink" href="#earthly-artifact-build-xyz-install" title="Link to this definition">#</a></dt>
+<dd><p>Built artifacts from the <a class="reference internal" href="#build-targets"><span class="std std-ref">build targets</span></a>. The
+<code class="docutils literal notranslate"><span class="pre">/pkg</span></code> artifact contains binary packages create by CPack: A <code class="docutils literal notranslate"><span class="pre">.tar.gz</span></code>
+archive, a <code class="docutils literal notranslate"><span class="pre">.zip</span></code> archive, and a self-extracting shell script <code class="docutils literal notranslate"><span class="pre">.sh</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">/install</span></code> artifact contains an install tree from the build.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="std earthly-target">
+<dt class="sig sig-object std" id="earthly-target-build-multi">
+<span class="sig-name descname"><span class="pre">+build-multi</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-multi" title="Link to this definition">#</a></dt>
+<dd><p>Builds all of <a class="reference internal" href="#earthly-target-build-alpine"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-alpine</span></code></a>, <a class="reference internal" href="#earthly-target-build-debian"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-debian</span></code></a>, and <a class="reference internal" href="#earthly-target-build-rl"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-rl</span></code></a> at once.</p>
+<dl class="std earthly-artifact">
+<dt class="sig sig-object std" id="earthly-artifact-build-multi">
+<span class="sig-prename descclassname"><span class="pre">+build-multi</span></span><span class="sig-name descname"><span class="pre">/</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">artifact)</span></em><a class="headerlink" href="#earthly-artifact-build-multi" title="Link to this definition">#</a></dt>
+<dd><p>The root artifact directory contains all artifacts from all other build
+targets.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="importing-in-cmake">
+<h2>Importing in CMake<a class="headerlink" href="#importing-in-cmake" title="Link to this heading">#</a></h2>
+<p>To use <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> in a CMake project, import the <code class="docutils literal notranslate"><span class="pre">amongoc</span></code> package:</p>
+<aside class="sidebar">
+<p>Note that the CMake package has no <code class="docutils literal notranslate"><span class="pre">COMPONENTS</span></code>. Specifying any components
+will result in an error at import-time.</p>
+</aside>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nf">find_package(</span><span class="nb">amongoc</span><span class="w"> </span><span class="m">0.1.0</span><span class="w"> </span><span class="no">REQUIRED</span><span class="nf">)</span>
+</pre></div>
+</div>
+<section id="using-the-imported-target">
+<h3>Using the Imported Target<a class="headerlink" href="#using-the-imported-target" title="Link to this heading">#</a></h3>
+<p>The CMake package defines a primary imported target: <code class="docutils literal notranslate"><span class="pre">amongoc::amongoc</span></code>, which
+can be linked into an application:</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nf">add_executbale(</span><span class="nb">my-program</span><span class="w"> </span><span class="nb">main.c</span><span class="nf">)</span>
+<span class="nf">target_link_libraries(</span><span class="nb">my-program</span><span class="w"> </span><span class="no">PRIVATE</span><span class="w"> </span><span class="nb">amongoc</span><span class="o">::</span><span class="nb">amongoc</span><span class="nf">)</span>
+</pre></div>
+</div>
+</section>
+<section id="dependency-imports">
+<h3>Dependency Imports<a class="headerlink" href="#dependency-imports" title="Link to this heading">#</a></h3>
+<p>By default, the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> CMake package will attempt to import dependencies
+using <span class="target" id="index-0-command:command:find_dependency"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html#command:find_dependency" title="(in CMake v3.31.1)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_dependency</span></code></a>. This import
+can be disabled by changing <span class="target" id="index-0-variable:AMONGOC_FIND_DEPENDENCIES"></span><a class="reference internal" href="#variable:AMONGOC_FIND_DEPENDENCIES" title="AMONGOC_FIND_DEPENDENCIES"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">AMONGOC_FIND_DEPENDENCIES</span></code></a>.</p>
+<dl class="cmake variable">
+<dt class="sig sig-object cmake" id="variable:AMONGOC_FIND_DEPENDENCIES">
+<span class="sig-name descname"><span class="pre">AMONGOC_FIND_DEPENDENCIES</span></span><a class="headerlink" href="#variable:AMONGOC_FIND_DEPENDENCIES" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Default<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">ON</span></code></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an <strong>import-time</strong> CMake setting that is defined for projects that
+call <code class="docutils literal notranslate"><span class="pre">find_package</span></code> to import <code class="docutils literal notranslate"><span class="pre">amongoc</span></code>. It has no effect on building
+<code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> itself.</p>
+</div>
+<p>If enabled (the default), then <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> will try to find its dependencies
+during import. If disabled, then <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> will assume that the necessary
+imported targets will be defined elsewhere by the importing package.</p>
+<p>The following imported targets are used by the imported <code class="docutils literal notranslate"><span class="pre">amongoc::amongoc</span></code>
+target:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fmt::fmt</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Boost::url</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Boost::container</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">OpenSSL::SSL</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Threads::Threads</span></code> (from the
+<span class="target" id="index-0-module:module:FindThreads"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/FindThreads.html#module:FindThreads" title="(in CMake v3.31.1)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">FindThreads</span></code></a> module)</p></li>
+</ul>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../api-patterns/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../box/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Dynamically Types Boxes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-dependencies">Third-Party Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-earthly">Building with Earthly</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-in-cmake">Importing in CMake</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-imported-target">Using the Imported Target</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-imports">Dependency Imports</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1019 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BSON Values &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/bson/value';</script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="BSON Reading" href="../view/" />
+    <link rel="prev" title="BSON Value Types" href="../types/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../handler/">Handler APIs</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../">BSON Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../types/">BSON Value Types</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../_sources/ref/bson/value.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>BSON Values</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anonE"><code class="docutils literal notranslate"><span class="pre">__anon</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon3eodE"><code class="docutils literal notranslate"><span class="pre">eod</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon7double_E"><code class="docutils literal notranslate"><span class="pre">double_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4utf8E"><code class="docutils literal notranslate"><span class="pre">utf8</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon8documentE"><code class="docutils literal notranslate"><span class="pre">document</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5arrayE"><code class="docutils literal notranslate"><span class="pre">array</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6binaryE"><code class="docutils literal notranslate"><span class="pre">binary</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9undefinedE"><code class="docutils literal notranslate"><span class="pre">undefined</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon3oidE"><code class="docutils literal notranslate"><span class="pre">oid</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5bool_E"><code class="docutils literal notranslate"><span class="pre">bool_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon8datetimeE"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4nullE"><code class="docutils literal notranslate"><span class="pre">null</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5regexE"><code class="docutils literal notranslate"><span class="pre">regex</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9dbpointerE"><code class="docutils literal notranslate"><span class="pre">dbpointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4codeE"><code class="docutils literal notranslate"><span class="pre">code</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6symbolE"><code class="docutils literal notranslate"><span class="pre">symbol</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5int32E"><code class="docutils literal notranslate"><span class="pre">int32</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9timestampE"><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5int64E"><code class="docutils literal notranslate"><span class="pre">int64</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon10decimal128E"><code class="docutils literal notranslate"><span class="pre">decimal128</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6maxkeyE"><code class="docutils literal notranslate"><span class="pre">maxkey</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6minkeyE"><code class="docutils literal notranslate"><span class="pre">minkey</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref4fromE24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref7as_boolEv"><code class="docutils literal notranslate"><span class="pre">as_bool()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref8as_int32EPb"><code class="docutils literal notranslate"><span class="pre">as_int32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref8as_int64EPb"><code class="docutils literal notranslate"><span class="pre">as_int64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref9as_doubleEPb"><code class="docutils literal notranslate"><span class="pre">as_double()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref21get_document_or_arrayE9bson_view"><code class="docutils literal notranslate"><span class="pre">get_document_or_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_refeqENSt8integralE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_refeqE16std__string_view"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK14bson_value_ref5visitEDcRR1F"><code class="docutils literal notranslate"><span class="pre">visit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anonE"><code class="docutils literal notranslate"><span class="pre">__anon</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon3eodE"><code class="docutils literal notranslate"><span class="pre">eod</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon7double_E"><code class="docutils literal notranslate"><span class="pre">double_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon4utf8E"><code class="docutils literal notranslate"><span class="pre">utf8</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon8documentE"><code class="docutils literal notranslate"><span class="pre">document</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon6binary5bytesE"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon6binary7subtypeE"><code class="docutils literal notranslate"><span class="pre">subtype</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon3oidE"><code class="docutils literal notranslate"><span class="pre">oid</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5bool_E"><code class="docutils literal notranslate"><span class="pre">bool_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon8datetimeE"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5regex2rxE"><code class="docutils literal notranslate"><span class="pre">rx</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5regex7optionsE"><code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9dbpointer10collectionE"><code class="docutils literal notranslate"><span class="pre">collection</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9dbpointer9object_idE"><code class="docutils literal notranslate"><span class="pre">object_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5int32E"><code class="docutils literal notranslate"><span class="pre">int32</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9timestampE"><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5int64E"><code class="docutils literal notranslate"><span class="pre">int64</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon10decimal128E"><code class="docutils literal notranslate"><span class="pre">decimal128</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">__bson_value_convertible</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417bson_value_delete10bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value_delete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_ref_from24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_ref_from()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_value_as_bool14bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int3214bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int32()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int6414bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int64()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420bson_value_as_double14bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_double()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="bson-values">
+<h1>BSON Values<a class="headerlink" href="#bson-values" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-bson-value_ref.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">bson/value_ref.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-bson-value_ref.h" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="header-file-bson-value.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">bson/value.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-bson-value.h" title="Link to this definition">#</a></dt>
+<dd><p>Contains APIs for working with arbitrary BSON element values.</p>
+</dd></dl>
+
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv414bson_value_ref">
+<span id="_CPPv314bson_value_ref"></span><span id="_CPPv214bson_value_ref"></span><span id="bson_value_ref"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_ref</span></span></span><a class="headerlink" href="#_CPPv414bson_value_ref" title="Link to this definition">#</a><br /></dt>
+<dd><p>A non-owning read-only view of a BSON value.</p>
+<dl class="field-list simple" id="bson-null-ref">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> Has type <a class="reference internal" href="../types/#_CPPv4N9bson_type13bson_type_eodE" title="bson_type_eod"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_eod</span></code></a>, and represents a
+<em>null</em> value reference. <strong>Note</strong> that this is distinct from a reference to a
+<a class="reference internal" href="../types/#_CPPv4N9bson_type14bson_type_nullE" title="bson_type_null"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_null</span></code></a> value!</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a union-like type. Only one of the value fields is active
+at a time. Check <a class="reference internal" href="#_CPPv4N14bson_value_ref4typeE" title="bson_value_ref::type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type</span></code></a> before accessing other fields.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For simple built-in types and aggregate types, the value ref takes a
+by-value copy of the value. It does not store a pointer to simple types.
+The “reference” semantics apply to the non-trivial types such as strings
+and document references.</p>
+</div>
+<section id="members">
+<h3>Members<a class="headerlink" href="#members" title="Link to this heading">#</a></h3>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref4typeE">
+<span id="_CPPv3N14bson_value_ref4typeE"></span><span id="_CPPv2N14bson_value_ref4typeE"></span><span id="bson_value_ref::type__bson_type"></span><a class="reference internal" href="../types/#_CPPv49bson_type" title="bson_type"><span class="n"><span class="pre">bson_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref4typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The active type of the viewed value. The special type tag <a class="reference internal" href="../types/#_CPPv4N9bson_type13bson_type_eodE" title="bson_type_eod"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_eod</span></code></a>
+represents a null value reference.</p>
+</dd></dl>
+
+<dl class="cpp union">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anonE">
+<span id="_CPPv3N14bson_value_ref6__anonE"></span><span id="_CPPv2N14bson_value_ref6__anonE"></span><span class="k"><span class="pre">union</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anonE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following are accessed directly on the <a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a> instance</p>
+</div>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon3eodE">
+<span id="_CPPv3N14bson_value_ref6__anon3eodE"></span><span id="_CPPv2N14bson_value_ref6__anon3eodE"></span><span id="bson_value_ref::__anon::eod__bson_eod"></span><a class="reference internal" href="../types/#_CPPv48bson_eod" title="bson_eod"><span class="n"><span class="pre">bson_eod</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eod</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon3eodE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon7double_E">
+<span id="_CPPv3N14bson_value_ref6__anon7double_E"></span><span id="_CPPv2N14bson_value_ref6__anon7double_E"></span><span id="bson_value_ref::__anon::double___double"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">double_</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon7double_E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon4utf8E">
+<span id="_CPPv3N14bson_value_ref6__anon4utf8E"></span><span id="_CPPv2N14bson_value_ref6__anon4utf8E"></span><span id="bson_value_ref::__anon::utf8__mlib_str_view"></span><a class="reference internal" href="../../str/#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">utf8</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon4utf8E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon8documentE">
+<span id="_CPPv3N14bson_value_ref6__anon8documentE"></span><span id="_CPPv2N14bson_value_ref6__anon8documentE"></span><span id="bson_value_ref::__anon::document__bson_view"></span><a class="reference internal" href="../view/#_CPPv49bson_view" title="bson_view"><span class="n"><span class="pre">bson_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">document</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon8documentE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon5arrayE">
+<span id="_CPPv3N14bson_value_ref6__anon5arrayE"></span><span id="_CPPv2N14bson_value_ref6__anon5arrayE"></span><span id="bson_value_ref::__anon::array__bson_array_view"></span><a class="reference internal" href="../view/#_CPPv415bson_array_view" title="bson_array_view"><span class="n"><span class="pre">bson_array_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">array</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon5arrayE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon6binaryE">
+<span id="_CPPv3N14bson_value_ref6__anon6binaryE"></span><span id="_CPPv2N14bson_value_ref6__anon6binaryE"></span><span id="bson_value_ref::__anon::binary__bson_binary_view"></span><a class="reference internal" href="../types/#_CPPv416bson_binary_view" title="bson_binary_view"><span class="n"><span class="pre">bson_binary_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">binary</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon6binaryE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon9undefinedE">
+<span id="_CPPv3N14bson_value_ref6__anon9undefinedE"></span><span id="_CPPv2N14bson_value_ref6__anon9undefinedE"></span><span id="bson_value_ref::__anon::undefined__bson_undefined"></span><a class="reference internal" href="../types/#_CPPv414bson_undefined" title="bson_undefined"><span class="n"><span class="pre">bson_undefined</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">undefined</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon9undefinedE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon3oidE">
+<span id="_CPPv3N14bson_value_ref6__anon3oidE"></span><span id="_CPPv2N14bson_value_ref6__anon3oidE"></span><span id="bson_value_ref::__anon::oid__bson_oid"></span><a class="reference internal" href="../types/#_CPPv48bson_oid" title="bson_oid"><span class="n"><span class="pre">bson_oid</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">oid</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon3oidE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon5bool_E">
+<span id="_CPPv3N14bson_value_ref6__anon5bool_E"></span><span id="_CPPv2N14bson_value_ref6__anon5bool_E"></span><span id="bson_value_ref::__anon::bool___b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bool_</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon5bool_E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon8datetimeE">
+<span id="_CPPv3N14bson_value_ref6__anon8datetimeE"></span><span id="_CPPv2N14bson_value_ref6__anon8datetimeE"></span><span id="bson_value_ref::__anon::datetime__bson_datetime"></span><a class="reference internal" href="../types/#_CPPv413bson_datetime" title="bson_datetime"><span class="n"><span class="pre">bson_datetime</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datetime</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon8datetimeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon4nullE">
+<span id="_CPPv3N14bson_value_ref6__anon4nullE"></span><span id="_CPPv2N14bson_value_ref6__anon4nullE"></span><span id="bson_value_ref::__anon::null__bson_null"></span><a class="reference internal" href="../types/#_CPPv49bson_null" title="bson_null"><span class="n"><span class="pre">bson_null</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">null</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon4nullE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon5regexE">
+<span id="_CPPv3N14bson_value_ref6__anon5regexE"></span><span id="_CPPv2N14bson_value_ref6__anon5regexE"></span><span id="bson_value_ref::__anon::regex__bson_regex_view"></span><a class="reference internal" href="../types/#_CPPv415bson_regex_view" title="bson_regex_view"><span class="n"><span class="pre">bson_regex_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">regex</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon5regexE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon9dbpointerE">
+<span id="_CPPv3N14bson_value_ref6__anon9dbpointerE"></span><span id="_CPPv2N14bson_value_ref6__anon9dbpointerE"></span><span id="bson_value_ref::__anon::dbpointer__bson_dbpointer_view"></span><a class="reference internal" href="../types/#_CPPv419bson_dbpointer_view" title="bson_dbpointer_view"><span class="n"><span class="pre">bson_dbpointer_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dbpointer</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon9dbpointerE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon4codeE">
+<span id="_CPPv3N14bson_value_ref6__anon4codeE"></span><span id="_CPPv2N14bson_value_ref6__anon4codeE"></span><span id="bson_value_ref::__anon::code__bson_code_view"></span><a class="reference internal" href="../types/#_CPPv414bson_code_view" title="bson_code_view"><span class="n"><span class="pre">bson_code_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">code</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon4codeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon6symbolE">
+<span id="_CPPv3N14bson_value_ref6__anon6symbolE"></span><span id="_CPPv2N14bson_value_ref6__anon6symbolE"></span><span id="bson_value_ref::__anon::symbol__bson_symbol_view"></span><a class="reference internal" href="../types/#_CPPv416bson_symbol_view" title="bson_symbol_view"><span class="n"><span class="pre">bson_symbol_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">symbol</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon6symbolE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon5int32E">
+<span id="_CPPv3N14bson_value_ref6__anon5int32E"></span><span id="_CPPv2N14bson_value_ref6__anon5int32E"></span><span id="bson_value_ref::__anon::int32__int32_t"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int32_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int32</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon5int32E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon9timestampE">
+<span id="_CPPv3N14bson_value_ref6__anon9timestampE"></span><span id="_CPPv2N14bson_value_ref6__anon9timestampE"></span><span id="bson_value_ref::__anon::timestamp__bson_timestamp"></span><a class="reference internal" href="../types/#_CPPv414bson_timestamp" title="bson_timestamp"><span class="n"><span class="pre">bson_timestamp</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon9timestampE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon5int64E">
+<span id="_CPPv3N14bson_value_ref6__anon5int64E"></span><span id="_CPPv2N14bson_value_ref6__anon5int64E"></span><span id="bson_value_ref::__anon::int64__int64_t"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int64_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int64</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon5int64E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon10decimal128E">
+<span id="_CPPv3N14bson_value_ref6__anon10decimal128E"></span><span id="_CPPv2N14bson_value_ref6__anon10decimal128E"></span><span id="bson_value_ref::__anon::decimal128__bson_decimal128"></span><a class="reference internal" href="../types/#_CPPv415bson_decimal128" title="bson_decimal128"><span class="n"><span class="pre">bson_decimal128</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decimal128</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon10decimal128E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon6maxkeyE">
+<span id="_CPPv3N14bson_value_ref6__anon6maxkeyE"></span><span id="_CPPv2N14bson_value_ref6__anon6maxkeyE"></span><span id="bson_value_ref::__anon::maxkey__bson_maxkey"></span><a class="reference internal" href="../types/#_CPPv411bson_maxkey" title="bson_maxkey"><span class="n"><span class="pre">bson_maxkey</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maxkey</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon6maxkeyE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref6__anon6minkeyE">
+<span id="_CPPv3N14bson_value_ref6__anon6minkeyE"></span><span id="_CPPv2N14bson_value_ref6__anon6minkeyE"></span><span id="bson_value_ref::__anon::minkey__bson_minkey"></span><a class="reference internal" href="../types/#_CPPv411bson_minkey" title="bson_minkey"><span class="n"><span class="pre">bson_minkey</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">minkey</span></span></span><a class="headerlink" href="#_CPPv4N14bson_value_ref6__anon6minkeyE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The various values that can be viewed by the reference. Each field
+corresponds to a value of the <a class="reference internal" href="#_CPPv4N14bson_value_ref4typeE" title="bson_value_ref::type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type</span></code></a> member.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="c-members">
+<h3>C++ Members<a class="headerlink" href="#c-members" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref4fromE24__bson_value_convertible">
+<span id="_CPPv3N14bson_value_ref4fromE24__bson_value_convertible"></span><span id="_CPPv2N14bson_value_ref4fromE24__bson_value_convertible"></span><span id="bson_value_ref::from____bson_value_convertible"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">V</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref4fromE24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a> instance that views the given value <a class="reference internal" href="#_CPPv4N14bson_value_ref4fromE24__bson_value_convertible" title="bson_value_ref::from::V"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">V</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref7as_boolEv">
+<span id="_CPPv3N14bson_value_ref7as_boolEv"></span><span id="_CPPv2N14bson_value_ref7as_boolEv"></span><span id="bson_value_ref::as_bool"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">as_bool</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref7as_boolEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref8as_int32EPb">
+<span id="_CPPv3N14bson_value_ref8as_int32EPb"></span><span id="_CPPv2N14bson_value_ref8as_int32EPb"></span><span id="bson_value_ref::as_int32__bP"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">std::int32_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">as_int32</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref8as_int32EPb" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref8as_int64EPb">
+<span id="_CPPv3N14bson_value_ref8as_int64EPb"></span><span id="_CPPv2N14bson_value_ref8as_int64EPb"></span><span id="bson_value_ref::as_int64__bP"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">std::int64_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">as_int64</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref8as_int64EPb" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref9as_doubleEPb">
+<span id="_CPPv3N14bson_value_ref9as_doubleEPb"></span><span id="_CPPv2N14bson_value_ref9as_doubleEPb"></span><span id="bson_value_ref::as_double__bP"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">as_double</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref9as_doubleEPb" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv418bson_value_as_bool14bson_value_ref" title="bson_value_as_bool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a>, <a class="reference internal" href="#_CPPv419bson_value_as_int3214bson_value_refPb" title="bson_value_as_int32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_as_int32()</span></code></a>, <a class="reference internal" href="#_CPPv419bson_value_as_int6414bson_value_refPb" title="bson_value_as_int64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_as_int64()</span></code></a>, and <a class="reference internal" href="#_CPPv420bson_value_as_double14bson_value_refPb" title="bson_value_as_double"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_as_double()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_ref21get_document_or_arrayE9bson_view">
+<span id="_CPPv3N14bson_value_ref21get_document_or_arrayE9bson_view"></span><span id="_CPPv2N14bson_value_ref21get_document_or_arrayE9bson_view"></span><span id="bson_value_ref::get_document_or_array__bson_view"></span><a class="reference internal" href="../view/#_CPPv49bson_view" title="bson_view"><span class="n"><span class="pre">bson_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_document_or_array</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../view/#_CPPv49bson_view" title="bson_view"><span class="n"><span class="pre">bson_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dflt</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_ref21get_document_or_arrayE9bson_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>If the value is a document or an array, return a view of that value.
+Otherwise, returns <a class="reference internal" href="#_CPPv4N14bson_value_ref21get_document_or_arrayE9bson_view" title="bson_value_ref::get_document_or_array::dflt"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">dflt</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_refeqENSt8integralE">
+<span id="_CPPv3N14bson_value_refeqENSt8integralE"></span><span id="_CPPv2N14bson_value_refeqENSt8integralE"></span><span id="bson_value_ref::eq-operator__std::integral"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">integral</span></span><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_refeqENSt8integralE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_value_refeqE16std__string_view">
+<span id="_CPPv3N14bson_value_refeqE16std__string_view"></span><span id="_CPPv2N14bson_value_refeqE16std__string_view"></span><span id="bson_value_ref::eq-operator__std__string_view"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sv</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N14bson_value_refeqE16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compare the value to an integer or a string. If the value does not carry
+the appropriate type, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK14bson_value_ref5visitEDcRR1F">
+<span id="_CPPv3I0ENK14bson_value_ref5visitERR1F"></span><span id="_CPPv2I0ENK14bson_value_ref5visitERR1F"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">visit</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0ENK14bson_value_ref5visitEDcRR1F" title="bson_value_ref::visit::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fn</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK14bson_value_ref5visitEDcRR1F" title="Link to this definition">#</a><br /></dt>
+<dd><p>Apply the value-visitor <a class="reference internal" href="#_CPPv4I0ENK14bson_value_ref5visitEDcRR1F" title="bson_value_ref::visit::fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">fn</span></code></a> to the underlying value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> – An invocable object. Must be invocable with each data type
+that an element can hold. Each overload of the invocation must return
+the same type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the value obtained by invoking the visior function with
+the appropriate value.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv410bson_value">
+<span id="_CPPv310bson_value"></span><span id="_CPPv210bson_value"></span><span id="bson_value"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value</span></span></span><a class="headerlink" href="#_CPPv410bson_value" title="Link to this definition">#</a><br /></dt>
+<dd><p>An owning dynamically-typed BSON value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> Represents a lack of any value. Calling
+<a class="reference internal" href="#_CPPv417bson_value_delete10bson_value" title="bson_value_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_delete()</span></code></a> on such an object is a no-op. Creating a <a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a>
+from such a value will create a null <a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a>. Using a zero-initialized
+<a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a> for most other operations is undefined behavior.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a union-like type. Only one of the value fields is active
+at a time. Check <a class="reference internal" href="#_CPPv4N10bson_value4typeE" title="bson_value::type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type</span></code></a> before accessing other fields.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For simple built-in types and trivial aggregate types, does not allocate any
+resources.</p>
+</div>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value4typeE">
+<span id="_CPPv3N10bson_value4typeE"></span><span id="_CPPv2N10bson_value4typeE"></span><span id="bson_value::type__bson_type"></span><a class="reference internal" href="../types/#_CPPv49bson_type" title="bson_type"><span class="n"><span class="pre">bson_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value4typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The active type of the stored value. The special type tag <a class="reference internal" href="../types/#_CPPv4N9bson_type13bson_type_eodE" title="bson_type_eod"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_eod</span></code></a>
+represents a null value.</p>
+</dd></dl>
+
+<dl class="cpp union">
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anonE">
+<span id="_CPPv3N10bson_value6__anonE"></span><span id="_CPPv2N10bson_value6__anonE"></span><span class="k"><span class="pre">union</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__anon</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anonE" title="Link to this definition">#</a><br /></dt>
+<dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The following are accessed directly on the <a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a> instance</p>
+</div>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon3eodE">
+<span id="_CPPv3N10bson_value6__anon3eodE"></span><span id="_CPPv2N10bson_value6__anon3eodE"></span><span id="bson_value::__anon::eod__bson_eod"></span><a class="reference internal" href="../types/#_CPPv48bson_eod" title="bson_eod"><span class="n"><span class="pre">bson_eod</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">eod</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon3eodE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon7double_E">
+<span id="_CPPv3N10bson_value6__anon7double_E"></span><span id="_CPPv2N10bson_value6__anon7double_E"></span><span id="bson_value::__anon::double___double"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">double_</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon7double_E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon4utf8E">
+<span id="_CPPv3N10bson_value6__anon4utf8E"></span><span id="_CPPv2N10bson_value6__anon4utf8E"></span><span id="bson_value::__anon::utf8__mlib_str"></span><a class="reference internal" href="../../str/#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">utf8</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon4utf8E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon8documentE">
+<span id="_CPPv3N10bson_value6__anon8documentE"></span><span id="_CPPv2N10bson_value6__anon8documentE"></span><span id="bson_value::__anon::document__bson_view"></span><a class="reference internal" href="../view/#_CPPv49bson_view" title="bson_view"><span class="n"><span class="pre">bson_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">document</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon8documentE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon6binary5bytesE">
+<span id="_CPPv3N10bson_value6__anon6binary5bytesE"></span><span id="_CPPv2N10bson_value6__anon6binary5bytesE"></span><span id="bson_value::__anon::binary::bytes__bson_byte_vec"></span><span class="n"><span class="pre">bson_byte_vec</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">bytes</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon6binary5bytesE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon6binary7subtypeE">
+<span id="_CPPv3N10bson_value6__anon6binary7subtypeE"></span><span id="_CPPv2N10bson_value6__anon6binary7subtypeE"></span><span id="bson_value::__anon::binary::subtype__uint8_t"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint8_t</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">binary</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">subtype</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon6binary7subtypeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon3oidE">
+<span id="_CPPv3N10bson_value6__anon3oidE"></span><span id="_CPPv2N10bson_value6__anon3oidE"></span><span id="bson_value::__anon::oid__bson_oid"></span><a class="reference internal" href="../types/#_CPPv48bson_oid" title="bson_oid"><span class="n"><span class="pre">bson_oid</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">oid</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon3oidE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon5bool_E">
+<span id="_CPPv3N10bson_value6__anon5bool_E"></span><span id="_CPPv2N10bson_value6__anon5bool_E"></span><span id="bson_value::__anon::bool___b"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bool_</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon5bool_E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon8datetimeE">
+<span id="_CPPv3N10bson_value6__anon8datetimeE"></span><span id="_CPPv2N10bson_value6__anon8datetimeE"></span><span id="bson_value::__anon::datetime__bson_datetime"></span><a class="reference internal" href="../types/#_CPPv413bson_datetime" title="bson_datetime"><span class="n"><span class="pre">bson_datetime</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">datetime</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon8datetimeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon5regex2rxE">
+<span id="_CPPv3N10bson_value6__anon5regex2rxE"></span><span id="_CPPv2N10bson_value6__anon5regex2rxE"></span><span id="bson_value::__anon::regex::rx__mlib_str"></span><a class="reference internal" href="../../str/#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">rx</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon5regex2rxE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon5regex7optionsE">
+<span id="_CPPv3N10bson_value6__anon5regex7optionsE"></span><span id="_CPPv2N10bson_value6__anon5regex7optionsE"></span><span id="bson_value::__anon::regex::options__mlib_str"></span><a class="reference internal" href="../../str/#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">regex</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">options</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon5regex7optionsE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon9dbpointer10collectionE">
+<span id="_CPPv3N10bson_value6__anon9dbpointer10collectionE"></span><span id="_CPPv2N10bson_value6__anon9dbpointer10collectionE"></span><span id="bson_value::__anon::dbpointer::collection__mlib_str"></span><a class="reference internal" href="../../str/#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">dbpointer</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">collection</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon9dbpointer10collectionE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon9dbpointer9object_idE">
+<span id="_CPPv3N10bson_value6__anon9dbpointer9object_idE"></span><span id="_CPPv2N10bson_value6__anon9dbpointer9object_idE"></span><span id="bson_value::__anon::dbpointer::object_id__bson_oid"></span><a class="reference internal" href="../types/#_CPPv48bson_oid" title="bson_oid"><span class="n"><span class="pre">bson_oid</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">dbpointer</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">object_id</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon9dbpointer9object_idE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon5int32E">
+<span id="_CPPv3N10bson_value6__anon5int32E"></span><span id="_CPPv2N10bson_value6__anon5int32E"></span><span id="bson_value::__anon::int32__int32_t"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int32_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int32</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon5int32E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon9timestampE">
+<span id="_CPPv3N10bson_value6__anon9timestampE"></span><span id="_CPPv2N10bson_value6__anon9timestampE"></span><span id="bson_value::__anon::timestamp__bson_timestamp"></span><a class="reference internal" href="../types/#_CPPv414bson_timestamp" title="bson_timestamp"><span class="n"><span class="pre">bson_timestamp</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">timestamp</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon9timestampE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon5int64E">
+<span id="_CPPv3N10bson_value6__anon5int64E"></span><span id="_CPPv2N10bson_value6__anon5int64E"></span><span id="bson_value::__anon::int64__int64_t"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int64_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">int64</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon5int64E" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N10bson_value6__anon10decimal128E">
+<span id="_CPPv3N10bson_value6__anon10decimal128E"></span><span id="_CPPv2N10bson_value6__anon10decimal128E"></span><span id="bson_value::__anon::decimal128__bson_decimal128"></span><a class="reference internal" href="../types/#_CPPv415bson_decimal128" title="bson_decimal128"><span class="n"><span class="pre">bson_decimal128</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">decimal128</span></span></span><a class="headerlink" href="#_CPPv4N10bson_value6__anon10decimal128E" title="Link to this definition">#</a><br /></dt>
+<dd><p>The various values that can be stored. Each field corresponds to a value
+of the <a class="reference internal" href="#_CPPv4N10bson_value4typeE" title="bson_value::type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type</span></code></a> member.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv424__bson_value_convertible">
+<span id="_CPPv324__bson_value_convertible"></span><span id="_CPPv224__bson_value_convertible"></span><span id="__bson_value_convertible"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__bson_value_convertible</span></span></span><a class="headerlink" href="#_CPPv424__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__bson_value_convertible</span></code></a> parameter is any type which can be converted to a
+<a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a>. The following types are supported:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Given</p></td>
+<td><p>Result</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../view/#_CPPv415__bson_viewable" title="__bson_viewable"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__bson_viewable</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type18bson_type_documentE" title="bson_type_document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_document</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_array</span></code></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_arrayE" title="bson_type_array"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_array</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__string_convertible</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type14bson_type_utf8E" title="bson_type_utf8"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_utf8</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv416bson_binary_view" title="bson_binary_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_binary_view</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type16bson_type_binaryE" title="bson_type_binary"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_binary</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../types/#_CPPv48bson_oid" title="bson_oid"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_oid</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type13bson_type_oidE" title="bson_type_oid"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_oid</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv413bson_datetime" title="bson_datetime"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_datetime</span></code></a></p></td>
+<td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_datetime</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_regex</span></code></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_regexE" title="bson_type_regex"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_regex</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_dbpointer</span></code></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type19bson_type_dbpointerE" title="bson_type_dbpointer"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_dbpointer</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_code</span></code></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type14bson_type_codeE" title="bson_type_code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_code</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_symbol</span></code></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type16bson_type_symbolE" title="bson_type_symbol"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_symbol</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">int32_t</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_int32E" title="bson_type_int32"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_int32</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv414bson_timestamp" title="bson_timestamp"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_timestamp</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type19bson_type_timestampE" title="bson_type_timestamp"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_timestamp</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_int64E" title="bson_type_int64"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_int64</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv415bson_decimal128" title="bson_decimal128"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_decimal128</span></code></a></p></td>
+<td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type20bson_type_decimal128E" title="bson_type_decimal128"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_decimal128</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a></p></td>
+<td><p>The reference is copied.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a></p></td>
+<td><p>A reference to the value is created.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417bson_value_delete10bson_value">
+<span id="_CPPv317bson_value_delete10bson_value"></span><span id="_CPPv217bson_value_delete10bson_value"></span><span id="bson_value_delete__bson_value"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_delete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><span class="n"><span class="pre">bson_value</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">nullable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417bson_value_delete10bson_value" title="Link to this definition">#</a><br /></dt>
+<dd><p>Delete any resources associated with the given BSON value.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419bson_value_ref_from24__bson_value_convertible">
+<span id="_CPPv319bson_value_ref_from24__bson_value_convertible"></span><span id="_CPPv219bson_value_ref_from24__bson_value_convertible"></span><span id="bson_value_ref_from____bson_value_convertible"></span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_ref_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">V</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bson_value_ref_from24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a dynamically typed <a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a> that corresponds to a view of the
+given value.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415bson_value_copy24__bson_value_convertible">
+<span id="_CPPv315bson_value_copy24__bson_value_convertible"></span><span id="_CPPv215bson_value_copy24__bson_value_convertible"></span><span id="bson_value_copy____bson_value_convertible"></span><a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><span class="n"><span class="pre">bson_value</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">V</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415bson_value_copy24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a copy of <a class="reference internal" href="#_CPPv415bson_value_copy24__bson_value_convertible" title="bson_value_copy::V"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">V</span></code></a> stored in a dynamically typed <a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a>. The returned
+value must eventually be destroyed.</p>
+</dd></dl>
+
+<dl class="cpp function" id="iter-coerce">
+<dt class="sig sig-object cpp" id="_CPPv418bson_value_as_bool14bson_value_ref">
+<span id="_CPPv318bson_value_as_bool14bson_value_ref"></span><span id="_CPPv218bson_value_as_bool14bson_value_ref"></span><span id="bson_value_as_bool__bson_value_ref"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_as_bool</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bson_value_as_bool14bson_value_ref" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv419bson_value_as_int3214bson_value_refPb">
+<span id="_CPPv319bson_value_as_int3214bson_value_refPb"></span><span id="_CPPv219bson_value_as_int3214bson_value_refPb"></span><span id="bson_value_as_int32__bson_value_ref.bP"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int32_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_as_int32</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bson_value_as_int3214bson_value_refPb" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv419bson_value_as_int6414bson_value_refPb">
+<span id="_CPPv319bson_value_as_int6414bson_value_refPb"></span><span id="_CPPv219bson_value_as_int6414bson_value_refPb"></span><span id="bson_value_as_int64__bson_value_ref.bP"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">int64_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_as_int64</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bson_value_as_int6414bson_value_refPb" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv420bson_value_as_double14bson_value_refPb">
+<span id="_CPPv320bson_value_as_double14bson_value_refPb"></span><span id="_CPPv220bson_value_as_double14bson_value_refPb"></span><span id="bson_value_as_double__bson_value_ref.bP"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_as_double</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">okay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420bson_value_as_double14bson_value_refPb" title="Link to this definition">#</a><br /></dt>
+<dd><p>Coerce the given BSON value to an numeric type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>it</strong> – A valid value to be decoded.</p></li>
+<li><p><strong>okay</strong> – An optional output parameter. If the returned value corresponds
+to the decoded element value, this is set to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code>. Otherwise, this
+will be set to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>. <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_as_bool</span></code> always coerces, so it
+omits this parameter.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes on behavior:</p>
+<ul class="simple">
+<li><p>For coercing a boolean element to a number, a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> element becomes
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="mi">1</span></code>, and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code> becomes <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="mi">0</span></code>.</p></li>
+<li><p>Coercing between double, int32, and int64 will do the coercing according to
+the language’s conversion rules. (e.g. an <strong>int64</strong> converted to a
+<strong>double</strong> will first extract an <a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">int64_t</span></code></a> and then convert it to a
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">double</span></code>)</p></li>
+<li><p>For coercing to a <code class="docutils literal notranslate"><span class="pre">bool</span></code> with <a class="reference internal" href="#_CPPv418bson_value_as_bool14bson_value_ref" title="bson_value_as_bool"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a>, the following
+applies:</p>
+<ul>
+<li><p>If the element is a numeric type, a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> value will be returned if
+if is not equal to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="mi">0</span></code>. Otherwise, it returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>.</p></li>
+<li><p>For documents, arrays, and strings, the returned value is a bool
+corresponding to whether the corresponding value is non-empty. If decoding
+a subdocument fails, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>.</p></li>
+<li><p>For BSON types <strong>EOD</strong>, <strong>undefined</strong>, <strong>null</strong>, <strong>min-key</strong>, and
+<strong>max-key</strong>, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>.</p></li>
+<li><p>For all other BSON types, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> unconditionally.</p></li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../types/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BSON Value Types</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../view/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">BSON Reading</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anonE"><code class="docutils literal notranslate"><span class="pre">__anon</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon3eodE"><code class="docutils literal notranslate"><span class="pre">eod</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon7double_E"><code class="docutils literal notranslate"><span class="pre">double_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4utf8E"><code class="docutils literal notranslate"><span class="pre">utf8</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon8documentE"><code class="docutils literal notranslate"><span class="pre">document</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5arrayE"><code class="docutils literal notranslate"><span class="pre">array</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6binaryE"><code class="docutils literal notranslate"><span class="pre">binary</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9undefinedE"><code class="docutils literal notranslate"><span class="pre">undefined</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon3oidE"><code class="docutils literal notranslate"><span class="pre">oid</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5bool_E"><code class="docutils literal notranslate"><span class="pre">bool_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon8datetimeE"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4nullE"><code class="docutils literal notranslate"><span class="pre">null</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5regexE"><code class="docutils literal notranslate"><span class="pre">regex</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9dbpointerE"><code class="docutils literal notranslate"><span class="pre">dbpointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon4codeE"><code class="docutils literal notranslate"><span class="pre">code</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6symbolE"><code class="docutils literal notranslate"><span class="pre">symbol</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5int32E"><code class="docutils literal notranslate"><span class="pre">int32</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon9timestampE"><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon5int64E"><code class="docutils literal notranslate"><span class="pre">int64</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon10decimal128E"><code class="docutils literal notranslate"><span class="pre">decimal128</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6maxkeyE"><code class="docutils literal notranslate"><span class="pre">maxkey</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref6__anon6minkeyE"><code class="docutils literal notranslate"><span class="pre">minkey</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref4fromE24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref7as_boolEv"><code class="docutils literal notranslate"><span class="pre">as_bool()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref8as_int32EPb"><code class="docutils literal notranslate"><span class="pre">as_int32()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref8as_int64EPb"><code class="docutils literal notranslate"><span class="pre">as_int64()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref9as_doubleEPb"><code class="docutils literal notranslate"><span class="pre">as_double()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_ref21get_document_or_arrayE9bson_view"><code class="docutils literal notranslate"><span class="pre">get_document_or_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_refeqENSt8integralE"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_value_refeqE16std__string_view"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK14bson_value_ref5visitEDcRR1F"><code class="docutils literal notranslate"><span class="pre">visit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value4typeE"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anonE"><code class="docutils literal notranslate"><span class="pre">__anon</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon3eodE"><code class="docutils literal notranslate"><span class="pre">eod</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon7double_E"><code class="docutils literal notranslate"><span class="pre">double_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon4utf8E"><code class="docutils literal notranslate"><span class="pre">utf8</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon8documentE"><code class="docutils literal notranslate"><span class="pre">document</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon6binary5bytesE"><code class="docutils literal notranslate"><span class="pre">bytes</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon6binary7subtypeE"><code class="docutils literal notranslate"><span class="pre">subtype</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon3oidE"><code class="docutils literal notranslate"><span class="pre">oid</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5bool_E"><code class="docutils literal notranslate"><span class="pre">bool_</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon8datetimeE"><code class="docutils literal notranslate"><span class="pre">datetime</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5regex2rxE"><code class="docutils literal notranslate"><span class="pre">rx</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5regex7optionsE"><code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9dbpointer10collectionE"><code class="docutils literal notranslate"><span class="pre">collection</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9dbpointer9object_idE"><code class="docutils literal notranslate"><span class="pre">object_id</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5int32E"><code class="docutils literal notranslate"><span class="pre">int32</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon9timestampE"><code class="docutils literal notranslate"><span class="pre">timestamp</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon5int64E"><code class="docutils literal notranslate"><span class="pre">int64</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N10bson_value6__anon10decimal128E"><code class="docutils literal notranslate"><span class="pre">decimal128</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">__bson_value_convertible</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417bson_value_delete10bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value_delete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_ref_from24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_ref_from()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_value_as_bool14bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int3214bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int32()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int6414bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int64()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420bson_value_as_double14bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_double()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

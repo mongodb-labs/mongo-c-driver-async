@@ -1,0 +1,589 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Creation &amp; Destruction &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'learn/bson/lifetime';</script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Adding Data" href="../inserting/" />
+    <link rel="prev" title="BSON Handling" href="../" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../">BSON Handling</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../_sources/learn/bson/lifetime.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Creation & Destruction</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-c">Creating (C)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Creating (C++)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copying">Copying</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reserving-memory">Reserving Memory</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="creation-destruction">
+<h1>Creation &amp; Destruction<a class="headerlink" href="#creation-destruction" title="Link to this heading">#</a></h1>
+<p>BSON data structures are managed using the <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> (C) or <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a>
+(C++) types. These types own an associated region of memory that contains the
+BSON data.</p>
+<section id="creating-c">
+<h2>Creating (C)<a class="headerlink" href="#creating-c" title="Link to this heading">#</a></h2>
+<p>Creation of a new <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> is performed using <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a>. When you are done
+with a document object, it should be destroyed with <a class="reference internal" href="../../../ref/bson/doc/#_CPPv411bson_delete8bson_doc" title="bson_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_delete()</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bson/doc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">c_create</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Create a new document boject</span>
+<span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Do stuff</span>
+
+<span class="w">    </span><span class="c1">// Destroy the object</span>
+<span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> object is small and safe to pass and return by value from
+functions and APIs.</p>
+</section>
+<section id="id1">
+<h2>Creating (C++)<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>C++ code can create a document object using <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bson/doc.h&gt;</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">cxx_create</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Will be destroyed automatically</span>
+<span class="w">    </span><span class="n">bson</span><span class="o">::</span><span class="n">document</span><span class="w"> </span><span class="n">doc</span><span class="p">{</span><span class="o">::</span><span class="no">mlib_default_allocator</span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>It will automatically destroy the object when it leaves scope. Copying a
+<a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> will create a distinct copy of the data.</p>
+<p>A C <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> can be converted to a C++ <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> by passing it as an
+r-value to the <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> constructor.</p>
+<p>A C++ <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> can be converted to a C <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> in two ways:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../ref/bson/doc/#_CPPv4NK4bson8document3getEv" title="bson::document::get"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::get()</span></code></a> will return an lvalue reference to the wrapped
+<a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>. This returned object should never be used with a <a class="reference internal" href="../../../ref/meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>
+parameter.</p></li>
+<li><p><a class="reference internal" href="../../../ref/bson/doc/#_CPPv4NO4bson8document7releaseEv" title="bson::document::release"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::release()</span></code></a> will relinquish ownership of the held <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> and
+return it to the caller. The <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> object will be made null and the
+returned <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> is now the responsibility of the caller.</p></li>
+</ul>
+</section>
+<section id="copying">
+<h2>Copying<a class="headerlink" href="#copying" title="Link to this heading">#</a></h2>
+<p>If you have an existing BSON object and want to duplicate it, <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> can
+also be used for that purpose:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">bson_doc</span><span class="o">*</span><span class="w"> </span><span class="n">get_some_bson_doc</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">copy_a_document</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">dup</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">(</span><span class="o">*</span><span class="n">get_some_bson_doc</span><span class="p">());</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">dup</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>C++ code can simply copy the <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> object to get a distinct copy.</p>
+</section>
+<section id="reserving-memory">
+<h2>Reserving Memory<a class="headerlink" href="#reserving-memory" title="Link to this heading">#</a></h2>
+<p>When creating a BSON document, it may be useful to reserve additional memory for
+the document data that we will later insert data into. This can be done by
+passing an integer number of bytes when constructing the instance with
+<a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> or <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">reserve_space</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">large</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">large</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Even though we allocate data for the document up-front, the returned object
+is still empty.</p>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BSON Handling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../inserting/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Adding Data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-c">Creating (C)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Creating (C++)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#copying">Copying</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reserving-memory">Reserving Memory</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

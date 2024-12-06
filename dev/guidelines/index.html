@@ -1,0 +1,922 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Development Guidelines &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/guidelines';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="C Object Deletion" href="../deletion/" />
+    <link rel="prev" title="amongoc Developer Documentation" href="../" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/guidelines.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Development Guidelines</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#macros-preprocessor">Macros &amp; Preprocessor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prefer-snake-case">Prefer <code class="docutils literal notranslate"><span class="pre">snake_case</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beware-the-global-scope-specifier"><strong>Beware</strong> the global-scope specifier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-conditional-compilation"><strong>Avoid</strong> Conditional Compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-terse-conditional-compilation">Use terse conditional compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-using-ifdef-or-if-with-object-macros"><strong>Avoid</strong> using <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#ifdef</span></code> or <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#if</span></code> with object macros</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linkage-blocks">Linkage Blocks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beware-r-values-that-look-like-l-values"><strong>Beware</strong> R-values that look like L-values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#declaration-statement-macros-should-require-a-semicolon">Declaration/Statement macros should require a semicolon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-comments-to-distant-endif-and-else-directives">Add comments to distant <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">endif</span></code> and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#else</span></code> directives</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-macros">Utility Macros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-headers">Public Headers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#header-sorting">Header Sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inclusion-syntax">Inclusion Syntax</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-linkage-specifiers">Use Linkage Specifiers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#be-aware-of-c-s-inline-rules"><strong>Be aware</strong> of C’s <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> rules</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-not-use-a-static-function-in-a-non-static-inline-function-in-c"><strong>Do not</strong> use a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> function in a non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function in C</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-compatibility">C++ Compatibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inclusion-of-c-apis-in-c-headers">Inclusion of C++ APIs in C Headers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-adding-c-constructors-to-c-structs"><strong>Avoid</strong> adding C++ constructors to C structs</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#do-not-add-copy-move-constructors-to-c-structs-nor-add-a-destructor-to-c-structs"><strong>Do not</strong> add copy/move constructors to C structs, nor add a destructor to C structs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="development-guidelines">
+<h1>Development Guidelines<a class="headerlink" href="#development-guidelines" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../documenting/"><span class="doc">Documenting amongoc</span></a></p>
+</div>
+<section id="macros-preprocessor">
+<h2>Macros &amp; Preprocessor<a class="headerlink" href="#macros-preprocessor" title="Link to this heading">#</a></h2>
+<p>When defining C preprocessor macros, adhere to the following:</p>
+<section id="prefer-snake-case">
+<h3>Prefer <code class="docutils literal notranslate"><span class="pre">snake_case</span></code><a class="headerlink" href="#prefer-snake-case" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>If the macro is intended to be used as an expression, statement, attribute,
+declaration, or declaration specifier, use <code class="docutils literal notranslate"><span class="pre">snake_case</span></code>.</p></li>
+<li><p>If a <a class="reference internal" href="../../ref/glossary/#term-function-like-macro"><span class="xref std std-term">function-like macro</span></a> performs nontrivial token manipulation, use
+<code class="docutils literal notranslate"><span class="pre">SHOUTING_CASE</span></code>.</p></li>
+</ul>
+</section>
+<section id="beware-the-global-scope-specifier">
+<span id="macros-global-scope"></span><h3><strong>Beware</strong> the global-scope specifier<a class="headerlink" href="#beware-the-global-scope-specifier" title="Link to this heading">#</a></h3>
+<p><strong>Avoid</strong> writing expression macros that generate a syntax error in C++ if they
+are expanded following a global-scope resolution operator:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Bad:</span>
+<span class="cp">#define function_macro() \</span>
+<span class="cp">  (_calls_a_function(x, y, z))</span>
+<span class="c1">// Causes a syntax error:</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">function_macro</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// Okay:</span>
+<span class="cp">#define better_constant_value \</span>
+<span class="cp">  _calls_a_function(x, y, z)</span>
+<span class="c1">// Okay:</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">function_macro</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>If the parenthesis are <em>absolutely necessary</em>, use
+<a class="reference internal" href="#c.mlib_parenthesized_expression" title="mlib_parenthesized_expression"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_parenthesized_expression</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define function_macro(X, Y) mlib_parenthesized_expression((X) + (Y))</span>
+<span class="c1">// Okay:</span>
+<span class="k">auto</span><span class="w">  </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">function_macro</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+</pre></div>
+</div>
+<p class="rubric">Reasoning</p>
+<p>The fact that a function is implemented using a macro is an implementation
+detail. If a C++ user uses a global-scope qualifier on a non-macro <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>
+function, and we later refactor that function to be a macro, it would be a
+breaking change for any C++ users that expect the <code class="docutils literal notranslate"><span class="pre">::</span></code> qualifier to continue
+to work.</p>
+</section>
+<section id="avoid-conditional-compilation">
+<h3><strong>Avoid</strong> Conditional Compilation<a class="headerlink" href="#avoid-conditional-compilation" title="Link to this heading">#</a></h3>
+<p>Use of conditional compilation should be avoided if possible. Conditional
+attributes and specifiers should be hidden behind a macro that performs the
+conditional expansion internally (e.g. <a class="reference internal" href="#c.mlib_extern_c" title="mlib_extern_c"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c</span></code></a>). Conditional
+compilation should be localized to the smallest lexical scope required.</p>
+</section>
+<section id="use-terse-conditional-compilation">
+<h3>Use terse conditional compilation<a class="headerlink" href="#use-terse-conditional-compilation" title="Link to this heading">#</a></h3>
+<p>Prever to use <a class="reference internal" href="#c.MLIB_IF_CXX" title="MLIB_IF_CXX"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MLIB_IF_CXX</span></code></a> and <a class="reference internal" href="#c.MLIB_IF_NOT_CXX" title="MLIB_IF_NOT_CXX"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MLIB_IF_NOT_CXX</span></code></a> for more
+concise conditional compilation/macro expansions.</p>
+</section>
+<section id="avoid-using-ifdef-or-if-with-object-macros">
+<h3><strong>Avoid</strong> using <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#ifdef</span></code> or <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#if</span></code> with object macros<a class="headerlink" href="#avoid-using-ifdef-or-if-with-object-macros" title="Link to this heading">#</a></h3>
+<p>Instead, use <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#if</span></code> with <a class="reference internal" href="../../ref/glossary/#term-function-like-macro"><span class="xref std std-term">function-like macro</span></a>s</p>
+<p><strong>Bad</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#ifdef __cpllusplus  </span><span class="c1">// Oops: Spelling error</span>
+<span class="c1">// this block never compiles</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<p><strong>Good</strong>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#if mlib_is_cxx()</span>
+<span class="c1">// Okay</span>
+<span class="cp">#endif </span><span class="c1">// C++</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#if milb_is_cxx()  </span><span class="c1">// Compile-error: milb_is_cxx is not defined (typo)</span>
+</pre></div>
+</div>
+</section>
+<section id="linkage-blocks">
+<h3>Linkage Blocks<a class="headerlink" href="#linkage-blocks" title="Link to this heading">#</a></h3>
+<p><strong>Prefer</strong> to use <a class="reference internal" href="#c.mlib_extern_c_begin" title="mlib_extern_c_begin"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c_begin</span></code></a> and
+<a class="reference internal" href="#c.mlib_extern_c_end" title="mlib_extern_c_end"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c_end</span></code></a> to conditional <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../ref/glossary/#term-language-linkage"><span class="xref std std-term">language linkage</span></a></p>
+</div>
+</section>
+<section id="beware-r-values-that-look-like-l-values">
+<h3><strong>Beware</strong> R-values that look like L-values<a class="headerlink" href="#beware-r-values-that-look-like-l-values" title="Link to this heading">#</a></h3>
+<p><strong>Avoid</strong> writing <a class="reference internal" href="../../ref/glossary/#term-object-like-macro"><span class="xref std std-term">object-like macros</span></a> that expand to
+rvalues. Users may expect to be able to take the address of such an expression
+since it looks like an <a class="reference internal" href="../../ref/glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define my_special_constant 42</span>
+
+<span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">my_special_constant</span><span class="p">;</span><span class="w">  </span><span class="c1">// Error!</span>
+</pre></div>
+</div>
+<p>Instead, use the same idiom as used for C <code class="docutils literal notranslate"><span class="pre">errno</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kr">inline</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="nf">_mySpecialConstantPtr</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cp">#define my_special_constant mlib_parenthesized_expression(*_mySpecialConstantPtr())</span>
+</pre></div>
+</div>
+<p>Alternatively, write it as a <a class="reference internal" href="../../ref/glossary/#term-function-like-macro"><span class="xref std std-term">function-like macro</span></a> that accepts no
+arguments:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define my_special_constant() mlib_parenthesized_expression(42)</span>
+</pre></div>
+</div>
+<p>While this is less than ideal, it does not look like an <a class="reference internal" href="../../ref/glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> when it
+appears in source code.</p>
+</section>
+<section id="declaration-statement-macros-should-require-a-semicolon">
+<h3>Declaration/Statement macros should require a semicolon<a class="headerlink" href="#declaration-statement-macros-should-require-a-semicolon" title="Link to this heading">#</a></h3>
+<p>If a macro is intended to be used like a statement or a declaration, it should
+expand such that it requires a following semicolon. Bad examples:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define declare_an_int(Name) int Name = 0;</span>
+<span class="cp">#define declares_a_func(Name) int Name() { return 42; }</span>
+<span class="cp">#define early_return(Cond) \</span>
+<span class="cp">  if (!(Cond)) { puts(&quot;Condition failed&quot;); return EINVAL; }</span>
+</pre></div>
+</div>
+<p>Better:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#define declare_an_int(Name) \</span>
+<span class="cp">  int Name = 0</span>
+<span class="cp">#define declares_a_func(Name) \</span>
+<span class="cp">  int Name() { return 42; } \</span>
+<span class="cp">  mlib_static_assert(true, &quot;&quot;)</span>
+<span class="cp">#define early_return(Cond) \</span>
+<span class="cp">  if (!(Cond)) { puts(&quot;Condition failed&quot;); return EINVAL; } \</span>
+<span class="cp">  else ((void)0)</span>
+</pre></div>
+</div>
+<p>Requiring a semicolon prevents ambiguity and compiler warnings about extra
+semicolons when a user adds a semicolon to a macro expansion that doesn’t need
+one.</p>
+</section>
+<section id="add-comments-to-distant-endif-and-else-directives">
+<h3>Add comments to distant <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">endif</span></code> and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#else</span></code> directives<a class="headerlink" href="#add-comments-to-distant-endif-and-else-directives" title="Link to this heading">#</a></h3>
+<p>If an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#endif</span></code> or <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#else</span></code> directive is far away from its associated
+conditional, add a comment explaining what it’s for:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#if mlib_is_cxx()</span>
+
+<span class="c1">// many many many many lines</span>
+
+<span class="cp">#else  </span><span class="c1">// ↑ C++ / C ↓</span>
+
+<span class="c1">// many many many more lines</span>
+
+<span class="cp">#endif  </span><span class="c1">// C</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="utility-macros">
+<h2>Utility Macros<a class="headerlink" href="#utility-macros" title="Link to this heading">#</a></h2>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.MLIB_LANG_PICK">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_LANG_PICK</span></span></span><a class="headerlink" href="#c.MLIB_LANG_PICK" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special <a class="reference internal" href="../../ref/glossary/#term-function-like-macro"><span class="xref std std-term">function-like macro</span></a> that takes two argument lists in two
+sets of parenthesis. If compiled as C, the first argument list will be
+expanded. In C++, the second argument list will be expanded. The unused
+argument list will be discarded. Neither argument will undergo immediate macro
+expansion:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">puts</span><span class="p">(</span><span class="n">MLIB_LANG_PICK</span><span class="p">(</span><span class="s">&quot;I am compiled as C!&quot;</span><span class="p">)(</span><span class="s">&quot;I am compiled as C++!&quot;</span><span class="p">));</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.MLIB_IF_CXX">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_CXX</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_CXX" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.MLIB_IF_NOT_CXX">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_NOT_CXX</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_NOT_CXX" title="Link to this definition">#</a><br /></dt>
+<dd><p>Expands to the given arguments when compiled in C++ or C, resepectively. Prefer
+<a class="reference internal" href="#c.MLIB_LANG_PICK" title="MLIB_LANG_PICK"><code class="xref c c-macro docutils literal notranslate"><span class="pre">MLIB_LANG_PICK</span></code></a> if you have something to say in both languages.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.MLIB_IF_CLANG">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_CLANG</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_CLANG" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.MLIB_IF_GCC">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_GCC</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_GCC" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.MLIB_IF_MSVC">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_MSVC</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_MSVC" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.MLIB_IF_GNU_LIKE">
+<span class="sig-name descname"><span class="n"><span class="pre">MLIB_IF_GNU_LIKE</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.MLIB_IF_GNU_LIKE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Function-like macros that expand to their arguments only when compiled using
+the associated compiler.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_parenthesized_expression">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_parenthesized_expression</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_parenthesized_expression" title="Link to this definition">#</a><br /></dt>
+<dd><p>In C, expands to <code class="docutils literal notranslate"><span class="pre">(__VA_ARGS__)</span></code>. In C++, expands to
+<code class="docutils literal notranslate"><span class="pre">mlib::identity{}(__VA_ARGS__)</span></code>. This allows the expression to be preceded
+by a global-scope name qualifier when the macro is expanded in C++. See:
+<a class="reference internal" href="#macros-global-scope"><span class="std std-ref">Beware the global-scope specifier</span></a></p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_extern_c">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_extern_c</span></span></span><a class="headerlink" href="#c.mlib_extern_c" title="Link to this definition">#</a><br /></dt>
+<dd><p>Expands to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span></code> when compiling as C++, otherwise an empty
+attribute. Enforces <a class="reference internal" href="../../ref/glossary/#term-C-linkage"><span class="xref std std-term">C linkage</span></a> on an entity.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_extern_c_begin">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_extern_c_begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_extern_c_begin" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_extern_c_end">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_extern_c_end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_extern_c_end" title="Link to this definition">#</a><br /></dt>
+<dd><p>Declaration-like function macros that expand to the <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span></code> block
+for wrapping APIs with <a class="reference internal" href="../../ref/glossary/#term-C-linkage"><span class="xref std std-term">C linkage</span></a>. Note that these expand to
+<em>declarations</em> and require a following semicolon:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">mlib_extern_c_begin</span><span class="p">();</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">meow</span><span class="p">;</span>
+
+<span class="n">mlib_extern_c_end</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>For declaring a single item, it may be more ergonomic to use
+<a class="reference internal" href="#c.mlib_extern_c" title="mlib_extern_c"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c</span></code></a>.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_is_cxx">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_cxx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_cxx" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_is_not_cxx">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_not_cxx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_not_cxx" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_is_gcc">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_gcc</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_gcc" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_is_clang">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_clang</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_clang" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_is_msvc">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_msvc</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_msvc" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.mlib_is_gnu_like">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_is_gnu_like</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_is_gnu_like" title="Link to this definition">#</a><br /></dt>
+<dd><p>Expression-macros that evaluate to <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code> depending on the compiler
+and the compile language.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_init">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_init</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">T</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_init" title="Link to this definition">#</a><br /></dt>
+<dd><p>Usage of this macro is <strong>mandatory</strong> in C headers when writing a compound
+initializer expression. This is required because C++ does not support compound
+initializers, but does support the same syntax with brace initializers:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">my_struct</span><span class="w"> </span><span class="nf">get_thing</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">mlib_init</span><span class="p">(</span><span class="n">my_struct</span><span class="p">){</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The type <code class="docutils literal notranslate"><span class="pre">T</span></code> cannot use an <a class="reference internal" href="../../ref/glossary/#term-elaborated-name"><span class="xref std std-term">elaborated name</span></a>, as that does not
+work with C++ brace initializers</p>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_static_assert">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_static_assert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Cond</span></span>, <span class="n"><span class="pre">Msg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_static_assert" title="Link to this definition">#</a><br /></dt>
+<dd><p>Expands to a static assertion appropriate for the current language.</p>
+</dd></dl>
+
+</section>
+<section id="public-headers">
+<h2>Public Headers<a class="headerlink" href="#public-headers" title="Link to this heading">#</a></h2>
+<section id="header-sorting">
+<h3>Header Sorting<a class="headerlink" href="#header-sorting" title="Link to this heading">#</a></h3>
+<p>Headers should be generally sorted and grouped as follows:</p>
+<ol class="arabic simple">
+<li><p>Primary <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#include</span></code> directives (this will be the primary associated
+header(s) for a source file).</p></li>
+<li><p>Implementation details</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;amongoc/...&gt;</span></code> headers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;mlib/...&gt;</span></code> headers</p></li>
+<li><p>Non-standard third-party headers</p></li>
+<li><p>System headers</p></li>
+<li><p>Standard library headers</p></li>
+</ol>
+<p>This sort order is intended to minimize accidental dependencies by catching use
+of required symbols as soon as possible.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.clang-format</span></code> file for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> will generally perform the appropriate
+header sorting automatically. This automatic header sorting can be overriding by
+placing a comment between <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#include</span></code> directives.</p>
+</section>
+<section id="inclusion-syntax">
+<h3>Inclusion Syntax<a class="headerlink" href="#inclusion-syntax" title="Link to this heading">#</a></h3>
+<p>Relative <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#include</span></code> directives should use double-quote style, and should
+begin with a dot or dot-dot path element to emphasize the relative-style header
+resolution.</p>
+<p>Absolute inclusions should use angle-bracket style.</p>
+<p>Run the <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">format</span></code> Makefile target to automatically rewrite and sort all
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#include</span></code> directives into the appropriate style.</p>
+</section>
+<section id="use-linkage-specifiers">
+<h3>Use Linkage Specifiers<a class="headerlink" href="#use-linkage-specifiers" title="Link to this heading">#</a></h3>
+<p>All non-static C functions and global variable declarations should be annotated
+with the appropriate linkage specifiers for C++ compatibility. Use
+<a class="reference internal" href="#c.mlib_extern_c_begin" title="mlib_extern_c_begin"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c_begin</span></code></a> and <a class="reference internal" href="#c.mlib_extern_c_end" title="mlib_extern_c_end"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_extern_c_end</span></code></a> before and after
+most C declarations.</p>
+<p>In general, you should not use linkage specifiers around type definitions, since
+they do not require it, and adding C++ members to types will break if it is
+wrapped in <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../ref/glossary/#term-language-linkage"><span class="xref std std-term">language linkage</span></a></p>
+</div>
+</section>
+<section id="be-aware-of-c-s-inline-rules">
+<h3><strong>Be aware</strong> of C’s <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> rules<a class="headerlink" href="#be-aware-of-c-s-inline-rules" title="Link to this heading">#</a></h3>
+<p>If a C function is declared <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> <em>and not</em> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code>, then there <em>must</em> exist
+an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code> declaration of that function in <em>exactly one</em> C
+translation unit. This differs from C++, where an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function is emitted
+in each TU in which it is used, and the linker merges them at the final step. In
+C, this consolidation must be done explicitly using an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code>
+declaration.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There is no way to automatically verify this, because it will only
+generate an error if the compiler decides <em>not</em> to do the inlining and expects
+an external definition.</p>
+</div>
+</section>
+<section id="do-not-use-a-static-function-in-a-non-static-inline-function-in-c">
+<h3><strong>Do not</strong> use a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> function in a non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function in C<a class="headerlink" href="#do-not-use-a-static-function-in-a-non-static-inline-function-in-c" title="Link to this heading">#</a></h3>
+<p>While probably benign, this will generate an unignorable compiler warning.</p>
+</section>
+<section id="c-compatibility">
+<h3>C++ Compatibility<a class="headerlink" href="#c-compatibility" title="Link to this heading">#</a></h3>
+<p>All public headers that have a <code class="docutils literal notranslate"><span class="pre">.h</span></code> extension <strong>must</strong> be able to be compiled
+as C11 <em>and</em> as C++17. Usage of C++20 features should either be moved to a
+<code class="docutils literal notranslate"><span class="pre">.hpp</span></code> header or guarded with <code class="docutils literal notranslate"><span class="pre">mlib_have_cxx20()</span></code>.</p>
+<p>To write a C++-only header, use the <code class="docutils literal notranslate"><span class="pre">.hpp</span></code> file extension. The <code class="docutils literal notranslate"><span class="pre">.hpp</span></code>
+headers <em>may</em> use C++20.</p>
+</section>
+<section id="inclusion-of-c-apis-in-c-headers">
+<h3>Inclusion of C++ APIs in C Headers<a class="headerlink" href="#inclusion-of-c-apis-in-c-headers" title="Link to this heading">#</a></h3>
+<p>Public C++ APIs <em>may</em> be included in C headers if they are not a substantial
+portion of the file. These should be simple wrappers around the C types (e.g.
+<a class="reference internal" href="../../ref/emitter/#_CPPv4N7amongoc14unique_emitterE" title="amongoc::unique_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_emitter</span></code></a>)</p>
+<section id="avoid-adding-c-constructors-to-c-structs">
+<h4><strong>Avoid</strong> adding C++ constructors to C structs<a class="headerlink" href="#avoid-adding-c-constructors-to-c-structs" title="Link to this heading">#</a></h4>
+<p>This can create a semantic ambiguity when a C struct is constructed in a C
+header. If you really need it, make sure that all calls to that constructor
+within C headers are syntactically valid and semantically equivalent when
+compiled in C and C++ modes (See: <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a>).</p>
+<p><strong>Instead, prefer</strong> to use the named-constructor idiom: Use <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> member
+functions that construct instances of the object (e.g. <a class="reference internal" href="../../ref/status/#_CPPv4N14amongoc_status4fromE15std__error_code" title="amongoc_status::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::from()</span></code></a>).</p>
+</section>
+<section id="do-not-add-copy-move-constructors-to-c-structs-nor-add-a-destructor-to-c-structs">
+<h4><strong>Do not</strong> add copy/move constructors to C structs, nor add a destructor to C structs<a class="headerlink" href="#do-not-add-copy-move-constructors-to-c-structs-nor-add-a-destructor-to-c-structs" title="Link to this heading">#</a></h4>
+<p>This will change the definition of inline functions defined in C headers that
+use such types, leading to ODR violations.</p>
+<p>For easier automatic destruction of C types, follow the rules in <a class="reference internal" href="../deletion/"><span class="doc">C Object Deletion</span></a>.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../deletion/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">C Object Deletion</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#macros-preprocessor">Macros &amp; Preprocessor</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prefer-snake-case">Prefer <code class="docutils literal notranslate"><span class="pre">snake_case</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beware-the-global-scope-specifier"><strong>Beware</strong> the global-scope specifier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-conditional-compilation"><strong>Avoid</strong> Conditional Compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-terse-conditional-compilation">Use terse conditional compilation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-using-ifdef-or-if-with-object-macros"><strong>Avoid</strong> using <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#ifdef</span></code> or <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#if</span></code> with object macros</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#linkage-blocks">Linkage Blocks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#beware-r-values-that-look-like-l-values"><strong>Beware</strong> R-values that look like L-values</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#declaration-statement-macros-should-require-a-semicolon">Declaration/Statement macros should require a semicolon</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-comments-to-distant-endif-and-else-directives">Add comments to distant <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">endif</span></code> and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="cp">#else</span></code> directives</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-macros">Utility Macros</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#public-headers">Public Headers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#header-sorting">Header Sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inclusion-syntax">Inclusion Syntax</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-linkage-specifiers">Use Linkage Specifiers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#be-aware-of-c-s-inline-rules"><strong>Be aware</strong> of C’s <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> rules</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#do-not-use-a-static-function-in-a-non-static-inline-function-in-c"><strong>Do not</strong> use a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> function in a non-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function in C</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-compatibility">C++ Compatibility</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inclusion-of-c-apis-in-c-headers">Inclusion of C++ APIs in C Headers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#avoid-adding-c-constructors-to-c-structs"><strong>Avoid</strong> adding C++ constructors to C structs</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#do-not-add-copy-move-constructors-to-c-structs-nor-add-a-destructor-to-c-structs"><strong>Do not</strong> add copy/move constructors to C structs, nor add a destructor to C structs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

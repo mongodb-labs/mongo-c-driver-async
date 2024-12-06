@@ -1,0 +1,820 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Meta-Reference: Documentation Attributes &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/meta-attrs';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="amongoc API Patterns" href="../api-patterns/" />
+    <link rel="prev" title="Reference" href="../" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/meta-attrs.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Meta-Reference: Documentation Attributes</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-standard-attributes">Non-Standard Attributes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-posix-close">Example: POSIX <code class="docutils literal notranslate"><span class="pre">close</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-c-free">Example: C <code class="docutils literal notranslate"><span class="pre">free</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-amongoc-box-destroy">Example: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-transferred-objects">Dealing with Transferred Objects</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-nullable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[nullable]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-zero-init"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zero-initialization-empty-initialization">Zero Initialization / Empty Initialization</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-type"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-storage"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[storage]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[optional]]</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-types">Parameter Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#type-parameters"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__type</span></code> Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv46__type"><code class="docutils literal notranslate"><span class="pre">__type</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unspecified-types">Unspecified Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413__unspecified"><code class="docutils literal notranslate"><span class="pre">__unspecified</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-fields">Documentation Fields</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#field-allocation">Field: <strong>Allocation</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#field-zero-initialized">Field: <strong>Zero-initialized</strong></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="meta-reference-documentation-attributes">
+<h1>Meta-Reference: Documentation Attributes<a class="headerlink" href="#meta-reference-documentation-attributes" title="Link to this heading">#</a></h1>
+<p>Some APIs in this documentation contain non-standard language attributes on
+functions, parameters, types, and variables. These only appear in the
+documentation and are not part of the actual C API headers. They do not effect
+the actual compilation or behavior of the program, and are intended to act as
+common shorthands for behavioral guarantees of the annotated APIs.</p>
+<section id="non-standard-attributes">
+<h2>Non-Standard Attributes<a class="headerlink" href="#non-standard-attributes" title="Link to this heading">#</a></h2>
+<section id="attr-transfer">
+<h3><a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a><a class="headerlink" href="#attr-transfer" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-transfer">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">transfer</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-transfer" title="Link to this definition">#</a></dt>
+<dd><p>Understanding the meaning of <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> is essential to understanding
+object lifetimes in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>. The <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> has two significant points:</p>
+<ol class="arabic simple">
+<li><p>If a function parameter is annotated with <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>, it means that
+passing a value to that function will invalidate the value in the caller’s
+scope.</p></li>
+<li><p>When an object is passed through a parameter that is marked with
+<a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>, it becomes the responsibility of the called function to
+manage the lifetime of the associated object. The function <strong>must</strong>
+eventually pass the object to another function that has an <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>
+attribute.<a class="footnote-reference brackets" href="#box-trivial-note" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p></li>
+</ol>
+<p>According to point <strong>1</strong>: If you pass an <a class="reference internal" href="../glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> to an object <span class="math notranslate nohighlight">\(V\)</span>
+through a parameter marked <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>, then the <span class="math notranslate nohighlight">\(V\)</span> object is now
+<em>invalid</em>. See: <a class="reference internal" href="#after-transfer"><span class="std std-ref">Dealing with Transferred Objects</span></a>.</p>
+<p>According to point <strong>2</strong>: If you pass a function pointer to an API, and the
+function pointer type has <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> parameters, then any value passed
+in through that parameter now <em>owns</em> the respective object, and it must
+handle it properly:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// `call_through` transfers ownership of an object through `i`</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">call_through</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">callback</span><span class="p">)(</span><span class="kt">int</span><span class="w"> </span><span class="p">[[</span><span class="n">transfer</span><span class="p">]]</span><span class="w"> </span><span class="n">i</span><span class="p">));</span>
+
+<span class="c1">// For use with `call_through`</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">my_callback</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// We own the `i` object!</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">my_code</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">call_through</span><span class="p">(</span><span class="o">&amp;</span><span class="n">my_callback</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="example-posix-close">
+<h4>Example: POSIX <code class="docutils literal notranslate"><span class="pre">close</span></code><a class="headerlink" href="#example-posix-close" title="Link to this heading">#</a></h4>
+<p>A correct use of <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> would be on the <code class="docutils literal notranslate"><span class="pre">close()</span></code> POSIX API:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="p">[[</span><span class="n">transfer</span><span class="p">]]</span><span class="w"> </span><span class="n">filedes</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Because we are passing <code class="docutils literal notranslate"><span class="pre">filedes</span></code> by-value to <code class="docutils literal notranslate"><span class="pre">close()</span></code>, it is not possible
+for <code class="docutils literal notranslate"><span class="pre">close()</span></code> to actually modify our copy of the file descriptor.
+Nevertheless, <code class="docutils literal notranslate"><span class="pre">close()</span></code> will <em>invalidate</em> the file descriptor, even if our
+copy is completely unmodified:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">fd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_fileno</span><span class="p">();</span><span class="w">  </span><span class="c1">// [1]</span>
+<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span><span class="w">              </span><span class="c1">// [2]</span>
+<span class="n">use_file</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span><span class="w">           </span><span class="c1">// [3]</span>
+</pre></div>
+</div>
+<p>Even though the <code class="docutils literal notranslate"><span class="pre">fd</span></code> value on <code class="docutils literal notranslate"><span class="pre">[3]</span></code> is bitwise-equal to the value it was
+assigned on <code class="docutils literal notranslate"><span class="pre">[1]</span></code>, it is inherently erroneous: The call to <code class="docutils literal notranslate"><span class="pre">close()</span></code> on
+<code class="docutils literal notranslate"><span class="pre">[2]</span></code> has made the bit pattern contained in <code class="docutils literal notranslate"><span class="pre">fd</span></code> invalid as a file
+descriptor, and the behavior of line <code class="docutils literal notranslate"><span class="pre">[3]</span></code> is unspecified.<a class="footnote-reference brackets" href="#ebadf" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<p>Because <code class="docutils literal notranslate"><span class="pre">close()</span></code> “poisons” the bit-pattern of the passed file descriptor, it
+would be correct to annotate the parameter with <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>.</p>
+</section>
+<section id="example-c-free">
+<h4>Example: C <code class="docutils literal notranslate"><span class="pre">free</span></code><a class="headerlink" href="#example-c-free" title="Link to this heading">#</a></h4>
+<p>The C function <code class="docutils literal notranslate"><span class="pre">free</span></code> could also be annotated as <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> on the passed
+pointer value:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="n">free</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="p">[[</span><span class="n">transfer</span><span class="p">]]</span><span class="w"> </span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This follows similar behavior to <code class="docutils literal notranslate"><span class="pre">close()</span></code>: Even though the bits of the
+pointer are unmodified in the calling scope, the pointer’s value itself has
+become poisoned and should not be used for any subsequent operation.</p>
+</section>
+<section id="example-amongoc-box-destroy">
+<h4>Example: <a class="reference internal" href="../box/#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a><a class="headerlink" href="#example-amongoc-box-destroy" title="Link to this heading">#</a></h4>
+<p>The <a class="reference internal" href="../box/#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a> function takes an <a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> by-value, and its parameter
+is annotated with <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>.</p>
+<p>Like with <code class="docutils literal notranslate"><span class="pre">close()</span></code> and <code class="docutils literal notranslate"><span class="pre">free()</span></code>, the caller’s copy of the passed value is
+unmodifed, but is still invalidated. Like with <code class="docutils literal notranslate"><span class="pre">close()</span></code> and <code class="docutils literal notranslate"><span class="pre">free()</span></code>,
+subsequent uses of the object are unspecified/undefined, including attempting to
+destroy the box a second time:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">got_box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_a_box</span><span class="p">();</span>
+<span class="nf">amongoc_box_destroy</span><span class="p">(</span><span class="n">got_box</span><span class="p">);</span><span class="w">         </span><span class="c1">// Okay</span>
+<span class="nf">amongoc_box_destroy</span><span class="p">(</span><span class="n">got_box</span><span class="p">);</span><span class="w">         </span><span class="c1">// UNDEFINED BEHAVIOR</span>
+</pre></div>
+</div>
+</section>
+<section id="dealing-with-transferred-objects">
+<span id="after-transfer"></span><h4>Dealing with Transferred Objects<a class="headerlink" href="#dealing-with-transferred-objects" title="Link to this heading">#</a></h4>
+<p>After passing an object to a <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> function parameter, the only legal<a class="footnote-reference brackets" href="#box-trivial-note" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> operations on that object are reassignment (replacing the
+object with a live value) or discarding (letting the object leave scope).</p>
+</section>
+</section>
+<section id="attr-nullable">
+<h3><a class="reference internal" href="#doc-attr-nullable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[nullable]]</span></code></a><a class="headerlink" href="#attr-nullable" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-nullable">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">nullable</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-nullable" title="Link to this definition">#</a></dt>
+<dd><p>A parameter marked with <a class="reference internal" href="#doc-attr-nullable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[nullable]]</span></code></a> indicates that passing a null-value
+for the object is valid. For pointers, this indicates that passing
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">NULL</span></code>/<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code> has well-defined behavior. Other pointer-like
+objects may also have a null state, usually their <a class="reference internal" href="#zero-init"><span class="std std-ref">zero-initialized</span></a> state.</p>
+<p>If a parameter is not marked <a class="reference internal" href="#doc-attr-nullable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[nullable]]</span></code></a>, assume that passing a null
+argument will introduce undefined behavior.</p>
+</dd></dl>
+
+</section>
+<section id="attr-zero-init">
+<h3><a class="reference internal" href="#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a><a class="headerlink" href="#attr-zero-init" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-zero_initializable">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">zero_initializable</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-zero_initializable" title="Link to this definition">#</a></dt>
+<dd><p>When an aggregate type is annotated with <a class="reference internal" href="#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a>, it indicates that a
+zero-initialized/empty-initialized instance of that aggregate type is a valid
+object for certain operations. Usually, this corresponds to a null or zero
+state. A type that is <a class="reference internal" href="#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> should have a <strong>Zero-initialized</strong>
+field describing the semantics of such a value.</p>
+<p>For such an object, declaring a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> instance with no explicit initializer
+will be valid, as well as initializing using empty braces <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="p">{}</span></code>, or using
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">memset</span></code> to fill its object representation with zero-bytes.</p>
+</dd></dl>
+
+<section id="zero-initialization-empty-initialization">
+<span id="zero-init"></span><h4>Zero Initialization / Empty Initialization<a class="headerlink" href="#zero-initialization-empty-initialization" title="Link to this heading">#</a></h4>
+<p><a class="reference external" href="https://en.cppreference.com/w/cpp/language/zero_initialization">Zero initialization</a> (C++) and <a class="reference external" href="https://en.cppreference.com/w/c/language/initialization">empty initialization</a> (C) are similar
+concepts with similar behavior. For convenience, this documentation refers to
+<em>zero initialization</em> to mean either the C++ concept or <em>empty initialization</em>
+in C.</p>
+<p>In C++ and C23, a trivial aggregate may be initialized with an empty brace pair
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="p">{</span><span class="w"> </span><span class="p">}</span></code> to achieve empt/zero-initialization (this is called <em>value
+initialization</em> in C++). In prior C versions, initializing with a brace pair and
+a single literal zero <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="p">{</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">}</span></code> will usually achieve the same effect. Some C
+compilers implement the C23 language feature as an extension in earlier C
+versions. An object declared <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> without an explicit initializer will
+always be zero-initialized at compile time.</p>
+</section>
+</section>
+<section id="attr-type">
+<h3><a class="reference internal" href="#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a><a class="headerlink" href="#attr-type" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-type-T">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">type(T)</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-type-T" title="Link to this definition">#</a></dt>
+<dd><p>Associates a type with a type-erased object. The meaning of this association
+depends on the object container type. The following types are often used with
+<a class="reference internal" href="#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a>:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a> - Specifies the success result type of the emitter.</p></li>
+<li><p><a class="reference internal" href="../handler/#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a> - Specifies the result type expected by the handler.</p></li>
+<li><p><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> and <a class="reference internal" href="../box/#_CPPv412amongoc_view" title="amongoc_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_view</span></code></a> - Specifies the type that is contained
+within the box for use with <a class="reference internal" href="../box/#_CPPv416amongoc_box_cast6__type13__box_or_view" title="amongoc_box_cast"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_cast()</span></code></a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">void*</span></code> - Specifies the pointed-to type for the pointer.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="attr-storage">
+<h3><a class="reference internal" href="#doc-attr-storage"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[storage]]</span></code></a><a class="headerlink" href="#attr-storage" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-storage">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">storage</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-storage" title="Link to this definition">#</a></dt>
+<dd><p>When attached to a pointer parameter, this attribute indicates that the
+pointer is treated as uninitialized storage for an object of the appropriate
+type. The API using <a class="reference internal" href="#doc-attr-storage"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[storage]]</span></code></a> will not attempt to destroy or read from
+the pointed-to location.</p>
+</dd></dl>
+
+</section>
+<section id="optional">
+<h3><a class="reference internal" href="#doc-attr-optional"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[optional]]</span></code></a><a class="headerlink" href="#optional" title="Link to this heading">#</a></h3>
+<dl class="std doc-attr">
+<dt class="sig sig-object std" id="doc-attr-optional">
+<span class="sig-prename descclassname"><span class="pre">[[</span></span><span class="sig-name descname"><span class="pre">optional</span></span><span class="sig-prename descclassname"><span class="pre">]]</span></span><span class="w"> </span><em class="property"><span class="pre">(documentation</span> <span class="pre">attribute)</span></em><a class="headerlink" href="#doc-attr-optional" title="Link to this definition">#</a></dt>
+<dd><p>When applied to a method declaration in a virtual method table, indicates that
+the associated method pointer may be <code class="docutils literal notranslate"><span class="pre">NULL</span></code>.</p>
+<p>For any methods not declared with <a class="reference internal" href="#doc-attr-optional"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[optional]]</span></code></a>, assume that the
+method is required.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="parameter-types">
+<h2>Parameter Types<a class="headerlink" href="#parameter-types" title="Link to this heading">#</a></h2>
+<section id="type-parameters">
+<h3><a class="reference internal" href="#_CPPv46__type" title="__type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__type</span></code></a> Parameters<a class="headerlink" href="#type-parameters" title="Link to this heading">#</a></h3>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv46__type">
+<span id="_CPPv36__type"></span><span id="_CPPv26__type"></span><span id="__type"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__type</span></span></span><a class="headerlink" href="#_CPPv46__type" title="Link to this definition">#</a><br /></dt>
+<dd><p>Certain <a class="reference internal" href="../glossary/#term-function-like-macro"><span class="xref std std-term">function-like macro</span></a>s are documented as functions, and they
+may be annotated with a <a class="reference internal" href="#_CPPv46__type" title="__type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__type</span></code></a> parameter. This indicates that the
+corresponding macro argument should be a compile-time type specifier rather
+than a runtime value.</p>
+</dd></dl>
+
+</section>
+<section id="unspecified-types">
+<h3>Unspecified Types<a class="headerlink" href="#unspecified-types" title="Link to this heading">#</a></h3>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv413__unspecified">
+<span id="_CPPv313__unspecified"></span><span id="_CPPv213__unspecified"></span><span id="__unspecified"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__unspecified</span></span></span><a class="headerlink" href="#_CPPv413__unspecified" title="Link to this definition">#</a><br /></dt>
+<dd><p>This documentation type indicates a private type that is not part of the
+public API, although an annotated struct field may be part of the public API.</p>
+<p>Dereferencing a pointer-to or accessing the members of an <a class="reference internal" href="#_CPPv413__unspecified" title="__unspecified"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__unspecified</span></code></a> type
+is not guaranteed to have well-defined behavior. A pointer-to-<a class="reference internal" href="#_CPPv413__unspecified" title="__unspecified"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__unspecified</span></code></a>
+should be considered a stronger-typed <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">void</span></code>.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="documentation-fields">
+<h2>Documentation Fields<a class="headerlink" href="#documentation-fields" title="Link to this heading">#</a></h2>
+<section id="field-allocation">
+<h3>Field: <strong>Allocation</strong><a class="headerlink" href="#field-allocation" title="Link to this heading">#</a></h3>
+<p>Some functions are annotated with an <strong>Allocation</strong> documentation field. This
+specifies how the function will allocate dynamic memory. If this field is
+ommitted, either the function does not allocate, uses the standard library
+allocator, or it accepts an <a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> directly.</p>
+</section>
+<section id="field-zero-initialized">
+<h3>Field: <strong>Zero-initialized</strong><a class="headerlink" href="#field-zero-initialized" title="Link to this heading">#</a></h3>
+<p>The <strong>Zero-initialized</strong> field appears on some data types and specifies the
+semantics of that type when it has been
+<a class="reference internal" href="#zero-init"><span class="std std-ref">zero/empty initialized</span></a>, if any.</p>
+<p>If a type does not have such a field, assume that it has no defined semantics
+when zero-initialized.</p>
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="ebadf" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>While using a closed file descriptor <em>may</em> result in <code class="docutils literal notranslate"><span class="pre">EBADF</span></code>, it
+is entirely possible that a subsequent operation between <code class="docutils literal notranslate"><span class="pre">close()</span></code> and using
+the file descriptor (possibly on another thread) has caused the operating
+system to re-use the particular integer value of that file descriptor, and the
+behavior of the program becomes completely unpredictable.</p>
+</aside>
+<aside class="footnote brackets" id="box-trivial-note" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>There is an exemption to the rules of <a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> for objects that are
+“trivial”. These exemptions are noted in the documentation in which they are
+relevant. In particular, an <a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> may be <a class="reference internal" href="../box/#box-trivial"><span class="std std-ref">trivial</span></a>,
+meaning that it has no associated destructor nor dynamically allocated
+storage. These boxes may be freely copied and discarded even when used with
+<a class="reference internal" href="#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> parameters.</p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api-patterns/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#non-standard-attributes">Non-Standard Attributes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-posix-close">Example: POSIX <code class="docutils literal notranslate"><span class="pre">close</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-c-free">Example: C <code class="docutils literal notranslate"><span class="pre">free</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#example-amongoc-box-destroy">Example: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#dealing-with-transferred-objects">Dealing with Transferred Objects</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-nullable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[nullable]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-zero-init"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#zero-initialization-empty-initialization">Zero Initialization / Empty Initialization</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-type"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#attr-storage"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[storage]]</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[optional]]</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameter-types">Parameter Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#type-parameters"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__type</span></code> Parameters</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv46__type"><code class="docutils literal notranslate"><span class="pre">__type</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unspecified-types">Unspecified Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413__unspecified"><code class="docutils literal notranslate"><span class="pre">__unspecified</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation-fields">Documentation Fields</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#field-allocation">Field: <strong>Allocation</strong></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#field-zero-initialized">Field: <strong>Zero-initialized</strong></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

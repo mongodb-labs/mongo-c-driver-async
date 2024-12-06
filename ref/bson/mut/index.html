@@ -1,0 +1,1192 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BSON Modifying &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/bson/mut';</script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="Strings &amp; String Views" href="../../str/" />
+    <link rel="prev" title="BSON Documents" href="../doc/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../handler/">Handler APIs</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../">BSON Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../doc/">BSON Documents</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../_sources/ref/bson/mut.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>BSON Modifying</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_mut</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutatorE"><code class="docutils literal notranslate"><span class="pre">mutator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7mutatorER8document"><code class="docutils literal notranslate"><span class="pre">mutator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7mutatorER8bson_doc"><code class="docutils literal notranslate"><span class="pre">mutator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator4findE16std__string_view"><code class="docutils literal notranslate"><span class="pre">find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator9byte_sizeEv"><code class="docutils literal notranslate"><span class="pre">byte_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator6insertE8iteratorDa"><code class="docutils literal notranslate"><span class="pre">insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">emplace()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator9push_backEDa"><code class="docutils literal notranslate"><span class="pre">push_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator9push_backEN13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">push_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">emplace_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator13insert_subdocE8iterator16std__string_view"><code class="docutils literal notranslate"><span class="pre">insert_subdoc()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator12insert_arrayE8iterator16std__string_view"><code class="docutils literal notranslate"><span class="pre">insert_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator11push_subdocE16std__string_view"><code class="docutils literal notranslate"><span class="pre">push_subdoc()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator10push_arrayE16std__string_view"><code class="docutils literal notranslate"><span class="pre">push_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocumentE"><code class="docutils literal notranslate"><span class="pre">inserted_subdocument</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocument8positionE"><code class="docutils literal notranslate"><span class="pre">position</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocument3mutE"><code class="docutils literal notranslate"><span class="pre">mut</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator5childE8iterator"><code class="docutils literal notranslate"><span class="pre">child()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator15parent_iteratorEv"><code class="docutils literal notranslate"><span class="pre">parent_iterator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_mutateP8bson_doc"><code class="docutils literal notranslate"><span class="pre">bson_mutate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inserting-data">Inserting Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424bson_mut_parent_iterator8bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_mut_parent_iterator()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-elements">Removing Elements</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_erase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_erase()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-elements">Modifying Elements</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible"><code class="docutils literal notranslate"><span class="pre">bson_set_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t"><code class="docutils literal notranslate"><span class="pre">bson_relabel_array_elements_at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv427bson_relabel_array_elementsP8bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_relabel_array_elements()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splicing-ranges">Splicing Ranges</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_splice_disjoint_ranges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_insert_disjoint_range()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_u32_string"><code class="docutils literal notranslate"><span class="pre">bson_u32_string</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15bson_u32_string3bufE"><code class="docutils literal notranslate"><span class="pre">buf</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422bson_u32_string_create8uint32_t"><code class="docutils literal notranslate"><span class="pre">bson_u32_string_create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-notes">Behavioral Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterator-invalidation">Iterator Invalidation</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="bson-modifying">
+<h1>BSON Modifying<a class="headerlink" href="#bson-modifying" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-bson-mut.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">bson/mut.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-bson-mut.h" title="Link to this definition">#</a></dt>
+<dd><p>Contains types and APIs for manipulating <a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> objects.</p>
+</dd></dl>
+
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv48bson_mut">
+<span id="_CPPv38bson_mut"></span><span id="_CPPv28bson_mut"></span><span id="bson_mut"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_mut</span></span></span><a class="headerlink" href="#_CPPv48bson_mut" title="Link to this definition">#</a><br /></dt>
+<dd><p>A BSON document mutator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N4bson7mutatorE" title="bson::mutator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::mutator</span></code></a></p>
+</dd>
+<dt class="field-even">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-even"><p>A zero-initialized <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> has no defined semantics and
+should not be used.</p>
+</dd>
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-bson-mut.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">bson/mut.h</span></code></a></p>
+</dd>
+</dl>
+<p>A <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> is created using <a class="reference internal" href="#_CPPv411bson_mutateP8bson_doc" title="bson_mutate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mutate()</span></code></a> or may come from another API that
+derives a new <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> from an existing <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutatorE">
+<span id="_CPPv3N4bson7mutatorE"></span><span id="_CPPv2N4bson7mutatorE"></span><span id="bson::mutator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mutator</span></span></span><a class="headerlink" href="#_CPPv4N4bson7mutatorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A BSON document mutator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator7mutatorER8document">
+<span id="_CPPv3N4bson7mutator7mutatorER8document"></span><span id="_CPPv2N4bson7mutator7mutatorER8document"></span><span id="bson::mutator::mutator__documentR"></span><span class="sig-name descname"><span class="n"><span class="pre">mutator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../doc/#_CPPv4N4bson8documentE" title="bson::document"><span class="n"><span class="pre">document</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator7mutatorER8document" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator7mutatorER8bson_doc">
+<span id="_CPPv3N4bson7mutator7mutatorER8bson_doc"></span><span id="_CPPv2N4bson7mutator7mutatorER8bson_doc"></span><span id="bson::mutator::mutator__bson_docR"></span><span class="sig-name descname"><span class="n"><span class="pre">mutator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><span class="n"><span class="pre">bson_doc</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator7mutatorER8bson_doc" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a new mutator for the given object.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator5beginEv">
+<span id="_CPPv3NK4bson7mutator5beginEv"></span><span id="_CPPv2NK4bson7mutator5beginEv"></span><span id="bson::mutator::beginC"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator5beginEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator3endEv">
+<span id="_CPPv3NK4bson7mutator3endEv"></span><span id="_CPPv2NK4bson7mutator3endEv"></span><span id="bson::mutator::endC"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator3endEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator4findE16std__string_view">
+<span id="_CPPv3NK4bson7mutator4findE16std__string_view"></span><span id="_CPPv2NK4bson7mutator4findE16std__string_view"></span><span id="bson::mutator::find__std__string_viewC"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">find</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator4findE16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator4dataEv">
+<span id="_CPPv3NK4bson7mutator4dataEv"></span><span id="_CPPv2NK4bson7mutator4dataEv"></span><span id="bson::mutator::dataC"></span><a class="reference internal" href="../view/#_CPPv49bson_byte" title="bson_byte"><span class="n"><span class="pre">bson_byte</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator4dataEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator9byte_sizeEv">
+<span id="_CPPv3NK4bson7mutator9byte_sizeEv"></span><span id="_CPPv2NK4bson7mutator9byte_sizeEv"></span><span id="bson::mutator::byte_sizeC"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">std::uint32_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">byte_size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator9byte_sizeEv" title="Link to this definition">#</a><br /></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../doc/#_CPPv4NK4bson8document5beginEv" title="bson::document::begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::begin()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../doc/#_CPPv4NK4bson8document3endEv" title="bson::document::end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::end()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../doc/#_CPPv4N4bson8document4findE16std__string_view" title="bson::document::find"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::find()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../doc/#_CPPv4NK4bson8document4dataEv" title="bson::document::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::data()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../doc/#_CPPv4NK4bson8document9byte_sizeEv" title="bson::document::byte_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::byte_size()</span></code></a></p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator3getEv">
+<span id="_CPPv3N4bson7mutator3getEv"></span><span id="_CPPv2N4bson7mutator3getEv"></span><span id="bson::mutator::get"></span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator3getEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator3getEv">
+<span id="_CPPv3NK4bson7mutator3getEv"></span><span id="_CPPv2NK4bson7mutator3getEv"></span><span id="bson::mutator::getC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator3getEv" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator6insertE8iteratorDa">
+<span id="_CPPv3N4bson7mutator6insertE8iteratorDa"></span><span id="_CPPv2N4bson7mutator6insertE8iteratorDa"></span><span id="bson::mutator::insert__iterator.auto"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pair</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator6insertE8iteratorDa" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE">
+<span id="_CPPv3N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE"></span><span id="_CPPv2N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE"></span><span id="bson::mutator::insert__iterator.bson_iterator::reference"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../iter/#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">elem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible">
+<span id="_CPPv3N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible"></span><span id="_CPPv2N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible"></span><span id="bson::mutator::emplace__iterator.std__string_view.__bson_value_convertible"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emplace</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>,</dd>
+<dd><a class="reference internal" href="../value/#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible" title="bson_insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></p>
+</dd>
+<dt class="field-even">Invalidation<span class="colon">:</span></dt>
+<dd class="field-even"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a></p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="bson::mutator::insert"><span class="n">insert</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorDa" title="bson::mutator::insert::pair"><span class="n">pair</span></a><span class="p">)</span></span> method is equivalent to
+<span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace"><span class="n">emplace</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">get</span><span class="p">&lt;</span><span class="m">0</span><span class="p">&gt;</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorDa" title="bson::mutator::insert::pair"><span class="n">pair</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">get</span><span class="p">&lt;</span><span class="m">1</span><span class="p">&gt;</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorDa" title="bson::mutator::insert::pair"><span class="n">pair</span></a><span class="p">)</span><span class="p">)</span></span>.</p></li>
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="bson::mutator::insert"><span class="n">insert</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="bson::mutator::insert::elem"><span class="n">elem</span></a><span class="p">)</span></span> is equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace"><span class="n">emplace</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="bson::mutator::insert::elem"><span class="n">elem</span></a><span class="p">.</span><span class="n">key</span><span class="p">(</span><span class="p">)</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE" title="bson::mutator::insert::elem"><span class="n">elem</span></a><span class="p">.</span><span class="n">value</span><span class="p">(</span><span class="p">)</span><span class="p">)</span></span></p></li>
+</ul>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator9push_backEDa">
+<span id="_CPPv3N4bson7mutator9push_backEDa"></span><span id="_CPPv2N4bson7mutator9push_backEDa"></span><span id="bson::mutator::push_back__auto"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pair</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator9push_backEDa" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator9push_backEN13bson_iterator9referenceE">
+<span id="_CPPv3N4bson7mutator9push_backEN13bson_iterator9referenceE"></span><span id="_CPPv2N4bson7mutator9push_backEN13bson_iterator9referenceE"></span><span id="bson::mutator::push_back__bson_iterator::reference"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_back</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../iter/#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">elem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator9push_backEN13bson_iterator9referenceE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible">
+<span id="_CPPv3N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible"></span><span id="_CPPv2N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible"></span><span id="bson::mutator::emplace_back__std__string_view.__bson_value_convertible"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">emplace_back</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="../value/#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible" title="bson_insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></p>
+</dd>
+<dt class="field-even">Invalidation<span class="colon">:</span></dt>
+<dd class="field-even"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a></p>
+</dd>
+</dl>
+<p>These are equivalent to <a class="reference internal" href="#_CPPv4N4bson7mutator6insertE8iteratorDa" title="bson::mutator::insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">insert()</span></code></a> or <a class="reference internal" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible" title="bson::mutator::emplace"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">emplace()</span></code></a> with the end iterator as the
+insertion position.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator13insert_subdocE8iterator16std__string_view">
+<span id="_CPPv3N4bson7mutator13insert_subdocE8iterator16std__string_view"></span><span id="_CPPv2N4bson7mutator13insert_subdocE8iterator16std__string_view"></span><span id="bson::mutator::insert_subdoc__iterator.std__string_view"></span><a class="reference internal" href="#_CPPv4N4bson7mutator20inserted_subdocumentE" title="bson::mutator::inserted_subdocument"><span class="n"><span class="pre">inserted_subdocument</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_subdoc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator13insert_subdocE8iterator16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator12insert_arrayE8iterator16std__string_view">
+<span id="_CPPv3N4bson7mutator12insert_arrayE8iterator16std__string_view"></span><span id="_CPPv2N4bson7mutator12insert_arrayE8iterator16std__string_view"></span><span id="bson::mutator::insert_array__iterator.std__string_view"></span><a class="reference internal" href="#_CPPv4N4bson7mutator20inserted_subdocumentE" title="bson::mutator::inserted_subdocument"><span class="n"><span class="pre">inserted_subdocument</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">insert_array</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator12insert_arrayE8iterator16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator11push_subdocE16std__string_view">
+<span id="_CPPv3N4bson7mutator11push_subdocE16std__string_view"></span><span id="_CPPv2N4bson7mutator11push_subdocE16std__string_view"></span><span id="bson::mutator::push_subdoc__std__string_view"></span><a class="reference internal" href="#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_subdoc</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator11push_subdocE16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator10push_arrayE16std__string_view">
+<span id="_CPPv3N4bson7mutator10push_arrayE16std__string_view"></span><span id="_CPPv2N4bson7mutator10push_arrayE16std__string_view"></span><span id="bson::mutator::push_array__std__string_view"></span><a class="reference internal" href="#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">push_array</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator10push_arrayE16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>Insert a new empty child document or array, and obtain a mutator for that
+child.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator20inserted_subdocumentE">
+<span id="_CPPv3N4bson7mutator20inserted_subdocumentE"></span><span id="_CPPv2N4bson7mutator20inserted_subdocumentE"></span><span id="bson::mutator::inserted_subdocument"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inserted_subdocument</span></span></span><a class="headerlink" href="#_CPPv4N4bson7mutator20inserted_subdocumentE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator20inserted_subdocument8positionE">
+<span id="_CPPv3N4bson7mutator20inserted_subdocument8positionE"></span><span id="_CPPv2N4bson7mutator20inserted_subdocument8positionE"></span><span id="bson::mutator::inserted_subdocument::position__iterator"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">position</span></span></span><a class="headerlink" href="#_CPPv4N4bson7mutator20inserted_subdocument8positionE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator20inserted_subdocument3mutE">
+<span id="_CPPv3N4bson7mutator20inserted_subdocument3mutE"></span><span id="_CPPv2N4bson7mutator20inserted_subdocument3mutE"></span><span id="bson::mutator::inserted_subdocument::mut__mutator"></span><a class="reference internal" href="#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mut</span></span></span><a class="headerlink" href="#_CPPv4N4bson7mutator20inserted_subdocument3mutE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson7mutator5childE8iterator">
+<span id="_CPPv3N4bson7mutator5childE8iterator"></span><span id="_CPPv2N4bson7mutator5childE8iterator"></span><span id="bson::mutator::child__iterator"></span><a class="reference internal" href="#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">child</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson7mutator5childE8iterator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4bson7mutator15parent_iteratorEv">
+<span id="_CPPv3NK4bson7mutator15parent_iteratorEv"></span><span id="_CPPv2NK4bson7mutator15parent_iteratorEv"></span><span id="bson::mutator::parent_iteratorC"></span><span class="n"><span class="pre">iterator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">parent_iterator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4bson7mutator15parent_iteratorEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#_CPPv424bson_mut_parent_iterator8bson_mut" title="bson_mut_parent_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_parent_iterator()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Regarding <a class="reference internal" href="#_CPPv4N4bson7mutator5childE8iterator" title="bson::mutator::child"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">child()</span></code></a>: The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<p>The document iteration/reading APIs detailed in <a class="reference internal" href="../iter/"><span class="doc">BSON Iteration</span></a> and <a class="reference internal" href="../view/"><span class="doc">BSON Reading</span></a> also
+work with <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> objects, including:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../iter/#_CPPv410bson_begin15__bson_viewable" title="bson_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_begin()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../iter/#_CPPv48bson_end15__bson_viewable" title="bson_end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_end()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../view/#_CPPv49bson_size15__bson_viewable" title="bson_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_size()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../view/#_CPPv413bson_mut_data15__bson_viewable" title="bson_mut_data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_data()</span></code></a></p></li>
+</ul>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411bson_mutateP8bson_doc">
+<span id="_CPPv311bson_mutateP8bson_doc"></span><span id="_CPPv211bson_mutateP8bson_doc"></span><span id="bson_mutate__bson_docP"></span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_mutate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><span class="n"><span class="pre">bson_doc</span></span></a><span class="p"><span class="pre">*</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411bson_mutateP8bson_doc" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a new <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> <span class="math notranslate nohighlight">\(M\)</span> mutator for the given document object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>No iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> by this call, but subsequent
+operations on <span class="math notranslate nohighlight">\(M\)</span> may potentially invalidate them.</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+</dd></dl>
+
+<section id="inserting-data">
+<h3>Inserting Data<a class="headerlink" href="#inserting-data" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible">
+<span id="_CPPv311bson_insertP8bson_mut20__string_convertible24__bson_value_convertible"></span><span id="_CPPv211bson_insertP8bson_mut20__string_convertible24__bson_value_convertible"></span><span id="bson_insert__bson_mutP.__string_convertible.__bson_value_convertible"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_insert</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>,</dd>
+<dd><a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>,</dd>
+<dd><a class="reference internal" href="../value/#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible">
+<span id="_CPPv311bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible"></span><span id="_CPPv211bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible"></span><span id="bson_insert__bson_mutP.bson_iterator.__string_convertible.__bson_value_convertible"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_insert</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>,</dd>
+<dd><a class="reference internal" href="../value/#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Insert a a value into a BSON document referred-to by <a class="reference internal" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible" title="bson_insert::m"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">m</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – A BSON mutator for the document to be updated.</p></li>
+<li><p><strong>pos</strong> – A position at which to perform the insertion. For version <code class="docutils literal notranslate"><span class="pre">[[1]]</span></code>,
+the default position is <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../iter/#_CPPv48bson_end15__bson_viewable" title="bson_end"><span class="n">bson_end</span></a><span class="p">(</span><span class="o">*</span><a class="reference internal" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible" title="bson_insert::m"><span class="n">m</span></a><span class="p">)</span></span>, which will append the value to
+the end of the document.</p></li>
+<li><p><strong>key</strong> – The new element key.</p></li>
+<li><p><strong>value</strong> – A value to be inserted.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Upon success, returns an iterator that refers to the inserted element.
+If there is an allocation failure, returns <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../iter/#_CPPv48bson_end15__bson_viewable" title="bson_end"><span class="n">bson_end</span></a><span class="p">(</span><span class="o">*</span><a class="reference internal" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible" title="bson_insert::m"><span class="n">m</span></a><span class="p">)</span></span>.</p>
+</dd>
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+<p class="rubric">Value Types</p>
+<p>The type of the newly inserted value is determined according to the
+<a class="reference internal" href="../value/#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__bson_value_convertible</span></code></a> type rules.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414bson_mut_childP8bson_mut13bson_iterator">
+<span id="_CPPv314bson_mut_childP8bson_mut13bson_iterator"></span><span id="_CPPv214bson_mut_childP8bson_mut13bson_iterator"></span><span id="bson_mut_child__bson_mutP.bson_iterator"></span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_mut_child</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">parent</span></span>, <a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a mutator <span class="math notranslate nohighlight">\(M\)</span> that manipulates a child document element at position
+<a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> within <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child::parent"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">parent</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> – An existing mutator that refers to the document that owns <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p></li>
+<li><p><strong>pos</strong> – An iterator referring to a document or array element within <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child::parent"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">parent</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Invalidation<span class="colon">:</span></dt>
+<dd class="field-even"><p>No iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> by this function, but subsequent
+operations may invalidate them. Use <a class="reference internal" href="#_CPPv424bson_mut_parent_iterator8bson_mut" title="bson_mut_parent_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_parent_iterator()</span></code></a> to recovery
+the iterator <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> from <span class="math notranslate nohighlight">\(M\)</span>.</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The mutator retains a pointer to the object from which it was created. It is
+essential that the parent object remain in-place while a mutator is in use.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424bson_mut_parent_iterator8bson_mut">
+<span id="_CPPv324bson_mut_parent_iterator8bson_mut"></span><span id="_CPPv224bson_mut_parent_iterator8bson_mut"></span><span id="bson_mut_parent_iterator__bson_mut"></span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_mut_parent_iterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424bson_mut_parent_iterator8bson_mut" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> that refers to the position of <a class="reference internal" href="#_CPPv424bson_mut_parent_iterator8bson_mut" title="bson_mut_parent_iterator::m"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">m</span></code></a> within a parent
+document. This can only be called on a <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> that was created as a child
+of another <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> – A mutator object that was returned by <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a>. Calling this
+with a mutator returned <a class="reference internal" href="#_CPPv411bson_mutateP8bson_doc" title="bson_mutate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mutate()</span></code></a> is <em>undefined behavior</em>.</p>
+</dd>
+<dt class="field-even">Invalidation<span class="colon">:</span></dt>
+<dd class="field-even"><p>No iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a>.</p>
+</dd>
+</dl>
+<p>This is useful to recover an iterator referring to a child document element
+after mutating that child document, since mutating a child may invalidate
+iterators in the parent.</p>
+</dd></dl>
+
+</section>
+<section id="removing-elements">
+<h3>Removing Elements<a class="headerlink" href="#removing-elements" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410bson_eraseP8bson_mut13bson_iterator">
+<span id="_CPPv310bson_eraseP8bson_mut13bson_iterator"></span><span id="_CPPv210bson_eraseP8bson_mut13bson_iterator"></span><span id="bson_erase__bson_mutP.bson_iterator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_erase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>, <a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator">
+<span id="_CPPv310bson_eraseP8bson_mut13bson_iterator13bson_iterator"></span><span id="_CPPv210bson_eraseP8bson_mut13bson_iterator13bson_iterator"></span><span id="bson_erase__bson_mutP.bson_iterator.bson_iterator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_erase</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">first</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">last</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Erase one or multiple elements within a document <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::m"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">m</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – A mutator for the document to be modified.</p></li>
+<li><p><strong>pos</strong> – A valid iterator referring to the single element to be erased.</p></li>
+<li><p><strong>first</strong> – The first element to be erased.</p></li>
+<li><p><strong>last</strong> – The first element to be retained, or the end iterator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ol class="arabic simple">
+<li><p>The updated iterator referring to the position after <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator" title="bson_erase::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a></p></li>
+<li><p>The updated iterator referring to the <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::last"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">last</span></code></a> position</p></li>
+</ol>
+</p>
+</dd>
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><ol class="arabic simple">
+<li><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a></p></li>
+<li><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_erase_range</span></code> will <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidate</span></a> all reachable iterators <em>if-and-only-if</em>
+<a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::first"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">first</span></code></a> is not equal to <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::last"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">last</span></code></a>.</p></li>
+</ol>
+</dd>
+</dl>
+<p>If <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::first"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">first</span></code></a> and <a class="reference internal" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator" title="bson_erase::last"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">last</span></code></a> are equivalent, then no element will be removed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="modifying-elements">
+<h3>Modifying Elements<a class="headerlink" href="#modifying-elements" title="Link to this heading">#</a></h3>
+<p>Existing document elements can be modified in-place to a limited extent.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible">
+<span id="_CPPv312bson_set_keyP8bson_mut13bson_iterator20__string_convertible"></span><span id="_CPPv212bson_set_keyP8bson_mut13bson_iterator20__string_convertible"></span><span id="bson_set_key__bson_mutP.bson_iterator.__string_convertible"></span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_set_key</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mut</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">new_key</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Replace the element key of the element pointed-to by <a class="reference internal" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="bson_set_key::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mut</strong> – Mutator for the document owning <a class="reference internal" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="bson_set_key::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a></p></li>
+<li><p><strong>pos</strong> – A valid iterator pointing to a live element. Must not be an error
+or end iterator.</p></li>
+<li><p><strong>new_key</strong> – The key string to be replaced.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The adjusted <a class="reference internal" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="bson_set_key::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> iterator following the modification.</p>
+</dd>
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> <em>if-and-only-if</em> <a class="reference internal" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="bson_set_key::new_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">new_key</span></code></a> is not the same
+length as <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../iter/#_CPPv48bson_key13bson_iterator" title="bson_key"><span class="n">bson_key</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible" title="bson_set_key::pos"><span class="n">pos</span></a><span class="p">)</span></span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t">
+<span id="_CPPv330bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t"></span><span id="_CPPv230bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t"></span><span id="bson_relabel_array_elements_at__bson_mutP.bson_iterator.uint32_t"></span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_relabel_array_elements_at</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">doc</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint32_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">idx</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv427bson_relabel_array_elementsP8bson_mut">
+<span id="_CPPv327bson_relabel_array_elementsP8bson_mut"></span><span id="_CPPv227bson_relabel_array_elementsP8bson_mut"></span><span id="bson_relabel_array_elements__bson_mutP"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_relabel_array_elements</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">doc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="Link to this definition">#</a><br /></dt>
+<dd><p>Relabel elements within a BSON document <a class="reference internal" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="bson_relabel_array_elements::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> as monotonically increasing
+decimal integers. <a class="reference internal" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="bson_relabel_array_elements"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_relabel_array_elements()</span></code></a> is equivalent to
+<span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t" title="bson_relabel_array_elements_at"><span class="n">bson_relabel_array_elements_at</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="bson_relabel_array_elements::doc"><span class="n">doc</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../iter/#_CPPv410bson_begin15__bson_viewable" title="bson_begin"><span class="n">bson_begin</span></a><span class="p">(</span><span class="o">*</span><a class="reference internal" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="bson_relabel_array_elements::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><span class="m">0</span><span class="p">)</span></span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>doc</strong> – The document to be modifed.</p></li>
+<li><p><strong>pos</strong> – Iterator referring to the first element to be modified. If equal
+to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="../iter/#_CPPv48bson_end15__bson_viewable" title="bson_end"><span class="n">bson_end</span></a><span class="p">(</span><span class="o">*</span><a class="reference internal" href="#_CPPv427bson_relabel_array_elementsP8bson_mut" title="bson_relabel_array_elements::doc"><span class="n">doc</span></a><span class="p">)</span></span>, then no elements are modified.</p></li>
+<li><p><strong>idx</strong> – The integer key to set for <a class="reference internal" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t" title="bson_relabel_array_elements_at::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>. All subsequent elements will be
+relabeled by incrementing this index for each element.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the iterator referring to the <a class="reference internal" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t" title="bson_relabel_array_elements_at::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> element after the
+relabelling is complete.</p>
+</dd>
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> <em>if-and-only-if</em> the length of any element’s new key is
+not equal to the length of its existing key. (When in doubt, assume all
+iterators are invalidated.)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="splicing-ranges">
+<h3>Splicing Ranges<a class="headerlink" href="#splicing-ranges" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator">
+<span id="_CPPv327bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator"></span><span id="_CPPv227bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator"></span><span id="bson_splice_disjoint_ranges__bson_mutP.bson_iterator.bson_iterator.bson_iterator.bson_iterator"></span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_splice_disjoint_ranges</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">m</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">delete_end</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">from_begin</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">from_end</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Delete elements from <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::m"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">m</span></code></a> and insert elements from another document into their place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> – The document being modifed.</p></li>
+<li><p><strong>pos</strong> – The position at which the splice operation will occur.</p></li>
+<li><p><strong>delete_end</strong> – The first element after <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> which will not be deleted. If
+equal to <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>, then no elements will be erased.</p></li>
+<li><p><strong>from_begin</strong> – The first element to copy into <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a></p></li>
+<li><p><strong>from_end</strong> – The end of the range from which to copy.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns the adjusted iterator pointing to the <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> element.</p>
+</dd>
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> <em>if-and-only-if</em> any elements are deleted or inserted
+(i.e. <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><span class="n">pos</span></a><span class="w"> </span><span class="o">!=</span><span class="w"> </span><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::delete_end"><span class="n">delete_end</span></a><span class="w"> </span><span class="k">or</span><span class="w"> </span><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_begin"><span class="n">from_begin</span></a><span class="w"> </span><span class="o">!=</span><span class="w"> </span><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_end"><span class="n">from_end</span></a></span>)</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_begin</span></code></a> and <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_end</span></code></a> are not equal, then <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_begin</span></code></a> and
+<a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_end</span></code></a> MUST NOT be elements within <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::m"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">m</span></code></a> or any elements within its
+document heirarchy.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::delete_end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">delete_end</span></code></a> must be reachable from <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>, and <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_end"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_end</span></code></a> must be reachable
+from <a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges::from_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from_begin</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator">
+<span id="_CPPv326bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator"></span><span id="_CPPv226bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator"></span><span id="bson_insert_disjoint_range__bson_mutP.bson_iterator.bson_iterator.bson_iterator"></span><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_insert_disjoint_range</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><span class="n"><span class="pre">bson_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">doc</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">from_begin</span></span>,</dd>
+<dd><a class="reference internal" href="../iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">from_end</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Copy elements in the range <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="p">[</span><span class="n">from_begin</span><span class="p">,</span><span class="w"> </span><span class="n">from_end</span><span class="p">)</span></code> into the document
+<a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> at <a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p>
+<p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator" title="bson_splice_disjoint_ranges"><span class="n">bson_splice_disjoint_ranges</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::doc"><span class="n">doc</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::pos"><span class="n">pos</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::from_begin"><span class="n">from_begin</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::from_end"><span class="n">from_end</span></a><span class="p">)</span></span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Invalidation<span class="colon">:</span></dt>
+<dd class="field-odd"><p>All reachable iterators are <a class="reference internal" href="#mut-iter-invalidate"><span class="std std-ref">invalidated</span></a> <em>if-and-only-if</em> <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::from_begin"><span class="n">from_begin</span></a><span class="w"> </span><span class="o">!=</span><span class="w"> </span><a class="reference internal" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator" title="bson_insert_disjoint_range::from_end"><span class="n">from_end</span></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="utilities">
+<h3>Utilities<a class="headerlink" href="#utilities" title="Link to this heading">#</a></h3>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv415bson_u32_string">
+<span id="_CPPv315bson_u32_string"></span><span id="_CPPv215bson_u32_string"></span><span id="bson_u32_string"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_u32_string</span></span></span><a class="headerlink" href="#_CPPv415bson_u32_string" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N15bson_u32_string3bufE">
+<span id="_CPPv3N15bson_u32_string3bufE"></span><span id="_CPPv2N15bson_u32_string3bufE"></span><span id="bson_u32_string::buf__cA"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">buf</span></span></span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">11</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#_CPPv4N15bson_u32_string3bufE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A small string enough to encode a non-negative 32-bit integer with a null
+terminator.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422bson_u32_string_create8uint32_t">
+<span id="_CPPv322bson_u32_string_create8uint32_t"></span><span id="_CPPv222bson_u32_string_create8uint32_t"></span><span id="bson_u32_string_create__uint32_t"></span><a class="reference internal" href="#_CPPv415bson_u32_string" title="bson_u32_string"><span class="n"><span class="pre">bson_u32_string</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_u32_string_create</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><span class="n"><span class="pre">uint32_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422bson_u32_string_create8uint32_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a small C string representing the base-10 encoding of the given 32-bit
+integer <a class="reference internal" href="#_CPPv422bson_u32_string_create8uint32_t" title="bson_u32_string_create::i"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">i</span></code></a>. The string is not dynamically allocated, so no deallocation is
+necessary. The character array in the returned small string is
+null-terminated.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="behavioral-notes">
+<h2>Behavioral Notes<a class="headerlink" href="#behavioral-notes" title="Link to this heading">#</a></h2>
+<section id="iterator-invalidation">
+<span id="mut-iter-invalidate"></span><h3>Iterator Invalidation<a class="headerlink" href="#iterator-invalidation" title="Link to this heading">#</a></h3>
+<p>A BSON iterator <span class="math notranslate nohighlight">\(I\)</span> is <em>reachable</em> for a <a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> <span class="math notranslate nohighlight">\(D\)</span> or <a class="reference internal" href="#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a> derived
+from <span class="math notranslate nohighlight">\(D\)</span> if there is any way to obtain that iterator by traversing the document
+heirarchy. <span class="math notranslate nohighlight">\(I\)</span> may be an iterator at the top level, or may be an iterator within
+any sub-document of <span class="math notranslate nohighlight">\(D\)</span>.</p>
+<p>A BSON iterator <span class="math notranslate nohighlight">\(I\)</span> that <em>reachable</em> in a <a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> <span class="math notranslate nohighlight">\(D\)</span> may be <em>invalidated</em> by
+certain operations on <span class="math notranslate nohighlight">\(D\)</span> or any sub-document thereof. <strong>This is true even if</strong>
+the operation does not cause a reallocation! For this reason, the insertion,
+erasing, and splicing APIs all return iterators that are adjusted to account for
+the invalidating operations. Iterator invalidation behaviors are documented
+under the <strong>Invalidation</strong> field on the relevant function.</p>
+<p>After modifying a subdocument <span class="math notranslate nohighlight">\(D'\)</span> using <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a>, an iterator referring
+to <span class="math notranslate nohighlight">\(D'\)</span> can be recovered by using <a class="reference internal" href="#_CPPv424bson_mut_parent_iterator8bson_mut" title="bson_mut_parent_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_parent_iterator()</span></code></a> on the mutator that
+was created with <a class="reference internal" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator" title="bson_mut_child"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a>.</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../doc/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BSON Documents</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../str/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Strings &amp; String Views</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_mut</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutatorE"><code class="docutils literal notranslate"><span class="pre">mutator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7mutatorER8document"><code class="docutils literal notranslate"><span class="pre">mutator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7mutatorER8bson_doc"><code class="docutils literal notranslate"><span class="pre">mutator()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator4findE16std__string_view"><code class="docutils literal notranslate"><span class="pre">find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator9byte_sizeEv"><code class="docutils literal notranslate"><span class="pre">byte_size()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator6insertE8iteratorDa"><code class="docutils literal notranslate"><span class="pre">insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator6insertE8iteratorN13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator7emplaceE8iterator16std__string_view24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">emplace()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator9push_backEDa"><code class="docutils literal notranslate"><span class="pre">push_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator9push_backEN13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">push_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator12emplace_backE16std__string_view24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">emplace_back()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator13insert_subdocE8iterator16std__string_view"><code class="docutils literal notranslate"><span class="pre">insert_subdoc()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator12insert_arrayE8iterator16std__string_view"><code class="docutils literal notranslate"><span class="pre">insert_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator11push_subdocE16std__string_view"><code class="docutils literal notranslate"><span class="pre">push_subdoc()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator10push_arrayE16std__string_view"><code class="docutils literal notranslate"><span class="pre">push_array()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocumentE"><code class="docutils literal notranslate"><span class="pre">inserted_subdocument</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocument8positionE"><code class="docutils literal notranslate"><span class="pre">position</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator20inserted_subdocument3mutE"><code class="docutils literal notranslate"><span class="pre">mut</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson7mutator5childE8iterator"><code class="docutils literal notranslate"><span class="pre">child()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4bson7mutator15parent_iteratorEv"><code class="docutils literal notranslate"><span class="pre">parent_iterator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_mutateP8bson_doc"><code class="docutils literal notranslate"><span class="pre">bson_mutate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inserting-data">Inserting Data</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_insertP8bson_mut13bson_iterator20__string_convertible24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_mut_childP8bson_mut13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_mut_child()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424bson_mut_parent_iterator8bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_mut_parent_iterator()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removing-elements">Removing Elements</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_erase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_eraseP8bson_mut13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_erase()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-elements">Modifying Elements</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412bson_set_keyP8bson_mut13bson_iterator20__string_convertible"><code class="docutils literal notranslate"><span class="pre">bson_set_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv430bson_relabel_array_elements_atP8bson_mut13bson_iterator8uint32_t"><code class="docutils literal notranslate"><span class="pre">bson_relabel_array_elements_at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv427bson_relabel_array_elementsP8bson_mut"><code class="docutils literal notranslate"><span class="pre">bson_relabel_array_elements()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splicing-ranges">Splicing Ranges</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv427bson_splice_disjoint_rangesP8bson_mut13bson_iterator13bson_iterator13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_splice_disjoint_ranges()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv426bson_insert_disjoint_rangeP8bson_mut13bson_iterator13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_insert_disjoint_range()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_u32_string"><code class="docutils literal notranslate"><span class="pre">bson_u32_string</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15bson_u32_string3bufE"><code class="docutils literal notranslate"><span class="pre">buf</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422bson_u32_string_create8uint32_t"><code class="docutils literal notranslate"><span class="pre">bson_u32_string_create()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-notes">Behavioral Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#iterator-invalidation">Iterator Invalidation</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

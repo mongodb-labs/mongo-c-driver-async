@@ -1,0 +1,1055 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Strings &amp; String Views &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/str';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Vector Types" href="../vec/" />
+    <link rel="prev" title="BSON Modifying" href="../bson/mut/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/str.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Strings & String Views</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_view"><code class="docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view3lenE"><code class="docutils literal notranslate"><span class="pre">len</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view4fromERK16std__string_view"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13mlib_str_viewcv16std__string_viewEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">std__string_view()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13mlib_str_vieweqE16std__string_view"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8mlib_str4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8mlib_str5allocE"><code class="docutils literal notranslate"><span class="pre">alloc</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_mut"><code class="docutils literal notranslate"><span class="pre">mlib_str_mut</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut5allocE"><code class="docutils literal notranslate"><span class="pre">alloc</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut3strE"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420__string_convertible"><code class="docutils literal notranslate"><span class="pre">__string_convertible</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#globals-constants">Globals &amp; Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_null"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_null</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_null"><code class="docutils literal notranslate"><span class="pre">mlib_str_null</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-view-creation">String View Creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_from20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_dataPKc6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_chopnulls()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-creation">String Creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_newv"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_new6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_new6size_t14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_copy20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_delete8mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str_delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-manipulation-modification">String Manipulation &amp; Modification</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str_assign()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_mut_resize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_splice()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_append20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_append()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416mlib_str_prepend20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_prepend()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_erase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_str_remove_prefix20__string_convertible6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_remove_prefix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_str_remove_suffix20__string_convertible6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_remove_suffix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_substr()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-observers">String Observers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_str_eq20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_str_at20__string_convertible9ptrdiff_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_find20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_rfind()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_strlen20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_strlen()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="strings-string-views">
+<h1>Strings &amp; String Views<a class="headerlink" href="#strings-string-views" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-mlib-str.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">mlib/str.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-mlib-str.h" title="Link to this definition">#</a></dt>
+<dd><p>Defines types and functions for handling strings and views of strings of
+characters.</p>
+</dd></dl>
+
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv413mlib_str_view">
+<span id="_CPPv313mlib_str_view"></span><span id="_CPPv213mlib_str_view"></span><span id="mlib_str_view"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_view</span></span></span><a class="headerlink" href="#_CPPv413mlib_str_view" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> A zero-initialized <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a>
+represents a <em>null</em> string view. It does not point to any string, including
+any empty string. Testing for a null string view can be done by testing
+whether the <a class="reference internal" href="#_CPPv4N13mlib_str_view4dataE" title="mlib_str_view::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a> member is a null pointer. A null string view is not
+equal to any non-null string view. Two null strings views are considered
+equivalent.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Converting a null <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a> to a C++ <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a>
+will create a <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a> that views an unspecified empty string.</p>
+</div>
+</dd>
+</dl>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N13mlib_str_view4dataE">
+<span id="_CPPv3N13mlib_str_view4dataE"></span><span id="_CPPv2N13mlib_str_view4dataE"></span><span id="mlib_str_view::data__cCP"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N13mlib_str_view4dataE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N13mlib_str_view3lenE">
+<span id="_CPPv3N13mlib_str_view3lenE"></span><span id="_CPPv2N13mlib_str_view3lenE"></span><span id="mlib_str_view::len__s"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">len</span></span></span><a class="headerlink" href="#_CPPv4N13mlib_str_view3lenE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pointer to the character array of the string, and the length of the
+pointed-to string as a count of <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The pointed-to array at <a class="reference internal" href="#_CPPv4N13mlib_str_view4dataE" title="mlib_str_view::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a> is <em>not</em> guaranteed to be null-terminated,
+and the pointed-to array may contain embedded nul characters.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N13mlib_str_view4fromERK16std__string_view">
+<span id="_CPPv3N13mlib_str_view4fromERK16std__string_view"></span><span id="_CPPv2N13mlib_str_view4fromERK16std__string_view"></span><span id="mlib_str_view::from__std__string_viewCR"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13mlib_str_view4fromERK16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>(C++) Obtain a view that views the given <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13mlib_str_viewcv16std__string_viewEv">
+<span id="_CPPv3NK13mlib_str_viewcv16std__string_viewEv"></span><span id="_CPPv2NK13mlib_str_viewcv16std__string_viewEv"></span><span id="mlib_str_view::castto-std__string_view-operatorC"></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13mlib_str_viewcv16std__string_viewEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>(C++) The <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a> is implicitly convertible to a <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13mlib_str_vieweqE16std__string_view">
+<span id="_CPPv3NK13mlib_str_vieweqE16std__string_view"></span><span id="_CPPv2NK13mlib_str_vieweqE16std__string_view"></span><span id="mlib_str_view::eq-operator__std__string_viewC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sv</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13mlib_str_vieweqE16std__string_view" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compare the string with another string</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv48mlib_str">
+<span id="_CPPv38mlib_str"></span><span id="_CPPv28mlib_str"></span><span id="mlib_str"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str</span></span></span><a class="headerlink" href="#_CPPv48mlib_str" title="Link to this definition">#</a><br /></dt>
+<dd><p>Represents a dynamically allocated immutable null-terminated string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> A zero-initialized <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> represent a
+<em>null</em> string. This is <strong>distinct</strong> from an empty string. Testing for a null
+string can be done by comparing the <a class="reference internal" href="#_CPPv4N8mlib_str4dataE" title="mlib_str::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a> member to a null pointer. Calling
+<a class="reference internal" href="#_CPPv415mlib_str_delete8mlib_str" title="mlib_str_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_delete()</span></code></a> on a null string is a no-op. Creating an <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a>
+from a null string will create a null <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a>. Using a null string
+for any other operation is undefined behavior.</p>
+</dd>
+</dl>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N8mlib_str4dataE">
+<span id="_CPPv3N8mlib_str4dataE"></span><span id="_CPPv2N8mlib_str4dataE"></span><span id="mlib_str::data__cCP"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N8mlib_str4dataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pointer to the array of characters. This is guaranteed to be
+null-terminated, but may contain embedded nulls.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N8mlib_str5allocE">
+<span id="_CPPv3N8mlib_str5allocE"></span><span id="_CPPv2N8mlib_str5allocE"></span><span id="mlib_str::alloc__mlib_allocator"></span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">alloc</span></span></span><a class="headerlink" href="#_CPPv4N8mlib_str5allocE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The allocator used for this string</p>
+</dd></dl>
+
+<p>To get the length of the string, use <a class="reference internal" href="#_CPPv411mlib_strlen20__string_convertible" title="mlib_strlen"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_strlen()</span></code></a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This type supports the creation of strings that contain embedded null characters!</p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv412mlib_str_mut">
+<span id="_CPPv312mlib_str_mut"></span><span id="_CPPv212mlib_str_mut"></span><span id="mlib_str_mut"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_mut</span></span></span><a class="headerlink" href="#_CPPv412mlib_str_mut" title="Link to this definition">#</a><br /></dt>
+<dd><p>A mutable string type. Convertible to <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> by accessing the <a class="reference internal" href="#_CPPv4N12mlib_str_mut3strE" title="mlib_str_mut::str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">str</span></code></a>
+member.</p>
+<p>Internally, this has an anonymous union member to implement the type pun.</p>
+<p>Creating a new string is done using <a class="reference internal" href="#_CPPv412mlib_str_new6size_t14mlib_allocator" title="mlib_str_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a> or <a class="reference internal" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator" title="mlib_str_copy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a>.</p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N12mlib_str_mut4dataE">
+<span id="_CPPv3N12mlib_str_mut4dataE"></span><span id="_CPPv2N12mlib_str_mut4dataE"></span><span id="mlib_str_mut::data__cP"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N12mlib_str_mut4dataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pointer to the mutable array of characters. This is guaranteed to be
+null-terminated, but may contain embedded null characters.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N12mlib_str_mut5allocE">
+<span id="_CPPv3N12mlib_str_mut5allocE"></span><span id="_CPPv2N12mlib_str_mut5allocE"></span><span id="mlib_str_mut::alloc__mlib_allocator"></span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">alloc</span></span></span><a class="headerlink" href="#_CPPv4N12mlib_str_mut5allocE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The memory allocator used by this string.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N12mlib_str_mut3strE">
+<span id="_CPPv3N12mlib_str_mut3strE"></span><span id="_CPPv2N12mlib_str_mut3strE"></span><span id="mlib_str_mut::str__mlib_str"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">str</span></span></span><a class="headerlink" href="#_CPPv4N12mlib_str_mut3strE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Accessing this member of the struct will yield an equivalent read-only
+<a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> instance. Copying this member is effectively the same as moving
+the mutable string into an immutable copy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv420__string_convertible">
+<span id="_CPPv320__string_convertible"></span><span id="_CPPv220__string_convertible"></span><span id="__string_convertible"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">__string_convertible</span></span></span><a class="headerlink" href="#_CPPv420__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__string_convertible</span></code></a> parameter is any type that can be converted to an
+<a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a>. The following types are supported in C and C++ code:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a></p></li>
+<li><p><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a></p></li>
+<li><p><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_mut</span></code></a></p></li>
+<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span><span class="w"> </span><span class="p">[</span><span class="k">const</span><span class="p">]</span><span class="o">*</span></code> (null terminated C strings, inluding string literals)</p></li>
+</ul>
+<p>From C++ code, any type convertible to <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a> may be used.</p>
+</dd></dl>
+
+</section>
+<section id="globals-constants">
+<h2>Globals &amp; Constants<a class="headerlink" href="#globals-constants" title="Link to this heading">#</a></h2>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv418mlib_str_view_null">
+<span id="_CPPv318mlib_str_view_null"></span><span id="_CPPv218mlib_str_view_null"></span><span id="mlib_str_view_null__mlib_str_viewC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_view_null</span></span></span><a class="headerlink" href="#_CPPv418mlib_str_view_null" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv413mlib_str_null">
+<span id="_CPPv313mlib_str_null"></span><span id="_CPPv213mlib_str_null"></span><span id="mlib_str_null__mlib_strC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_null</span></span></span><a class="headerlink" href="#_CPPv413mlib_str_null" title="Link to this definition">#</a><br /></dt>
+<dd><p>A null <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a> and <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<section id="string-view-creation">
+<h3>String View Creation<a class="headerlink" href="#string-view-creation" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418mlib_str_view_from20__string_convertible">
+<span id="_CPPv318mlib_str_view_from20__string_convertible"></span><span id="_CPPv218mlib_str_view_from20__string_convertible"></span><span id="mlib_str_view_from____string_convertible"></span><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_view_from</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">S</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418mlib_str_view_from20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Coerce a string-like object <a class="reference internal" href="#_CPPv418mlib_str_view_from20__string_convertible" title="mlib_str_view_from::S"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">S</span></code></a> to a <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418mlib_str_view_dataPKc6size_t">
+<span id="_CPPv318mlib_str_view_dataPKc6size_t"></span><span id="_CPPv218mlib_str_view_dataPKc6size_t"></span><span id="mlib_str_view_data__cCP.s"></span><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_view_data</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418mlib_str_view_dataPKc6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a> from a character array pointed-to by <a class="reference internal" href="#_CPPv418mlib_str_view_dataPKc6size_t" title="mlib_str_view_data::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>s</strong> – A pointer to a character array.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view_from_data</span></code> may be used to create UTF-8 views that contain
+embeded U+0000 ␀ NULL codepoints. This will work in many places, but
+attempting to use such a string for an element key will result in an element
+with a key that is truncated at the first embedded nul. See:
+<a class="reference internal" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible" title="mlib_str_view_chopnulls"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view_chopnulls()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423mlib_str_view_chopnulls20__string_convertible">
+<span id="_CPPv323mlib_str_view_chopnulls20__string_convertible"></span><span id="_CPPv223mlib_str_view_chopnulls20__string_convertible"></span><span id="mlib_str_view_chopnulls____string_convertible"></span><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_view_chopnulls</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the longest prefix of <a class="reference internal" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible" title="mlib_str_view_chopnulls::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> that does not contain any embedded U+0000 ␀
+null character. If <a class="reference internal" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible" title="mlib_str_view_chopnulls::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> does not contain an null characters, the returned
+string will be equal to <a class="reference internal" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible" title="mlib_str_view_chopnulls::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a>.</p>
+<p>This function is used on UTF-8 strings that are given as element keys when
+BSON is being modified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="string-creation">
+<h3>String Creation<a class="headerlink" href="#string-creation" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412mlib_str_newv">
+<span id="_CPPv312mlib_str_newv"></span><span id="_CPPv212mlib_str_newv"></span><span id="mlib_str_new"></span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_new</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412mlib_str_newv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412mlib_str_new6size_t">
+<span id="_CPPv312mlib_str_new6size_t"></span><span id="_CPPv212mlib_str_new6size_t"></span><span id="mlib_str_new__s"></span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_new</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412mlib_str_new6size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412mlib_str_new6size_t14mlib_allocator">
+<span id="_CPPv312mlib_str_new6size_t14mlib_allocator"></span><span id="_CPPv212mlib_str_new6size_t14mlib_allocator"></span><span id="mlib_str_new__s.mlib_allocator"></span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_new</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412mlib_str_new6size_t14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_mut</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – The number of characters to allocate for the new string.</p></li>
+<li><p><strong>alloc</strong> – A memory allocator to imbue in the new string.</p></li>
+</ul>
+</dd>
+</dl>
+<p>New characters are zero-initialized.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The created string must eventually be cast to <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a>
+and deleted with <a class="reference internal" href="#_CPPv415mlib_str_delete8mlib_str" title="mlib_str_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_delete()</span></code></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413mlib_str_copy20__string_convertible">
+<span id="_CPPv313mlib_str_copy20__string_convertible"></span><span id="_CPPv213mlib_str_copy20__string_convertible"></span><span id="mlib_str_copy____string_convertible"></span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413mlib_str_copy20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv413mlib_str_copy20__string_convertible14mlib_allocator">
+<span id="_CPPv313mlib_str_copy20__string_convertible14mlib_allocator"></span><span id="_CPPv213mlib_str_copy20__string_convertible14mlib_allocator"></span><span id="mlib_str_copy____string_convertible.mlib_allocator"></span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a copy of the given string <a class="reference internal" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator" title="mlib_str_copy::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> – A string from which to copy characters.</p></li>
+<li><p><strong>alloc</strong> – A memory allocator for the new string.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The created string must eventually be cast to <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a>
+and deleted with <a class="reference internal" href="#_CPPv415mlib_str_delete8mlib_str" title="mlib_str_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_delete()</span></code></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mlib_str_delete8mlib_str">
+<span id="_CPPv315mlib_str_delete8mlib_str"></span><span id="_CPPv215mlib_str_delete8mlib_str"></span><span id="mlib_str_delete__mlib_str"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_delete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_str_delete8mlib_str" title="Link to this definition">#</a><br /></dt>
+<dd><p>Delete and deallocate any associated memory for the string <a class="reference internal" href="#_CPPv415mlib_str_delete8mlib_str" title="mlib_str_delete::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>.</p>
+</dd></dl>
+
+</section>
+<section id="string-manipulation-modification">
+<h3>String Manipulation &amp; Modification<a class="headerlink" href="#string-manipulation-modification" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mlib_str_assignP8mlib_str8mlib_str">
+<span id="_CPPv315mlib_str_assignP8mlib_str8mlib_str"></span><span id="_CPPv215mlib_str_assignP8mlib_str8mlib_str"></span><span id="mlib_str_assign__mlib_strP.mlib_str"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_assign</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">from</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="Link to this definition">#</a><br /></dt>
+<dd><p>Delete the string pointed-to by <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> and take the new value from <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s</strong> – A non-null pointer to a valid <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> object. A zero-initialized <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a>
+is considered valid.</p></li>
+<li><p><strong>from</strong> – A string that will be moved into <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Ownership of the resource in <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">from</span></code></a> is considered to be transferred into <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>.
+Any resources previously owned by <a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> are released. This function is
+equivalent to:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="nf">mlib_str_delete</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+<span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This is intended as a convenience for rebinding a <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> in a single
+statement from an expression returning a new <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a>, which may itself use
+<a class="reference internal" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str" title="mlib_str_assign::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>, without requiring a temporary variable, for example:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">mlib_str</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_string</span><span class="p">();</span>
+<span class="nf">mlib_str_assign</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="n">convert_to_uppercase_copy</span><span class="p">(</span><span class="n">s</span><span class="p">));</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t">
+<span id="_CPPv319mlib_str_mut_resizeP12mlib_str_mut6size_t"></span><span id="_CPPv219mlib_str_mut_resizeP12mlib_str_mut6size_t"></span><span id="mlib_str_mut_resize__mlib_str_mutP.s"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_mut_resize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><span class="n"><span class="pre">mlib_str_mut</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">mut</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">new_len</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Resize the mutable string <a class="reference internal" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t" title="mlib_str_mut_resize::mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mut</span></code></a> to have length <a class="reference internal" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t" title="mlib_str_mut_resize::new_len"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">new_len</span></code></a>. Returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code> in
+case of allocation failure.</p>
+<p>The original contents of <a class="reference internal" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t" title="mlib_str_mut_resize::mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mut</span></code></a> are unmodified. New characters are
+zero-initialized.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator">
+<span id="_CPPv315mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator"></span><span id="_CPPv215mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator"></span><span id="mlib_str_splice____string_convertible.s.s.__string_convertible.mlib_allocator"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_splice</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">str</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">del_count</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">insert</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n"><span class="pre">mlib_default_allocator</span></span></a>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a new string based on <a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">str</span></code></a> with the given modifications.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>str</strong> – The string from which we will copy.</p></li>
+<li><p><strong>pos</strong> – The zero-based index at which to perform the splice.</p></li>
+<li><p><strong>del_count</strong> – The number of code units that will be deleted from the
+string. This will be clamped to the string length.</p></li>
+<li><p><strong>insert</strong> – A string that will be inserted at <a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p></li>
+<li><p><strong>alloc</strong> – An allocator for the new string.</p></li>
+</ul>
+</dd>
+</dl>
+<p>If <a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::del_count"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">del_count</span></code></a> is zero, this simply inserts the string. If <a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">insert</span></code></a> is empty,
+this will only delete characters from the string. If <a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::del_count"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">del_count</span></code></a> is zero and
+<a class="reference internal" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator" title="mlib_str_splice::insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">insert</span></code></a> is empty, simply returns a copy of the string.</p>
+<p>Returns a null string on allocation failure.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mlib_str_append20__string_convertible20__string_convertible">
+<span id="_CPPv315mlib_str_append20__string_convertible20__string_convertible"></span><span id="_CPPv215mlib_str_append20__string_convertible20__string_convertible"></span><span id="mlib_str_append____string_convertible.__string_convertible"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_append</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">suffix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_str_append20__string_convertible20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv416mlib_str_prepend20__string_convertible20__string_convertible">
+<span id="_CPPv316mlib_str_prepend20__string_convertible20__string_convertible"></span><span id="_CPPv216mlib_str_prepend20__string_convertible20__string_convertible"></span><span id="mlib_str_prepend____string_convertible.__string_convertible"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_prepend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prefix</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416mlib_str_prepend20__string_convertible20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Append or prepend an affix to another string.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible">
+<span id="_CPPv315mlib_str_insert20__string_convertible6size_t20__string_convertible"></span><span id="_CPPv215mlib_str_insert20__string_convertible6size_t20__string_convertible"></span><span id="mlib_str_insert____string_convertible.s.__string_convertible"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_insert</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">infix</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Insert the string <a class="reference internal" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible" title="mlib_str_insert::infix"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">infix</span></code></a> into a copy of string <a class="reference internal" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible" title="mlib_str_insert::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> at position <a class="reference internal" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible" title="mlib_str_insert::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414mlib_str_erase20__string_convertible6size_t6size_t">
+<span id="_CPPv314mlib_str_erase20__string_convertible6size_t6size_t"></span><span id="_CPPv214mlib_str_erase20__string_convertible6size_t6size_t"></span><span id="mlib_str_erase____string_convertible.s.s"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_erase</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Erase <a class="reference internal" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t" title="mlib_str_erase::count"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">count</span></code></a> code units in a new copy of <a class="reference internal" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t" title="mlib_str_erase::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> at position <a class="reference internal" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t" title="mlib_str_erase::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422mlib_str_remove_prefix20__string_convertible6size_t">
+<span id="_CPPv322mlib_str_remove_prefix20__string_convertible6size_t"></span><span id="_CPPv222mlib_str_remove_prefix20__string_convertible6size_t"></span><span id="mlib_str_remove_prefix____string_convertible.s"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_remove_prefix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422mlib_str_remove_prefix20__string_convertible6size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv422mlib_str_remove_suffix20__string_convertible6size_t">
+<span id="_CPPv322mlib_str_remove_suffix20__string_convertible6size_t"></span><span id="_CPPv222mlib_str_remove_suffix20__string_convertible6size_t"></span><span id="mlib_str_remove_suffix____string_convertible.s"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_remove_suffix</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422mlib_str_remove_suffix20__string_convertible6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Remove <a class="reference internal" href="#_CPPv422mlib_str_remove_suffix20__string_convertible6size_t" title="mlib_str_remove_suffix::count"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">count</span></code></a> characters from the beginning/end of a copy of <a class="reference internal" href="#_CPPv422mlib_str_remove_suffix20__string_convertible6size_t" title="mlib_str_remove_suffix::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411mlib_substr20__string_convertible6size_t6size_t">
+<span id="_CPPv311mlib_substr20__string_convertible6size_t6size_t"></span><span id="_CPPv211mlib_substr20__string_convertible6size_t6size_t"></span><span id="mlib_substr____string_convertible.s.s"></span><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><span class="n"><span class="pre">mlib_str</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_substr</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">s</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">pos</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">len</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a new string copy of the substring of <a class="reference internal" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t" title="mlib_substr::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> beginning at <a class="reference internal" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t" title="mlib_substr::pos"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pos</span></code></a> and
+continuing for at most <a class="reference internal" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t" title="mlib_substr::len"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">len</span></code></a> code units.</p>
+</dd></dl>
+
+</section>
+<section id="string-observers">
+<h3>String Observers<a class="headerlink" href="#string-observers" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411mlib_str_eq20__string_convertible20__string_convertible">
+<span id="_CPPv311mlib_str_eq20__string_convertible20__string_convertible"></span><span id="_CPPv211mlib_str_eq20__string_convertible20__string_convertible"></span><span id="mlib_str_eq____string_convertible.__string_convertible"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_eq</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411mlib_str_eq20__string_convertible20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Test whether two strings are equal. <a class="reference internal" href="#_CPPv411mlib_str_eq20__string_convertible20__string_convertible" title="mlib_str_eq::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a> and <a class="reference internal" href="#_CPPv411mlib_str_eq20__string_convertible20__string_convertible" title="mlib_str_eq::b"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">b</span></code></a> are considered equal if they
+have the same length and equal code units at each position in the string.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411mlib_str_at20__string_convertible9ptrdiff_t">
+<span id="_CPPv311mlib_str_at20__string_convertible9ptrdiff_t"></span><span id="_CPPv211mlib_str_at20__string_convertible9ptrdiff_t"></span><span id="mlib_str_at____string_convertible.ptrdiff_t"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_at</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">S</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/ptrdiff_t" title="(in cppreference v0)"><span class="n"><span class="pre">ptrdiff_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">off</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411mlib_str_at20__string_convertible9ptrdiff_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the character at the given offset, with negative index wrapping.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>off</strong> – The zero-based offset if non-negative. If negative, accesses from
+the end of the string such that <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="mi">-1</span></code> is the last character, <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="mi">-2</span></code>
+is the second-last character, etc.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413mlib_str_find20__string_convertible20__string_convertible">
+<span id="_CPPv313mlib_str_find20__string_convertible20__string_convertible"></span><span id="_CPPv213mlib_str_find20__string_convertible20__string_convertible"></span><span id="mlib_str_find____string_convertible.__string_convertible"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_find</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">haystack</span></span>, <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">needle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413mlib_str_find20__string_convertible20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv414mlib_str_rfind20__string_convertible20__string_convertible">
+<span id="_CPPv314mlib_str_rfind20__string_convertible20__string_convertible"></span><span id="_CPPv214mlib_str_rfind20__string_convertible20__string_convertible"></span><span id="mlib_str_rfind____string_convertible.__string_convertible"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_str_rfind</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">haystack</span></span>, <a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">needle</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Find the zero-based offset of an occurrence of <a class="reference internal" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="mlib_str_rfind::needle"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">needle</span></code></a> within <a class="reference internal" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="mlib_str_rfind::haystack"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">haystack</span></code></a>. If
+the substring is not found, returns an unspecified negative value.</p>
+<p><a class="reference internal" href="#_CPPv413mlib_str_find20__string_convertible20__string_convertible" title="mlib_str_find"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_find()</span></code></a> finds the <em>first</em> occurrence of <a class="reference internal" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="mlib_str_rfind::needle"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">needle</span></code></a>, while
+<a class="reference internal" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="mlib_str_rfind"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_rfind()</span></code></a> finds the <em>last</em> occurrence of <a class="reference internal" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible" title="mlib_str_rfind::needle"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">needle</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411mlib_strlen20__string_convertible">
+<span id="_CPPv311mlib_strlen20__string_convertible"></span><span id="_CPPv211mlib_strlen20__string_convertible"></span><span id="mlib_strlen____string_convertible"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_strlen</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">S</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411mlib_strlen20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the length of the given string as a number of <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code> code units.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../bson/mut/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BSON Modifying</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../vec/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Vector Types</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_view"><code class="docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view3lenE"><code class="docutils literal notranslate"><span class="pre">len</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13mlib_str_view4fromERK16std__string_view"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13mlib_str_viewcv16std__string_viewEv"><code class="docutils literal notranslate"><span class="pre">operator</span> <span class="pre">std__string_view()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13mlib_str_vieweqE16std__string_view"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8mlib_str4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8mlib_str5allocE"><code class="docutils literal notranslate"><span class="pre">alloc</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_mut"><code class="docutils literal notranslate"><span class="pre">mlib_str_mut</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut5allocE"><code class="docutils literal notranslate"><span class="pre">alloc</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N12mlib_str_mut3strE"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420__string_convertible"><code class="docutils literal notranslate"><span class="pre">__string_convertible</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#globals-constants">Globals &amp; Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_null"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_null</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_null"><code class="docutils literal notranslate"><span class="pre">mlib_str_null</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-view-creation">String View Creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_from20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_from()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418mlib_str_view_dataPKc6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423mlib_str_view_chopnulls20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_view_chopnulls()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-creation">String Creation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_newv"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_new6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412mlib_str_new6size_t14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_copy20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_delete8mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str_delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-manipulation-modification">String Manipulation &amp; Modification</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_assignP8mlib_str8mlib_str"><code class="docutils literal notranslate"><span class="pre">mlib_str_assign()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419mlib_str_mut_resizeP12mlib_str_mut6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_mut_resize()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_splice20__string_convertible6size_t6size_t20__string_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_str_splice()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_append20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_append()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416mlib_str_prepend20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_prepend()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_str_insert20__string_convertible6size_t20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_insert()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_str_erase20__string_convertible6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_erase()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_str_remove_prefix20__string_convertible6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_remove_prefix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_str_remove_suffix20__string_convertible6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_remove_suffix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_substr20__string_convertible6size_t6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_substr()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#string-observers">String Observers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_str_eq20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_str_at20__string_convertible9ptrdiff_t"><code class="docutils literal notranslate"><span class="pre">mlib_str_at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_str_find20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_str_rfind20__string_convertible20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_str_rfind()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411mlib_strlen20__string_convertible"><code class="docutils literal notranslate"><span class="pre">mlib_strlen()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

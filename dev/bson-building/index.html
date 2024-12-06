@@ -1,0 +1,895 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Declaratively Building BSON Documents &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/bson-building';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Declaratively Parsing BSON Objects" href="../bson-parsing/" />
+    <link rel="prev" title="Documenting amongoc" href="../documenting/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/bson-building.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Declaratively Building BSON Documents</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-constructs">High-Level Constructs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-rules">Value Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE"><code class="docutils literal notranslate"><span class="pre">doc</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE"><code class="docutils literal notranslate"><span class="pre">build()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp10value_ruleEN4bson4make5arrayE"><code class="docutils literal notranslate"><span class="pre">array</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE"><code class="docutils literal notranslate"><span class="pre">range</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make14optional_valueE"><code class="docutils literal notranslate"><span class="pre">optional_value</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-rules">Element Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_10value_ruleEN4bson4make4pairE"><code class="docutils literal notranslate"><span class="pre">pair</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_10value_ruleEN4bson4make13optional_pairE"><code class="docutils literal notranslate"><span class="pre">optional_pair</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-concepts">Low-Level Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make12element_ruleE"><code class="docutils literal notranslate"><span class="pre">element_rule</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12element_rule4ruleE"><code class="docutils literal notranslate"><span class="pre">rule</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12element_rule3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make10value_ruleE"><code class="docutils literal notranslate"><span class="pre">value_rule</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule3keyE"><code class="docutils literal notranslate"><span class="pre">key</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule5valueE"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make15value_byte_sizeE10value_rule"><code class="docutils literal notranslate"><span class="pre">value_byte_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12append_valueER7mutator16std__string_view10value_rule"><code class="docutils literal notranslate"><span class="pre">append_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule"><code class="docutils literal notranslate"><span class="pre">append_value()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-empty-document">Create an empty document</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-a-single-key-value-pair">Create a document with a single key-value pair</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-an-empty-array">Create a document with an empty array</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-an-array-of-strings">Create a document with an array of strings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-find-command-document">Create a <code class="docutils literal notranslate"><span class="pre">find</span></code> Command Document</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="declaratively-building-bson-documents">
+<h1>Declaratively Building BSON Documents<a class="headerlink" href="#declaratively-building-bson-documents" title="Link to this heading">#</a></h1>
+<p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>’s BSON library contains a facility for building heirarchies of BSON
+objects declaratively in a single-shot. Usage of this facility is recommended
+for a few reasons:</p>
+<ul class="simple">
+<li><p>It will always “do the right thing” – Building large heirarchies of data
+by-hand is tedious and error-prone.</p></li>
+<li><p>The declarative structure mimics the generated data very closely, and is easy
+to understand and modify.</p></li>
+<li><p>The declarative building system is extensible.</p></li>
+<li><p>The built document will allocate exactly the right amount, exactly once: It
+first assesses the required storage space before performing the build.</p></li>
+</ul>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-bson-make.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">bson/make.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-bson-make.hpp" title="Link to this definition">#</a></dt>
+<dd><p>Contains types used for declarative building BSON document data.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Everything declared in this file lives in the <code class="docutils literal notranslate"><span class="pre">bson::make</span></code> namespace</p>
+</div>
+<section id="high-level-constructs">
+<h2>High-Level Constructs<a class="headerlink" href="#high-level-constructs" title="Link to this heading">#</a></h2>
+<section id="value-rules">
+<span id="bson-make-value-rules"></span><h3>Value Rules<a class="headerlink" href="#value-rules" title="Link to this heading">#</a></h3>
+<p>The rules here can be used to construct element values. The special <a class="reference internal" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE" title="bson::make::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> rule
+is also used to construct the root document (with <a class="reference internal" href="#_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE" title="bson::make::doc::build"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc::build()</span></code></a>). These implement
+<a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> (i.e. they can be used as the value of an element’s key-value
+pair).</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp12element_ruleEN4bson4make3docE">
+<span id="_CPPv3I_Dp12element_ruleEN4bson4make3docE"></span><span id="_CPPv2I_Dp12element_ruleEN4bson4make3docE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4bson4make12element_ruleE" title="bson::make::element_rule"><span class="n"><span class="pre">element_rule</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ts</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">doc</span></span></span><a class="headerlink" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> that constructs a document consisting of key-value pairs. This
+is also used to construct the root document (See: <a class="reference internal" href="#_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE" title="bson::make::doc::build"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">build()</span></code></a>).</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>For a list of element rules that can be used to populate a document, see:
+<a class="reference internal" href="#bson-make-element-rules"><span class="std std-ref">Element Rules</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you pull the <code class="docutils literal notranslate"><span class="pre">bson::parse</span></code> namespace, they both contain a <a class="reference internal" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE" title="bson::make::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a>
+declaration, and you will receive a compiler error about ambiguous name lookup.
+Pull <a class="reference internal" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE" title="bson::make::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::make::doc</span></code></a> with a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">using</span></code>, or use the fully-qualifeid name.</p>
+</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE">
+<span id="_CPPv3N4bson4make3doc5buildEN4mlib9allocatorIEE"></span><span id="_CPPv2N4bson4make3doc5buildEN4mlib9allocatorIEE"></span><span id="bson::make::doc::build__mlib::allocator::"></span><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><span class="n"><span class="pre">document</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">build</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../ref/alloc/#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a new <a class="reference internal" href="../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> containing the elements of this rule.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp10value_ruleEN4bson4make5arrayE">
+<span id="_CPPv3I_Dp10value_ruleEN4bson4make5arrayE"></span><span id="_CPPv2I_Dp10value_ruleEN4bson4make5arrayE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Vs</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">array</span></span></span><a class="headerlink" href="#_CPPv4I_Dp10value_ruleEN4bson4make5arrayE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A build rule that constructs an array value within an element. Implements
+<a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This constructs a fixed-length array of elements. To construct a
+variable-length arrray, use <a class="reference internal" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE" title="bson::make::range"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">range</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference external" href="https://en.cppreference.com/w/cpp/ranges/forward_range" title="(in cppreference v0)"><span class="n"><span class="pre">std::ranges::forward_range</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">requires</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ranges</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">range_reference_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE" title="bson::make::range::R"><span class="n"><span class="pre">R</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">range</span></span></span><a class="headerlink" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> that creates a BSON array of values that are pulled from the
+given range. The range must be a range of objects that satisfy <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The given range <a class="reference internal" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE" title="bson::make::range::R"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">R</span></code></a> will be iterated twice: Once to calculate the expected
+byte-size of the array, and a second time to actually perform the insertion.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson4make14optional_valueE">
+<span id="_CPPv3I0EN4bson4make14optional_valueE"></span><span id="_CPPv2I0EN4bson4make14optional_valueE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">V</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">optional_value</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson4make14optional_valueE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> that is used to generate conditional elements. The
+value must be contextually convertible to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">bool</span></code> <a class="footnote-reference brackets" href="#ctx-conv-bool" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. If the contained evaluates to
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>, then no value will be appended.</p>
+<p>The wrapped object must be a <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> itself, or must yield a <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>
+when a unary dereference <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="o">*</span></code> is applied (e.g. a <code class="docutils literal notranslate"><span class="pre">std::optional</span></code>
+containing a <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>).</p>
+</dd></dl>
+
+</section>
+<section id="element-rules">
+<span id="bson-make-element-rules"></span><h3>Element Rules<a class="headerlink" href="#element-rules" title="Link to this heading">#</a></h3>
+<p>These build rules are used to specify the contents of a <a class="reference internal" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE" title="bson::make::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> value rule. An
+element rule can insert any number of elements into a document, but usually it
+will either insert only one (i.e. <a class="reference internal" href="#_CPPv4I_10value_ruleEN4bson4make4pairE" title="bson::make::pair"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pair</span></code></a>) or zero (i.e. <a class="reference internal" href="#_CPPv4I_10value_ruleEN4bson4make13optional_pairE" title="bson::make::optional_pair"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">optional_pair</span></code></a>).</p>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_10value_ruleEN4bson4make4pairE">
+<span id="_CPPv3I_10value_ruleEN4bson4make4pairE"></span><span id="_CPPv2I_10value_ruleEN4bson4make4pairE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">V</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pair</span></span></span><a class="headerlink" href="#_CPPv4I_10value_ruleEN4bson4make4pairE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Unconditionally adds a single key-value pair to a document. The key is given
+as a <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a> via the first argument. The value is any <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>
+given as the second argument.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_10value_ruleEN4bson4make13optional_pairE">
+<span id="_CPPv3I_10value_ruleEN4bson4make13optional_pairE"></span><span id="_CPPv2I_10value_ruleEN4bson4make13optional_pairE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">V</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">optional_pair</span></span></span><a class="headerlink" href="#_CPPv4I_10value_ruleEN4bson4make13optional_pairE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special <a class="reference internal" href="#_CPPv4I0EN4bson4make12element_ruleE" title="bson::make::element_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">element_rule</span></code></a> that inserts a key-value pair if-and-only-if the
+value of the candidate element evaluates to a truthy value (the value rule
+<a class="reference internal" href="#_CPPv4I_10value_ruleEN4bson4make13optional_pairE" title="bson::make::optional_pair::V"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">V</span></code></a> must be contextually convertible to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">bool</span></code> <a class="footnote-reference brackets" href="#ctx-conv-bool" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>).</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="low-level-concepts">
+<h2>Low-Level Concepts<a class="headerlink" href="#low-level-concepts" title="Link to this heading">#</a></h2>
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson4make12element_ruleE">
+<span id="_CPPv3I0EN4bson4make12element_ruleE"></span><span id="_CPPv2I0EN4bson4make12element_ruleE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">element_rule</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson4make12element_ruleE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A concept for defining build rules that insert key-value pairs into a
+document.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#bson-make-element-rules"><span class="std std-ref">Element Rules</span></a>.</p>
+</div>
+<p class="rubric">Given:</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make12element_rule4ruleE">
+<span id="_CPPv3N4bson4make12element_rule4ruleE"></span><span id="_CPPv2N4bson4make12element_rule4ruleE"></span><span id="bson::make::element_rule::rule__T"></span><a class="reference internal" href="#_CPPv4I0EN4bson4make12element_ruleE" title="bson::make::element_rule::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rule</span></span></span><a class="headerlink" href="#_CPPv4N4bson4make12element_rule4ruleE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make12element_rule3outE">
+<span id="_CPPv3N4bson4make12element_rule3outE"></span><span id="_CPPv2N4bson4make12element_rule3outE"></span><span id="bson::make::element_rule::out__bson::mutatorR"></span><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../ref/bson/mut/#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">out</span></span></span><a class="headerlink" href="#_CPPv4N4bson4make12element_rule3outE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<p class="rubric">Requires:</p>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson4make12element_rule4ruleE" title="bson::make::element_rule::rule"><span class="n">rule</span></a><span class="p">.</span><span class="n">append_to</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson4make12element_rule3outE" title="bson::make::element_rule::out"><span class="n">out</span></a><span class="p">)</span></span> - Should append any number of elements to <a class="reference internal" href="#_CPPv4N4bson4make12element_rule3outE" title="bson::make::element_rule::out"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out</span></code></a></p></li>
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson4make12element_rule4ruleE" title="bson::make::element_rule::rule"><span class="n">rule</span></a><span class="p">.</span><span class="n">byte_size</span><span class="p">(</span><span class="p">)</span></span> - Should return the number of bytes that will be appended</p></li>
+</ul>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson4make10value_ruleE">
+<span id="_CPPv3I0EN4bson4make10value_ruleE"></span><span id="_CPPv2I0EN4bson4make10value_ruleE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_rule</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson4make10value_ruleE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A build rule or value that can be used as the value in a key-value pair for a
+document or array element.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#bson-make-value-rules"><span class="std std-ref">Value Rules</span></a>.</p>
+</div>
+<p><strong>Any type</strong> that can be inserted using <a class="reference internal" href="../../ref/bson/mut/#_CPPv411bson_insertP8bson_mut20__string_convertible24__bson_value_convertible" title="bson_insert"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_insert()</span></code></a> can be used as an
+<a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a>.</p>
+<p><strong>Other types</strong> may also satisfy <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_rule</span></code></a> by meeting the below
+requirements.</p>
+<p class="rubric">Given</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make10value_rule3outE">
+<span id="_CPPv3N4bson4make10value_rule3outE"></span><span id="_CPPv2N4bson4make10value_rule3outE"></span><span id="bson::make::value_rule::out__bson::mutatorR"></span><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../ref/bson/mut/#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">out</span></span></span><a class="headerlink" href="#_CPPv4N4bson4make10value_rule3outE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make10value_rule3keyE">
+<span id="_CPPv3N4bson4make10value_rule3keyE"></span><span id="_CPPv2N4bson4make10value_rule3keyE"></span><span id="bson::make::value_rule::key__std__string_view"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">key</span></span></span><a class="headerlink" href="#_CPPv4N4bson4make10value_rule3keyE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make10value_rule5valueE">
+<span id="_CPPv3N4bson4make10value_rule5valueE"></span><span id="_CPPv2N4bson4make10value_rule5valueE"></span><span id="bson::make::value_rule::value__T"></span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value</span></span></span><span class="p"><span class="pre">;</span></span><a class="headerlink" href="#_CPPv4N4bson4make10value_rule5valueE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<p class="rubric">Requires</p>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson4make10value_rule5valueE" title="bson::make::value_rule::value"><span class="n">value</span></a><span class="p">.</span><span class="n">byte_size</span><span class="p">(</span><span class="p">)</span></span> must return the number of bytes that the value will
+consume. This only includes bytes for the value portion of a potential element,
+not including the element key or type tag.</p></li>
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson4make10value_rule5valueE" title="bson::make::value_rule::value"><span class="n">value</span></a><span class="p">.</span><span class="n">append_to</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson4make10value_rule3outE" title="bson::make::value_rule::out"><span class="n">out</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson4make10value_rule3keyE" title="bson::make::value_rule::key"><span class="n">key</span></a><span class="p">)</span></span> - May append a value to the document <a class="reference internal" href="#_CPPv4N4bson4make10value_rule3outE" title="bson::make::value_rule::out"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out</span></code></a>
+using the key string <a class="reference internal" href="#_CPPv4N4bson4make10value_rule3keyE" title="bson::make::value_rule::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a>. It is also possible that no element will be
+inserted at all (e.g. the <a class="reference internal" href="#_CPPv4I0EN4bson4make14optional_valueE" title="bson::make::optional_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">optional_value</span></code></a> may not actually append
+anything).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t call the above methods directly in generic contexts. Use
+<a class="reference internal" href="#_CPPv4N4bson4make15value_byte_sizeE10value_rule" title="bson::make::value_byte_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value_byte_size()</span></code></a> and <a class="reference internal" href="#_CPPv4N4bson4make12append_valueER7mutator16std__string_view10value_rule" title="bson::make::append_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">append_value()</span></code></a> instead.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make15value_byte_sizeE10value_rule">
+<span id="_CPPv3N4bson4make15value_byte_sizeE10value_rule"></span><span id="_CPPv2N4bson4make15value_byte_sizeE10value_rule"></span><span id="bson::make::value_byte_size__value_rule"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_byte_size</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson4make15value_byte_sizeE10value_rule" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the size, in bytes, of the value <a class="reference internal" href="#_CPPv4N4bson4make15value_byte_sizeE10value_rule" title="bson::make::value_byte_size::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> when appended to a document.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make12append_valueER7mutator16std__string_view10value_rule">
+<span id="_CPPv3N4bson4make12append_valueER7mutator16std__string_view10value_rule"></span><span id="_CPPv2N4bson4make12append_valueER7mutator16std__string_view10value_rule"></span><span id="bson::make::append_value__mutatorR.std__string_view.value_rule"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_value</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../ref/bson/mut/#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">doc</span></span>, <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson4make12append_valueER7mutator16std__string_view10value_rule" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule">
+<span id="_CPPv3N4bson4make12append_valueER7mutator11std__size_t10value_rule"></span><span id="_CPPv2N4bson4make12append_valueER7mutator11std__size_t10value_rule"></span><span id="bson::make::append_value__mutatorR.std__size_t.value_rule"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">append_value</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../../ref/bson/mut/#_CPPv4N4bson7mutatorE" title="bson::mutator"><span class="n"><span class="pre">mutator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">doc</span></span>, <a class="reference external" href="https://en.cppreference.com/w/cpp/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">std::size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I0EN4bson4make10value_ruleE" title="bson::make::value_rule"><span class="n"><span class="pre">value_rule</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule" title="Link to this definition">#</a><br /></dt>
+<dd><p>Append a value <a class="reference internal" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule" title="bson::make::append_value::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> to the document <a class="reference internal" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule" title="bson::make::append_value::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> under the key <a class="reference internal" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule" title="bson::make::append_value::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a>. <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="p">[[</span><span class="mi">2</span><span class="p">]]</span></code>
+will automatically construct an integer key string without allocating memory.</p>
+</dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
+<section id="create-an-empty-document">
+<h3>Create an empty document<a class="headerlink" href="#create-an-empty-document" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">bson</span><span class="o">::</span><span class="nn">make</span><span class="p">;</span>
+<span class="n">bson</span><span class="o">::</span><span class="n">document</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="p">().</span><span class="n">build</span><span class="p">(</span><span class="n">alloc</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-document-with-a-single-key-value-pair">
+<h3>Create a document with a single key-value pair<a class="headerlink" href="#create-a-document-with-a-single-key-value-pair" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bson</span><span class="o">::</span><span class="n">document</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="p">(</span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p">)).</span><span class="n">build</span><span class="p">(</span><span class="n">alloc</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nx">foo</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-document-with-an-empty-array">
+<h3>Create a document with an empty array<a class="headerlink" href="#create-a-document-with-an-empty-array" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bson</span><span class="o">::</span><span class="n">document</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">doc</span><span class="p">(</span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">123</span><span class="p">),</span>
+<span class="w">      </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;bar&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">array</span><span class="p">()))</span>
+<span class="w">  </span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">alloc</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nx">foo</span><span class="o">:</span><span class="w"> </span><span class="mf">123</span><span class="p">,</span>
+<span class="w">  </span><span class="nx">bar</span><span class="o">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-document-with-an-array-of-strings">
+<h3>Create a document with an array of strings<a class="headerlink" href="#create-a-document-with-an-array-of-strings" title="Link to this heading">#</a></h3>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">strs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;baz&quot;</span><span class="w"> </span><span class="p">};</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">doc</span><span class="p">(</span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;someStrings&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">range</span><span class="p">(</span><span class="n">strs</span><span class="p">)))</span>
+<span class="w">  </span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">alloc</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="highlight-js notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nx">someStrings</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;baz&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-find-command-document">
+<h3>Create a <code class="docutils literal notranslate"><span class="pre">find</span></code> Command Document<a class="headerlink" href="#create-a-find-command-document" title="Link to this heading">#</a></h3>
+<p>This is similar to the document build expression use to implement the <code class="docutils literal notranslate"><span class="pre">find</span></code>
+operation in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, where <code class="docutils literal notranslate"><span class="pre">params</span></code> is a set of find parameters.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">bson</span><span class="o">::</span><span class="n">document</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="p">(</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;find&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">collection_name</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;$db&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">database_name</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;filter&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">filter</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;sort&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">sort</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;projection&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">projection</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;hint&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">hint_doc</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;hint&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">hint_str</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;skip&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">skip</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;limit&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">limit</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;batchSize&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">batch_size</span><span class="p">),</span>
+<span class="w">    </span><span class="c1">// If the limit is set to a negative value, generate a single batch</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;singleBatch&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">limit</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;comment&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">comment</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;maxTimeMS&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">::</span><span class="n">mlib_count_milliseconds</span><span class="p">(</span><span class="n">params</span><span class="o">-&gt;</span><span class="n">max_time</span><span class="p">)),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;max&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">max</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;min&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">min</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;returnKey&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">return_key</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;oplogReplay&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">oplog_replay</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;showRecordId&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">show_record_id</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;tailable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">cursor_type</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="o">::</span><span class="n">amongoc_find_cursor_not_tailable</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;noCursorTimeout&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">no_cursor_timeout</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;awaitData&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">(</span><span class="n">params</span><span class="o">-&gt;</span><span class="n">cursor_type</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">::</span><span class="n">amongoc_find_cursor_tailable_await</span><span class="p">)),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;allowPartialResults&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">allow_partial_results</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;collation&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">collation</span><span class="p">),</span>
+<span class="w">    </span><span class="n">pair</span><span class="p">(</span><span class="s">&quot;allowDiskUse&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">allow_disk_use</span><span class="p">),</span>
+<span class="w">    </span><span class="n">optional_pair</span><span class="p">(</span><span class="s">&quot;let&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="o">-&gt;</span><span class="n">let</span><span class="p">))</span>
+<span class="w">  </span><span class="p">.</span><span class="n">build</span><span class="p">(</span><span class="n">alloc</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Example output:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nl">find</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;my-collection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">$db</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mainDb&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">filter</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">_id</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">$gt</span><span class="o">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nl">batchSize</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">singleBatch</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">returnKey</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">oplogReplay</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">showRecordId</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">tailable</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">noCursorTimeout</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">awaitData</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">allowPartialResults</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nl">allowDiskUse</span><span class="p">:</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="ctx-conv-bool" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>A type is contextually convertible to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">bool</span></code> if it will convert to a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> or <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code>
+value in a context that expects a <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">bool</span></code> expression. See: <a class="reference external" href="https://en.cppreference.com/w/cpp/language/implicit_conversion">Implicit conversions (Contextual conversions)</a></p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../documenting/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../bson-parsing/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Declaratively Parsing BSON Objects</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-constructs">High-Level Constructs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#value-rules">Value Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp12element_ruleEN4bson4make3docE"><code class="docutils literal notranslate"><span class="pre">doc</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make3doc5buildEN4mlib9allocatorIEE"><code class="docutils literal notranslate"><span class="pre">build()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp10value_ruleEN4bson4make5arrayE"><code class="docutils literal notranslate"><span class="pre">array</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_26std__ranges__forward_rangeEIQ10value_ruleINSt6ranges17range_reference_tI1REEEEN4bson4make5rangeE"><code class="docutils literal notranslate"><span class="pre">range</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make14optional_valueE"><code class="docutils literal notranslate"><span class="pre">optional_value</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-rules">Element Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_10value_ruleEN4bson4make4pairE"><code class="docutils literal notranslate"><span class="pre">pair</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_10value_ruleEN4bson4make13optional_pairE"><code class="docutils literal notranslate"><span class="pre">optional_pair</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-concepts">Low-Level Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make12element_ruleE"><code class="docutils literal notranslate"><span class="pre">element_rule</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12element_rule4ruleE"><code class="docutils literal notranslate"><span class="pre">rule</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12element_rule3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson4make10value_ruleE"><code class="docutils literal notranslate"><span class="pre">value_rule</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule3keyE"><code class="docutils literal notranslate"><span class="pre">key</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make10value_rule5valueE"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make15value_byte_sizeE10value_rule"><code class="docutils literal notranslate"><span class="pre">value_byte_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12append_valueER7mutator16std__string_view10value_rule"><code class="docutils literal notranslate"><span class="pre">append_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson4make12append_valueER7mutator11std__size_t10value_rule"><code class="docutils literal notranslate"><span class="pre">append_value()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-empty-document">Create an empty document</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-a-single-key-value-pair">Create a document with a single key-value pair</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-an-empty-array">Create a document with an empty array</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-document-with-an-array-of-strings">Create a document with an array of strings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-find-command-document">Create a <code class="docutils literal notranslate"><span class="pre">find</span></code> Command Document</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

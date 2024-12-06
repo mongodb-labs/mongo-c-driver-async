@@ -1,0 +1,758 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>result&lt;T&gt; &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/result';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Query Objects" href="../queries/" />
+    <link rel="prev" title="Couroutines" href="../coroutines/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/result.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>result<T></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7amongoc6resultE"><code class="docutils literal notranslate"><span class="pre">result</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result12success_typeE"><code class="docutils literal notranslate"><span class="pre">success_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result10error_typeE"><code class="docutils literal notranslate"><span class="pre">error_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result6resultEv"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc6result6resultERR1U"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc6result9has_valueEv"><code class="docutils literal notranslate"><span class="pre">has_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc6result9has_errorEv"><code class="docutils literal notranslate"><span class="pre">has_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result9error_tagEv"><code class="docutils literal notranslate"><span class="pre">error_tag()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result5valueEv"><code class="docutils literal notranslate"><span class="pre">value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6resultmlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result5errorEv"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc11success_tagE"><code class="docutils literal notranslate"><span class="pre">success_tag</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc9error_tagE"><code class="docutils literal notranslate"><span class="pre">error_tag</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc7successEDpRRDa"><code class="docutils literal notranslate"><span class="pre">success()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc5errorEDpRRDa"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc12error_traitsE"><code class="docutils literal notranslate"><span class="pre">error_traits</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc12error_traits15throw_exceptionERK1E"><code class="docutils literal notranslate"><span class="pre">throw_exception()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#result-combinators-and-helpers"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code> Combinators and Helpers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc11result_fmapE"><code class="docutils literal notranslate"><span class="pre">result_fmap</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE"><code class="docutils literal notranslate"><span class="pre">result_join()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE"><code class="docutils literal notranslate"><span class="pre">nanosender_traits</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="result-t">
+<h1><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code><a class="headerlink" href="#result-t" title="Link to this heading">#</a></h1>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7amongoc6resultE">
+<span id="_CPPv3I00EN7amongoc6resultE"></span><span id="_CPPv2I00EN7amongoc6resultE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><a class="headerlink" href="#_CPPv4I00EN7amongoc6resultE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implements a sum type over a success type <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> and an error type <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::E"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">E</span></code></a>. A result
+<span class="math notranslate nohighlight">\(R\)</span> holds either an instance of <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> or an instance of <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::E"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">E</span></code></a> (reference types
+<em>are</em> supported!)</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result12success_typeE">
+<span id="_CPPv3N7amongoc6result12success_typeE"></span><span id="_CPPv2N7amongoc6result12success_typeE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7amongoc6result12success_typeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result10error_typeE">
+<span id="_CPPv3N7amongoc6result10error_typeE"></span><span id="_CPPv2N7amongoc6result10error_typeE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N7amongoc6result10error_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The success type and error type of the result, respectively.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result6resultEv">
+<span id="_CPPv3N7amongoc6result6resultEv"></span><span id="_CPPv2N7amongoc6result6resultEv"></span><span id="amongoc::result::result"></span><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc6result6resultEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Default-construct to a successful value, if possible.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc6result6resultERR1U">
+<span id="_CPPv3I0EN7amongoc6result6resultERR1U"></span><span id="_CPPv2I0EN7amongoc6result6resultERR1U"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7amongoc6result6resultERR1U" title="amongoc::result::result::U"><span class="n"><span class="pre">U</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">arg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN7amongoc6result6resultERR1U" title="Link to this definition">#</a><br /></dt>
+<dd><p>Conditionally-explicit converting constructor. Requires that <a class="reference internal" href="#_CPPv4I0EN7amongoc6result6resultERR1U" title="amongoc::result::result::U"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">U</span></code></a> is
+explicit-convertbile to <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> <em>but not</em> explicit-convertible to <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::E"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">E</span></code></a>. This
+constructor is explicit unless <a class="reference internal" href="#_CPPv4I0EN7amongoc6result6resultERR1U" title="amongoc::result::result::U"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">U</span></code></a> is implicit-convertbile to <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE">
+<span id="_CPPv3IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE"></span><span id="_CPPv2IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpEN7amongoc11success_tagE" title="amongoc::success_tag"><span class="n"><span class="pre">success_tag</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE" title="amongoc::result::result::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tag</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE">
+<span id="_CPPv3IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE"></span><span id="_CPPv2IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N7amongoc6result9error_tagEv" title="amongoc::result::error_tag"><span class="n"><span class="pre">error_tag</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE" title="amongoc::result::result::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tag</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE" title="Link to this definition">#</a><br /></dt>
+<dd><p>In-place constructs a success value or an error value, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tag</strong> – The tag contains a tuple of bound constructor arguments that will
+be forwarded to consrtuct the underlying object.</p>
+</dd>
+</dl>
+<p>This requires that the corresponding contained type be constructible from
+the argument types that are bound within the tag.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc6result9has_valueEv">
+<span id="_CPPv3NK7amongoc6result9has_valueEv"></span><span id="_CPPv2NK7amongoc6result9has_valueEv"></span><span id="amongoc::result::has_valueC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc6result9has_valueEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc6result9has_errorEv">
+<span id="_CPPv3NK7amongoc6result9has_errorEv"></span><span id="_CPPv2NK7amongoc6result9has_errorEv"></span><span id="amongoc::result::has_errorC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc6result9has_errorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Test whether the result contains a value or an error, respectively.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result9error_tagEv">
+<span id="_CPPv3N7amongoc6result9error_tagEv"></span><span id="_CPPv2N7amongoc6result9error_tagEv"></span><span id="amongoc::result::error_tag"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_tag</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc6result9error_tagEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create an <a class="reference internal" href="#_CPPv4IDpEN7amongoc9error_tagE" title="amongoc::error_tag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::error_tag</span></code></a> object that can be used to construct a new
+<a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a> containing the same error as this result.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4NK7amongoc6result9has_errorEv" title="amongoc::result::has_error"><span class="n">has_error</span></a><span class="p">(</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">true</span></span></p>
+</dd>
+</dl>
+<p>This function is cvref-overloaded to perfect-forward the contained error.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result5valueEv">
+<span id="_CPPv3N7amongoc6result5valueEv"></span><span id="_CPPv2N7amongoc6result5valueEv"></span><span id="amongoc::result::value"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc6result5valueEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6resultmlEv">
+<span id="_CPPv3N7amongoc6resultmlEv"></span><span id="_CPPv2N7amongoc6resultmlEv"></span><span id="amongoc::result::mul-operator"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc6resultmlEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the contained value, or throw an exception if the result is errant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throw<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Throws an error according to <a class="reference internal" href="#_CPPv4I0EN7amongoc12error_traitsE" title="amongoc::error_traits"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">error_traits</span></code></a></p>
+</dd>
+</dl>
+<p>This function is cvref-overloaded to perfect-forward the contained value.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc6result5errorEv">
+<span id="_CPPv3N7amongoc6result5errorEv"></span><span id="_CPPv2N7amongoc6result5errorEv"></span><span id="amongoc::result::error"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc6result5errorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the contained error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4NK7amongoc6result9has_errorEv" title="amongoc::result::has_error"><span class="n">has_error</span></a><span class="p">(</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">true</span></span></p>
+</dd>
+</dl>
+<p>This function is cvref-overloaded to perfect-forward the contained error.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7amongoc11success_tagE">
+<span id="_CPPv3IDpEN7amongoc11success_tagE"></span><span id="_CPPv2IDpEN7amongoc11success_tagE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success_tag</span></span></span><a class="headerlink" href="#_CPPv4IDpEN7amongoc11success_tagE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN7amongoc9error_tagE">
+<span id="_CPPv3IDpEN7amongoc9error_tagE"></span><span id="_CPPv2IDpEN7amongoc9error_tagE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_tag</span></span></span><a class="headerlink" href="#_CPPv4IDpEN7amongoc9error_tagE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Tag types that are used to construct a <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a> with a set of arguments.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc7successEDpRRDa">
+<span id="_CPPv3N7amongoc7successEDpRRDa"></span><span id="_CPPv2N7amongoc7successEDpRRDa"></span><span id="amongoc::success__autoRRDp"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">success</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc7successEDpRRDa" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc5errorEDpRRDa">
+<span id="_CPPv3N7amongoc5errorEDpRRDa"></span><span id="_CPPv2N7amongoc5errorEDpRRDa"></span><span id="amongoc::error__autoRRDp"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc5errorEDpRRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Returns a <a class="reference internal" href="#_CPPv4IDpEN7amongoc11success_tagE" title="amongoc::success_tag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">success_tag</span></code></a> or <a class="reference internal" href="#_CPPv4IDpEN7amongoc9error_tagE" title="amongoc::error_tag"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">error_tag</span></code></a>, respectively, with the given
+argumounts bound. When the tags are then converted to a <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a>, the bound
+arguments are used to construct the underlying success/error value for that
+<a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The arguments are stored within the tag by-reference (including by r-value
+reference), so the tag should be immediately used to construct a <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a> to
+avoid dangling references.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc12error_traitsE">
+<span id="_CPPv3I0EN7amongoc12error_traitsE"></span><span id="_CPPv2I0EN7amongoc12error_traitsE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error_traits</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc12error_traitsE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Determines how to throw an exception for a <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a>.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc12error_traits15throw_exceptionERK1E">
+<span id="_CPPv3N7amongoc12error_traits15throw_exceptionERK1E"></span><span id="_CPPv2N7amongoc12error_traits15throw_exceptionERK1E"></span><span id="amongoc::error_traits::throw_exception__ECR"></span><span class="p"><span class="pre">[[</span></span><span class="pre">noreturn</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">throw_exception</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7amongoc12error_traitsE" title="amongoc::error_traits::E"><span class="n"><span class="pre">E</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">e</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc12error_traits15throw_exceptionERK1E" title="Link to this definition">#</a><br /></dt>
+<dd><p>Throws an exception based on <a class="reference internal" href="#_CPPv4N7amongoc12error_traits15throw_exceptionERK1E" title="amongoc::error_traits::throw_exception::e"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">e</span></code></a></p>
+</dd></dl>
+
+<p>The following specializations are provided for <a class="reference internal" href="#_CPPv4I0EN7amongoc12error_traitsE" title="amongoc::error_traits::E"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">E</span></code></a>:</p>
+<dl class="simple">
+<dt><a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::error_code</span></code></a></dt><dd><p>Throws a <a class="reference external" href="https://en.cppreference.com/w/cpp/error/system_error" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::system_error</span></code></a></p>
+</dd>
+<dt><a class="reference external" href="https://en.cppreference.com/w/cpp/error/exception_ptr" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::exception_ptr</span></code></a></dt><dd><p>Calls <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">std::rethrow_exception</span></code></p>
+</dd>
+<dt>Any type derived from <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">std::exception</span></code></dt><dd><p>Simply throws the exception</p>
+</dd>
+<dt><a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></dt><dd><p>Throws an <a class="reference internal" href="../../ref/status/#_CPPv4N7amongoc9exceptionE" title="amongoc::exception"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::exception</span></code></a> for the status</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="result-combinators-and-helpers">
+<h2><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code></a> Combinators and Helpers<a class="headerlink" href="#result-combinators-and-helpers" title="Link to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc11result_fmapE">
+<span id="_CPPv3I0EN7amongoc11result_fmapE"></span><span id="_CPPv2I0EN7amongoc11result_fmapE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">result_fmap</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc11result_fmapE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Provides a monadic fmap-style combinator for the given function <a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">F</span></code></a>.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">requires</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">invocable</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><span class="n"><span class="pre">F</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">res</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">invoke_result_t</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><span class="n"><span class="pre">F</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Call the fmap object with a result <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::res"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">res</span></code></a> with a value type <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> and error
+type <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::E"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">E</span></code></a>.</p>
+<p>Requires that the wrapped <a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">F</span></code></a> be invocable with a <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> and return a new value
+of type <span class="math notranslate nohighlight">\(R\)</span> (which may be a reference or <code class="docutils literal notranslate"><span class="pre">void</span></code>).</p>
+<ul class="simple">
+<li><p>If <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::res"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">res</span></code></a> has a value, then the underlying <a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">F</span></code></a> will be invoked with that
+value, and the result will be wrapped in a new <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result&lt;R,</span> <span class="pre">E&gt;</span></code></a>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::res"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">res</span></code></a> <em>does not</em> hold a value, then <a class="reference internal" href="#_CPPv4I0EN7amongoc11result_fmapE" title="amongoc::result_fmap::F"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">F</span></code></a> will not be invoked, and the
+error in <a class="reference internal" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE" title="amongoc::result_fmap::operator()::res"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">res</span></code></a> will be used to initialize a <a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result&lt;R,</span> <span class="pre">E&gt;</span></code></a> with an errant
+state.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE">
+<span id="_CPPv3I00EN7amongoc11result_joinE6resultI6resultI1T1EE1EE"></span><span id="_CPPv2I00EN7amongoc11result_joinE6resultI6resultI1T1EE1EE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">result_join</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">r</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="Link to this definition">#</a><br /></dt>
+<dd><p>“Flattens” a result-of-result <a class="reference internal" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE" title="amongoc::result_join::r"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">r</span></code></a>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This is an invocable object type with the above signature, not an actual function template.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">E</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">requires</span></span><span class="w"> </span><a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc10nanosenderE" title="amongoc::nanosender"><span class="n"><span class="pre">nanosender</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE" title="amongoc::nanosender_traits&lt;result&lt;T, E&gt;&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nanosender_traits</span></span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE" title="amongoc::nanosender_traits&lt;result&lt;T, E&gt;&gt;::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE" title="amongoc::nanosender_traits&lt;result&lt;T, E&gt;&gt;::E"><span class="n"><span class="pre">E</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A specialization of <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc17nanosender_traitsE" title="amongoc::nanosender_traits"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::nanosender_traits</span></code></a> that allows a result to act
+as a nanosender if its success value type is itself a nanosender.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../coroutines/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Couroutines</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../queries/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Query Objects</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7amongoc6resultE"><code class="docutils literal notranslate"><span class="pre">result</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result12success_typeE"><code class="docutils literal notranslate"><span class="pre">success_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result10error_typeE"><code class="docutils literal notranslate"><span class="pre">error_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result6resultEv"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc6result6resultERR1U"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc6result6resultE11success_tagIDp4ArgsE"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc6result6resultE9error_tagIDp4ArgsE"><code class="docutils literal notranslate"><span class="pre">result()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc6result9has_valueEv"><code class="docutils literal notranslate"><span class="pre">has_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc6result9has_errorEv"><code class="docutils literal notranslate"><span class="pre">has_error()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result9error_tagEv"><code class="docutils literal notranslate"><span class="pre">error_tag()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result5valueEv"><code class="docutils literal notranslate"><span class="pre">value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6resultmlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc6result5errorEv"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc11success_tagE"><code class="docutils literal notranslate"><span class="pre">success_tag</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN7amongoc9error_tagE"><code class="docutils literal notranslate"><span class="pre">error_tag</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc7successEDpRRDa"><code class="docutils literal notranslate"><span class="pre">success()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc5errorEDpRRDa"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc12error_traitsE"><code class="docutils literal notranslate"><span class="pre">error_traits</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc12error_traits15throw_exceptionERK1E"><code class="docutils literal notranslate"><span class="pre">throw_exception()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#result-combinators-and-helpers"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result</span></code> Combinators and Helpers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc11result_fmapE"><code class="docutils literal notranslate"><span class="pre">result_fmap</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQNSt9invocableI1F1TEEEN7amongoc11result_fmapclE6resultINSt15invoke_result_tI1F1TEE1EE6resultI1T1EE"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN7amongoc11result_joinE6resultI1T1EE6resultI6resultI1T1EE1EE"><code class="docutils literal notranslate"><span class="pre">result_join()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EIQ10nanosenderI1TEEN7amongoc17nanosender_traitsI6resultI1T1EEEE"><code class="docutils literal notranslate"><span class="pre">nanosender_traits</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

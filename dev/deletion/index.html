@@ -1,0 +1,892 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>C Object Deletion &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/deletion';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Nanosenders" href="../nanosenders/" />
+    <link rel="prev" title="Development Guidelines" href="../guidelines/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/deletion.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>C Object Deletion</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#object-deletion-mechanism">Object Deletion Mechanism</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deletion-apis">Deletion APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib13delete_uniqueERDa"><code class="docutils literal notranslate"><span class="pre">delete_unique()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib16unique_deletableE"><code class="docutils literal notranslate"><span class="pre">unique_deletable</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib14unique_deleterE"><code class="docutils literal notranslate"><span class="pre">unique_deleter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14unique_deleterclER1T"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_DpDaEN4mlib14delete_membersE"><code class="docutils literal notranslate"><span class="pre">delete_members</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-simple-deletable-aggregate">Creating a simple deletable aggregate</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-custom-deletable-objects">Creating a Custom Deletable Objects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-unique-objects">Automatic Unique Objects</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4mlib6uniqueE"><code class="docutils literal notranslate"><span class="pre">unique</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueEv"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueERR1T"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueERR6unique"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniqueaSERR6unique"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO4mlib6unique7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique5resetERR1T"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniqueptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6uniqueptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniquemlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6uniquemlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6unique3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="c-object-deletion">
+<h1>C Object Deletion<a class="headerlink" href="#c-object-deletion" title="Link to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> contains several types, templates, and macros that aide in the
+automatic deletion of C objects. All objects should follow the given rules in
+order to ensure uniform deletion behavior across the codebase.</p>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-mlib-delete.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">mlib/delete.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-mlib-delete.h" title="Link to this definition">#</a></dt>
+<dd><p>This is a C-compatible header that is mostly useful for C++ code only.</p>
+</dd></dl>
+
+<section id="object-deletion-mechanism">
+<h2>Object Deletion Mechanism<a class="headerlink" href="#object-deletion-mechanism" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Any public C type that acts as an owner of resources, whether it is a pointer
+type or an aggregate type that contains resources, should have a
+specialization of <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a>. <strong>Note</strong> that explicit
+specialization is not usually necessary, and it will be done automatically
+when certain macros are used. Read below.</p></li>
+<li><p>A type that is deletable using <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> meets the
+<a class="reference internal" href="#_CPPv4I0EN4mlib16unique_deletableE" title="mlib::unique_deletable"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deletable</span></code></a> concept.</p></li>
+<li><p>For a type <span class="math notranslate nohighlight">\(T\)</span> which has subtle deletion behavior that is implemented as a
+hand-written C API function <span class="math notranslate nohighlight">\(F\)</span>, use <a class="reference internal" href="#c.mlib_assoc_deleter" title="mlib_assoc_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_assoc_deleter</span></code></a> to
+associate the function <span class="math notranslate nohighlight">\(F\)</span> with the type <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
+<li><p>For a simple struct type that contains resource-owning members which are
+themselves <a class="reference internal" href="#_CPPv4I0EN4mlib16unique_deletableE" title="mlib::unique_deletable"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deletable</span></code></a>, use
+<a class="reference internal" href="#c.mlib_declare_member_deleter" title="mlib_declare_member_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_declare_member_deleter</span></code></a> and use
+<a class="reference internal" href="#c.mlib_declare_c_deletion_function" title="mlib_declare_c_deletion_function"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_declare_c_deletion_function</span></code></a>.</p></li>
+<li><p><strong>Important</strong>: Ensure that trying to delete on a <a class="reference internal" href="../../ref/meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a> value of
+a type is well-defined (a-la calling <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">delete</span></code> on a null pointer, which
+is a safe no-op).</p></li>
+</ol>
+</section>
+<section id="deletion-apis">
+<h2>Deletion APIs<a class="headerlink" href="#deletion-apis" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib13delete_uniqueERDa">
+<span id="_CPPv3N4mlib13delete_uniqueERDa"></span><span id="_CPPv2N4mlib13delete_uniqueERDa"></span><span id="mlib::delete_unique__autoR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">delete_unique</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inst</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib13delete_uniqueERDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Delete the object <a class="reference internal" href="#_CPPv4N4mlib13delete_uniqueERDa" title="mlib::delete_unique::inst"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">inst</span></code></a> using the <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_deleter</span></code></a> mechanism. This function
+is only callable if such a specialization of <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_deleter</span></code></a> exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-delete.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/delete.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This is implemented as a stateless invocable object.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib16unique_deletableE">
+<span id="_CPPv3I0EN4mlib16unique_deletableE"></span><span id="_CPPv2I0EN4mlib16unique_deletableE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique_deletable</span></span></span><a class="headerlink" href="#_CPPv4I0EN4mlib16unique_deletableE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Matches any type that can be passed to <a class="reference internal" href="#_CPPv4N4mlib13delete_uniqueERDa" title="mlib::delete_unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">delete_unique()</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib14unique_deleterE">
+<span id="_CPPv3I0EN4mlib14unique_deleterE"></span><span id="_CPPv2I0EN4mlib14unique_deleterE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique_deleter</span></span></span><a class="headerlink" href="#_CPPv4I0EN4mlib14unique_deleterE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This struct template is used to determine how to automatically delete C objects
+of type <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>, including pointers and aggregates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-delete.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/delete.h</span></code></a></p>
+</dd>
+</dl>
+<p>This should <em>only</em> be used
+with types that are themselves trivially destructible. To delete a C object
+generically, use <a class="reference internal" href="#_CPPv4N4mlib13delete_uniqueERDa" title="mlib::delete_unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::delete_unique()</span></code></a>. Any specialization of <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_deleter</span></code></a>
+is treated as a stateless invocable object which must provide an <a class="reference internal" href="#_CPPv4NK4mlib14unique_deleterclER1T" title="mlib::unique_deleter::operator()"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">operator()()</span></code></a></p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib14unique_deleterclER1T">
+<span id="_CPPv3NK4mlib14unique_deleterclER1T"></span><span id="_CPPv2NK4mlib14unique_deleterclER1T"></span><span id="mlib::unique_deleter::call-operator__TRC"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inst</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK4mlib14unique_deleterclER1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Any specialization of <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">unique_deleter</span></code></a> must have a function call operation
+that performs the actual deletion operation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_DpDaEN4mlib14delete_membersE">
+<span id="_CPPv3I_DpDaEN4mlib14delete_membersE"></span><span id="_CPPv2I_DpDaEN4mlib14delete_membersE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">auto</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MemPointers</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">delete_members</span></span></span><a class="headerlink" href="#_CPPv4I_DpDaEN4mlib14delete_membersE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This struct template creates a deletion invocable that deletes the members of
+a struct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>MemPointers</strong> – Zero or more pointers-to-member-objects.</p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-mlib-delete.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/delete.h</span></code></a></p>
+</dd>
+</dl>
+<p>When this deletion object is invoked on an instance of a type, for each member
+in <a class="reference internal" href="#_CPPv4I_DpDaEN4mlib14delete_membersE" title="mlib::delete_members::MemPointers"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">MemPointers</span></code></a>, <a class="reference internal" href="#_CPPv4N4mlib13delete_uniqueERDa" title="mlib::delete_unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::delete_unique()</span></code></a> will be invoked on that instance’s
+member in the listed order.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Instead of using this directly, generate a specialization of it
+using the <a class="reference internal" href="#c.mlib_declare_member_deleter" title="mlib_declare_member_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_declare_member_deleter</span></code></a> macro within a struct body.</p>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_declare_member_deleter">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_declare_member_deleter</span></span></span><span class="sig-paren">(</span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_declare_member_deleter" title="Link to this definition">#</a><br /></dt>
+<dd><p>This variadic macro should appear within the body of a C struct, and each
+macro argument should be a pointer to a member of that struct.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-delete.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/delete.h</span></code></a></p>
+</dd>
+</dl>
+<p>When compiled as C, this expands to an empty declaration.</p>
+<p>When compiled as C++, this expands to a nested typedef <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">deleter</span></code> which is a
+specialization of <a class="reference internal" href="#_CPPv4I_DpDaEN4mlib14delete_membersE" title="mlib::delete_members"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::delete_members</span></code></a>. This will notify the
+<a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> mechanism that deletion of the object should
+recursively delete the identified struct members.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Don’t use this with <a class="reference internal" href="#c.mlib_assoc_deleter" title="mlib_assoc_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_assoc_deleter</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_declare_c_deletion_function">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_declare_c_deletion_function</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">FuncName</span></span>, <span class="n"><span class="pre">Type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_declare_c_deletion_function" title="Link to this definition">#</a><br /></dt>
+<dd><p>Declares and defines a <a class="reference internal" href="../../ref/glossary/#term-C-linkage"><span class="xref std std-term">C linkage</span></a> function named by <code class="docutils literal notranslate"><span class="pre">FuncName</span></code> that
+accepts a <code class="docutils literal notranslate"><span class="pre">Type</span></code> by-value.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Don’t use this with <a class="reference internal" href="#c.mlib_assoc_deleter" title="mlib_assoc_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_assoc_deleter</span></code></a></p>
+</div>
+<p>The body of that function will call <a class="reference internal" href="#_CPPv4N4mlib13delete_uniqueERDa" title="mlib::delete_unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::delete_unique()</span></code></a> with the instance of
+the value.</p>
+<p>When compiled as C, this expands to the forward declaration of the function.
+When compiled as C++, this expands to an inline definition of that function.
+The function must appear in at least one C++ <a class="reference internal" href="../../ref/glossary/#term-translation-unit"><span class="xref std std-term">translation unit</span></a> in order
+to emit this function’s definition.</p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.mlib_assoc_deleter">
+<span class="sig-name descname"><span class="n"><span class="pre">mlib_assoc_deleter</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Type</span></span>, <span class="n"><span class="pre">DeletionFunc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.mlib_assoc_deleter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a compile-time association between the given type and a C API deletion
+function. The function must be invocable with a modifiable lvalue of type
+<code class="docutils literal notranslate"><span class="pre">Type</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-delete.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/delete.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Don’t use this with <a class="reference internal" href="#c.mlib_declare_c_deletion_function" title="mlib_declare_c_deletion_function"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_declare_c_deletion_function</span></code></a></p>
+</div>
+<p>When compiled as C, this expands to an empty declaration.</p>
+<p>When compiled as C++, this expands to an explicit specialization of
+<a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> for the type <code class="docutils literal notranslate"><span class="pre">Type</span></code>, which will invoke
+<code class="docutils literal notranslate"><span class="pre">DeletionFunc</span></code> for that type.</p>
+<p>The expansion of this macro should always appear within any
+<a class="reference internal" href="../../ref/glossary/#term-translation-unit"><span class="xref std std-term">translation unit</span></a> that contains the definition of the associated type.</p>
+</dd></dl>
+
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">#</a></h2>
+<section id="creating-a-simple-deletable-aggregate">
+<h3>Creating a simple deletable aggregate<a class="headerlink" href="#creating-a-simple-deletable-aggregate" title="Link to this heading">#</a></h3>
+<p>If I have an aggregate type that I want to make deletable using the
+<a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> mechanism, that can be done as follows:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mlib/delete.h&gt;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">user_info</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">mlib_str</span><span class="w"> </span><span class="n">username</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">mlib_str</span><span class="w"> </span><span class="n">domain</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w">      </span><span class="n">uid</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// Declare the deletion mechanism:</span>
+<span class="w">  </span><span class="n">mlib_declare_member_deleter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">user_info</span><span class="o">::</span><span class="n">username</span><span class="p">,</span>
+<span class="w">                              </span><span class="o">&amp;</span><span class="n">user_info</span><span class="o">::</span><span class="n">domain</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="n">user_info</span><span class="p">;</span>
+
+<span class="c1">// Declare a C API function that invokes mlib::delete_unique</span>
+<span class="n">mlib_declare_c_deletion_function</span><span class="p">(</span><span class="n">user_info_delete</span><span class="p">,</span><span class="w"> </span><span class="n">user_info</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is C-compatible header content that declares a zero-initializable struct
+<code class="docutils literal notranslate"><span class="pre">user_info</span></code>, along with a C API function <code class="docutils literal notranslate"><span class="pre">user_info_delete</span></code> which takes an
+instance of <code class="docutils literal notranslate"><span class="pre">user_info</span></code> by-value and deletes the members of that object.</p>
+</section>
+<section id="creating-a-custom-deletable-objects">
+<h3>Creating a Custom Deletable Objects<a class="headerlink" href="#creating-a-custom-deletable-objects" title="Link to this heading">#</a></h3>
+<p>This example creates a type which is not simple to destroy, but we can still
+register it with the <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> mechanism:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mlib/delete.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mlib/alloc.h&gt;</span>
+
+<span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">buncha_numbers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="o">*</span><span class="w">           </span><span class="n">integers</span><span class="p">;</span>
+<span class="w">  </span><span class="n">mlib_allocator</span><span class="w"> </span><span class="n">alloc</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w">         </span><span class="n">n_numbers</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="n">buncha_numbers</span><span class="p">;</span>
+
+<span class="n">mlib_extern_c</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">buncha_numbers_delete</span><span class="p">(</span><span class="n">buncha_numbers</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">mlib_deallocate</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">alloc</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">integers</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="n">n_numbers</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Associate our deletion function with unique_deleter</span>
+<span class="n">mlib_assoc_deleter</span><span class="p">(</span><span class="n">buncha_numbers</span><span class="p">,</span><span class="w"> </span><span class="n">buncha_numbers_delete</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is a C-compatible interface that declares a type <code class="docutils literal notranslate"><span class="pre">buncha_numbers</span></code> and has
+a C function <code class="docutils literal notranslate"><span class="pre">buncha_numbers_delete</span></code>. Because of the API guarantees of
+<a class="reference internal" href="../../ref/alloc/#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a>, it is safe to call with a zero-initialized allocator as long
+as the pointer argument is also null.</p>
+<p>The expansion of <a class="reference internal" href="#c.mlib_assoc_deleter" title="mlib_assoc_deleter"><code class="xref c c-macro docutils literal notranslate"><span class="pre">mlib_assoc_deleter</span></code></a> will associate the C function
+<code class="docutils literal notranslate"><span class="pre">buncha_numbers_delete</span></code> with a <a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_deleter</span></code></a> specialization for the
+type <code class="docutils literal notranslate"><span class="pre">buncha_numbers</span></code></p>
+</section>
+</section>
+<section id="automatic-unique-objects">
+<h2>Automatic Unique Objects<a class="headerlink" href="#automatic-unique-objects" title="Link to this heading">#</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-mlib-unique.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">mlib/unique.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-mlib-unique.hpp" title="Link to this definition">#</a></dt>
+<dd><p>Declares the <a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique</span></code></a> class template</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN4mlib6uniqueE">
+<span id="_CPPv3I00EN4mlib6uniqueE"></span><span id="_CPPv2I00EN4mlib6uniqueE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Del</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4mlib14unique_deleterE" title="mlib::unique_deleter"><span class="n"><span class="pre">unique_deleter</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique</span></span></span><a class="headerlink" href="#_CPPv4I00EN4mlib6uniqueE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Automatically takes ownership of instances of <a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> using the given deleter.</p>
+<p>Use with CTAD is supported.</p>
+<p class="rubric">Example</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">mlib_str</span><span class="w"> </span><span class="n">makes_a_string</span><span class="p">();</span>
+<span class="k">extern</span><span class="w"> </span><span class="s">&quot;C&quot;</span><span class="w"> </span><span class="kt">void</span><span class="w">     </span><span class="n">takes_a_string</span><span class="p">(</span><span class="kt">mlib_str</span><span class="w"> </span><span class="n">s</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">cxx_function</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// The string returned by `makes_a_string` will be automatically destroyed</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">s1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mlib</span><span class="o">::</span><span class="n">unique</span><span class="p">(</span><span class="n">makes_a_string</span><span class="p">());</span>
+<span class="w">  </span><span class="c1">// Alternatively, with implicit conversion:</span>
+<span class="w">  </span><span class="n">mlib</span><span class="o">::</span><span class="n">unique</span><span class="w"> </span><span class="n">s2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">makes_a_string</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// We can pass the string along using release():</span>
+<span class="w">  </span><span class="n">takes_a_string</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">s2</span><span class="p">).</span><span class="n">release</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This type does not separately track whether is is moved-from or empty. It is
+up to the deleter to respect zero-initialized objects as being empty.</p>
+</div>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique6uniqueEv">
+<span id="_CPPv3N4mlib6unique6uniqueEv"></span><span id="_CPPv2N4mlib6unique6uniqueEv"></span><span id="mlib::unique::unique"></span><span class="sig-name descname"><span class="n"><span class="pre">unique</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique6uniqueEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Creates a <a class="reference internal" href="../../ref/meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a> instance of <a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique6uniqueERR1T">
+<span id="_CPPv3N4mlib6unique6uniqueERR1T"></span><span id="_CPPv2N4mlib6unique6uniqueERR1T"></span><span id="mlib::unique::unique__TRR"></span><span class="sig-name descname"><span class="n"><span class="pre">unique</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">inst</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique6uniqueERR1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Takes ownership of <a class="reference internal" href="#_CPPv4N4mlib6unique6uniqueERR1T" title="mlib::unique::unique::inst"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">inst</span></code></a>. <a class="reference internal" href="#_CPPv4N4mlib6unique6uniqueERR1T" title="mlib::unique::unique::inst"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">inst</span></code></a> will be reset to a <a class="reference internal" href="../../ref/meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a>
+value.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is an <em>implicit conversion</em> constructor.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique6uniqueERR6unique">
+<span id="_CPPv3N4mlib6unique6uniqueERR6unique"></span><span id="_CPPv2N4mlib6unique6uniqueERR6unique"></span><span id="mlib::unique::unique__uniqueRR"></span><span class="sig-name descname"><span class="n"><span class="pre">unique</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4mlib6unique6uniqueERR6unique" title="mlib::unique::unique"><span class="n"><span class="pre">unique</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique6uniqueERR6unique" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6uniqueaSERR6unique">
+<span id="_CPPv3N4mlib6uniqueaSERR6unique"></span><span id="_CPPv2N4mlib6uniqueaSERR6unique"></span><span id="mlib::unique::assign-operator__uniqueRR"></span><a class="reference internal" href="#_CPPv4N4mlib6unique6uniqueERR6unique" title="mlib::unique::unique"><span class="n"><span class="pre">unique</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4mlib6unique6uniqueERR6unique" title="mlib::unique::unique"><span class="n"><span class="pre">unique</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6uniqueaSERR6unique" title="Link to this definition">#</a><br /></dt>
+<dd><p>Move from another unique instance. Destroys the currently held object and
+calls <a class="reference internal" href="#_CPPv4NO4mlib6unique7releaseEv" title="mlib::unique::release"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">release()</span></code></a> on <a class="reference internal" href="#_CPPv4N4mlib6uniqueaSERR6unique" title="mlib::unique::operator=::other"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">other</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NO4mlib6unique7releaseEv">
+<span id="_CPPv3NO4mlib6unique7releaseEv"></span><span id="_CPPv2NO4mlib6unique7releaseEv"></span><span id="mlib::unique::releaseO"></span><span class="p"><span class="pre">[[</span></span><span class="pre">nodiscard</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">&amp;&amp;</span></span><a class="headerlink" href="#_CPPv4NO4mlib6unique7releaseEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Relinquish ownership of the held object. The current value is returned, and
+the held value is <a class="reference internal" href="../../ref/meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a>.</p>
+<p>This is r-value qualified to emphasize the ownership transfer.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique5resetEv">
+<span id="_CPPv3N4mlib6unique5resetEv"></span><span id="_CPPv2N4mlib6unique5resetEv"></span><span id="mlib::unique::reset"></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique5resetEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique5resetERR1T">
+<span id="_CPPv3N4mlib6unique5resetERR1T"></span><span id="_CPPv2N4mlib6unique5resetERR1T"></span><span id="mlib::unique::reset__TRR"></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">reset</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique5resetERR1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Destroy the held value and replace it with either a zero-initialized
+instance or the given <a class="reference internal" href="#_CPPv4N4mlib6unique5resetERR1T" title="mlib::unique::reset::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6uniqueptEv">
+<span id="_CPPv3N4mlib6uniqueptEv"></span><span id="_CPPv2N4mlib6uniqueptEv"></span><span id="mlib::unique::pointer-operator"></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6uniqueptEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib6uniqueptEv">
+<span id="_CPPv3NK4mlib6uniqueptEv"></span><span id="_CPPv2NK4mlib6uniqueptEv"></span><span id="mlib::unique::pointer-operatorC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib6uniqueptEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6uniquemlEv">
+<span id="_CPPv3N4mlib6uniquemlEv"></span><span id="_CPPv2N4mlib6uniquemlEv"></span><span id="mlib::unique::mul-operator"></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6uniquemlEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib6uniquemlEv">
+<span id="_CPPv3NK4mlib6uniquemlEv"></span><span id="_CPPv2NK4mlib6uniquemlEv"></span><span id="mlib::unique::mul-operatorC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib6uniquemlEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib6unique3getEv">
+<span id="_CPPv3N4mlib6unique3getEv"></span><span id="_CPPv2N4mlib6unique3getEv"></span><span id="mlib::unique::get"></span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib6unique3getEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib6unique3getEv">
+<span id="_CPPv3NK4mlib6unique3getEv"></span><span id="_CPPv2NK4mlib6unique3getEv"></span><span id="mlib::unique::getC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4mlib6uniqueE" title="mlib::unique::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">get</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib6unique3getEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain access to the wrapped object.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../guidelines/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Development Guidelines</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../nanosenders/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Nanosenders</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#object-deletion-mechanism">Object Deletion Mechanism</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deletion-apis">Deletion APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib13delete_uniqueERDa"><code class="docutils literal notranslate"><span class="pre">delete_unique()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib16unique_deletableE"><code class="docutils literal notranslate"><span class="pre">unique_deletable</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib14unique_deleterE"><code class="docutils literal notranslate"><span class="pre">unique_deleter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14unique_deleterclER1T"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_DpDaEN4mlib14delete_membersE"><code class="docutils literal notranslate"><span class="pre">delete_members</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-simple-deletable-aggregate">Creating a simple deletable aggregate</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-custom-deletable-objects">Creating a Custom Deletable Objects</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#automatic-unique-objects">Automatic Unique Objects</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4mlib6uniqueE"><code class="docutils literal notranslate"><span class="pre">unique</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueEv"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueERR1T"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique6uniqueERR6unique"><code class="docutils literal notranslate"><span class="pre">unique()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniqueaSERR6unique"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO4mlib6unique7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique5resetEv"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique5resetERR1T"><code class="docutils literal notranslate"><span class="pre">reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniqueptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6uniqueptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6uniquemlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6uniquemlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib6unique3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib6unique3getEv"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,994 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>BSON Iteration &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/bson/iter';</script>
+    <link rel="index" title="Index" href="../../../genindex/" />
+    <link rel="search" title="Search" href="../../../search/" />
+    <link rel="next" title="BSON Documents" href="../doc/" />
+    <link rel="prev" title="BSON Reading" href="../view/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../handler/">Handler APIs</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../">BSON Library</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../view/">BSON Reading</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../../_sources/ref/bson/iter.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>BSON Iteration</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratormlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratorptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13bson_iteratorppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratoreqEK13bson_iterator"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator5errorEv"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9has_errorEv"><code class="docutils literal notranslate"><span class="pre">has_error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9has_valueEv"><code class="docutils literal notranslate"><span class="pre">has_value()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator4stopEv"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator14throw_if_errorEv"><code class="docutils literal notranslate"><span class="pre">throw_if_error()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference4typeEv"><code class="docutils literal notranslate"><span class="pre">type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference3keyEv"><code class="docutils literal notranslate"><span class="pre">key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference5valueEv"><code class="docutils literal notranslate"><span class="pre">value()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_iter_errc"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc19bson_iter_errc_okayE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_okay</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc25bson_iter_errc_short_readE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_short_read</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc27bson_iter_errc_invalid_typeE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_invalid_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc29bson_iter_errc_invalid_lengthE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_invalid_length</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#document-iteration">Document Iteration</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_begin15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">bson_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_end15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">bson_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_next13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_next()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_stop13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_stop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423bson_iterator_get_error13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_find15__bson_viewable20__string_convertible"><code class="docutils literal notranslate"><span class="pre">bson_find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#looping">Looping</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-properties">Element Properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_key13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_key_eq13bson_iteratorDa"><code class="docutils literal notranslate"><span class="pre">bson_key_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_iterator_type13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_iterator_value13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_value()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_iterator_data13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-notes">Behavioral Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#errant-iterators">Errant Iterators</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="bson-iteration">
+<h1>BSON Iteration<a class="headerlink" href="#bson-iteration" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-bson-iterator.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">bson/iterator.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-bson-iterator.h" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using <a class="reference internal" href="#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::reference</span></code></a> in C++ and certain document decoding C APIs
+requires the inclusion of the <a class="reference internal" href="../view/#header-file-bson-view.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">bson/view.h</span></code></a>.</p>
+</div>
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv413bson_iterator">
+<span id="_CPPv313bson_iterator"></span><span id="_CPPv213bson_iterator"></span><span id="bson_iterator"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator</span></span></span><a class="headerlink" href="#_CPPv413bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>A BSON iterator is used to refer to elements and positions within a BSON
+document. It can be used to read elements from a <a class="reference internal" href="../view/#_CPPv49bson_view" title="bson_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view</span></code></a> or <a class="reference internal" href="../doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>,
+and is also used when modifying elements with <a class="reference internal" href="../mut/#_CPPv48bson_mut" title="bson_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_mut</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A zero-initialized <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> has no defined semantics
+and should not be used for any operations.</p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-bson-iterator.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">bson/iterator.h</span></code></a></p>
+</dd>
+</dl>
+<p>This type is fully trivial and is the size of two pointers.</p>
+<p>This struct also implements the C++ <a class="reference external" href="https://en.cppreference.com/w/cpp/iterator/forward_iterator" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code></a> concept.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iteratormlEv">
+<span id="_CPPv3NK13bson_iteratormlEv"></span><span id="_CPPv2NK13bson_iteratormlEv"></span><span id="bson_iterator::mul-operatorC"></span><a class="reference internal" href="#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iteratormlEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iteratorptEv">
+<span id="_CPPv3NK13bson_iteratorptEv"></span><span id="_CPPv2NK13bson_iteratorptEv"></span><span id="bson_iterator::pointer-operatorC"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">-&gt;</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iteratorptEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reference</span></code></a> to the element. This will <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">throw</span></code> an exception if
+the iterator is <a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">errant</span></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N13bson_iteratorppEv">
+<span id="_CPPv3N13bson_iteratorppEv"></span><span id="_CPPv2N13bson_iteratorppEv"></span><span id="bson_iterator::inc-operator"></span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N13bson_iteratorppEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iteratoreqEK13bson_iterator">
+<span id="_CPPv3NK13bson_iteratoreqEK13bson_iterator"></span><span id="_CPPv2NK13bson_iteratoreqEK13bson_iterator"></span><span id="bson_iterator::eq-operator__bson_iteratorCC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iteratoreqEK13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implements <a class="reference external" href="https://en.cppreference.com/w/cpp/iterator/forward_iterator" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::forward_iterator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv49bson_next13bson_iterator" title="bson_next"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_next()</span></code></a> and <a class="reference internal" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator" title="bson_iterator_eq"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_eq()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator5errorEv">
+<span id="_CPPv3NK13bson_iterator5errorEv"></span><span id="_CPPv2NK13bson_iterator5errorEv"></span><span id="bson_iterator::errorC"></span><a class="reference internal" href="#_CPPv414bson_iter_errc" title="bson_iter_errc"><span class="n"><span class="pre">bson_iter_errc</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator5errorEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator9has_errorEv">
+<span id="_CPPv3NK13bson_iterator9has_errorEv"></span><span id="_CPPv2NK13bson_iterator9has_errorEv"></span><span id="bson_iterator::has_errorC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator9has_errorEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator9has_valueEv">
+<span id="_CPPv3NK13bson_iterator9has_valueEv"></span><span id="_CPPv2NK13bson_iterator9has_valueEv"></span><span id="bson_iterator::has_valueC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator9has_valueEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv4NK13bson_iterator4stopEv" title="bson_iterator::stop"><span class="n">stop</span></a><span class="p">(</span><span class="p">)</span></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator4stopEv">
+<span id="_CPPv3NK13bson_iterator4stopEv"></span><span id="_CPPv2NK13bson_iterator4stopEv"></span><span id="bson_iterator::stopC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator4stopEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv49bson_stop13bson_iterator" title="bson_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_stop()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator4dataEv">
+<span id="_CPPv3NK13bson_iterator4dataEv"></span><span id="_CPPv2NK13bson_iterator4dataEv"></span><span id="bson_iterator::dataC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../view/#_CPPv49bson_byte" title="bson_byte"><span class="n"><span class="pre">bson_byte</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator4dataEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv418bson_iterator_data13bson_iterator" title="bson_iterator_data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_data()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator14throw_if_errorEv">
+<span id="_CPPv3NK13bson_iterator14throw_if_errorEv"></span><span id="_CPPv2NK13bson_iterator14throw_if_errorEv"></span><span id="bson_iterator::throw_if_errorC"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">throw_if_error</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator14throw_if_errorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>If <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4NK13bson_iterator9has_errorEv" title="bson_iterator::has_error"><span class="n">has_error</span></a><span class="p">(</span><span class="p">)</span></span>, throws an exception related to that error.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N13bson_iterator9referenceE">
+<span id="_CPPv3N13bson_iterator9referenceE"></span><span id="_CPPv2N13bson_iterator9referenceE"></span><span id="bson_iterator::reference"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><a class="headerlink" href="#_CPPv4N13bson_iterator9referenceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>(C++) Implements a proxy reference for the iterator for using with
+<a class="reference internal" href="#_CPPv4NK13bson_iteratormlEv" title="bson_iterator::operator*"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">operator*()</span></code></a> and <a class="reference internal" href="#_CPPv4NK13bson_iteratorptEv" title="bson_iterator::operator-&gt;"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a>. This class is used to access properties of the
+underlying element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../view/#header-file-bson-view.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">bson/view.h</span></code></a></p>
+</dd>
+</dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator9reference4typeEv">
+<span id="_CPPv3NK13bson_iterator9reference4typeEv"></span><span id="_CPPv2NK13bson_iterator9reference4typeEv"></span><span id="bson_iterator::reference::typeC"></span><a class="reference internal" href="../types/#_CPPv49bson_type" title="bson_type"><span class="n"><span class="pre">bson_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator9reference4typeEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator9reference3keyEv">
+<span id="_CPPv3NK13bson_iterator9reference3keyEv"></span><span id="_CPPv2NK13bson_iterator9reference3keyEv"></span><span id="bson_iterator::reference::keyC"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">key</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator9reference3keyEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK13bson_iterator9reference5valueEv">
+<span id="_CPPv3NK13bson_iterator9reference5valueEv"></span><span id="_CPPv2NK13bson_iterator9reference5valueEv"></span><span id="bson_iterator::reference::valueC"></span><a class="reference internal" href="../value/#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK13bson_iterator9reference5valueEv" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv48bson_key13bson_iterator" title="bson_key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_key()</span></code></a>, <a class="reference internal" href="#_CPPv418bson_iterator_type13bson_iterator" title="bson_iterator_type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_type()</span></code></a>, and <a class="reference internal" href="#_CPPv419bson_iterator_value13bson_iterator" title="bson_iterator_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_value()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv414bson_iter_errc">
+<span id="_CPPv314bson_iter_errc"></span><span id="_CPPv214bson_iter_errc"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iter_errc</span></span></span><a class="headerlink" href="#_CPPv414bson_iter_errc" title="Link to this definition">#</a><br /></dt>
+<dd><p>Error conditions that may occur during BSON iteration. See: <a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">Errant Iterators</span></a></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_iter_errc19bson_iter_errc_okayE">
+<span id="_CPPv3N14bson_iter_errc19bson_iter_errc_okayE"></span><span id="_CPPv2N14bson_iter_errc19bson_iter_errc_okayE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iter_errc_okay</span></span></span><a class="headerlink" href="#_CPPv4N14bson_iter_errc19bson_iter_errc_okayE" title="Link to this definition">#</a><br /></dt>
+<dd><p>No error condition.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_iter_errc25bson_iter_errc_short_readE">
+<span id="_CPPv3N14bson_iter_errc25bson_iter_errc_short_readE"></span><span id="_CPPv2N14bson_iter_errc25bson_iter_errc_short_readE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iter_errc_short_read</span></span></span><a class="headerlink" href="#_CPPv4N14bson_iter_errc25bson_iter_errc_short_readE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The document ended abruptly before being able to read another element.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_iter_errc27bson_iter_errc_invalid_typeE">
+<span id="_CPPv3N14bson_iter_errc27bson_iter_errc_invalid_typeE"></span><span id="_CPPv2N14bson_iter_errc27bson_iter_errc_invalid_typeE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iter_errc_invalid_type</span></span></span><a class="headerlink" href="#_CPPv4N14bson_iter_errc27bson_iter_errc_invalid_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>An invalid type tag was encountered, and iteration cannot decode the value.</p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N14bson_iter_errc29bson_iter_errc_invalid_lengthE">
+<span id="_CPPv3N14bson_iter_errc29bson_iter_errc_invalid_lengthE"></span><span id="_CPPv2N14bson_iter_errc29bson_iter_errc_invalid_lengthE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iter_errc_invalid_length</span></span></span><a class="headerlink" href="#_CPPv4N14bson_iter_errc29bson_iter_errc_invalid_lengthE" title="Link to this definition">#</a><br /></dt>
+<dd><p>An element declares itself to have a size that is too large to fit within
+the document which contains it.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<section id="document-iteration">
+<h3>Document Iteration<a class="headerlink" href="#document-iteration" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv410bson_begin15__bson_viewable">
+<span id="_CPPv310bson_begin15__bson_viewable"></span><span id="_CPPv210bson_begin15__bson_viewable"></span><span id="bson_begin____bson_viewable"></span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_begin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../view/#_CPPv415__bson_viewable" title="__bson_viewable"><span class="n"><span class="pre">__bson_viewable</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv410bson_begin15__bson_viewable" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv48bson_end15__bson_viewable">
+<span id="_CPPv38bson_end15__bson_viewable"></span><span id="_CPPv28bson_end15__bson_viewable"></span><span id="bson_end____bson_viewable"></span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_end</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../view/#_CPPv415__bson_viewable" title="__bson_viewable"><span class="n"><span class="pre">__bson_viewable</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48bson_end15__bson_viewable" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> referring to the beginning or end of the given BSON
+document, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Use the <code class="docutils literal notranslate"><span class="pre">begin()</span></code> and <code class="docutils literal notranslate"><span class="pre">end()</span></code> member function of the object <a class="reference internal" href="#_CPPv48bson_end15__bson_viewable" title="bson_end::B"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">B</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>B</strong> – A BSON document to be viewed. Passed through <a class="reference internal" href="../view/#_CPPv414bson_view_from15__bson_viewable" title="bson_view_from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view_from()</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> referring to the respective positions.</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><a class="reference internal" href="#_CPPv410bson_begin15__bson_viewable" title="bson_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_begin()</span></code></a> may return an <a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">errant iterator</span></a> if
+decoding the first element fails.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49bson_next13bson_iterator">
+<span id="_CPPv39bson_next13bson_iterator"></span><span id="_CPPv29bson_next13bson_iterator"></span><span id="bson_next__bson_iterator"></span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_next</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49bson_next13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> referring to the next element after <a class="reference internal" href="#_CPPv49bson_next13bson_iterator" title="bson_next::i"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">i</span></code></a>, or an
+<a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">errant iterator</span></a> if a parsing error occurs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N13bson_iteratorppEv" title="bson_iterator::operator++"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::operator++()</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>i</strong> – An iterator referring to some document. The iterator must refer to
+a valid element.</p>
+</dd>
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv49bson_stop13bson_iterator" title="bson_stop"><span class="n">bson_stop</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv49bson_next13bson_iterator" title="bson_next::i"><span class="n">i</span></a><span class="p">)</span></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv416bson_iterator_eq13bson_iterator13bson_iterator">
+<span id="_CPPv316bson_iterator_eq13bson_iterator13bson_iterator"></span><span id="_CPPv216bson_iterator_eq13bson_iterator13bson_iterator"></span><span id="bson_iterator_eq__bson_iterator.bson_iterator"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator_eq</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">b</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Determine whether the iterators <a class="reference internal" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator" title="bson_iterator_eq::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a> and <a class="reference internal" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator" title="bson_iterator_eq::b"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">b</span></code></a> refer to the same element within
+their respective document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4NK13bson_iteratoreqEK13bson_iterator" title="bson_iterator::operator=="><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::operator==()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49bson_stop13bson_iterator">
+<span id="_CPPv39bson_stop13bson_iterator"></span><span id="_CPPv29bson_stop13bson_iterator"></span><span id="bson_stop__bson_iterator"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_stop</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49bson_stop13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Determine whether the given iterator can be advanced further.</p>
+<p>This function will return <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> if <a class="reference internal" href="#_CPPv49bson_stop13bson_iterator" title="bson_stop::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a> is the end iterator <em>or</em> if <a class="reference internal" href="#_CPPv49bson_stop13bson_iterator" title="bson_stop::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a>
+has <a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">encountered a decoding error</span></a> while it was
+advanced.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv423bson_iterator_get_error13bson_iterator">
+<span id="_CPPv323bson_iterator_get_error13bson_iterator"></span><span id="_CPPv223bson_iterator_get_error13bson_iterator"></span><span id="bson_iterator_get_error__bson_iterator"></span><a class="reference internal" href="#_CPPv414bson_iter_errc" title="bson_iter_errc"><span class="n"><span class="pre">bson_iter_errc</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator_get_error</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the error condition for the given iterator. If the iterator is valid,
+returns <a class="reference internal" href="#_CPPv4N14bson_iter_errc19bson_iter_errc_okayE" title="bson_iter_errc::bson_iter_errc_okay"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iter_errc::bson_iter_errc_okay</span></code></a>. See: <a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">Errant Iterators</span></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv49bson_find15__bson_viewable20__string_convertible">
+<span id="_CPPv39bson_find15__bson_viewable20__string_convertible"></span><span id="_CPPv29bson_find15__bson_viewable20__string_convertible"></span><span id="bson_find____bson_viewable.__string_convertible"></span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_find</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../view/#_CPPv415__bson_viewable" title="__bson_viewable"><span class="n"><span class="pre">__bson_viewable</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">B</span></span>, <a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><span class="n"><span class="pre">__string_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">Key</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv49bson_find15__bson_viewable20__string_convertible" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a> referring to the first element within <code class="docutils literal notranslate"><span class="pre">B</span></code> that has
+the key <code class="docutils literal notranslate"><span class="pre">Key</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>B</strong> – A BSON document object, passed through <a class="reference internal" href="../view/#_CPPv414bson_view_from15__bson_viewable" title="bson_view_from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view_from()</span></code></a>.</p></li>
+<li><p><strong>Key</strong> – A key to search for. Passed through <a class="reference internal" href="../../str/#_CPPv418mlib_str_view_from20__string_convertible" title="mlib_str_view_from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view_from()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a>. If the expected key was found, returns an
+iterator referring to that element.</p>
+<p>If an error occured during iteration, the returned iterator will have an
+associated error (see: <a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a>).</p>
+<p>If the requested element was not found, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nf">bson_end</span><span class="p">(</span><span class="n">B</span><span class="p">)</span></code></p>
+</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<section id="looping">
+<h4>Looping<a class="headerlink" href="#looping" title="Link to this heading">#</a></h4>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.bson_foreach">
+<span class="sig-name descname"><span class="n"><span class="pre">bson_foreach</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IterName</span></span>, <span class="n"><span class="pre">Viewable</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.bson_foreach" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object c" id="c.bson_foreach_subrange">
+<span class="sig-name descname"><span class="n"><span class="pre">bson_foreach_subrange</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">IterName</span></span>, <span class="n"><span class="pre">FirstIter</span></span>, <span class="n"><span class="pre">LastIter</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.bson_foreach_subrange" title="Link to this definition">#</a><br /></dt>
+<dd><p>These macros allow the creation of control flow loops that iterate over the
+elements of a BSON document or array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>IterName</strong> – An identifier that will be the name of the <a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator</span></code></a>
+that will be in scope for the loop body.</p></li>
+<li><p><strong>Viewable</strong> – A BSON document object, passed through <a class="reference internal" href="../view/#_CPPv414bson_view_from15__bson_viewable" title="bson_view_from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view_from()</span></code></a></p></li>
+<li><p><strong>FirstIter</strong> – A first iterator to begin iteration.</p></li>
+<li><p><strong>LastIter</strong> – The iterator at which to stop the loop.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">bson_foreach</span><span class="p">(</span><span class="n">it</span><span class="p">,</span><span class="w"> </span><span class="n">my_doc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// loop body</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For every element in the document/range, an iterator (named by <code class="docutils literal notranslate"><span class="pre">IterName</span></code>)
+will point to that element. The created iterator is <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code>-qualified.
+If the document being inspected is modified during execution of the loop,
+the behavior is undefined.</p>
+<p class="rubric">Error Behavior</p>
+<p>If a call to <a class="reference internal" href="#_CPPv49bson_next13bson_iterator" title="bson_next"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_next()</span></code></a> results in an
+<a class="reference internal" href="#bson-iter-errant"><span class="std std-ref">errant iterator</span></a>, then the loop will be executed
+<em>once</em> using that errant iterator, and then the loop will stop on the next
+iteration. For this reason, it is important to check that the iterator is not
+errant (see <a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a>).</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="element-properties">
+<h3>Element Properties<a class="headerlink" href="#element-properties" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv48bson_key13bson_iterator">
+<span id="_CPPv38bson_key13bson_iterator"></span><span id="_CPPv28bson_key13bson_iterator"></span><span id="bson_key__bson_iterator"></span><a class="reference internal" href="../../str/#_CPPv413mlib_str_view" title="mlib_str_view"><span class="n"><span class="pre">mlib_str_view</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_key</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv48bson_key13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a string that views the key of the element referred-to by <a class="reference internal" href="#_CPPv48bson_key13bson_iterator" title="bson_key::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv49bson_stop13bson_iterator" title="bson_stop"><span class="n">bson_stop</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_key13bson_iterator" title="bson_key::it"><span class="n">it</span></a><span class="p">)</span></span>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411bson_key_eq13bson_iteratorDa">
+<span id="_CPPv311bson_key_eq13bson_iteratorDa"></span><span id="_CPPv211bson_key_eq13bson_iteratorDa"></span><span id="bson_key_eq__bson_iterator.auto"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_key_eq</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">K</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411bson_key_eq13bson_iteratorDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Test whether the <a class="reference internal" href="#_CPPv411bson_key_eq13bson_iteratorDa" title="bson_key_eq::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a> element key is equal to the given string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>it</strong> – The element to inspect.</p></li>
+<li><p><strong>K</strong> – A string to compare against. Passed through <a class="reference internal" href="../../str/#_CPPv418mlib_str_view_from20__string_convertible" title="mlib_str_view_from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view_from()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bson_iterator_type13bson_iterator">
+<span id="_CPPv318bson_iterator_type13bson_iterator"></span><span id="_CPPv218bson_iterator_type13bson_iterator"></span><span id="bson_iterator_type__bson_iterator"></span><a class="reference internal" href="../types/#_CPPv49bson_type" title="bson_type"><span class="n"><span class="pre">bson_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator_type</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bson_iterator_type13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Get the type of the element referred-to by <a class="reference internal" href="#_CPPv418bson_iterator_type13bson_iterator" title="bson_iterator_type::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><span class="n">bson_iterator_get_error</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv418bson_iterator_type13bson_iterator" title="bson_iterator_type::it"><span class="n">it</span></a><span class="p">)</span></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv419bson_iterator_value13bson_iterator">
+<span id="_CPPv319bson_iterator_value13bson_iterator"></span><span id="_CPPv219bson_iterator_value13bson_iterator"></span><span id="bson_iterator_value__bson_iterator"></span><a class="reference internal" href="../value/#_CPPv414bson_value_ref" title="bson_value_ref"><span class="n"><span class="pre">bson_value_ref</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator_value</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv419bson_iterator_value13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a <a class="reference internal" href="../value/#_CPPv414bson_value_ref" title="bson_value_ref"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value_ref</span></code></a> that views the element value referred-to by <a class="reference internal" href="#_CPPv419bson_iterator_value13bson_iterator" title="bson_iterator_value::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><span class="n">bson_iterator_get_error</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv419bson_iterator_value13bson_iterator" title="bson_iterator_value::it"><span class="n">it</span></a><span class="p">)</span></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv418bson_iterator_data13bson_iterator">
+<span id="_CPPv318bson_iterator_data13bson_iterator"></span><span id="_CPPv218bson_iterator_data13bson_iterator"></span><span id="bson_iterator_data__bson_iterator"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../view/#_CPPv49bson_byte" title="bson_byte"><span class="n"><span class="pre">bson_byte</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">bson_iterator_data</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">it</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418bson_iterator_data13bson_iterator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a pointer to the element data referred-to by <a class="reference internal" href="#_CPPv418bson_iterator_data13bson_iterator" title="bson_iterator_data::it"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">it</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Precondition<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="cpp-expr sig sig-inline cpp"><span class="k">not</span><span class="w"> </span><a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><span class="n">bson_iterator_get_error</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv418bson_iterator_data13bson_iterator" title="bson_iterator_data::it"><span class="n">it</span></a><span class="p">)</span></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="behavioral-notes">
+<h2>Behavioral Notes<a class="headerlink" href="#behavioral-notes" title="Link to this heading">#</a></h2>
+<section id="errant-iterators">
+<span id="bson-iter-errant"></span><h3>Errant Iterators<a class="headerlink" href="#errant-iterators" title="Link to this heading">#</a></h3>
+<p>BSON documents are validated on-the-fly as the iterator is advanced. If a parse
+error occurs during <a class="reference internal" href="#_CPPv49bson_next13bson_iterator" title="bson_next"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_next()</span></code></a> or <a class="reference internal" href="#_CPPv410bson_begin15__bson_viewable" title="bson_begin"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_begin()</span></code></a>, then an <em>errant iterator</em> will
+be created. Attempting to read from or advance an errant iterator will result in
+undefined behavior. In C++, the <a class="reference internal" href="#_CPPv4NK13bson_iteratormlEv" title="bson_iterator::operator*"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::operator*()</span></code></a> and
+<a class="reference internal" href="#_CPPv4NK13bson_iteratorptEv" title="bson_iterator::operator-&gt;"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::operator-&gt;()</span></code></a> will throw an exception if the iterator is errant.</p>
+<p>To test whether an iterator has an error, use <a class="reference internal" href="#_CPPv423bson_iterator_get_error13bson_iterator" title="bson_iterator_get_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a> (C) or
+<a class="reference internal" href="#_CPPv4NK13bson_iterator5errorEv" title="bson_iterator::error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::error()</span></code></a> (C++).</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../view/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">BSON Reading</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../doc/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">BSON Documents</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratormlEv"><code class="docutils literal notranslate"><span class="pre">operator*()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratorptEv"><code class="docutils literal notranslate"><span class="pre">operator-&gt;()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13bson_iteratorppEv"><code class="docutils literal notranslate"><span class="pre">operator++()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iteratoreqEK13bson_iterator"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator5errorEv"><code class="docutils literal notranslate"><span class="pre">error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9has_errorEv"><code class="docutils literal notranslate"><span class="pre">has_error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9has_valueEv"><code class="docutils literal notranslate"><span class="pre">has_value()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator4stopEv"><code class="docutils literal notranslate"><span class="pre">stop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator14throw_if_errorEv"><code class="docutils literal notranslate"><span class="pre">throw_if_error()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N13bson_iterator9referenceE"><code class="docutils literal notranslate"><span class="pre">reference</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference4typeEv"><code class="docutils literal notranslate"><span class="pre">type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference3keyEv"><code class="docutils literal notranslate"><span class="pre">key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK13bson_iterator9reference5valueEv"><code class="docutils literal notranslate"><span class="pre">value()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414bson_iter_errc"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc19bson_iter_errc_okayE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_okay</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc25bson_iter_errc_short_readE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_short_read</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc27bson_iter_errc_invalid_typeE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_invalid_type</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14bson_iter_errc29bson_iter_errc_invalid_lengthE"><code class="docutils literal notranslate"><span class="pre">bson_iter_errc_invalid_length</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#document-iteration">Document Iteration</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv410bson_begin15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">bson_begin()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_end15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">bson_end()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_next13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_next()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416bson_iterator_eq13bson_iterator13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_stop13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_stop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423bson_iterator_get_error13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_get_error()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv49bson_find15__bson_viewable20__string_convertible"><code class="docutils literal notranslate"><span class="pre">bson_find()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#looping">Looping</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#element-properties">Element Properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48bson_key13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_key()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411bson_key_eq13bson_iteratorDa"><code class="docutils literal notranslate"><span class="pre">bson_key_eq()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_iterator_type13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_iterator_value13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_value()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_iterator_data13bson_iterator"><code class="docutils literal notranslate"><span class="pre">bson_iterator_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#behavioral-notes">Behavioral Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#errant-iterators">Errant Iterators</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

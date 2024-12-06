@@ -1,0 +1,651 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Vector Types &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/vec';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Time Utilities" href="../time/" />
+    <link rel="prev" title="Strings &amp; String Views" href="../str/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/vec.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Vector Types</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec1TE"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec4sizeE"><code class="docutils literal notranslate"><span class="pre">size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec9allocatorE"><code class="docutils literal notranslate"><span class="pre">allocator</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414item_vec_begin8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_begin()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412item_vec_end8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_end()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417item_vec_max_sizev"><code class="docutils literal notranslate"><span class="pre">item_vec_max_size()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412item_vec_new14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414item_vec_new_n6size_tPb14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new_n()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415item_vec_delete8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_delete()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415item_vec_resizeP8item_vec6size_t"><code class="docutils literal notranslate"><span class="pre">item_vec_resize()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413item_vec_pushP8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_push()</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="vector-types">
+<h1>Vector Types<a class="headerlink" href="#vector-types" title="Link to this heading">#</a></h1>
+<p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> defines various dynamically-sized contiguous array types. These are
+stamped out from a template and all follow an identical API shape. These vector
+types are conventially named as <code class="docutils literal notranslate"><span class="pre">xyz_vec</span></code>, where <code class="docutils literal notranslate"><span class="pre">xyz</span></code> is the name of the
+element type.</p>
+<p>This page will document the vector type interface using a placeholder type
+<a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">item_vec::T</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The vector API template is contained in a publicly-visible header, but direct
+use of that header is an implementation detail.</p>
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv48item_vec">
+<span id="_CPPv38item_vec"></span><span id="_CPPv28item_vec"></span><span id="item_vec"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">zero_initializable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec</span></span></span><a class="headerlink" href="#_CPPv48item_vec" title="Link to this definition">#</a><br /></dt>
+<dd><p>A dynamically-sized contiguous array of objects of type <a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>. <strong>Note</strong> that
+the name <a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">item_vec</span></code></a> is a stand-in for an actual concrete vector type.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec1TE">
+<span id="_CPPv3N8item_vec1TE"></span><span id="_CPPv2N8item_vec1TE"></span><span id="item_vec::T"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><a class="headerlink" href="#_CPPv4N8item_vec1TE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The name “<a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>” herein acts as a stand-in for the type of the actual vector
+elements, which vary.</p>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> A zero-initialized vector is considered
+<em>null</em>, and holds no objects. Deleting a null vector is a no-op. A null
+vector cannot be resized: It must first be initialized using <a class="reference internal" href="#_CPPv412item_vec_new14mlib_allocator" title="item_vec_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">item_vec_new()</span></code></a>.</p>
+</dd>
+</dl>
+<p>A vector type will automatically call a pre-defined destructor function on
+the vector elements when it is resized or deleted.</p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec4dataE">
+<span id="_CPPv3N8item_vec4dataE"></span><span id="_CPPv2N8item_vec4dataE"></span><span id="item_vec::data__TP"></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N8item_vec4dataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A pointer to the first element of the contiguous array. The length of the
+pointed-to array is designated by <a class="reference internal" href="#_CPPv4N8item_vec4sizeE" title="item_vec::size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">size</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec4sizeE">
+<span id="_CPPv3N8item_vec4sizeE"></span><span id="_CPPv2N8item_vec4sizeE"></span><span id="item_vec::size__s"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><a class="headerlink" href="#_CPPv4N8item_vec4sizeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The length of the array pointed-to by <a class="reference internal" href="#_CPPv4N8item_vec4dataE" title="item_vec::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">data</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec9allocatorE">
+<span id="_CPPv3N8item_vec9allocatorE"></span><span id="_CPPv2N8item_vec9allocatorE"></span><span id="item_vec::allocator__mlib_allocator"></span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocator</span></span></span><a class="headerlink" href="#_CPPv4N8item_vec9allocatorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The dynamic memory allocator associated with this object.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec5beginEv">
+<span id="_CPPv3N8item_vec5beginEv"></span><span id="_CPPv2N8item_vec5beginEv"></span><span id="item_vec::begin"></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8item_vec5beginEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N8item_vec3endEv">
+<span id="_CPPv3N8item_vec3endEv"></span><span id="_CPPv2N8item_vec3endEv"></span><span id="item_vec::end"></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8item_vec3endEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Allows use as a C++ range</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414item_vec_begin8item_vec">
+<span id="_CPPv314item_vec_begin8item_vec"></span><span id="_CPPv214item_vec_begin8item_vec"></span><span id="item_vec_begin__item_vec"></span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_begin</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">vec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414item_vec_begin8item_vec" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412item_vec_end8item_vec">
+<span id="_CPPv312item_vec_end8item_vec"></span><span id="_CPPv212item_vec_end8item_vec"></span><span id="item_vec_end__item_vec"></span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_end</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">vec</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412item_vec_end8item_vec" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the begin/end pointers to the dynamically-sized array managed by <a class="reference internal" href="#_CPPv412item_vec_end8item_vec" title="item_vec_end::vec"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">vec</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv417item_vec_max_sizev">
+<span id="_CPPv317item_vec_max_sizev"></span><span id="_CPPv217item_vec_max_sizev"></span><span id="item_vec_max_size__void"></span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_max_size</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417item_vec_max_sizev" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the maximum number of objects that can be stored in an <a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">item_vec</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv412item_vec_new14mlib_allocator">
+<span id="_CPPv312item_vec_new14mlib_allocator"></span><span id="_CPPv212item_vec_new14mlib_allocator"></span><span id="item_vec_new__mlib_allocator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_new</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412item_vec_new14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv414item_vec_new_n6size_tPb14mlib_allocator">
+<span id="_CPPv314item_vec_new_n6size_tPb14mlib_allocator"></span><span id="_CPPv214item_vec_new_n6size_tPb14mlib_allocator"></span><span id="item_vec_new_n__s.bP.mlib_allocator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_new_n</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">alloc_okay</span></span>, <a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414item_vec_new_n6size_tPb14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a new vector of objects. <code class="docutils literal notranslate"><span class="pre">[[1]]</span></code> Creates a new empty vector.
+<code class="docutils literal notranslate"><span class="pre">[[2]]</span></code> is equivalent to calling <code class="docutils literal notranslate"><span class="pre">[[1]]</span></code> followed by an immediate
+<a class="reference internal" href="#_CPPv415item_vec_resizeP8item_vec6size_t" title="item_vec_resize"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">item_vec_resize()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – The number of objects to be created.</p></li>
+<li><p><strong>alloc_okay</strong> – A boolean that is set to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> when the function succeeds.
+A <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code> result indicates an allocation failure. This must not be null, as
+this is the only reliable way to detect allocation failures.</p></li>
+<li><p><strong>alloc</strong> – The allocator for the new vector.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415item_vec_delete8item_vec">
+<span id="_CPPv315item_vec_delete8item_vec"></span><span id="_CPPv215item_vec_delete8item_vec"></span><span id="item_vec_delete__item_vec"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_delete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">nullable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">self</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415item_vec_delete8item_vec" title="Link to this definition">#</a><br /></dt>
+<dd><p>Destroy all elements are release any store associated with <a class="reference internal" href="#_CPPv415item_vec_delete8item_vec" title="item_vec_delete::self"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">self</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv415item_vec_resizeP8item_vec6size_t">
+<span id="_CPPv315item_vec_resizeP8item_vec6size_t"></span><span id="_CPPv215item_vec_resizeP8item_vec6size_t"></span><span id="item_vec_resize__item_vecP.s"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_resize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">self</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415item_vec_resizeP8item_vec6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Resize the vector <a class="reference internal" href="#_CPPv415item_vec_resizeP8item_vec6size_t" title="item_vec_resize::self"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">self</span></code></a> to contain <a class="reference internal" href="#_CPPv415item_vec_resizeP8item_vec6size_t" title="item_vec_resize::count"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">count</span></code></a> items. Removed items are
+destroyed. Returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">true</span></code> on success, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="nb">false</span></code> if there was an
+allocation failure.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413item_vec_pushP8item_vec">
+<span id="_CPPv313item_vec_pushP8item_vec"></span><span id="_CPPv213item_vec_pushP8item_vec"></span><span id="item_vec_push__item_vecP"></span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8item_vec1TE" title="item_vec::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">item_vec_push</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv48item_vec" title="item_vec"><span class="n"><span class="pre">item_vec</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">self</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413item_vec_pushP8item_vec" title="Link to this definition">#</a><br /></dt>
+<dd><p>Append a new item to the end of the vector. Upon success, returns a pointer to
+the added object. If there is an allocation failure, then a null pointer is
+returned.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../str/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Strings &amp; String Views</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../time/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Time Utilities</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv48item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec1TE"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec4dataE"><code class="docutils literal notranslate"><span class="pre">data</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec4sizeE"><code class="docutils literal notranslate"><span class="pre">size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec9allocatorE"><code class="docutils literal notranslate"><span class="pre">allocator</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec5beginEv"><code class="docutils literal notranslate"><span class="pre">begin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8item_vec3endEv"><code class="docutils literal notranslate"><span class="pre">end()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414item_vec_begin8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_begin()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412item_vec_end8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_end()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417item_vec_max_sizev"><code class="docutils literal notranslate"><span class="pre">item_vec_max_size()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412item_vec_new14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414item_vec_new_n6size_tPb14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">item_vec_new_n()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415item_vec_delete8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_delete()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415item_vec_resizeP8item_vec6size_t"><code class="docutils literal notranslate"><span class="pre">item_vec_resize()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413item_vec_pushP8item_vec"><code class="docutils literal notranslate"><span class="pre">item_vec_push()</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

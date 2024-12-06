@@ -1,0 +1,946 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Connect to a Server &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/connect';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Creating Asynchronous Loops" href="../looping/" />
+    <link rel="prev" title="How-to Guides" href="../" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">How-to Guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/how-to/connect.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Connect to a Server</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#headers">Headers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line-arguments">Command-Line Arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-the-loop">Initializing the Loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declare-the-app-state">Declare the App State</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-client-with-a-timeout">Create a Client with a Timeout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attach-the-first-continuation">Attach the First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-first-continuation">The First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-second-continuation">The Second Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tie-the-final-result">Tie the Final Result</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-the-operation-run-the-loop-and-clean-up">Start the Operation, Run the Loop, and Clean Up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#print-the-final-result">Print the Final Result</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="connect-to-a-server">
+<h1>Connect to a Server<a class="headerlink" href="#connect-to-a-server" title="Link to this heading">#</a></h1>
+<p>This how-to guide will walk through the follow example program:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">connect.example.c</span></code></span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;amongoc/amongoc.h&gt;</span>
+<span class="linenos">  2</span>
+<span class="linenos">  3</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;bson/view.h&quot;</span>
+<span class="linenos">  4</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bson/iterator.h&gt;</span>
+<span class="linenos">  5</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bson/mut.h&gt;</span>
+<span class="linenos">  6</span>
+<span class="linenos">  7</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mlib/str.h&quot;</span>
+<span class="linenos">  8</span>
+<span class="linenos">  9</span><span class="cm">/**</span>
+<span class="linenos"> 10</span><span class="cm"> * @brief Shared state for the application. This is passed through the app as pointer stored</span>
+<span class="linenos"> 11</span><span class="cm"> * in a box</span>
+<span class="linenos"> 12</span><span class="cm"> */</span>
+<span class="linenos"> 13</span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">app_state</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 14</span><span class="w">    </span><span class="c1">// The connection to a server</span>
+<span class="linenos"> 15</span><span class="w">    </span><span class="kt">amongoc_client</span><span class="o">*</span><span class="w"> </span><span class="n">client</span><span class="p">;</span>
+<span class="linenos"> 16</span><span class="p">}</span><span class="w"> </span><span class="n">app_state</span><span class="p">;</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="cm">/**</span>
+<span class="linenos"> 19</span><span class="cm"> * @brief Write the content of a BSON document in JSON-like format to the given output</span>
+<span class="linenos"> 20</span><span class="cm"> */</span>
+<span class="linenos"> 21</span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">print_bson</span><span class="p">(</span><span class="kt">FILE</span><span class="o">*</span><span class="w"> </span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="kt">bson_view</span><span class="w"> </span><span class="n">doc</span><span class="p">,</span><span class="w"> </span><span class="kt">mlib_str_view</span><span class="w"> </span><span class="n">indent</span><span class="p">);</span>
+<span class="linenos"> 22</span>
+<span class="linenos"> 23</span><span class="cm">/** after_hello()</span>
+<span class="linenos"> 24</span><span class="cm"> * @brief Handle the `hello` response from the server</span>
+<span class="linenos"> 25</span><span class="cm"> *</span>
+<span class="linenos"> 26</span><span class="cm"> * @param state_ptr Pointer to the `app_state`</span>
+<span class="linenos"> 27</span><span class="cm"> * @param resp_data A `bson_mut` object that contains the response message</span>
+<span class="linenos"> 28</span><span class="cm"> * @return amongoc_box Returns `amongoc_nil`</span>
+<span class="linenos"> 29</span><span class="cm"> */</span>
+<span class="linenos"> 30</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">after_hello</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">resp_data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 31</span><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">state_ptr</span><span class="p">;</span>
+<span class="linenos"> 32</span><span class="w">    </span><span class="kt">bson_view</span><span class="w"> </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_view_from</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="kt">bson_doc</span><span class="p">,</span><span class="w"> </span><span class="n">resp_data</span><span class="p">));</span>
+<span class="linenos"> 33</span><span class="w">    </span><span class="c1">// Just print the response message</span>
+<span class="linenos"> 34</span><span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Got response: &quot;</span><span class="p">);</span>
+<span class="linenos"> 35</span><span class="w">    </span><span class="n">print_bson</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="n">resp</span><span class="p">,</span><span class="w"> </span><span class="nf">mlib_str_view_from</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">));</span>
+<span class="linenos"> 36</span><span class="w">    </span><span class="n">fputs</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stdout</span><span class="p">);</span>
+<span class="linenos"> 37</span><span class="w">    </span><span class="nf">amongoc_box_destroy</span><span class="p">(</span><span class="n">resp_data</span><span class="p">);</span>
+<span class="linenos"> 38</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="no">amongoc_nil</span><span class="p">;</span>
+<span class="linenos"> 39</span><span class="p">}</span>
+<span class="linenos"> 40</span><span class="c1">// end.</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span><span class="cm">/** after_connect_say_hello()</span>
+<span class="linenos"> 43</span><span class="cm"> * @brief Handle the connection to a server. Sends a &quot;hello&quot; message</span>
+<span class="linenos"> 44</span><span class="cm"> *</span>
+<span class="linenos"> 45</span><span class="cm"> * @param state_ptr Pointer to the `app_state`</span>
+<span class="linenos"> 46</span><span class="cm"> * @param cl_box An `amongoc_client*`</span>
+<span class="linenos"> 47</span><span class="cm"> * @return amongoc_emitter</span>
+<span class="linenos"> 48</span><span class="cm"> */</span>
+<span class="linenos"> 49</span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">after_connect_say_hello</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">cl_box</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 50</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connected to server</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos"> 51</span><span class="w">    </span><span class="c1">// Store the connection in our app state</span>
+<span class="linenos"> 52</span><span class="w">    </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="n">cl_box</span><span class="p">);</span>
+<span class="linenos"> 53</span>
+<span class="linenos"> 54</span><span class="w">    </span><span class="c1">// Create a &quot;hello&quot; command</span>
+<span class="linenos"> 55</span><span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+<span class="linenos"> 56</span><span class="w">    </span><span class="kt">bson_mut</span><span class="w"> </span><span class="n">mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_mutate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos"> 57</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="p">);</span>
+<span class="linenos"> 58</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$db&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">);</span>
+<span class="linenos"> 59</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_command</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span>
+<span class="linenos"> 60</span><span class="w">                                                </span><span class="nf">bson_view_from</span><span class="p">(</span><span class="n">mut</span><span class="p">));</span>
+<span class="linenos"> 61</span><span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_then</span><span class="p">(</span><span class="n">em</span><span class="p">,</span>
+<span class="linenos"> 64</span><span class="w">                      </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span>
+<span class="linenos"> 65</span><span class="w">                      </span><span class="no">mlib_default_allocator</span><span class="p">,</span>
+<span class="linenos"> 66</span><span class="w">                      </span><span class="n">state_ptr</span><span class="p">,</span>
+<span class="linenos"> 67</span><span class="w">                      </span><span class="n">after_hello</span><span class="p">);</span>
+<span class="linenos"> 68</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">em</span><span class="p">;</span>
+<span class="linenos"> 69</span><span class="p">}</span>
+<span class="linenos"> 70</span><span class="c1">// end.</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span><span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 73</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 74</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Usage: %s &lt;uri&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="linenos"> 75</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos"> 76</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos"> 77</span><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">uri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="linenos"> 78</span>
+<span class="linenos"> 79</span><span class="w">    </span><span class="kt">amongoc_loop</span><span class="w"> </span><span class="n">loop</span><span class="p">;</span>
+<span class="linenos"> 80</span><span class="w">    </span><span class="nf">amongoc_default_loop_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos"> 81</span>
+<span class="linenos"> 82</span><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">app_state</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="linenos"> 83</span>
+<span class="linenos"> 84</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">uri</span><span class="p">);</span>
+<span class="linenos"> 85</span><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">timespec</span><span class="w"> </span><span class="n">dur</span><span class="p">;</span>
+<span class="linenos"> 86</span><span class="w">    </span><span class="n">dur</span><span class="p">.</span><span class="n">tv_sec</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="linenos"> 87</span><span class="w">    </span><span class="n">dur</span><span class="p">.</span><span class="n">tv_nsec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos"> 88</span><span class="w">    </span><span class="n">em</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_timeout</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="n">dur</span><span class="p">);</span>
+<span class="linenos"> 89</span>
+<span class="linenos"> 90</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_let</span><span class="p">(</span><span class="n">em</span><span class="p">,</span>
+<span class="linenos"> 91</span><span class="w">                     </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span>
+<span class="linenos"> 92</span><span class="w">                     </span><span class="no">mlib_default_allocator</span><span class="p">,</span>
+<span class="linenos"> 93</span><span class="w">                     </span><span class="nf">amongoc_box_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">state</span><span class="p">),</span>
+<span class="linenos"> 94</span><span class="w">                     </span><span class="n">after_connect_say_hello</span><span class="p">);</span>
+<span class="linenos"> 95</span>
+<span class="linenos"> 96</span><span class="w">    </span><span class="kt">amongoc_status</span><span class="w">    </span><span class="n">fin_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">amongoc_okay</span><span class="p">;</span>
+<span class="linenos"> 97</span><span class="w">    </span><span class="kt">amongoc_operation</span><span class="w"> </span><span class="n">op</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_tie</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fin_status</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="no">mlib_default_allocator</span><span class="p">);</span>
+<span class="linenos"> 98</span><span class="w">    </span><span class="nf">amongoc_start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos"> 99</span><span class="w">    </span><span class="nf">amongoc_default_loop_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">100</span><span class="w">    </span><span class="nf">amongoc_operation_delete</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span><span class="w">    </span><span class="c1">// Destroy the connection since we are done with it (this is a no-op for a null connection)</span>
+<span class="linenos">103</span><span class="w">    </span><span class="nf">amongoc_client_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">104</span><span class="w">    </span><span class="nf">amongoc_default_loop_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">amongoc_is_error</span><span class="p">(</span><span class="n">fin_status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">107</span><span class="w">        </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_status_strdup_message</span><span class="p">(</span><span class="n">fin_status</span><span class="p">);</span>
+<span class="linenos">108</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;An error occurred: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">);</span>
+<span class="linenos">109</span><span class="w">        </span><span class="n">free</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="linenos">110</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="linenos">111</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">112</span><span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Okay</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">113</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">114</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">115</span><span class="p">}</span>
+<span class="linenos">116</span><span class="c1">// end.</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">print_bson</span><span class="p">(</span><span class="kt">FILE</span><span class="o">*</span><span class="w"> </span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="kt">bson_view</span><span class="w"> </span><span class="n">doc</span><span class="p">,</span><span class="w"> </span><span class="kt">mlib_str_view</span><span class="w"> </span><span class="n">indent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">119</span><span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;{</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">120</span><span class="w">    </span><span class="k">bson_foreach</span><span class="p">(</span><span class="n">it</span><span class="p">,</span><span class="w"> </span><span class="n">doc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">121</span><span class="w">        </span><span class="kt">mlib_str_view</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_key</span><span class="p">(</span><span class="n">it</span><span class="p">);</span>
+<span class="linenos">122</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%*s  </span><span class="se">\&quot;</span><span class="s">%s</span><span class="se">\&quot;</span><span class="s">: &quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">indent</span><span class="p">.</span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="p">.</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="n">str</span><span class="p">.</span><span class="n">data</span><span class="p">);</span>
+<span class="linenos">123</span><span class="w">        </span><span class="kt">bson_value_ref</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_iterator_value</span><span class="p">(</span><span class="n">it</span><span class="p">);</span>
+<span class="linenos">124</span><span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="p">.</span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">125</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_eod</span><span class="p">:</span>
+<span class="linenos">126</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_double</span><span class="p">:</span>
+<span class="linenos">127</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%f,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">double_</span><span class="p">);</span>
+<span class="linenos">128</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">129</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_utf8</span><span class="p">:</span>
+<span class="linenos">130</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">%s</span><span class="se">\&quot;</span><span class="s">,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">utf8</span><span class="p">.</span><span class="n">data</span><span class="p">);</span>
+<span class="linenos">131</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">132</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_document</span><span class="p">:</span>
+<span class="linenos">133</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_array</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">134</span><span class="w">            </span><span class="kt">mlib_str</span><span class="w">  </span><span class="n">i2</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="nf">mlib_str_append</span><span class="p">(</span><span class="n">indent</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="p">);</span>
+<span class="linenos">135</span><span class="w">            </span><span class="kt">bson_view</span><span class="w"> </span><span class="n">subdoc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_iterator_value</span><span class="p">(</span><span class="n">it</span><span class="p">).</span><span class="n">document</span><span class="p">;</span>
+<span class="linenos">136</span><span class="w">            </span><span class="n">print_bson</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="n">subdoc</span><span class="p">,</span><span class="w"> </span><span class="nf">mlib_str_view_from</span><span class="p">(</span><span class="n">i2</span><span class="p">));</span>
+<span class="linenos">137</span><span class="w">            </span><span class="nf">mlib_str_delete</span><span class="p">(</span><span class="n">i2</span><span class="p">);</span>
+<span class="linenos">138</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">139</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">140</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">141</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_undefined</span><span class="p">:</span>
+<span class="linenos">142</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[undefined],</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">143</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">144</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_bool</span><span class="p">:</span>
+<span class="linenos">145</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">bool_</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;true,</span><span class="se">\n</span><span class="s">&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;false,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">146</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">147</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_null</span><span class="p">:</span>
+<span class="linenos">148</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;null,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">149</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">150</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_int32</span><span class="p">:</span>
+<span class="linenos">151</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%d,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">int32</span><span class="p">);</span>
+<span class="linenos">152</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">153</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_int64</span><span class="p">:</span>
+<span class="linenos">154</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%ld,</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">.</span><span class="n">int64</span><span class="p">);</span>
+<span class="linenos">155</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">156</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_timestamp</span><span class="p">:</span>
+<span class="linenos">157</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_decimal128</span><span class="p">:</span>
+<span class="linenos">158</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_maxkey</span><span class="p">:</span>
+<span class="linenos">159</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_minkey</span><span class="p">:</span>
+<span class="linenos">160</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_oid</span><span class="p">:</span>
+<span class="linenos">161</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_binary</span><span class="p">:</span>
+<span class="linenos">162</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_datetime</span><span class="p">:</span>
+<span class="linenos">163</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_regex</span><span class="p">:</span>
+<span class="linenos">164</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_dbpointer</span><span class="p">:</span>
+<span class="linenos">165</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_code</span><span class="p">:</span>
+<span class="linenos">166</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_symbol</span><span class="p">:</span>
+<span class="linenos">167</span><span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="no">bson_type_codewscope</span><span class="p">:</span>
+<span class="linenos">168</span><span class="w">            </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;[[printing unimplemented for this type]],</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">169</span><span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="linenos">170</span><span class="w">        </span><span class="p">}</span>
+<span class="linenos">171</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">172</span><span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">into</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;%*s}&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">indent</span><span class="p">.</span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="p">.</span><span class="n">data</span><span class="p">);</span>
+<span class="linenos">173</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<section id="headers">
+<h2>Headers<a class="headerlink" href="#headers" title="Link to this heading">#</a></h2>
+<p>We first include the “everything” library header:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Header file inclusions</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;amongoc/amongoc.h&gt;</span>
+</pre></div>
+</div>
+</div>
+<p>This will make all public APIs visible. Individual APIs can be included on a
+header-by-header basis. Refer to the documentation on a component to learn what
+header contains it.</p>
+</section>
+<section id="command-line-arguments">
+<h2>Command-Line Arguments<a class="headerlink" href="#command-line-arguments" title="Link to this heading">#</a></h2>
+<p>The first action we perform in <code class="docutils literal notranslate"><span class="pre">main()</span></code> is checking our arguments:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Argument checking</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">72</span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">73</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">argc</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">74</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Usage: %s &lt;uri&gt;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="linenos">75</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">76</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">77</span><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">uri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</pre></div>
+</div>
+</div>
+<p>We will use <code class="docutils literal notranslate"><span class="pre">argv[1]</span></code> as the connection URI string.</p>
+</section>
+<section id="initializing-the-loop">
+<h2>Initializing the Loop<a class="headerlink" href="#initializing-the-loop" title="Link to this heading">#</a></h2>
+<p>The first “interesting” code will declare and initialize the default event loop:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">79</span><span class="w">    </span><span class="kt">amongoc_loop</span><span class="w"> </span><span class="n">loop</span><span class="p">;</span>
+<span class="linenos">80</span><span class="w">    </span><span class="nf">amongoc_default_loop_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../../ref/loop/#_CPPv412amongoc_loop" title="amongoc_loop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a> and <a class="reference internal" href="../../ref/loop/#_CPPv425amongoc_default_loop_initP12amongoc_loop" title="amongoc_default_loop_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_default_loop_init()</span></code></a></p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is possible to provide your own event loop implementation, but that is out
+of scope for this page.</p>
+</div>
+</section>
+<section id="declare-the-app-state">
+<h2>Declare the App State<a class="headerlink" href="#declare-the-app-state" title="Link to this heading">#</a></h2>
+<p>We use a type <code class="docutils literal notranslate"><span class="pre">app_state</span></code> to store some state that is shared across the
+application:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">13</span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">app_state</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">14</span><span class="w">    </span><span class="c1">// The connection to a server</span>
+<span class="linenos">15</span><span class="w">    </span><span class="kt">amongoc_client</span><span class="o">*</span><span class="w"> </span><span class="n">client</span><span class="p">;</span>
+<span class="linenos">16</span><span class="p">}</span><span class="w"> </span><span class="n">app_state</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This state needs to be stored in a way that it outlives the scope of each
+sub-operation in the program. For this reason, we declare the instance in
+<code class="docutils literal notranslate"><span class="pre">main()</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">82</span><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">app_state</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</pre></div>
+</div>
+<p>This will zero-initialize the contents of the struct. This is important so that
+the declared <a class="reference internal" href="../../ref/client/#_CPPv414amongoc_client" title="amongoc_client"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client</span></code></a> object is also null, ensuring that the later call
+to <a class="reference internal" href="../../ref/client/#_CPPv421amongoc_client_deleteP14amongoc_client" title="amongoc_client_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_delete()</span></code></a> will be a no-op if that field is never initialized.</p>
+<p>We will pass the state around by-reference in a box using <a class="reference internal" href="../../ref/box/#_CPPv419amongoc_box_pointerPKv" title="amongoc_box_pointer"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_pointer()</span></code></a>.</p>
+</section>
+<section id="create-a-client-with-a-timeout">
+<h2>Create a Client with a Timeout<a class="headerlink" href="#create-a-client-with-a-timeout" title="Link to this heading">#</a></h2>
+<p>We create a connect operation using <a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a>, and then attach a
+timeout using <a class="reference internal" href="../../ref/async/#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec" title="amongoc_timeout"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a></p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">84</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">uri</span><span class="p">);</span>
+<span class="linenos">85</span><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">timespec</span><span class="w"> </span><span class="n">dur</span><span class="p">;</span>
+<span class="linenos">86</span><span class="w">    </span><span class="n">dur</span><span class="p">.</span><span class="n">tv_sec</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="linenos">87</span><span class="w">    </span><span class="n">dur</span><span class="p">.</span><span class="n">tv_nsec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">88</span><span class="w">    </span><span class="n">em</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_timeout</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="n">dur</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We pass the emitter <code class="docutils literal notranslate"><span class="pre">em</span></code> to <a class="reference internal" href="../../ref/async/#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec" title="amongoc_timeout"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a> on the same line as as
+overwriting it with the return value. This emitter-exchange pattern is common
+and preferred for building composed asynchronous operations.</p>
+</section>
+<section id="attach-the-first-continuation">
+<h2>Attach the First Continuation<a class="headerlink" href="#attach-the-first-continuation" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">90</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_let</span><span class="p">(</span><span class="n">em</span><span class="p">,</span>
+<span class="linenos">91</span><span class="w">                     </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span>
+<span class="linenos">92</span><span class="w">                     </span><span class="no">mlib_default_allocator</span><span class="p">,</span>
+<span class="linenos">93</span><span class="w">                     </span><span class="nf">amongoc_box_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">state</span><span class="p">),</span>
+<span class="linenos">94</span><span class="w">                     </span><span class="n">after_connect_say_hello</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> function will attach a continuation to an operation in a way
+that lets us initiate a subsequent operation. We use
+<a class="reference internal" href="../../ref/async/#_CPPv4N19amongoc_async_flags28amongoc_async_forward_errorsE" title="amongoc_async_forward_errors"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_async_forward_errors</span></code></a> to tell <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> that it should call our
+continuation <em>only</em> if the input operation resolves with a non-error status. If
+<a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a> fails with an error (including a timeout), then
+<code class="docutils literal notranslate"><span class="pre">after_connect_say_hello</span></code> will not be called, and the errant result will
+simply be passed to the next step in the chain.</p>
+</section>
+<section id="the-first-continuation">
+<h2>The First Continuation<a class="headerlink" href="#the-first-continuation" title="Link to this heading">#</a></h2>
+<p>The first step, after connecting to a server, is <code class="docutils literal notranslate"><span class="pre">after_connect_say_hello</span></code>, a
+continuation function given to <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">42</span><span class="cm">/** after_connect_say_hello()</span>
+<span class="linenos">43</span><span class="cm"> * @brief Handle the connection to a server. Sends a &quot;hello&quot; message</span>
+<span class="linenos">44</span><span class="cm"> *</span>
+<span class="linenos">45</span><span class="cm"> * @param state_ptr Pointer to the `app_state`</span>
+<span class="linenos">46</span><span class="cm"> * @param cl_box An `amongoc_client*`</span>
+<span class="linenos">47</span><span class="cm"> * @return amongoc_emitter</span>
+<span class="linenos">48</span><span class="cm"> */</span>
+<span class="linenos">49</span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">after_connect_say_hello</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">cl_box</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> parameter is unused: Because we passed
+<a class="reference internal" href="../../ref/async/#_CPPv4N19amongoc_async_flags28amongoc_async_forward_errorsE" title="amongoc_async_forward_errors"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_async_forward_errors</span></code></a> in <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, our continuation will only be
+called if the <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> would be zero, so there is no need to check it.</p>
+<p class="rubric">Capture the Client</p>
+<p>Upon success, the operation from <a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a> will resolve with an
+<a class="reference internal" href="../../ref/client/#_CPPv414amongoc_client" title="amongoc_client"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client</span></code></a> in its boxed result value. We move the connection by-value
+from the box and store it in our application state:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">49</span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">after_connect_say_hello</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">cl_box</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">50</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Connected to server</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">51</span><span class="w">    </span><span class="c1">// Store the connection in our app state</span>
+<span class="linenos">52</span><span class="w">    </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="n">cl_box</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_takeDa11amongoc_box" title="amongoc_box_take"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_take()</span></code></a> macro is used to transfer the ownership from a
+type-erased <a class="reference internal" href="../../ref/box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> into a typed storage for the object that it holds. The
+object that was owned by the box is now owned by the storage destination.</p>
+<p class="rubric">Build and Prepare a Command</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">54</span><span class="w">    </span><span class="c1">// Create a &quot;hello&quot; command</span>
+<span class="linenos">55</span><span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+<span class="linenos">56</span><span class="w">    </span><span class="kt">bson_mut</span><span class="w"> </span><span class="n">mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_mutate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">57</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="p">);</span>
+<span class="linenos">58</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;$db&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test&quot;</span><span class="p">);</span>
+<span class="linenos">59</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_command</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span>
+<span class="linenos">60</span><span class="w">                                                </span><span class="nf">bson_view_from</span><span class="p">(</span><span class="n">mut</span><span class="p">));</span>
+<span class="linenos">61</span><span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We build a MongoDB command <code class="docutils literal notranslate"><span class="pre">{</span> <span class="pre">hello:</span> <span class="pre">&quot;1&quot;,</span> <span class="pre">$db:</span> <span class="pre">&quot;test&quot;</span> <span class="pre">}</span></code> and prepare to send
+it as a command with <a class="reference internal" href="../../ref/client/#_CPPv422amongoc_client_commandP14amongoc_client9bson_view" title="amongoc_client_command"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_command()</span></code></a>. We can delete the prepared BSON
+document here as a copy of the data is now stored within the prepared operation
+in <code class="docutils literal notranslate"><span class="pre">em</span></code>.</p>
+<p class="rubric">Attach the Second Continuation</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">63</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_then</span><span class="p">(</span><span class="n">em</span><span class="p">,</span>
+<span class="linenos">64</span><span class="w">                      </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span>
+<span class="linenos">65</span><span class="w">                      </span><span class="no">mlib_default_allocator</span><span class="p">,</span>
+<span class="linenos">66</span><span class="w">                      </span><span class="n">state_ptr</span><span class="p">,</span>
+<span class="linenos">67</span><span class="w">                      </span><span class="n">after_hello</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We set the next step in the process to call <code class="docutils literal notranslate"><span class="pre">after_hello</span></code> once the command has
+completed. We use <a class="reference internal" href="../../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> instead of <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, because
+<code class="docutils literal notranslate"><span class="pre">after_hello</span></code> does not return a new operation to continue, just a new result
+value.</p>
+<p>The <a class="reference internal" href="../../ref/async/#_CPPv4N19amongoc_async_flags28amongoc_async_forward_errorsE" title="amongoc_async_forward_errors"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_async_forward_errors</span></code></a> flag tells <a class="reference internal" href="../../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> to <em>not</em> call
+<code class="docutils literal notranslate"><span class="pre">after_hello</span></code> if the operation enounters an error, and will instead forward
+the error to the next operation in the chain.</p>
+</section>
+<section id="the-second-continuation">
+<h2>The Second Continuation<a class="headerlink" href="#the-second-continuation" title="Link to this heading">#</a></h2>
+<p>The second continuation after we receive a response from the server is very
+simple:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">23</span><span class="cm">/** after_hello()</span>
+<span class="linenos">24</span><span class="cm"> * @brief Handle the `hello` response from the server</span>
+<span class="linenos">25</span><span class="cm"> *</span>
+<span class="linenos">26</span><span class="cm"> * @param state_ptr Pointer to the `app_state`</span>
+<span class="linenos">27</span><span class="cm"> * @param resp_data A `bson_mut` object that contains the response message</span>
+<span class="linenos">28</span><span class="cm"> * @return amongoc_box Returns `amongoc_nil`</span>
+<span class="linenos">29</span><span class="cm"> */</span>
+<span class="linenos">30</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">after_hello</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">resp_data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">31</span><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">state_ptr</span><span class="p">;</span>
+<span class="linenos">32</span><span class="w">    </span><span class="kt">bson_view</span><span class="w"> </span><span class="n">resp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_view_from</span><span class="p">(</span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="kt">bson_doc</span><span class="p">,</span><span class="w"> </span><span class="n">resp_data</span><span class="p">));</span>
+<span class="linenos">33</span><span class="w">    </span><span class="c1">// Just print the response message</span>
+<span class="linenos">34</span><span class="w">    </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Got response: &quot;</span><span class="p">);</span>
+<span class="linenos">35</span><span class="w">    </span><span class="n">print_bson</span><span class="p">(</span><span class="n">stdout</span><span class="p">,</span><span class="w"> </span><span class="n">resp</span><span class="p">,</span><span class="w"> </span><span class="nf">mlib_str_view_from</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">));</span>
+<span class="linenos">36</span><span class="w">    </span><span class="n">fputs</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">stdout</span><span class="p">);</span>
+<span class="linenos">37</span><span class="w">    </span><span class="nf">amongoc_box_destroy</span><span class="p">(</span><span class="n">resp_data</span><span class="p">);</span>
+<span class="linenos">38</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="no">amongoc_nil</span><span class="p">;</span>
+<span class="linenos">39</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>We simply extract a <a class="reference internal" href="../../ref/bson/view/#_CPPv49bson_view" title="bson_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view</span></code></a> of the response data from the <code class="docutils literal notranslate"><span class="pre">resp_data</span></code> box
+that was provided by <a class="reference internal" href="../../ref/client/#_CPPv422amongoc_client_commandP14amongoc_client9bson_view" title="amongoc_client_command"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_command()</span></code></a> and print it to standard output.
+After we finish printing it, we destroy the data and return <a class="reference internal" href="../../ref/box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>. This
+is the final value for the program.</p>
+</section>
+<section id="tie-the-final-result">
+<h2>Tie the Final Result<a class="headerlink" href="#tie-the-final-result" title="Link to this heading">#</a></h2>
+<p>Going back to <code class="docutils literal notranslate"><span class="pre">main()</span></code>, after our call to <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> in which we attached
+the first continuation, we use <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a> to convert the emitter to an
+<a class="reference internal" href="../../ref/operation/#_CPPv417amongoc_operation" title="amongoc_operation"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_operation</span></code></a>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">96</span><span class="w">    </span><span class="kt">amongoc_status</span><span class="w">    </span><span class="n">fin_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">amongoc_okay</span><span class="p">;</span>
+<span class="linenos">97</span><span class="w">    </span><span class="kt">amongoc_operation</span><span class="w"> </span><span class="n">op</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_tie</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">fin_status</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="no">mlib_default_allocator</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This will allow us to see the final result status of the program in
+<code class="docutils literal notranslate"><span class="pre">fin_status</span></code> after the returned operation <code class="docutils literal notranslate"><span class="pre">op</span></code> completes. We pass <code class="docutils literal notranslate"><span class="pre">NULL</span></code>
+for the <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie::value</span></code></a> parameter, indicating that we do not care what the
+final result value will be (in a successful case, this would just be the
+<a class="reference internal" href="../../ref/box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a> returned from <code class="docutils literal notranslate"><span class="pre">after_hello</span></code>).</p>
+</section>
+<section id="start-the-operation-run-the-loop-and-clean-up">
+<h2>Start the Operation, Run the Loop, and Clean Up<a class="headerlink" href="#start-the-operation-run-the-loop-and-clean-up" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 98</span><span class="w">    </span><span class="nf">amongoc_start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos"> 99</span><span class="w">    </span><span class="nf">amongoc_default_loop_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">100</span><span class="w">    </span><span class="nf">amongoc_operation_delete</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">101</span>
+<span class="linenos">102</span><span class="w">    </span><span class="c1">// Destroy the connection since we are done with it (this is a no-op for a null connection)</span>
+<span class="linenos">103</span><span class="w">    </span><span class="nf">amongoc_client_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">104</span><span class="w">    </span><span class="nf">amongoc_default_loop_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>We now launch the composed operation using <a class="reference internal" href="../../ref/operation/#_CPPv413amongoc_startP17amongoc_operation" title="amongoc_start"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_start()</span></code></a>. This will enqueue
+work on the event loop. We then give the event loop control to run the program
+using <a class="reference internal" href="../../ref/loop/#_CPPv424amongoc_default_loop_runP12amongoc_loop" title="amongoc_default_loop_run"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_default_loop_run()</span></code></a>. After the event loop returns, all asynchronous
+work has completed, and we destroy the operation with
+<a class="reference internal" href="../../ref/operation/#_CPPv424amongoc_operation_delete17amongoc_operation" title="amongoc_operation_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_operation_delete()</span></code></a>. This will free resources associated with the
+operation.</p>
+<p>We also now have a copy of the connection that was created with
+<a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a>. We destroy that with <a class="reference internal" href="../../ref/client/#_CPPv421amongoc_client_deleteP14amongoc_client" title="amongoc_client_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_delete()</span></code></a>. If the
+connect operation failed, the connection object will have remained
+zero-initialized and the call will be a no-op.</p>
+<p>Finally, we are done with the event loop, and we can destroy it with
+<a class="reference internal" href="../../ref/loop/#_CPPv428amongoc_default_loop_destroyP12amongoc_loop" title="amongoc_default_loop_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_default_loop_destroy()</span></code></a>.</p>
+</section>
+<section id="print-the-final-result">
+<h2>Print the Final Result<a class="headerlink" href="#print-the-final-result" title="Link to this heading">#</a></h2>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">106</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">amongoc_is_error</span><span class="p">(</span><span class="n">fin_status</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">107</span><span class="w">        </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_status_strdup_message</span><span class="p">(</span><span class="n">fin_status</span><span class="p">);</span>
+<span class="linenos">108</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;An error occurred: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">);</span>
+<span class="linenos">109</span><span class="w">        </span><span class="n">free</span><span class="p">(</span><span class="n">m</span><span class="p">);</span>
+<span class="linenos">110</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="linenos">111</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">112</span><span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Okay</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">113</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">114</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">115</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Finally, we inspect the <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> that was produced by our operation and
+updated using <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>. This will tell us if there were any errors during
+the execution of the program. If so, we print the error message to standard
+error and exit non-zero from the program.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">How-to Guides</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../looping/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Creating Asynchronous Loops</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#headers">Headers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#command-line-arguments">Command-Line Arguments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initializing-the-loop">Initializing the Loop</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declare-the-app-state">Declare the App State</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-client-with-a-timeout">Create a Client with a Timeout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attach-the-first-continuation">Attach the First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-first-continuation">The First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-second-continuation">The Second Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tie-the-final-result">Tie the Final Result</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-the-operation-run-the-loop-and-clean-up">Start the Operation, Run the Loop, and Clean Up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#print-the-final-result">Print the Final Result</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

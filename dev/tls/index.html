@@ -1,0 +1,708 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TLS Streams &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/tls';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Documenting amongoc" href="../documenting/" />
+    <link rel="prev" title="Asio in amongoc" href="../asio/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/tls.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>TLS Streams</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operation-implementation">Operation Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#certificate-verification">Certificate Verification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-api">Internal API</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc3tls6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE"><code class="docutils literal notranslate"><span class="pre">stream()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream10next_layerEv"><code class="docutils literal notranslate"><span class="pre">next_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc3tls6stream10next_layerEv"><code class="docutils literal notranslate"><span class="pre">next_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc3tls6stream8ssl_cptrEv"><code class="docutils literal notranslate"><span class="pre">ssl_cptr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE"><code class="docutils literal notranslate"><span class="pre">set_verify_mode()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream19set_verify_callbackEDa"><code class="docutils literal notranslate"><span class="pre">set_verify_callback()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15set_server_nameERK11std__string"><code class="docutils literal notranslate"><span class="pre">set_server_name()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream7connectEv"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream16async_write_someERRDaRRDa"><code class="docutils literal notranslate"><span class="pre">async_write_some()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15async_read_someERRDaRRDa"><code class="docutils literal notranslate"><span class="pre">async_read_some()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv43SSL"><code class="docutils literal notranslate"><span class="pre">SSL</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio3ssl7contextE"><code class="docutils literal notranslate"><span class="pre">context</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tls-streams">
+<h1>TLS Streams<a class="headerlink" href="#tls-streams" title="Link to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<section id="background">
+<h2>Background<a class="headerlink" href="#background" title="Link to this heading">#</a></h2>
+<p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, the TLS engine is not tied to a socket. Instead, OpenSSL provides
+a state machine <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">SSL</span></code></a> interface using a <code class="docutils literal notranslate"><span class="pre">BIO</span></code> as an abstraction around an
+opaque I/O object. It doesn’t concern itself with how bytes move in/out of that
+BIO, it just expects it to behave like a stream of bytes.</p>
+<p>Any I/O operation on the high-level TLS stream can be composed of an arbitrary
+number of reads and writes to the actual underlying stream. As such, it is not
+as simple as reading/writing data into the <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">SSL</span></code></a> and then receiving some
+plaintext/cyphertext. A single read or write of plaintext may invoke more reads
+or writes on the ciphertext stream, so the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> wrapper’s read/write
+operations need to be able to handle such a situation.</p>
+<p>The stream wrapper in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> provides an asynchronous interface around that
+BIO by moving bytes to/from the BIO from/to a wrapped <a class="reference internal" href="../asio/#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a>.</p>
+</section>
+<section id="operation-implementation">
+<h2>Operation Implementation<a class="headerlink" href="#operation-implementation" title="Link to this heading">#</a></h2>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-amongoc-tls-stream.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/tls/stream.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-tls-stream.hpp" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="header-file-amongoc-tls-detail-stream_base.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/tls/detail/stream_base.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-tls-detail-stream_base.hpp" title="Link to this definition">#</a></dt>
+<dd><p><strong>(Private headers)</strong></p>
+<p>Provides the implementation of a TLS stream wrapper. See:
+<a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">amongoc::tls::stream</span></code></a></p>
+</dd></dl>
+
+<p>All operations are implemented with an abstract base class
+<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::tls::detail::stream_base::operation_base</span></code>, which provides a basic
+interface:</p>
+<ul class="simple">
+<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">reenter</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span></code> is called to pump the OpenSSL state machine. The error code
+given comes from the operation that reentered it. On initial reentry, this
+error code is always zero.</p></li>
+<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">complete</span><span class="p">(</span><span class="n">ec</span><span class="p">)</span></code> will be called exactly once for an operation and may
+destroy the operation object. An outstanding operation must complete before a
+new operation may be enqueued.</p></li>
+<li><p>If the error code given to <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">reenter</span></code> is non-zero, then the operation
+immediately calls <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">complete</span><span class="p">()</span></code> with that error.</p></li>
+<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">do_ssl_operation</span><span class="p">()</span></code> actually invokes the OpenSSL API for the operation.
+It may be called multiple times. It should return an integer for the result of
+the operation. It is called by <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">reenter</span><span class="p">()</span></code>.</p></li>
+<li><p>After <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">do_ssl_operation</span></code>, <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">reenter</span></code> initiates more asynchronous I/O
+operations on the wrapped stream based on what the <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a> engine needs.</p>
+<ul>
+<li><p>If <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a> wants more bytes, then the operation will initiate an async read.
+When the read completes, <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">reenter</span></code> is called again and the received
+bytes are written into the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">BIO</span></code> associated with the <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a> has data to send, then the operation will pull bytes from the <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">BIO</span></code>
+and initiate an asynchronous write of those bytes on the stream.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a> reports an error, then <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">complete</span></code> will be called with an error
+code.</p></li>
+</ul>
+</li>
+<li><p>If <a class="reference internal" href="#_CPPv43SSL" title="SSL"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">SSL</span></code></a> does not have any data to read or write, then the operation will
+consider itself to be complete, and it calls <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">complete</span></code> with a success
+status.</p></li>
+</ul>
+</section>
+<section id="certificate-verification">
+<h2>Certificate Verification<a class="headerlink" href="#certificate-verification" title="Link to this heading">#</a></h2>
+<p>The certificate verification implementation in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is based on the Asio
+interface. There are two ways to verify certificates:</p>
+<ul class="simple">
+<li><p>Verification associated with the context: <a class="reference internal" href="#_CPPv4N4asio3ssl7contextE" title="asio::ssl::context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::ssl::context</span></code></a> allows a
+verification callback to be attached to the context, and this will apply to
+all derived SSL engines. This relies entirely on the Asio implementation.</p></li>
+<li><p>Verification can be associated with a particular stream wrapper. This is
+implemented in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> but follows the same implementation pattern that Asio
+uses for stream-associated verification.</p></li>
+</ul>
+<p>In either case, a verification callback is tied to an object using
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">set_verify_callback</span></code>. Refer to
+<a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/ssl__stream/set_verify_callback/overload1.html">the Asio documentation</a> for information on how the
+callback is invoked.</p>
+</section>
+<section id="internal-api">
+<h2>Internal API<a class="headerlink" href="#internal-api" title="Link to this heading">#</a></h2>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc3tls6streamE">
+<span id="_CPPv3I0EN7amongoc3tls6streamE"></span><span id="_CPPv2I0EN7amongoc3tls6streamE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">S</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">internal</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tls</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">stream</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc3tls6streamE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implements an Asio <a class="reference internal" href="../asio/#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a> that wraps another
+<a class="reference internal" href="../asio/#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a> <a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream::S"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">S</span></code></a>.</p>
+<p>We cannot reuse the <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">asio</span><span class="o">::</span><span class="n">ssl</span><span class="o">::</span><span class="n">stream</span><span class="o">&lt;&gt;</span></code>, because it requires access to
+a proper Asio execution context that we cannot provide with our event loop.</p>
+<p>Many of the APIs below are provided by the <code class="docutils literal notranslate"><span class="pre">stream_base</span></code> base class.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE">
+<span id="_CPPv3N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE"></span><span id="_CPPv2N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE"></span><span id="amongoc::tls::stream::stream__SRR.asio::ssl::contextR"></span><span class="sig-name descname"><span class="n"><span class="pre">stream</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream::S"><span class="n"><span class="pre">S</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">s</span></span>, <span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N4asio3ssl7contextE" title="asio::ssl::context"><span class="n"><span class="pre">context</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ctx</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a new stream. Perfect-forwards the stream <a class="reference internal" href="#_CPPv4N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE" title="amongoc::tls::stream::stream::s"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">s</span></code></a> into place.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream10next_layerEv">
+<span id="_CPPv3N7amongoc3tls6stream10next_layerEv"></span><span id="_CPPv2N7amongoc3tls6stream10next_layerEv"></span><span id="amongoc::tls::stream::next_layer"></span><a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream::S"><span class="n"><span class="pre">S</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">next_layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream10next_layerEv" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc3tls6stream10next_layerEv">
+<span id="_CPPv3NK7amongoc3tls6stream10next_layerEv"></span><span id="_CPPv2NK7amongoc3tls6stream10next_layerEv"></span><span id="amongoc::tls::stream::next_layerC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream::S"><span class="n"><span class="pre">S</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">next_layer</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc3tls6stream10next_layerEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the wrapped stream.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc3tls6stream8ssl_cptrEv">
+<span id="_CPPv3NK7amongoc3tls6stream8ssl_cptrEv"></span><span id="_CPPv2NK7amongoc3tls6stream8ssl_cptrEv"></span><span id="amongoc::tls::stream::ssl_cptrC"></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv43SSL" title="SSL"><span class="n"><span class="pre">SSL</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">ssl_cptr</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc3tls6stream8ssl_cptrEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the pointer to the native OpenSSL engine object. This can be used to
+invoke OpenSSL APIs that are not otherwise exposed on the stream.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE">
+<span id="_CPPv3N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE"></span><span id="_CPPv2N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE"></span><span id="amongoc::tls::stream::set_verify_mode__asio::ssl::verify_mode"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><span class="n"><span class="pre">std::error_code</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_verify_mode</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">verify_mode</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">v</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream19set_verify_callbackEDa">
+<span id="_CPPv3N7amongoc3tls6stream19set_verify_callbackEDa"></span><span id="_CPPv2N7amongoc3tls6stream19set_verify_callbackEDa"></span><span id="amongoc::tls::stream::set_verify_callback__auto"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><span class="n"><span class="pre">std::error_code</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_verify_callback</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream19set_verify_callbackEDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Set the verification mode and verification callback.</p>
+<p><a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/ssl__stream/set_verify_callback/overload1.html">Refer to the Asio documentation for details</a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream15set_server_nameERK11std__string">
+<span id="_CPPv3N7amongoc3tls6stream15set_server_nameERK11std__string"></span><span id="_CPPv2N7amongoc3tls6stream15set_server_nameERK11std__string"></span><span id="amongoc::tls::stream::set_server_name__std__stringCR"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><span class="n"><span class="pre">std::error_code</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_server_name</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string" title="(in cppreference v0)"><span class="n"><span class="pre">std::string</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream15set_server_nameERK11std__string" title="Link to this definition">#</a><br /></dt>
+<dd><p>Set the server name for the peer. This is required if the peer uses SNI.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream7connectEv">
+<span id="_CPPv3N7amongoc3tls6stream7connectEv"></span><span id="_CPPv2N7amongoc3tls6stream7connectEv"></span><span id="amongoc::tls::stream::connect"></span><a class="reference internal" href="../nanosenders/#_CPPv4I00EN7amongoc13nanosender_ofE" title="amongoc::nanosender_of"><span class="n"><span class="pre">nanosender_of</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../result/#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><span class="n"><span class="pre">result</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><span class="n"><span class="pre">std::error_code</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">connect</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream7connectEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtian a nanosender that performs a client-side handshake on the stream.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream16async_write_someERRDaRRDa">
+<span id="_CPPv3N7amongoc3tls6stream16async_write_someERRDaRRDa"></span><span id="_CPPv2N7amongoc3tls6stream16async_write_someERRDaRRDa"></span><span id="amongoc::tls::stream::async_write_some__autoRR.autoRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_write_some</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cbufs</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">callback</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream16async_write_someERRDaRRDa" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc3tls6stream15async_read_someERRDaRRDa">
+<span id="_CPPv3N7amongoc3tls6stream15async_read_someERRDaRRDa"></span><span id="_CPPv2N7amongoc3tls6stream15async_read_someERRDaRRDa"></span><span id="amongoc::tls::stream::async_read_some__autoRR.autoRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_read_some</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">mbufs</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">callback</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc3tls6stream15async_read_someERRDaRRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implement the <a class="reference internal" href="../asio/#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncReadStream</span></code></a> and <a class="reference internal" href="../asio/#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a> interface
+for completion callbacks.</p>
+<p>This allows the <a class="reference internal" href="#_CPPv4I0EN7amongoc3tls6streamE" title="amongoc::tls::stream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">stream</span></code></a> wrapper to be used in higher-level interfaces.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t use these directly. Instead, use the Asio
+<a class="reference internal" href="../asio/#asio-algo"><span class="std std-ref">algorithms</span></a>, which will allow you to use a proper
+<a class="reference internal" href="../asio/#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::CompletionToken</span></code></a> and have stronger behavioral guarantees.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv43SSL">
+<span id="_CPPv33SSL"></span><span id="_CPPv23SSL"></span><span id="SSL"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SSL</span></span></span><a class="headerlink" href="#_CPPv43SSL" title="Link to this definition">#</a><br /></dt>
+<dd><p>An OpenSSL TLS stream object. <a class="reference external" href="https://docs.openssl.org/1.1.1/man3/SSL_new/">Refer to the OpenSSL documentation</a></p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N4asio3ssl7contextE">
+<span id="_CPPv3N4asio3ssl7contextE"></span><span id="_CPPv2N4asio3ssl7contextE"></span><span id="asio::ssl::context"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ssl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">context</span></span></span><a class="headerlink" href="#_CPPv4N4asio3ssl7contextE" title="Link to this definition">#</a><br /></dt>
+<dd><p>We reuse Asio’s wrapper around an OpenSSL context, as it implements a lot of
+useful functionality for us, and does not require access to a full Asio event
+loop.</p>
+<p><a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/ssl__context.html">Refer to the Asio documentation</a></p>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../asio/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../documenting/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#background">Background</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operation-implementation">Operation Implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#certificate-verification">Certificate Verification</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-api">Internal API</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc3tls6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream6streamERR1SRN4asio3ssl7contextE"><code class="docutils literal notranslate"><span class="pre">stream()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream10next_layerEv"><code class="docutils literal notranslate"><span class="pre">next_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc3tls6stream10next_layerEv"><code class="docutils literal notranslate"><span class="pre">next_layer()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc3tls6stream8ssl_cptrEv"><code class="docutils literal notranslate"><span class="pre">ssl_cptr()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15set_verify_modeEN4asio3ssl11verify_modeE"><code class="docutils literal notranslate"><span class="pre">set_verify_mode()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream19set_verify_callbackEDa"><code class="docutils literal notranslate"><span class="pre">set_verify_callback()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15set_server_nameERK11std__string"><code class="docutils literal notranslate"><span class="pre">set_server_name()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream7connectEv"><code class="docutils literal notranslate"><span class="pre">connect()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream16async_write_someERRDaRRDa"><code class="docutils literal notranslate"><span class="pre">async_write_some()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc3tls6stream15async_read_someERRDaRRDa"><code class="docutils literal notranslate"><span class="pre">async_read_some()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv43SSL"><code class="docutils literal notranslate"><span class="pre">SSL</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio3ssl7contextE"><code class="docutils literal notranslate"><span class="pre">context</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1118 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Dynamic Memory Allocation &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/alloc';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Client API" href="../client/" />
+    <link rel="prev" title="Asynchronous Utility APIs" href="../async/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/alloc.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Dynamic Memory Allocation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-apis">C APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14mlib_allocator4implE"><code class="docutils literal notranslate"><span class="pre">impl</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419mlib_allocator_impl"><code class="docutils literal notranslate"><span class="pre">mlib_allocator_impl</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N19mlib_allocator_impl8userdataE"><code class="docutils literal notranslate"><span class="pre">userdata</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t"><code class="docutils literal notranslate"><span class="pre">reallocate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_allocate14mlib_allocator6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_reallocate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_default_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_default_allocator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv426mlib_terminating_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_terminating_allocator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">C++ APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib9allocatorE"><code class="docutils literal notranslate"><span class="pre">allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator9allocatorE14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE"><code class="docutils literal notranslate"><span class="pre">allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocatoreqE9allocator"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator11c_allocatorEv"><code class="docutils literal notranslate"><span class="pre">c_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator8allocateE11std__size_t"><code class="docutils literal notranslate"><span class="pre">allocate()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator10deallocateE7pointer11std__size_t"><code class="docutils literal notranslate"><span class="pre">deallocate()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENK4mlib9allocator4new_E7pointerDpRR4Args"><code class="docutils literal notranslate"><span class="pre">new_()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator7delete_E7pointer"><code class="docutils literal notranslate"><span class="pre">delete_()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK4mlib9allocator6rebindE9allocatorI1UEv"><code class="docutils literal notranslate"><span class="pre">rebind()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4mlib14bind_allocatorE"><code class="docutils literal notranslate"><span class="pre">bind_allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T"><code class="docutils literal notranslate"><span class="pre">bind_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocator14allocator_typeE"><code class="docutils literal notranslate"><span class="pre">allocator_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14bind_allocator13get_allocatorEv"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocatorclEDpRRDa"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14bind_allocator5queryEDa"><code class="docutils literal notranslate"><span class="pre">query()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib13alloc_deleterE"><code class="docutils literal notranslate"><span class="pre">alloc_deleter</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib10unique_ptrE"><code class="docutils literal notranslate"><span class="pre">unique_ptr</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa"><code class="docutils literal notranslate"><span class="pre">allocate_unique()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib21terminating_allocatorE"><code class="docutils literal notranslate"><span class="pre">terminating_allocator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="dynamic-memory-allocation">
+<h1>Dynamic Memory Allocation<a class="headerlink" href="#dynamic-memory-allocation" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-mlib-alloc.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">mlib/alloc.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-mlib-alloc.h" title="Link to this definition">#</a></dt>
+<dd><p>Contains types, functions, and constants related to dynamic memory management.</p>
+</dd></dl>
+
+<section id="c-apis">
+<h2>C APIs<a class="headerlink" href="#c-apis" title="Link to this heading">#</a></h2>
+<section id="types">
+<h3>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h3>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv414mlib_allocator">
+<span id="_CPPv314mlib_allocator"></span><span id="_CPPv214mlib_allocator"></span><span id="mlib_allocator"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_allocator</span></span></span><a class="headerlink" href="#_CPPv414mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Provides support for customizing dynamic memory allocation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+<dt class="field-even">Zero-initialized<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="../meta-attrs/#zero-init"><span class="std std-ref">zero-initialized</span></a> <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> is not valid for
+<strong>any operation</strong> <em>except</em> with <a class="reference internal" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a> of a null pointer.</p>
+</dd>
+</dl>
+<p>Many <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> APIs accept an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> parameter, or otherwise consult
+other objects that carry an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> (e.g. <a class="reference internal" href="../loop/#_CPPv412amongoc_loop" title="amongoc_loop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a> has an
+associated allocator, and therefore any object associated with an event loop
+will also use that same allocator).</p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N14mlib_allocator4implE">
+<span id="_CPPv3N14mlib_allocator4implE"></span><span id="_CPPv2N14mlib_allocator4implE"></span><span id="mlib_allocator::impl__mlib_allocator_implCP"></span><a class="reference internal" href="#_CPPv419mlib_allocator_impl" title="mlib_allocator_impl"><span class="n"><span class="pre">mlib_allocator_impl</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">impl</span></span></span><a class="headerlink" href="#_CPPv4N14mlib_allocator4implE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pointer to the allocator implementation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv419mlib_allocator_impl">
+<span id="_CPPv319mlib_allocator_impl"></span><span id="_CPPv219mlib_allocator_impl"></span><span id="mlib_allocator_impl"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_allocator_impl</span></span></span><a class="headerlink" href="#_CPPv419mlib_allocator_impl" title="Link to this definition">#</a><br /></dt>
+<dd><p>Provides the backing implementation for an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a></p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N19mlib_allocator_impl8userdataE">
+<span id="_CPPv3N19mlib_allocator_impl8userdataE"></span><span id="_CPPv2N19mlib_allocator_impl8userdataE"></span><span id="mlib_allocator_impl::userdata__voidP"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">userdata</span></span></span><a class="headerlink" href="#_CPPv4N19mlib_allocator_impl8userdataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Arbitrary pointer to context for the allocator.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t">
+<span id="_CPPv3N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t"></span><span id="_CPPv2N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t"></span><span id="mlib_allocator_impl::reallocate__voidP.voidP.s.s.s.sP"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">reallocate</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">nullable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">prev_ptr</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">requested_size</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alignment</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">previous_size</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">storage</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">out_new_size</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p><strong>(Function pointer member)</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t call this directly. Use <a class="reference internal" href="#_CPPv413mlib_allocate14mlib_allocator6size_t" title="mlib_allocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a>, <a class="reference internal" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a>, and <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_reallocate()</span></code></a></p>
+</div>
+<p>Implements custom allocation for the allocator. The user must provide a
+non-null pointer to a function for the allocator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userdata</strong> – The <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl8userdataE" title="mlib_allocator_impl::userdata"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator_impl::userdata</span></code></a> pointer.</p></li>
+<li><p><strong>prev_ptr</strong> – Pointer that was previously returned by <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reallocate()</span></code></a></p></li>
+<li><p><strong>requested_size</strong> – The requested amount of memory for the new region, <strong>or</strong>
+zero to request deallocation of <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a>.</p></li>
+<li><p><strong>alignment</strong> – The requested alignment of the new memory region. Must be
+a power of two.</p></li>
+<li><p><strong>previous_size</strong> – If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a> is not <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code>, this is the
+previous <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> used when <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a> was allocated.</p></li>
+<li><p><strong>out_new_size</strong> – An output parameter: The allocator will write the actually
+allocated size to this pointer. The argument may be <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Upon success</strong>, must return a pointer to the newly allocated region of
+size at least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> with alignment of at least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::alignment"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alignment</span></code></a>.</p></li>
+<li><p><strong>Upon failure</strong>, must return <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Allocation Behavior</p>
+<p>In brief:</p>
+<ol class="arabic simple">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is zero: Behave as-if <code class="docutils literal notranslate"><span class="pre">free(prev_ptr)</span></code>, set
+<code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code> to zero.</p></li>
+<li><p>Otherwise, behave as-if <code class="docutils literal notranslate"><span class="pre">realloc(prev_ptr,</span> <span class="pre">requested_size)</span></code>, set
+<code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code> to <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a>.</p></li>
+</ol>
+<p>In greater detail, a user-provided allocation function must do the
+following:</p>
+<ol class="arabic simple" start="3">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a> is null:</p>
+<ol class="arabic simple">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is zero, return a null pointer.</p></li>
+<li><p>Attempt to allocate a region <span class="math notranslate nohighlight">\(R\)</span> of size <span class="math notranslate nohighlight">\(S\)</span> bytes, where <span class="math notranslate nohighlight">\(S\)</span> is at
+least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a>.</p></li>
+<li><p>If allocating <span class="math notranslate nohighlight">\(R\)</span> fails, return a null pointer.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S\)</span> to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Return a pointer to the beginning of <span class="math notranslate nohighlight">\(R\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (<a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a> is non-null), let <span class="math notranslate nohighlight">\(R_p\)</span> be the existing memory
+region of size <span class="math notranslate nohighlight">\(S_p\)</span> pointed-to by <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is zero:</p>
+<ol class="arabic simple">
+<li><p>Release the region <span class="math notranslate nohighlight">\(R_p\)</span>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write zero to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Return a null pointer.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (<a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is non-zero), if <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is greater
+than <span class="math notranslate nohighlight">\(S_p\)</span>:</p>
+<ol class="arabic simple">
+<li><p>Attempt to grow the region <span class="math notranslate nohighlight">\(R_p\)</span> to a new size <span class="math notranslate nohighlight">\(S\)</span> where <span class="math notranslate nohighlight">\(S\)</span> is at
+least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> bytes. If successful:</p>
+<ol class="arabic simple">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S\)</span> to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Return a pointer to <span class="math notranslate nohighlight">\(R_p\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (growing the region failed), attempt to allocate a new region <span class="math notranslate nohighlight">\(R\)</span>
+of size <span class="math notranslate nohighlight">\(S\)</span>, where <span class="math notranslate nohighlight">\(S\)</span> is at least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> bytes. If succesful:</p>
+<ol class="arabic simple">
+<li><p>Copy the first <span class="math notranslate nohighlight">\(S_p\)</span> bytes from <span class="math notranslate nohighlight">\(R_p\)</span> into <span class="math notranslate nohighlight">\(R\)</span>.</p></li>
+<li><p>Release the region <span class="math notranslate nohighlight">\(R_p\)</span>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S\)</span> to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Return a pointer to the beginning of <span class="math notranslate nohighlight">\(R\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (allocating a new region failed), return a null pointer. (Do
+not modify the region <span class="math notranslate nohighlight">\(R_p\)</span> nor write anything to <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a>)</p></li>
+</ol>
+</li>
+<li><p>Otherwise (<a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> is non-zero and at most <span class="math notranslate nohighlight">\(S_p\)</span>):</p>
+<ol class="arabic simple">
+<li><p>Optionally, to simply reuse the region <span class="math notranslate nohighlight">\(R_p\)</span>:</p>
+<ol class="arabic simple">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S_p\)</span> to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code></p></li>
+<li><p>Return <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::prev_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">prev_ptr</span></code></a> unmodified.</p></li>
+</ol>
+</li>
+<li><p>Otherwise, attempt to shrink the region <span class="math notranslate nohighlight">\(R_p\)</span> to a new size <span class="math notranslate nohighlight">\(S\)</span> that is
+at least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> bytes. If successful:</p>
+<ol class="arabic simple">
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S\)</span> to <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Return a pointer to <span class="math notranslate nohighlight">\(R_p\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (shrinking the region failed), attempt to allocate a new
+region <span class="math notranslate nohighlight">\(R\)</span> of size <span class="math notranslate nohighlight">\(S\)</span>, where <span class="math notranslate nohighlight">\(S\)</span> is at least <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a>. If
+succesful:</p>
+<ol class="arabic simple">
+<li><p>Copy the first <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::requested_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">requested_size</span></code></a> bytes from <span class="math notranslate nohighlight">\(R_p\)</span> into <span class="math notranslate nohighlight">\(R\)</span>.</p></li>
+<li><p>If <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a> is not null, write <span class="math notranslate nohighlight">\(S\)</span> into <code class="docutils literal notranslate"><span class="pre">*out_new_size</span></code>.</p></li>
+<li><p>Release the region <span class="math notranslate nohighlight">\(R_p\)</span>.</p></li>
+<li><p>Return a pointer to the beginning of <span class="math notranslate nohighlight">\(R\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Otherwise (allocating a new region failed), return a null pointer (Do
+not modify the region <span class="math notranslate nohighlight">\(R_p\)</span> nor write anything to <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate::out_new_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out_new_size</span></code></a>).</p></li>
+</ol>
+</li>
+</ol>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv413mlib_allocate14mlib_allocator6size_t">
+<span id="_CPPv313mlib_allocate14mlib_allocator6size_t"></span><span id="_CPPv213mlib_allocate14mlib_allocator6size_t"></span><span id="mlib_allocate__mlib_allocator.s"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mlib_allocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sz</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv413mlib_allocate14mlib_allocator6size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv415mlib_deallocate14mlib_allocatorPv6size_t">
+<span id="_CPPv315mlib_deallocate14mlib_allocatorPv6size_t"></span><span id="_CPPv215mlib_deallocate14mlib_allocatorPv6size_t"></span><span id="mlib_deallocate__mlib_allocator.voidP.s"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>, <span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sz</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t">
+<span id="_CPPv315mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t"></span><span id="_CPPv215mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t"></span><span id="mlib_reallocate__mlib_allocator.voidP.s.s.s.sP"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mlib_reallocate</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">prev_ptr</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">sz</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alignment</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">prev_size</span></span>,</dd>
+<dd><a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">out_new_size</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Attempt to allocate or deallocate memory using the allocator <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::alloc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alloc</strong> – The allocator to be used.</p></li>
+<li><p><strong>p</strong> – (For deallocation) A pointer that was previously returned by <a class="reference internal" href="#_CPPv413mlib_allocate14mlib_allocator6size_t" title="mlib_allocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a>
+using the same <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::alloc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code></a> parameter.</p></li>
+<li><p><strong>sz</strong> – For allocation, the requested size. For deallocation, this must be
+the original <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::sz"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">sz</span></code></a> value that was used with <a class="reference internal" href="#_CPPv413mlib_allocate14mlib_allocator6size_t" title="mlib_allocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>For allocation functions: <strong>upon success</strong>: returns a pointer to the
+beginning of a newly allocated region of at least size <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::sz"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">sz</span></code></a> and optional
+alignment <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::alignment"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alignment</span></code></a>. <strong>Upon failure</strong>, returns <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">nullptr</span></code>.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<p>The <a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_reallocate()</span></code></a> function is a wrapper around the
+<a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator_impl::reallocate()</span></code></a> function.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For <a class="reference internal" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a>: If the pointer <a class="reference internal" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate::p"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">p</span></code></a> is null, then it is legal for
+<a class="reference internal" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t" title="mlib_reallocate::alloc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code></a> to have a null <a class="reference internal" href="#_CPPv4N14mlib_allocator4implE" title="mlib_allocator::impl"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator::impl</span></code></a> member. <strong>This is the only
+legal use of a null allocator</strong>.</p>
+<p>This behavior is crafted specifically to support deletion of aggregate types
+which store an allocator and a pointer as a member, so that deleting a
+zero-initialized instance of that struct is a valid no-op.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="constants">
+<h3>Constants<a class="headerlink" href="#constants" title="Link to this heading">#</a></h3>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv422mlib_default_allocator">
+<span id="_CPPv322mlib_default_allocator"></span><span id="_CPPv222mlib_default_allocator"></span><span id="mlib_default_allocator__mlib_allocatorC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_default_allocator</span></span></span><a class="headerlink" href="#_CPPv422mlib_default_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>A reasonable default <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<p>This allocator is implemented in terms of the standard library
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">realloc</span><span class="p">()</span></code> and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">free</span><span class="p">()</span></code> functions.</p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv426mlib_terminating_allocator">
+<span id="_CPPv326mlib_terminating_allocator"></span><span id="_CPPv226mlib_terminating_allocator"></span><span id="mlib_terminating_allocator__mlib_allocatorC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mlib_terminating_allocator</span></span></span><a class="headerlink" href="#_CPPv426mlib_terminating_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> that terminates the program if there is any
+attempt to allocate memory through it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<p>This allocator is intended to be used in places where the programmer wishes to
+assert that dynamic allocation will not occur. If an attempt is made to
+allocate memory using this alloator, then a diagnostic will be printed to
+standard error and <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">abort</span><span class="p">()</span></code> will be called.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="id1">
+<h2>C++ APIs<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<section id="id2">
+<h3>Types<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib9allocatorE">
+<span id="_CPPv3I0EN4mlib9allocatorE"></span><span id="_CPPv2I0EN4mlib9allocatorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">allocator</span></span></span><a class="headerlink" href="#_CPPv4I0EN4mlib9allocatorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Provides a C++ allocator interface for an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<p>This allocator type is <em>not</em> default-constructible: It must be constructed
+explicitly from an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a>.</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib9allocator10value_typeE">
+<span id="_CPPv3N4mlib9allocator10value_typeE"></span><span id="_CPPv2N4mlib9allocator10value_typeE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator::T"><span class="n"><span class="pre">T</span></span></a><a class="headerlink" href="#_CPPv4N4mlib9allocator10value_typeE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib9allocator7pointerE">
+<span id="_CPPv3N4mlib9allocator7pointerE"></span><span id="_CPPv2N4mlib9allocator7pointerE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4mlib9allocator10value_typeE" title="mlib::allocator::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="p"><span class="pre">*</span></span><a class="headerlink" href="#_CPPv4N4mlib9allocator7pointerE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Types associated with this allocator.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> is <code class="docutils literal notranslate"><span class="pre">void</span></code>, then the allocator is a proto-allocator and
+must be converted to a typed allocator before it may be used.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib9allocator9allocatorE14mlib_allocator">
+<span id="_CPPv3N4mlib9allocator9allocatorE14mlib_allocator"></span><span id="_CPPv2N4mlib9allocator9allocatorE14mlib_allocator"></span><span id="mlib::allocator::allocator__mlib_allocator"></span><span class="sig-name descname"><span class="n"><span class="pre">allocator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib9allocator9allocatorE14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Convert from an <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> <a class="reference internal" href="#_CPPv4N4mlib9allocator9allocatorE14mlib_allocator" title="mlib::allocator::allocator::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE">
+<span id="_CPPv3I0EN4mlib9allocator9allocatorE9allocatorI1UE"></span><span id="_CPPv2I0EN4mlib9allocator9allocatorE9allocatorI1UE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="sig-name descname"><span class="n"><span class="pre">allocator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE" title="mlib::allocator::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE" title="mlib::allocator::allocator::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Convert-construct from another allocator instance, rebinding the allocated
+type.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib9allocatoreqE9allocator">
+<span id="_CPPv3NK4mlib9allocatoreqE9allocator"></span><span id="_CPPv2NK4mlib9allocatoreqE9allocator"></span><span id="mlib::allocator::eq-operator__allocatorC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">==</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib9allocatoreqE9allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Compare two allocators. Two <a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">allocator</span></code></a>s are equal if the
+<a class="reference internal" href="#_CPPv4N19mlib_allocator_impl8userdataE" title="mlib_allocator_impl::userdata"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator_impl::userdata</span></code></a> and <a class="reference internal" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t" title="mlib_allocator_impl::reallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator_impl::reallocate()</span></code></a>
+pointers are equal.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib9allocator11c_allocatorEv">
+<span id="_CPPv3NK4mlib9allocator11c_allocatorEv"></span><span id="_CPPv2NK4mlib9allocator11c_allocatorEv"></span><span id="mlib::allocator::c_allocatorC"></span><a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">c_allocator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib9allocator11c_allocatorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the <a class="reference internal" href="#_CPPv414mlib_allocator" title="mlib_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a> that is used by this <a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">allocator</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib9allocator8allocateE11std__size_t">
+<span id="_CPPv3NK4mlib9allocator8allocateE11std__size_t"></span><span id="_CPPv2NK4mlib9allocator8allocateE11std__size_t"></span><span id="mlib::allocator::allocate__std__size_tC"></span><a class="reference internal" href="#_CPPv4N4mlib9allocator7pointerE" title="mlib::allocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocate</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">std::size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib9allocator8allocateE11std__size_t" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib9allocator10deallocateE7pointer11std__size_t">
+<span id="_CPPv3NK4mlib9allocator10deallocateE7pointer11std__size_t"></span><span id="_CPPv2NK4mlib9allocator10deallocateE7pointer11std__size_t"></span><span id="mlib::allocator::deallocate__pointer.std__size_tC"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">deallocate</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4mlib9allocator7pointerE" title="mlib::allocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference external" href="https://en.cppreference.com/w/cpp/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">std::size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib9allocator10deallocateE7pointer11std__size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>The allocation/deallocation functions for the C++ allocator interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> – The number of objects to be allocated/deallocated</p></li>
+<li><p><strong>p</strong> – Pointer to a previous region obtained from an equivalent <a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">allocator</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<p>Calls <a class="reference internal" href="#_CPPv413mlib_allocate14mlib_allocator6size_t" title="mlib_allocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a>/<a class="reference internal" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t" title="mlib_deallocate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a> to perform the allocation.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpENK4mlib9allocator4new_E7pointerDpRR4Args">
+<span id="_CPPv3IDpENK4mlib9allocator4new_EDpRR4Args"></span><span id="_CPPv2IDpENK4mlib9allocator4new_EDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4N4mlib9allocator7pointerE" title="mlib::allocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">new_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4IDpENK4mlib9allocator4new_E7pointerDpRR4Args" title="mlib::allocator::new_::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IDpENK4mlib9allocator4new_E7pointerDpRR4Args" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib9allocator7delete_E7pointer">
+<span id="_CPPv3NK4mlib9allocator7delete_E7pointer"></span><span id="_CPPv2NK4mlib9allocator7delete_E7pointer"></span><span id="mlib::allocator::delete___pointerC"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delete_</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4mlib9allocator7pointerE" title="mlib::allocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib9allocator7delete_E7pointer" title="Link to this definition">#</a><br /></dt>
+<dd><p>New/delete individual objects using the allocator.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0ENK4mlib9allocator6rebindE9allocatorI1UEv">
+<span id="_CPPv3I0ENK4mlib9allocator6rebindEv"></span><span id="_CPPv2I0ENK4mlib9allocator6rebindEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">U</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0ENK4mlib9allocator6rebindE9allocatorI1UEv" title="mlib::allocator::rebind::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rebind</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4I0ENK4mlib9allocator6rebindE9allocatorI1UEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Rebind the type parameter for the allocator.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args">
+<span id="_CPPv3IDpENK4mlib9allocator9constructE7pointerDpRR4Args"></span><span id="_CPPv2IDpENK4mlib9allocator9constructE7pointerDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">construct</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N4mlib9allocator7pointerE" title="mlib::allocator::pointer"><span class="n"><span class="pre">pointer</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">p</span></span>, <a class="reference internal" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args" title="mlib::allocator::construct::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct an object at <a class="reference internal" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args" title="mlib::allocator::construct::p"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">p</span></code></a> with <a class="reference external" href="https://en.cppreference.com/w/cpp/memory/uses_allocator">uses-allocator construction</a>. This will
+“inject” the allocator into objects that support construction using the same
+memory allocator. This allows the following to work properly:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="c1">// An allocator to be used</span>
+<span class="n">mlib</span><span class="o">::</span><span class="n">allocator</span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">get_some_allocator</span><span class="p">();</span>
+<span class="c1">// A string type that uses an mlib allocator</span>
+<span class="k">using</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">basic_string</span><span class="o">&lt;</span><span class="kt">char</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">char_traits</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">mlib</span><span class="o">::</span><span class="n">allocator</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;&gt;</span>
+<span class="c1">// Construct a vector with our allocator</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">mlib</span><span class="o">::</span><span class="n">allocator</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">strings</span><span class="p">{</span><span class="n">a</span><span class="p">};</span>
+<span class="c1">// Append a new string</span>
+<span class="n">strings</span><span class="p">.</span><span class="n">emplace_back</span><span class="p">(</span><span class="s">&quot;hello, world!&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// [note]</span>
+</pre></div>
+</div>
+<p>On the line marked <code class="docutils literal notranslate"><span class="pre">[note]</span></code> we are emplace-constructing a string from a
+character array. This would not work if the <a class="reference internal" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args" title="mlib::allocator::construct"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">construct()</span></code></a> method was not
+available, as the vector would try to default-construct a new
+<a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::allocator</span></code></a>, which is not allowed. In this example, <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">emplace_back</span></code>
+will end up calling <a class="reference internal" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args" title="mlib::allocator::construct"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">allocator::construct()</span></code></a> for the string, which will
+inject the parent allocator into the string during construction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN4mlib14bind_allocatorE">
+<span id="_CPPv3I00EN4mlib14bind_allocatorE"></span><span id="_CPPv2I00EN4mlib14bind_allocatorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Alloc</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">bind_allocator</span></span></span><a class="headerlink" href="#_CPPv4I00EN4mlib14bind_allocatorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create an object with a bound allocator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<p>This class type supports CTAD, and using CTAD is recommended. It will
+perfect-forward the bound object into the resulting <a class="reference internal" href="#_CPPv4I00EN4mlib14bind_allocatorE" title="mlib::bind_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bind_allocator</span></code></a> wrapper.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T">
+<span id="_CPPv3N4mlib14bind_allocator14bind_allocatorE5AllocRR1T"></span><span id="_CPPv2N4mlib14bind_allocator14bind_allocatorE5AllocRR1T"></span><span id="mlib::bind_allocator::bind_allocator__Alloc.TRR"></span><span class="sig-name descname"><span class="n"><span class="pre">bind_allocator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN4mlib14bind_allocatorE" title="mlib::bind_allocator::Alloc"><span class="n"><span class="pre">Alloc</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <a class="reference internal" href="#_CPPv4I00EN4mlib14bind_allocatorE" title="mlib::bind_allocator::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T" title="Link to this definition">#</a><br /></dt>
+<dd><p>Bind the allocator <a class="reference internal" href="#_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T" title="mlib::bind_allocator::bind_allocator::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a> to the object <a class="reference internal" href="#_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T" title="mlib::bind_allocator::bind_allocator::obj"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">obj</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib14bind_allocator14allocator_typeE">
+<span id="_CPPv3N4mlib14bind_allocator14allocator_typeE"></span><span id="_CPPv2N4mlib14bind_allocator14allocator_typeE"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">allocator_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4mlib14bind_allocatorE" title="mlib::bind_allocator::Alloc"><span class="n"><span class="pre">Alloc</span></span></a><a class="headerlink" href="#_CPPv4N4mlib14bind_allocator14allocator_typeE" title="Link to this definition">#</a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib14bind_allocator13get_allocatorEv">
+<span id="_CPPv3NK4mlib14bind_allocator13get_allocatorEv"></span><span id="_CPPv2NK4mlib14bind_allocator13get_allocatorEv"></span><span id="mlib::bind_allocator::get_allocatorC"></span><a class="reference internal" href="#_CPPv4N4mlib14bind_allocator14allocator_typeE" title="mlib::bind_allocator::allocator_type"><span class="n"><span class="pre">allocator_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_allocator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib14bind_allocator13get_allocatorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the allocate that was bound with this object</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib14bind_allocatorclEDpRRDa">
+<span id="_CPPv3N4mlib14bind_allocatorclEDpRRDa"></span><span id="_CPPv2N4mlib14bind_allocatorclEDpRRDa"></span><span id="mlib::bind_allocator::call-operator__autoRRDp"></span><span class="k"><span class="pre">decltype</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">auto</span></span><span class="p"><span class="pre">)</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4mlib14bind_allocatorclEDpRRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Call the underlying invocable with the given arguments, if such a call is
+well-formed.</p>
+<p>This method is cvref-overloaded for the underlying object.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK4mlib14bind_allocator5queryEDa">
+<span id="_CPPv3NK4mlib14bind_allocator5queryEDa"></span><span id="_CPPv2NK4mlib14bind_allocator5queryEDa"></span><span id="mlib::bind_allocator::query__autoC"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">query</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">q</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK4mlib14bind_allocator5queryEDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Apply a query to the underlying object. (See: <a class="reference internal" href="../../dev/queries/"><span class="doc">Query Objects</span></a>)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib13alloc_deleterE">
+<span id="_CPPv3N4mlib13alloc_deleterE"></span><span id="_CPPv2N4mlib13alloc_deleterE"></span><span id="mlib::alloc_deleter"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">alloc_deleter</span></span></span><a class="headerlink" href="#_CPPv4N4mlib13alloc_deleterE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A deleter type for use with <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> that deletes an object using an
+<a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::allocator</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib10unique_ptrE">
+<span id="_CPPv3I0EN4mlib10unique_ptrE"></span><span id="_CPPv2I0EN4mlib10unique_ptrE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique_ptr</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4mlib10unique_ptrE" title="mlib::unique_ptr::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4mlib13alloc_deleterE" title="mlib::alloc_deleter"><span class="n"><span class="pre">alloc_deleter</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0EN4mlib10unique_ptrE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">std::unique_ptr</span></code> type that uses an <a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::allocator</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa" title="mlib::allocate_unique"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">allocate_unique()</span></code></a></p>
+</div>
+</dd></dl>
+
+</section>
+<section id="id4">
+<h3>Functions<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa">
+<span id="_CPPv3I0EN4mlib15allocate_uniqueE9allocatorIEDpRRDa"></span><span id="_CPPv2I0EN4mlib15allocate_uniqueE9allocatorIEDpRRDa"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I0EN4mlib10unique_ptrE" title="mlib::unique_ptr"><span class="n"><span class="pre">unique_ptr</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa" title="mlib::allocate_unique::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">allocate_unique</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>,</dd>
+<dd><span class="kt"><span class="pre">auto</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct an <a class="reference internal" href="#_CPPv4I0EN4mlib10unique_ptrE" title="mlib::unique_ptr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unique_ptr&lt;T&gt;</span></code></a> using the given allocator to manage the
+object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id5">
+<h3>Constants<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4mlib21terminating_allocatorE">
+<span id="_CPPv3N4mlib21terminating_allocatorE"></span><span id="_CPPv2N4mlib21terminating_allocatorE"></span><span id="mlib::terminating_allocator__allocator::C"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><span class="n"><span class="pre">allocator</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">mlib</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">terminating_allocator</span></span></span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv426mlib_terminating_allocator" title="mlib_terminating_allocator"><span class="n"><span class="pre">mlib_terminating_allocator</span></span></a><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N4mlib21terminating_allocatorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A C++ version of the <a class="reference internal" href="#_CPPv426mlib_terminating_allocator" title="mlib_terminating_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_terminating_allocator</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-mlib-alloc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">mlib/alloc.h</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../async/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Asynchronous Utility APIs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../client/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Client API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-apis">C APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414mlib_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N14mlib_allocator4implE"><code class="docutils literal notranslate"><span class="pre">impl</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419mlib_allocator_impl"><code class="docutils literal notranslate"><span class="pre">mlib_allocator_impl</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N19mlib_allocator_impl8userdataE"><code class="docutils literal notranslate"><span class="pre">userdata</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N19mlib_allocator_impl10reallocateEPvPv6size_t6size_t6size_tP6size_t"><code class="docutils literal notranslate"><span class="pre">reallocate()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv413mlib_allocate14mlib_allocator6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_allocate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_deallocate14mlib_allocatorPv6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_deallocate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415mlib_reallocate14mlib_allocatorPv6size_t6size_t6size_tP6size_t"><code class="docutils literal notranslate"><span class="pre">mlib_reallocate()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422mlib_default_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_default_allocator</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv426mlib_terminating_allocator"><code class="docutils literal notranslate"><span class="pre">mlib_terminating_allocator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">C++ APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib9allocatorE"><code class="docutils literal notranslate"><span class="pre">allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator10value_typeE"><code class="docutils literal notranslate"><span class="pre">value_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator7pointerE"><code class="docutils literal notranslate"><span class="pre">pointer</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib9allocator9allocatorE14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib9allocator9allocatorE9allocatorI1UE"><code class="docutils literal notranslate"><span class="pre">allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocatoreqE9allocator"><code class="docutils literal notranslate"><span class="pre">operator==()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator11c_allocatorEv"><code class="docutils literal notranslate"><span class="pre">c_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator8allocateE11std__size_t"><code class="docutils literal notranslate"><span class="pre">allocate()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator10deallocateE7pointer11std__size_t"><code class="docutils literal notranslate"><span class="pre">deallocate()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENK4mlib9allocator4new_E7pointerDpRR4Args"><code class="docutils literal notranslate"><span class="pre">new_()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib9allocator7delete_E7pointer"><code class="docutils literal notranslate"><span class="pre">delete_()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0ENK4mlib9allocator6rebindE9allocatorI1UEv"><code class="docutils literal notranslate"><span class="pre">rebind()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpENK4mlib9allocator9constructEv7pointerDpRR4Args"><code class="docutils literal notranslate"><span class="pre">construct()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4mlib14bind_allocatorE"><code class="docutils literal notranslate"><span class="pre">bind_allocator</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocator14bind_allocatorE5AllocRR1T"><code class="docutils literal notranslate"><span class="pre">bind_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocator14allocator_typeE"><code class="docutils literal notranslate"><span class="pre">allocator_type</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14bind_allocator13get_allocatorEv"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib14bind_allocatorclEDpRRDa"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK4mlib14bind_allocator5queryEDa"><code class="docutils literal notranslate"><span class="pre">query()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib13alloc_deleterE"><code class="docutils literal notranslate"><span class="pre">alloc_deleter</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib10unique_ptrE"><code class="docutils literal notranslate"><span class="pre">unique_ptr</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Functions</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4mlib15allocate_uniqueE10unique_ptrI1TE9allocatorIEDpRRDa"><code class="docutils literal notranslate"><span class="pre">allocate_unique()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Constants</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4mlib21terminating_allocatorE"><code class="docutils literal notranslate"><span class="pre">terminating_allocator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

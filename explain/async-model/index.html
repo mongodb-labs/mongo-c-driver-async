@@ -1,0 +1,588 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Our Asynchrony Model &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'explain/async-model';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="amongoc Developer Documentation" href="../../dev/" />
+    <link rel="prev" title="Design Considerations in amongoc" href="../consider/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Design &amp; Explanation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/explain/async-model.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Our Asynchrony Model</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#emitters-handlers">Emitters &amp; Handlers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emitters">Emitters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handlers">Handlers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-an-emitter-s-result">Accessing an Emitter’s Result</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-art-senders-receivers">Prior Art - Senders &amp; Receivers</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="our-asynchrony-model">
+<h1>Our Asynchrony Model<a class="headerlink" href="#our-asynchrony-model" title="Link to this heading">#</a></h1>
+<p>The previous pages (<a class="reference internal" href="../why-async/"><span class="doc">Why Asynchrony?</span></a> and <a class="reference internal" href="../consider/"><span class="doc">Design Considerations in amongoc</span></a>) explored <em>why</em> we want
+to provide <a class="reference internal" href="../why-async/#term-asynchrony"><span class="xref std std-term">asynchrony</span></a>, and this page will explain <em>how</em> we provide
+asynchrony.</p>
+<section id="emitters-handlers">
+<h2>Emitters &amp; Handlers<a class="headerlink" href="#emitters-handlers" title="Link to this heading">#</a></h2>
+<p>The asynchrony model in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is defined by <a class="reference internal" href="../../ref/glossary/#term-emitter"><span class="xref std std-term">emitters</span></a> and
+<a class="reference internal" href="../../ref/glossary/#term-handler"><span class="xref std std-term">handlers</span></a>.</p>
+<section id="emitters">
+<span id="id1"></span><h3>Emitters<a class="headerlink" href="#emitters" title="Link to this heading">#</a></h3>
+<p>An <a class="reference internal" href="../../ref/glossary/#term-emitter"><span class="xref std std-term">emitter</span></a> object, defined by <a class="reference internal" href="../../ref/emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a>, represents a pending
+asynchronous operation, where “operation” may be anything from “send some data
+to a server” to <em>your entire application</em>.</p>
+<p>An emitter is said to <em>resolve</em> or <em>complete</em> when its associated asynchronous
+operation finishes. In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, a resolving emitter <em>emits</em> two objects: an
+<a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> representing the success/error/etc of the operation, and an
+<a class="reference internal" href="../../ref/box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> that encloses the final “result value” for the operation. The
+meaning of the result value depends on the asynchronous operation of the emitter
+and the value of the result status.</p>
+<p>For example, the <a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a> function returns an <a class="reference internal" href="../../ref/emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a>
+that resolves with an <a class="reference internal" href="../../ref/client/#_CPPv414amongoc_client" title="amongoc_client"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_client</span></code></a> upon success (this is represented in
+the documentation with the <a class="reference internal" href="../../ref/meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a> attribute).</p>
+</section>
+<section id="handlers">
+<span id="model-handlers"></span><h3>Handlers<a class="headerlink" href="#handlers" title="Link to this heading">#</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Writing a valid <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> <a class="reference internal" href="../../ref/glossary/#term-handler"><span class="xref std std-term">handler</span></a> is somewhat subtle and requires
+care. Usually, it is easier to use the library’s asynchronous operation
+composition APIs instead of writing a <a class="reference internal" href="../../ref/glossary/#term-handler"><span class="xref std std-term">handler</span></a> directly.</p>
+</div>
+<p>A <a class="reference internal" href="../../ref/glossary/#term-handler"><span class="xref std std-term">handler</span></a> combines with a <a class="reference internal" href="../../ref/glossary/#term-emitter"><span class="xref std std-term">emitter</span></a> to form to tell that emitter
+how to continue after its associated asynchronous operation completes.</p>
+<section id="accessing-an-emitter-s-result">
+<h4>Accessing an Emitter’s Result<a class="headerlink" href="#accessing-an-emitter-s-result" title="Link to this heading">#</a></h4>
+<p>There is no way to “ask” an emitter for its result value. Instead, an emitter
+must be <em>connected</em> to a <a class="reference internal" href="../../ref/glossary/#term-handler"><span class="xref std std-term">handler</span></a> that acts on the completion of the
+emitter.</p>
+<p>However, using <a class="reference internal" href="../../ref/handler/#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a> directly is a very low-level and error-prone
+process. For this reason, <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> provides convenience functions for the
+purpose of composing emitters automatically without needing to create and juggle
+<a class="reference internal" href="../../ref/handler/#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>s oneself, such as <a class="reference internal" href="../../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a>, <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>,
+<a class="reference internal" href="../../ref/async/#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator" title="amongoc_detach"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a>, and <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>.</p>
+</section>
+</section>
+</section>
+<section id="prior-art-senders-receivers">
+<h2>Prior Art - Senders &amp; Receivers<a class="headerlink" href="#prior-art-senders-receivers" title="Link to this heading">#</a></h2>
+<p>The asynchronous model provided by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is based on a highly-simplified
+version of <a class="reference external" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2300r10.html">P2300 - std::execution</a>, the leading proposal for defining a
+universal asynchronous execution design for C++.</p>
+<p>The differences are many, mostly by omission, but the most important changes
+are as follows (if you are unfamiliar with P2300, you can ignore these details):</p>
+<ol class="arabic simple">
+<li><p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, <em>senders</em> and <em>receivers</em> are called <em>emitters</em> and <em>handlers</em>,
+respectively. This name change is designed to prevent confusion between the
+two designs.</p></li>
+<li><p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, the <em>scheduler</em> mechanism of senders is absent.</p></li>
+<li><p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, because we are a C library, all emitters and handlers are
+type-erased to single struct types, <a class="reference internal" href="../../ref/emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a> and <a class="reference internal" href="../../ref/handler/#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>.</p></li>
+<li><p>Emitters always emit two values: an <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> and an <a class="reference internal" href="../../ref/box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>,
+which also type-erases the result type. The actual emitted result type is a
+matter of documentation for the associated operation.</p></li>
+<li><p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, emitters have one completion channel, whereas senders have
+three (“value”, “error”, and “stopped”). Emitters transmit the
+success/error/cancellation state via their <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> value.</p></li>
+<li><p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> has the concept of operation cancellation, but does not use stop
+tokens. Instead, an <a class="reference internal" href="../../ref/handler/#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref any cpp cpp-class docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a> uses
+<a class="reference internal" href="../../ref/handler/#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="amongoc_handler_vtable::register_stop"><code class="xref any cpp cpp-func docutils literal notranslate"><span class="pre">amongoc_handler_vtable::register_stop()</span></code></a> to connect stop callbacks for an
+operation.</p></li>
+</ol>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../consider/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../../dev/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#emitters-handlers">Emitters &amp; Handlers</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emitters">Emitters</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#handlers">Handlers</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-an-emitter-s-result">Accessing an Emitter’s Result</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prior-art-senders-receivers">Prior Art - Senders &amp; Receivers</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

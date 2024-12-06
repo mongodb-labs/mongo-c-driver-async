@@ -1,0 +1,860 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Declaratively Parsing BSON Objects &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/bson-parsing';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="prev" title="Declaratively Building BSON Documents" href="../bson-building/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/bson-parsing.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Declaratively Parsing BSON Objects</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-constructs">High-Level Constructs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parse-state">Parse State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parser-rules">Parser Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11just_acceptE"><code class="docutils literal notranslate"><span class="pre">just_accept</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11just_rejectE"><code class="docutils literal notranslate"><span class="pre">just_reject</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse13reject_othersE"><code class="docutils literal notranslate"><span class="pre">reject_others</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE"><code class="docutils literal notranslate"><span class="pre">type_rule</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R"><code class="docutils literal notranslate"><span class="pre">type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse6actionE"><code class="docutils literal notranslate"><span class="pre">action</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse5storeE"><code class="docutils literal notranslate"><span class="pre">store</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse4mustE"><code class="docutils literal notranslate"><span class="pre">must</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE"><code class="docutils literal notranslate"><span class="pre">field</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse5field5fieldE16std__string_view1R"><code class="docutils literal notranslate"><span class="pre">field()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R"><code class="docutils literal notranslate"><span class="pre">require()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN4bson5parse3anyE"><code class="docutils literal notranslate"><span class="pre">any</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN4bson5parse3allE"><code class="docutils literal notranslate"><span class="pre">all</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse4eachE"><code class="docutils literal notranslate"><span class="pre">each</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse5maybeE"><code class="docutils literal notranslate"><span class="pre">maybe</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE"><code class="docutils literal notranslate"><span class="pre">doc</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R"><code class="docutils literal notranslate"><span class="pre">must_parse()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res"><code class="docutils literal notranslate"><span class="pre">describe_error()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-concepts">Low-Level Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4bson5parse4ruleE"><code class="docutils literal notranslate"><span class="pre">rule</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse11result_typeE"><code class="docutils literal notranslate"><span class="pre">result_type</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11result_type6resultE"><code class="docutils literal notranslate"><span class="pre">result</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11result_type3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstateE"><code class="docutils literal notranslate"><span class="pre">pstate</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate6rejectE"><code class="docutils literal notranslate"><span class="pre">reject</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate6acceptE"><code class="docutils literal notranslate"><span class="pre">accept</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate5errorE"><code class="docutils literal notranslate"><span class="pre">error</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="declaratively-parsing-bson-objects">
+<h1>Declaratively Parsing BSON Objects<a class="headerlink" href="#declaratively-parsing-bson-objects" title="Link to this heading">#</a></h1>
+<p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>’s BSON library contains a submodule for declaratively decomposing
+BSON values and heirarchies declaratively.</p>
+<section id="high-level-constructs">
+<h2>High-Level Constructs<a class="headerlink" href="#high-level-constructs" title="Link to this heading">#</a></h2>
+<section id="parse-state">
+<h3>Parse State<a class="headerlink" href="#parse-state" title="Link to this heading">#</a></h3>
+<p>A parse rule has one of three result states after being tested on a value:</p>
+<dl class="simple">
+<dt>acceptance</dt><dd><p>The rule successfully parsed the given value.</p>
+</dd>
+<dt>local error / soft failure / reject</dt><dd><p>The rule rejects the given value. This will not necessarily reject the entire
+value.</p>
+</dd>
+<dt>global error / hard failure / error</dt><dd><p>The rule rejects the given value, and all parent rules should reject
+immediately.</p>
+</dd>
+</dl>
+</section>
+<section id="parser-rules">
+<h3>Parser Rules<a class="headerlink" href="#parser-rules" title="Link to this heading">#</a></h3>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse11just_acceptE">
+<span id="_CPPv3N4bson5parse11just_acceptE"></span><span id="_CPPv2N4bson5parse11just_acceptE"></span><span id="bson::parse::just_accept"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">just_accept</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse11just_acceptE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse11just_rejectE">
+<span id="_CPPv3N4bson5parse11just_rejectE"></span><span id="_CPPv2N4bson5parse11just_rejectE"></span><span id="bson::parse::just_reject"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">just_reject</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse11just_rejectE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse13reject_othersE">
+<span id="_CPPv3N4bson5parse13reject_othersE"></span><span id="_CPPv2N4bson5parse13reject_othersE"></span><span id="bson::parse::reject_others"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">reject_others</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse13reject_othersE" title="Link to this definition">#</a><br /></dt>
+<dd><p>These special rules will parse anything and immediately <em>accept</em> or <em>reject</em>,
+respectively.</p>
+<p>These are useful e.g. to test for the existence/absence of a document element
+without inspecting its value.</p>
+<p>The <a class="reference internal" href="#_CPPv4N4bson5parse13reject_othersE" title="bson::parse::reject_others"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reject_others</span></code></a> rule is used with the <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::parse::doc</span></code></a> rule combinator
+to enforce that the document does not contain any elements that were otherwise
+unexpected.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE">
+<span id="_CPPv3I0_4ruleI1TEEN4bson5parse9type_ruleE"></span><span id="_CPPv2I0_4ruleI1TEEN4bson5parse9type_ruleE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">type_rule</span></span></span><a class="headerlink" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><span class="n">rule</span></a><span class="p">&lt;</span><a class="reference internal" href="../../ref/bson/iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n">bson_iterator</span></a><span class="p">::</span><a class="reference internal" href="../../ref/bson/iter/#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><span class="n">reference</span></a><span class="p">&gt;</span></span> that checks that a document elements
+contains a value convertible to <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>, and that the value matches rule <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule::R"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">R</span></code></a>. The
+wrapped rule will be invoked with the converted instance of <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a>.</p>
+<p>Use the shorthand <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::parse::type()</span></code></a> to create <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type_rule</span></code></a> instances.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R">
+<span id="_CPPv3I0_4ruleI1TEEN4bson5parse4typeERR1R"></span><span id="_CPPv2I0_4ruleI1TEEN4bson5parse4typeERR1R"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4bson5parse11just_acceptE" title="bson::parse::just_accept"><span class="n"><span class="pre">just_accept</span></span></a><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">type</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rule</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="o"><span class="pre">-&gt;</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule"><span class="n"><span class="pre">type_rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::R"><span class="n"><span class="pre">R</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE" title="bson::parse::type_rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">type_rule</span></code></a> rule for the type <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> and the parsing rule <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">rule</span></code></a>. If no
+<a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R" title="bson::parse::type::rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">rule</span></code></a> is given, then the type rule will simply check the type without
+inspecting the value.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson5parse6actionE">
+<span id="_CPPv3I0EN4bson5parse6actionE"></span><span id="_CPPv2I0EN4bson5parse6actionE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">action</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson5parse6actionE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A parser rule that executes the function <a class="reference internal" href="#_CPPv4I0EN4bson5parse6actionE" title="bson::parse::action::F"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">F</span></code></a> with the value being inspected.
+Always accepts its argument</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson5parse5storeE">
+<span id="_CPPv3I0EN4bson5parse5storeE"></span><span id="_CPPv2I0EN4bson5parse5storeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">store</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson5parse5storeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A parser rule that stores its operand in a target. The type <a class="reference internal" href="#_CPPv4I0EN4bson5parse5storeE" title="bson::parse::store::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> should usually
+be an lvalue reference. If <a class="reference internal" href="#_CPPv4I0EN4bson5parse5storeE" title="bson::parse::store::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> is not just a <a class="reference internal" href="../../ref/bson/iter/#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_iterator::reference</span></code></a>, then
+the rule will also check that the operand is of the correct type.</p>
+<p>Upon storing, accepts.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson5parse4mustE">
+<span id="_CPPv3I0EN4bson5parse4mustE"></span><span id="_CPPv2I0EN4bson5parse4mustE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">must</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson5parse4mustE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special rule combinator that upgrades parse rejections to parse errors. If
+the wrapped rule rejects, then the resulting error becomes a global failure.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This rule has special meaning when used with <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE">
+<span id="_CPPv3I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE"></span><span id="_CPPv2I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../../ref/bson/iter/#_CPPv413bson_iterator" title="bson_iterator"><span class="n"><span class="pre">bson_iterator</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../../ref/bson/iter/#_CPPv4N13bson_iterator9referenceE" title="bson_iterator::reference"><span class="n"><span class="pre">reference</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">field</span></span></span><a class="headerlink" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Searches for an element within a document with the given key and matching the
+given rule <a class="reference internal" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE" title="bson::parse::field::R"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">R</span></code></a>. This rule can be invoked with either an element reference to
+test a single element, or a <a class="reference internal" href="../../ref/bson/view/#_CPPv49bson_view" title="bson_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_view</span></code></a> to search for an element with the
+expected key.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse5field5fieldE16std__string_view1R">
+<span id="_CPPv3N4bson5parse5field5fieldE16std__string_view1R"></span><span id="_CPPv2N4bson5parse5field5fieldE16std__string_view1R"></span><span id="bson::parse::field::field__std__string_view.R"></span><span class="sig-name descname"><span class="n"><span class="pre">field</span></span></span><span class="sig-paren">(</span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>, <a class="reference internal" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE" title="bson::parse::field::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">r</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N4bson5parse5field5fieldE16std__string_view1R" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a field rule that searches for an element with <a class="reference internal" href="#_CPPv4N4bson5parse5field5fieldE16std__string_view1R" title="bson::parse::field::field::key"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">key</span></code></a> and matching
+the rule <a class="reference internal" href="#_CPPv4N4bson5parse5field5fieldE16std__string_view1R" title="bson::parse::field::field::r"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">r</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R">
+<span id="_CPPv3I_4ruleI9referenceEEN4bson5parse7requireE16std__string_viewRR1R"></span><span id="_CPPv2I_4ruleI9referenceEEN4bson5parse7requireE16std__string_viewRR1R"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R" title="bson::parse::require::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><span class="n"><span class="pre">must</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE" title="bson::parse::field"><span class="n"><span class="pre">field</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R" title="bson::parse::require::R"><span class="n"><span class="pre">R</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">require</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><span class="n"><span class="pre">std::string_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">key</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R" title="bson::parse::require::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rule</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R" title="Link to this definition">#</a><br /></dt>
+<dd><p>Shorthand to create a <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><span class="n">must</span></a><span class="p">&lt;</span><a class="reference internal" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE" title="bson::parse::field"><span class="n">field</span></a><span class="p">&lt;</span><a class="reference internal" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R" title="bson::parse::require::R"><span class="n">R</span></a><span class="p">&gt;</span><span class="p">&gt;</span></span> rule.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN4bson5parse3anyE">
+<span id="_CPPv3IDpEN4bson5parse3anyE"></span><span id="_CPPv2IDpEN4bson5parse3anyE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rs</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">any</span></span></span><a class="headerlink" href="#_CPPv4IDpEN4bson5parse3anyE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A special rule combinator that accepts if any of its sub-rules accepts. Each
+sub-rule is tried in the order they are given. This is a short-circuiting
+operation: When any sub-rule accepts or errors, then the <a class="reference internal" href="#_CPPv4IDpEN4bson5parse3anyE" title="bson::parse::any"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">any</span></code></a> rule
+immediately accepts or errors. If <em>all</em> sub-rules reject, then <a class="reference internal" href="#_CPPv4IDpEN4bson5parse3anyE" title="bson::parse::any"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">any</span></code></a> will also
+reject.</p>
+<p>A generated rejection message will explain why each sub-rule was rejected.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4IDpEN4bson5parse3allE">
+<span id="_CPPv3IDpEN4bson5parse3allE"></span><span id="_CPPv2IDpEN4bson5parse3allE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Rs</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">all</span></span></span><a class="headerlink" href="#_CPPv4IDpEN4bson5parse3allE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A rule combinator that accepts only if <em>all</em> of its sub-rules accept. Each
+sub-rule in <a class="reference internal" href="#_CPPv4IDpEN4bson5parse3allE" title="bson::parse::all::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a> is tried in the order they are given as arguments. The
+operation is short-circuiting: If any sub-rule rejects or errors, no
+subsequent rules will be attempted. If any sub-rules rejects, then <a class="reference internal" href="#_CPPv4IDpEN4bson5parse3allE" title="bson::parse::all"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">all</span></code></a>
+will also reject.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_4ruleI9referenceEEN4bson5parse4eachE">
+<span id="_CPPv3I_4ruleI9referenceEEN4bson5parse4eachE"></span><span id="_CPPv2I_4ruleI9referenceEEN4bson5parse4eachE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">each</span></span></span><a class="headerlink" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse4eachE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A rule combinator for arrays or documents treated as an array of elements.</p>
+<p>For each element, tests the given rule. Stops and rejects if any sub-rule
+rejects.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson5parse5maybeE">
+<span id="_CPPv3I0EN4bson5parse5maybeE"></span><span id="_CPPv2I0EN4bson5parse5maybeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">maybe</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson5parse5maybeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A rule combinator that accepts if the inner rule does <em>not</em> generate a <em>hard
+failure</em>.</p>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE">
+<span id="_CPPv3I_Dp4ruleI9referenceEEN4bson5parse3docE"></span><span id="_CPPv2I_Dp4ruleI9referenceEEN4bson5parse3docE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Rs</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">doc</span></span></span><a class="headerlink" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A parsing rule that expects a document or array and decomposes it according to
+the rules <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a>.</p>
+<p>Given a document or array <span class="math notranslate nohighlight">\(D\)</span>:</p>
+<ul>
+<li><p>For each element <span class="math notranslate nohighlight">\(E\)</span> in <span class="math notranslate nohighlight">\(D\)</span>:</p>
+<ul class="simple">
+<li><p>If all rules in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a> have accepted an element, <strong>accept</strong> <span class="math notranslate nohighlight">\(D\)</span> and <strong>stop</strong>
+(parsing stops once all rules are satisfied)</p></li>
+<li><p>For each rule <span class="math notranslate nohighlight">\(R\)</span> in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a>:</p>
+<ul>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> has already accepted any previous element, <strong>skip</strong> <span class="math notranslate nohighlight">\(R\)</span> (a rule
+will only be tried until it accepts at most once).</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> is a <a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">must</span></code></a> rule that wraps a rule <span class="math notranslate nohighlight">\(R_1\)</span>, let <span class="math notranslate nohighlight">\(R_1\)</span> take the
+place of <span class="math notranslate nohighlight">\(R\)</span> in the following steps (unwraps a <a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">must</span></code></a> rule: <a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">must</span></code></a> is
+handled after the full loop over <span class="math notranslate nohighlight">\(D\)</span>).</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> <strong>accepts</strong> <span class="math notranslate nohighlight">\(E\)</span>, <strong>skip</strong> to the next element in <span class="math notranslate nohighlight">\(D\)</span> and restart
+the loop over <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a>.</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> <strong>errors</strong> on <span class="math notranslate nohighlight">\(E\)</span>, <strong>error</strong> on <span class="math notranslate nohighlight">\(D\)</span> and <strong>stop</strong>.</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> is <a class="reference internal" href="#_CPPv4N4bson5parse13reject_othersE" title="bson::parse::reject_others"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reject_others</span></code></a>, <strong>reject</strong> <span class="math notranslate nohighlight">\(D\)</span> and <strong>stop</strong>. (<a class="reference internal" href="#_CPPv4N4bson5parse13reject_othersE" title="bson::parse::reject_others"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reject_others</span></code></a>
+should only be used as the final rule in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a>, otherwise subsequent
+rules will be unreachable)</p></li>
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> <strong>rejects</strong> <span class="math notranslate nohighlight">\(E\)</span>, continue.</p></li>
+</ul>
+</li>
+<li><p>(If no rule in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a> accepted or errored on <span class="math notranslate nohighlight">\(E\)</span>, then <span class="math notranslate nohighlight">\(E\)</span> will just be ignored.)</p></li>
+</ul>
+</li>
+<li><p>Finally, for each rule <span class="math notranslate nohighlight">\(R\)</span> in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a>:</p>
+<ul class="simple">
+<li><p>If <span class="math notranslate nohighlight">\(R\)</span> is a <a class="reference internal" href="#_CPPv4I0EN4bson5parse4mustE" title="bson::parse::must"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">must</span></code></a> rule and it did not accept any element in <span class="math notranslate nohighlight">\(D\)</span>,
+<strong>reject</strong> <span class="math notranslate nohighlight">\(D\)</span> completely.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If any other rule in <a class="reference internal" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE" title="bson::parse::doc::Rs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Rs</span></code></a> did not match anything in <span class="math notranslate nohighlight">\(D\)</span>, the rule
+is silently ignored.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <a class="reference internal" href="#_CPPv4N4bson5parse13reject_othersE" title="bson::parse::reject_others"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reject_others</span></code></a> is not present in the ruleset, unmatched elements
+are silently ignored.</p>
+</div>
+</li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="utilities">
+<h3>Utilities<a class="headerlink" href="#utilities" title="Link to this heading">#</a></h3>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R">
+<span id="_CPPv3I0_4ruleI1TEEN4bson5parse10must_parseERK1TRR1R"></span><span id="_CPPv2I0_4ruleI1TEEN4bson5parse10must_parseERK1TRR1R"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::rule"><span class="n"><span class="pre">rule</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">must_parse</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::R"><span class="n"><span class="pre">R</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">rule</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="Link to this definition">#</a><br /></dt>
+<dd><p>Attempt to parse <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a> using <a class="reference internal" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R" title="bson::parse::must_parse::rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">rule</span></code></a>. If the parser rejects or errors, throws
+a <a class="reference external" href="https://en.cppreference.com/w/cpp/error/system_error" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::system_error</span></code></a> with <code class="docutils literal notranslate"><span class="pre">EPROTO</span></code> containing the error message string
+describing the failure.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res">
+<span id="_CPPv3I_11result_typeEN4bson5parse14describe_errorERK3Res"></span><span id="_CPPv2I_11result_typeEN4bson5parse14describe_errorERK3Res"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN4bson5parse11result_typeE" title="bson::parse::result_type"><span class="n"><span class="pre">result_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Res</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string" title="(in cppreference v0)"><span class="n"><span class="pre">std::string</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">describe_error</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res" title="bson::parse::describe_error::Res"><span class="n"><span class="pre">Res</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">res</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res" title="Link to this definition">#</a><br /></dt>
+<dd><p>Generate a string that describes the result <a class="reference internal" href="#_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res" title="bson::parse::describe_error::res"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">res</span></code></a> which was returned by a
+parse rule.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="low-level-concepts">
+<h2>Low-Level Concepts<a class="headerlink" href="#low-level-concepts" title="Link to this heading">#</a></h2>
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN4bson5parse4ruleE">
+<span id="_CPPv3I00EN4bson5parse4ruleE"></span><span id="_CPPv2I00EN4bson5parse4ruleE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">R</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Arg</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">rule</span></span></span><a class="headerlink" href="#_CPPv4I00EN4bson5parse4ruleE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A type <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code> satisfies the requirements for <a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">rule</span></code></a> if it is <em>invocable</em> with an
+<a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule::Arg"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">Arg</span></code></a> instance and such an invocation returns a type that satisfies
+<a class="reference internal" href="#_CPPv4I0EN4bson5parse11result_typeE" title="bson::parse::result_type"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result_type</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4bson5parse11result_typeE">
+<span id="_CPPv3I0EN4bson5parse11result_typeE"></span><span id="_CPPv2I0EN4bson5parse11result_typeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">result_type</span></span></span><a class="headerlink" href="#_CPPv4I0EN4bson5parse11result_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A type that is returned by a <a class="reference internal" href="#_CPPv4I00EN4bson5parse4ruleE" title="bson::parse::rule"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">rule</span></code></a> for attempting to perform a parse.</p>
+<p class="rubric">Given</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse11result_type6resultE">
+<span id="_CPPv3N4bson5parse11result_type6resultE"></span><span id="_CPPv2N4bson5parse11result_type6resultE"></span><span id="bson::parse::result_type::result__TC"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN4bson5parse11result_typeE" title="bson::parse::result_type::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">result</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse11result_type6resultE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse11result_type3outE">
+<span id="_CPPv3N4bson5parse11result_type3outE"></span><span id="_CPPv2N4bson5parse11result_type3outE"></span><span id="bson::parse::result_type::out__std::output_iterator:c:"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">output_iterator</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">char</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">out</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse11result_type3outE" title="Link to this definition">#</a><br /></dt>
+<dd><p><strong>Requires</strong>:</p>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson5parse11result_type6resultE" title="bson::parse::result_type::result"><span class="n">result</span></a><span class="p">.</span><span class="n">state</span><span class="p">(</span><span class="p">)</span></span> returns a <a class="reference internal" href="#_CPPv4N4bson5parse6pstateE" title="bson::parse::pstate"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">pstate</span></code></a> value.</p></li>
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4bson5parse11result_type6resultE" title="bson::parse::result_type::result"><span class="n">result</span></a><span class="p">.</span><span class="n">format_to</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4bson5parse11result_type3outE" title="bson::parse::result_type::out"><span class="n">out</span></a><span class="p">)</span></span> returns the same type as <a class="reference internal" href="#_CPPv4N4bson5parse11result_type3outE" title="bson::parse::result_type::out"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">out</span></code></a>. This
+function may write characters into the given output iterator to describe
+the result (e.g. an error message).</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp enum">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse6pstateE">
+<span id="_CPPv3N4bson5parse6pstateE"></span><span id="_CPPv2N4bson5parse6pstateE"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">bson</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">parse</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">pstate</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse6pstateE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse6pstate6rejectE">
+<span id="_CPPv3N4bson5parse6pstate6rejectE"></span><span id="_CPPv2N4bson5parse6pstate6rejectE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reject</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse6pstate6rejectE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse6pstate6acceptE">
+<span id="_CPPv3N4bson5parse6pstate6acceptE"></span><span id="_CPPv2N4bson5parse6pstate6acceptE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">accept</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse6pstate6acceptE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4bson5parse6pstate5errorE">
+<span id="_CPPv3N4bson5parse6pstate5errorE"></span><span id="_CPPv2N4bson5parse6pstate5errorE"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">error</span></span></span><a class="headerlink" href="#_CPPv4N4bson5parse6pstate5errorE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Rule result states for local rejection, success, and global errors,
+respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../bson-building/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Declaratively Building BSON Documents</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-constructs">High-Level Constructs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parse-state">Parse State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#parser-rules">Parser Rules</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11just_acceptE"><code class="docutils literal notranslate"><span class="pre">just_accept</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11just_rejectE"><code class="docutils literal notranslate"><span class="pre">just_reject</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse13reject_othersE"><code class="docutils literal notranslate"><span class="pre">reject_others</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse9type_ruleE"><code class="docutils literal notranslate"><span class="pre">type_rule</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse4typeE9type_ruleI1T1RERR1R"><code class="docutils literal notranslate"><span class="pre">type()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse6actionE"><code class="docutils literal notranslate"><span class="pre">action</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse5storeE"><code class="docutils literal notranslate"><span class="pre">store</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse4mustE"><code class="docutils literal notranslate"><span class="pre">must</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleIN13bson_iterator9referenceEEEN4bson5parse5fieldE"><code class="docutils literal notranslate"><span class="pre">field</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse5field5fieldE16std__string_view1R"><code class="docutils literal notranslate"><span class="pre">field()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse7requireE4mustI5fieldI1REE16std__string_viewRR1R"><code class="docutils literal notranslate"><span class="pre">require()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN4bson5parse3anyE"><code class="docutils literal notranslate"><span class="pre">any</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4IDpEN4bson5parse3allE"><code class="docutils literal notranslate"><span class="pre">all</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_4ruleI9referenceEEN4bson5parse4eachE"><code class="docutils literal notranslate"><span class="pre">each</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse5maybeE"><code class="docutils literal notranslate"><span class="pre">maybe</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_Dp4ruleI9referenceEEN4bson5parse3docE"><code class="docutils literal notranslate"><span class="pre">doc</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utilities">Utilities</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0_4ruleI1TEEN4bson5parse10must_parseEvRK1TRR1R"><code class="docutils literal notranslate"><span class="pre">must_parse()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I_11result_typeEN4bson5parse14describe_errorE11std__stringRK3Res"><code class="docutils literal notranslate"><span class="pre">describe_error()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#low-level-concepts">Low-Level Concepts</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN4bson5parse4ruleE"><code class="docutils literal notranslate"><span class="pre">rule</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4bson5parse11result_typeE"><code class="docutils literal notranslate"><span class="pre">result_type</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11result_type6resultE"><code class="docutils literal notranslate"><span class="pre">result</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse11result_type3outE"><code class="docutils literal notranslate"><span class="pre">out</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstateE"><code class="docutils literal notranslate"><span class="pre">pstate</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate6rejectE"><code class="docutils literal notranslate"><span class="pre">reject</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate6acceptE"><code class="docutils literal notranslate"><span class="pre">accept</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4bson5parse6pstate5errorE"><code class="docutils literal notranslate"><span class="pre">error</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

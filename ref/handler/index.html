@@ -1,0 +1,1090 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Handler APIs &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'ref/handler';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="BSON Library" href="../bson/" />
+    <link rel="prev" title="Type: amongoc_loop" href="../loop/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/ref/handler.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Handler APIs</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-types">C Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_handler"><code class="docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler1TE"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8UserDataE"><code class="docutils literal notranslate"><span class="pre">UserData</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8userdataE"><code class="docutils literal notranslate"><span class="pre">userdata</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler6vtableE"><code class="docutils literal notranslate"><span class="pre">vtable</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO15amongoc_handler9as_uniqueEv"><code class="docutils literal notranslate"><span class="pre">as_unique()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_handler_vtable"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_vtable</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">register_stop()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">C++ Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handlerE"><code class="docutils literal notranslate"><span class="pre">unique_handler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc14unique_handler14get_stop_tokenEv"><code class="docutils literal notranslate"><span class="pre">get_stop_token()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc14unique_handler13get_allocatorEv"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">register_stop()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO7amongoc14unique_handler7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handlerclERR14emitter_result"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418handler_stop_token"><code class="docutils literal notranslate"><span class="pre">handler_stop_token</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token18handler_stop_tokenERK15amongoc_handler"><code class="docutils literal notranslate"><span class="pre">handler_stop_token()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18handler_stop_token13stop_possibleEv"><code class="docutils literal notranslate"><span class="pre">stop_possible()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18handler_stop_token14stop_requestedEv"><code class="docutils literal notranslate"><span class="pre">stop_requested()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN18handler_stop_token13callback_typeE"><code class="docutils literal notranslate"><span class="pre">callback_type</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F"><code class="docutils literal notranslate"><span class="pre">callback_type()</span></code></a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token13callback_typeD0Ev"><code class="docutils literal notranslate"><span class="pre">~callback_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_complete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">amongoc_register_stop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_get_allocator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_handler_delete15amongoc_handler"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-handler-associated-allocator">The Handler-Associated Allocator</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="handler-apis">
+<h1>Handler APIs<a class="headerlink" href="#handler-apis" title="Link to this heading">#</a></h1>
+<dl class="std header-file">
+<dt class="sig sig-object std" id="header-file-amongoc-handler.h">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/handler.h</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-handler.h" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="header-file-amongoc-handler.hpp">
+<span class="sig-prename descclassname"><span class="pre">&lt;</span></span><span class="sig-name descname"><span class="pre">amongoc/handler.hpp</span></span><span class="sig-prename descclassname"><span class="pre">&gt;</span></span><span class="w"> </span><em class="property"><span class="pre">(header</span> <span class="pre">file)</span></em><a class="headerlink" href="#header-file-amongoc-handler.hpp" title="Link to this definition">#</a></dt>
+<dd><p>Contains APIs for working with <a class="reference internal" href="../glossary/#term-handler"><span class="xref std std-term">handlers</span></a>.</p>
+</dd></dl>
+
+<section id="types">
+<h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
+<section id="c-types">
+<h3>C Types<a class="headerlink" href="#c-types" title="Link to this heading">#</a></h3>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv415amongoc_handler">
+<span id="_CPPv315amongoc_handler"></span><span id="_CPPv215amongoc_handler"></span><span id="amongoc_handler"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_handler</span></span></span><a class="headerlink" href="#_CPPv415amongoc_handler" title="Link to this definition">#</a><br /></dt>
+<dd><p>A generic asynchronous-operation-completion-handler type, with some additional
+controls for operation cancellation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N15amongoc_handler1TE">
+<span id="_CPPv3N15amongoc_handler1TE"></span><span id="_CPPv2N15amongoc_handler1TE"></span><span id="amongoc_handler::T"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><a class="headerlink" href="#_CPPv4N15amongoc_handler1TE" title="Link to this definition">#</a><br /></dt>
+<dd><p>(Exposition-only for <a class="reference internal" href="../meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a>) The result type expected by the handler
+for <a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_vtable::complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_vtable::complete()</span></code></a>. A handler should also accept
+<a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a> in the case that the completion status is non-successful.</p>
+<p>When an <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a> return value or parameter is annotated with
+<a class="reference internal" href="../meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a>, the attribute specifies this <a class="reference internal" href="#_CPPv4N15amongoc_handler1TE" title="amongoc_handler::T"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">T</span></code></a> type.</p>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N15amongoc_handler8UserDataE">
+<span id="_CPPv3N15amongoc_handler8UserDataE"></span><span id="_CPPv2N15amongoc_handler8UserDataE"></span><span id="amongoc_handler::UserData"></span><span class="k"><span class="pre">type</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UserData</span></span></span><a class="headerlink" href="#_CPPv4N15amongoc_handler8UserDataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>(Exposition-only for <a class="reference internal" href="../meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a>) The type contained within <a class="reference internal" href="#_CPPv4N15amongoc_handler8userdataE" title="amongoc_handler::userdata"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">userdata</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N15amongoc_handler8userdataE">
+<span id="_CPPv3N15amongoc_handler8userdataE"></span><span id="_CPPv2N15amongoc_handler8userdataE"></span><span id="amongoc_handler::userdata__amongoc_box"></span><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(UserData)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">userdata</span></span></span><a class="headerlink" href="#_CPPv4N15amongoc_handler8userdataE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The data associated with this handler object.</p>
+</dd></dl>
+
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N15amongoc_handler6vtableE">
+<span id="_CPPv3N15amongoc_handler6vtableE"></span><span id="_CPPv2N15amongoc_handler6vtableE"></span><span id="amongoc_handler::vtable__amongoc_handler_vtableCP"></span><a class="reference internal" href="#_CPPv422amongoc_handler_vtable" title="amongoc_handler_vtable"><span class="n"><span class="pre">amongoc_handler_vtable</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">vtable</span></span></span><a class="headerlink" href="#_CPPv4N15amongoc_handler6vtableE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Pointers to methodd for the handler object.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NO15amongoc_handler9as_uniqueEv">
+<span id="_CPPv3NO15amongoc_handler9as_uniqueEv"></span><span id="_CPPv2NO15amongoc_handler9as_uniqueEv"></span><span id="amongoc_handler::as_uniqueO"></span><span class="sig-name descname"><span class="n"><span class="pre">as_unique</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">&amp;&amp;</span></span><a class="headerlink" href="#_CPPv4NO15amongoc_handler9as_uniqueEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>(C++) Move the handler into an <a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerE" title="amongoc::unique_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler</span></code></a> to be managed automatically</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE">
+<span id="_CPPv3N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE"></span><span id="_CPPv2N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE"></span><span id="amongoc_handler::complete__amongoc_status.amongoc::unique_boxRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">complete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>, <span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../box/#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_complete()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv422amongoc_handler_vtable">
+<span id="_CPPv322amongoc_handler_vtable"></span><span id="_CPPv222amongoc_handler_vtable"></span><span id="amongoc_handler_vtable"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_handler_vtable</span></span></span><a class="headerlink" href="#_CPPv422amongoc_handler_vtable" title="Link to this definition">#</a><br /></dt>
+<dd><p>The set of function pointers that handle actions for an <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>. The
+“member functions” described here are actually function pointer member
+variables that should be filled-out by the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box">
+<span id="_CPPv3N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box"></span><span id="_CPPv2N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box"></span><span id="amongoc_handler_vtable::complete__amongoc_handlerP.amongoc_status.amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">complete</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">self</span></span>,</dd>
+<dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">result</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>The function that handles the completion of an associated operation. This
+function is <strong>required</strong> to be defined for all handler objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Pointer to the handler object being completed.</p></li>
+<li><p><strong>st</strong> – The status of the operation.</p></li>
+<li><p><strong>result</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The result value of the operation.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_complete()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE">
+<span id="_CPPv3N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE"></span><span id="_CPPv2N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE"></span><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_stop</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">self</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">callback</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="p"><span class="pre">)</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">optional</span><span class="p"><span class="pre">]]</span></span><a class="headerlink" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Register a stop callback with the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Pointer to the handler object.</p></li>
+<li><p><strong>userdata</strong> – An arbitrary pointer that should be used when the <a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="amongoc_handler_vtable::register_stop::callback"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">callback</span></code></a> is invoked
+during operation cancellation.</p></li>
+<li><p><strong>callback</strong> – The callback function that should be invoked to cancel the associated
+operation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A cookie value that when destroyed will disconnect the stop callback.</p>
+</dd>
+</dl>
+<p>This is used by asynchronous operations to implement cancellation. Before an
+operation begins, it <em>may</em> call <a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="amongoc_handler_vtable::register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">register_stop()</span></code></a> to register a callback that
+should be invoked to cause the cancellation of the associated operation.</p>
+<p>If this callback is not set for a handler, then cancelling the operation
+will not be possible.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Instead of calling this API function directly, use <a class="reference internal" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE" title="amongoc_register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_register_stop()</span></code></a> or
+<a class="reference internal" href="#_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE" title="amongoc::unique_handler::register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler::register_stop()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator">
+<span id="_CPPv3N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator"></span><span id="_CPPv2N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator"></span><span id="amongoc_handler_vtable::get_allocator__amongoc_handlerCP.mlib_allocator"></span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_allocator</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">self</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dflt</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">optional</span><span class="p"><span class="pre">]]</span></span><a class="headerlink" href="#_CPPv4N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain an allocator associated with this handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>self</strong> – Pointer to the handler object</p></li>
+<li><p><strong>dflt</strong> – The default allocator that should be returned if the handler
+does not provide an allocator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function must return a valid allocator that is associated with the
+handler object.</p>
+</dd>
+</dl>
+<p>If this function is omitted, then the handler will not have an associated
+allocator.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#handler-allocator"><span class="std std-ref">The Handler-Associated Allocator</span></a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t call this directly. Use: <a class="reference internal" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator" title="amongoc_handler_get_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_get_allocator()</span></code></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="id1">
+<h3>C++ Types<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc14unique_handlerE">
+<span id="_CPPv3N7amongoc14unique_handlerE"></span><span id="_CPPv2N7amongoc14unique_handlerE"></span><span id="amongoc::unique_handler"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">unique_handler</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc14unique_handlerE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Provides a move-only wrapper around <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>, preventing programmer
+error and ensuring desctruction of the associated object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.hpp"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.hpp</span></code></a></p>
+</dd>
+</dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc14unique_handler14get_stop_tokenEv">
+<span id="_CPPv3NK7amongoc14unique_handler14get_stop_tokenEv"></span><span id="_CPPv2NK7amongoc14unique_handler14get_stop_tokenEv"></span><span id="amongoc::unique_handler::get_stop_tokenC"></span><a class="reference internal" href="#_CPPv418handler_stop_token" title="handler_stop_token"><span class="n"><span class="pre">handler_stop_token</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_stop_token</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc14unique_handler14get_stop_tokenEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a stop token associated with the handler object.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK7amongoc14unique_handler13get_allocatorEv">
+<span id="_CPPv3NK7amongoc14unique_handler13get_allocatorEv"></span><span id="_CPPv2NK7amongoc14unique_handler13get_allocatorEv"></span><span id="amongoc::unique_handler::get_allocatorC"></span><span class="n"><span class="pre">allocator</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_allocator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK7amongoc14unique_handler13get_allocatorEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the allocator associated with the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator" title="amongoc_handler_get_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_get_allocator()</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#handler-allocator"><span class="std std-ref">The Handler-Associated Allocator</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa">
+<span id="_CPPv3N7amongoc14unique_handler4fromE9allocatorIERRDa"></span><span id="_CPPv2N7amongoc14unique_handler4fromE9allocatorIERRDa"></span><span id="amongoc::unique_handler::from__allocator::.autoRR"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerE" title="amongoc::unique_handler"><span class="n"><span class="pre">unique_handler</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">from</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">allocator</span></span><span class="p"><span class="pre">&lt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">a</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a <a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerE" title="amongoc::unique_handler"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">unique_handler</span></code></a> from an invocable object. The object <a class="reference internal" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa" title="amongoc::unique_handler::from::fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">fn</span></code></a>
+must be invocable with an <a class="reference internal" href="../emitter/#_CPPv4N7amongoc14emitter_resultE" title="amongoc::emitter_result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">emitter_result</span></code></a> argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> – An allocator used to allocate the handler’s state, and may be
+associated with the new handler.</p></li>
+<li><p><strong>fn</strong> – The invocable object that will be called as the completion
+callback for the handler.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Allocation<span class="colon">:</span></dt>
+<dd class="field-even"><p>Allocation of the handler’s state data will be performed using
+<a class="reference internal" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa" title="amongoc::unique_handler::from::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a>. <strong>If</strong> the invocable <a class="reference internal" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa" title="amongoc::unique_handler::from::fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">fn</span></code></a> has an associated <a class="reference internal" href="../alloc/#_CPPv4I0EN4mlib9allocatorE" title="mlib::allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::allocator</span></code></a> <span class="math notranslate nohighlight">\(A'\)</span>,
+then the returned handler will use <span class="math notranslate nohighlight">\(A'\)</span> as its associated allocator,
+otherwise it will use <a class="reference internal" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa" title="amongoc::unique_handler::from::a"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">a</span></code></a>.</p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Note that the <a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="amongoc_handler_vtable::register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_vtable::register_stop()</span></code></a> function will not be
+defined, so the new handler will not have cancellation support.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box">
+<span id="_CPPv3N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box"></span><span id="_CPPv2N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box"></span><span id="amongoc::unique_handler::complete__amongoc_status.unique_boxRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">complete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>, <a class="reference internal" href="../box/#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_complete()</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE">
+<span id="_CPPv3N7amongoc14unique_handler13register_stopEPvPFvPvE"></span><span id="_CPPv2N7amongoc14unique_handler13register_stopEPvPFvPvE"></span><a class="reference internal" href="../box/#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">register_stop</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">callback</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="p"><span class="pre">)</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">C API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE" title="amongoc_register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_register_stop()</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The returned box must be destroyed before the associated handler is
+destroyed: The box may contain state that refers to the handler object.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NO7amongoc14unique_handler7releaseEv">
+<span id="_CPPv3NO7amongoc14unique_handler7releaseEv"></span><span id="_CPPv2NO7amongoc14unique_handler7releaseEv"></span><span id="amongoc::unique_handler::releaseO"></span><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">release</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">&amp;&amp;</span></span><a class="headerlink" href="#_CPPv4NO7amongoc14unique_handler7releaseEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Relinquish ownership of the managed object and return it to the caller. This
+function is used to interface with C APIs that <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> an
+<a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc14unique_handlerclERR14emitter_result">
+<span id="_CPPv3N7amongoc14unique_handlerclERR14emitter_result"></span><span id="_CPPv2N7amongoc14unique_handlerclERR14emitter_result"></span><span id="amongoc::unique_handler::call-operator__emitter_resultRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">()</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../emitter/#_CPPv4N7amongoc14emitter_resultE" title="amongoc::emitter_result"><span class="n"><span class="pre">emitter_result</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">r</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc14unique_handlerclERR14emitter_result" title="Link to this definition">#</a><br /></dt>
+<dd><p>Invokes <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box" title="amongoc::unique_handler::complete"><span class="n">complete</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerclERR14emitter_result" title="amongoc::unique_handler::operator()::r"><span class="n">r</span></a><span class="p">.</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/utility/move" title="(in cppreference v0)"><span class="n">std::move</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerclERR14emitter_result" title="amongoc::unique_handler::operator()::r"><span class="n">r</span></a><span class="p">)</span><span class="p">.</span><span class="n">value</span><span class="p">)</span></span></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv418handler_stop_token">
+<span id="_CPPv318handler_stop_token"></span><span id="_CPPv218handler_stop_token"></span><span id="handler_stop_token"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">handler_stop_token</span></span></span><a class="headerlink" href="#_CPPv418handler_stop_token" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implements a <em>stopptable token</em> type for use with an <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a>. This
+type is compatible with the standard library stoppable token interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.hpp"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.hpp</span></code></a></p>
+</dd>
+</dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N18handler_stop_token18handler_stop_tokenERK15amongoc_handler">
+<span id="_CPPv3N18handler_stop_token18handler_stop_tokenERK15amongoc_handler"></span><span id="_CPPv2N18handler_stop_token18handler_stop_tokenERK15amongoc_handler"></span><span id="handler_stop_token::handler_stop_token__amongoc_handlerCR"></span><span class="sig-name descname"><span class="n"><span class="pre">handler_stop_token</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18handler_stop_token18handler_stop_tokenERK15amongoc_handler" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a stop token that is bound to the given handler.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK18handler_stop_token13stop_possibleEv">
+<span id="_CPPv3NK18handler_stop_token13stop_possibleEv"></span><span id="_CPPv2NK18handler_stop_token13stop_possibleEv"></span><span id="handler_stop_token::stop_possibleC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop_possible</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK18handler_stop_token13stop_possibleEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">true</span></code> if the associated handler has stop registration methods.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK18handler_stop_token14stop_requestedEv">
+<span id="_CPPv3NK18handler_stop_token14stop_requestedEv"></span><span id="_CPPv2NK18handler_stop_token14stop_requestedEv"></span><span id="handler_stop_token::stop_requestedC"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stop_requested</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK18handler_stop_token14stop_requestedEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Always returns <code class="docutils literal notranslate"><span class="pre">false</span></code> (this stop token only supports callback-based stopping)</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN18handler_stop_token13callback_typeE">
+<span id="_CPPv3I0EN18handler_stop_token13callback_typeE"></span><span id="_CPPv2I0EN18handler_stop_token13callback_typeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">F</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">callback_type</span></span></span><a class="headerlink" href="#_CPPv4I0EN18handler_stop_token13callback_typeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>The stop-callback type to be used with this stop token.</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F">
+<span id="_CPPv3N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F"></span><span id="_CPPv2N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F"></span><span id="handler_stop_token::callback_type::callback_type__handler_stop_token.FRR"></span><span class="sig-name descname"><span class="n"><span class="pre">callback_type</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv418handler_stop_token" title="handler_stop_token"><span class="n"><span class="pre">handler_stop_token</span></span></a>, <a class="reference internal" href="#_CPPv4I0EN18handler_stop_token13callback_typeE" title="handler_stop_token::callback_type::F"><span class="n"><span class="pre">F</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct the stop callback associated with this token, which will invoke
+<a class="reference internal" href="#_CPPv4N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F" title="handler_stop_token::callback_type::callback_type::fn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">fn</span></code></a> when a stop is requested</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N18handler_stop_token13callback_typeD0Ev">
+<span id="_CPPv3N18handler_stop_token13callback_typeD0Ev"></span><span id="_CPPv2N18handler_stop_token13callback_typeD0Ev"></span><span id="handler_stop_token::callback_type::~callback_type"></span><span class="sig-name descname"><span class="n"><span class="pre">~callback_type</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18handler_stop_token13callback_typeD0Ev" title="Link to this definition">#</a><br /></dt>
+<dd><p>Disconnects the stop callback from the stop state.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+<section id="functions-macros">
+<h2>Functions &amp; Macros<a class="headerlink" href="#functions-macros" title="Link to this heading">#</a></h2>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box">
+<span id="_CPPv324amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box"></span><span id="_CPPv224amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box"></span><span id="amongoc_handler_complete__amongoc_handlerP.amongoc_status.amongoc_box"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_handler_complete</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">hnd</span></span>,</dd>
+<dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">res</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dd><p>Invoke the completion callback for the handler.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box" title="amongoc::unique_handler::complete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler::complete()</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>hnd</strong> – The handler to be completed.</p></li>
+<li><p><strong>st</strong> – The status of the operation.</p></li>
+<li><p><strong>res</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The final result value for the operation. Even though
+the parameter is marked with <a class="reference internal" href="../meta-attrs/#doc-attr-type-T"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[type(…)]]</span></code></a> that matches the handler <a class="reference internal" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_complete::hnd"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">hnd</span></code></a>, it is
+likely that he handler must also accept <a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a> in the case that <a class="reference internal" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box" title="amongoc_handler_complete::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a>
+represents failure. Exceptions to this rule will be documented.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>A handler object should be completed <em>at most once</em>.</p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE">
+<span id="_CPPv321amongoc_register_stopPK15amongoc_handlerPvPFvPvE"></span><span id="_CPPv221amongoc_register_stopPK15amongoc_handlerPvPFvPvE"></span><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_register_stop</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">h</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">callback</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">type(V)</span><span class="p"><span class="pre">]]</span></span><span class="p"><span class="pre">)</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Register a stop callback with the handler. This function has no effect if
+<a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE" title="amongoc_handler_vtable::register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_vtable::register_stop()</span></code></a> is not set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE" title="amongoc::unique_handler::register_stop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler::register_stop()</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>h</strong> – The handler object with which to register the callback</p></li>
+<li><p><strong>userdata</strong> – Arbitrary pointer that will be passed to <a class="reference internal" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE" title="amongoc_register_stop::callback"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">callback</span></code></a> at a later point.</p></li>
+<li><p><strong>callback</strong> – The callback function that should cancel the associated operation.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An <a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> cookie object that when destroyed will unregister the
+callback from the handler. The type of value contained by this box is
+unspecified.</p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator">
+<span id="_CPPv329amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator"></span><span id="_CPPv229amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator"></span><span id="amongoc_handler_get_allocator__amongoc_handlerCP.mlib_allocator"></span><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_handler_get_allocator</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">h</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">dflt</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain the allocator associated with an handler object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4NK7amongoc14unique_handler13get_allocatorEv" title="amongoc::unique_handler::get_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler::get_allocator()</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>h</strong> – Pointer to an <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a></p></li>
+<li><p><strong>dflt</strong> – The fallback allocator to be returned if <a class="reference internal" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator" title="amongoc_handler_get_allocator::h"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">h</span></code></a> does not have an
+associated allocator.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Header<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#handler-allocator"><span class="std std-ref">The Handler-Associated Allocator</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv422amongoc_handler_delete15amongoc_handler">
+<span id="_CPPv322amongoc_handler_delete15amongoc_handler"></span><span id="_CPPv222amongoc_handler_delete15amongoc_handler"></span><span id="amongoc_handler_delete__amongoc_handler"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_handler_delete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><span class="n"><span class="pre">amongoc_handler</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">h</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv422amongoc_handler_delete15amongoc_handler" title="Link to this definition">#</a><br /></dt>
+<dd><p>Destroy a handler object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">C++ API<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Use <a class="reference internal" href="#_CPPv4N7amongoc14unique_handlerE" title="amongoc::unique_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_handler</span></code></a></p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-amongoc-handler.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/handler.h</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t call this function on a handler that has been transferred
+elsewhere. This function will usually only be needed when a handler
+is unused, otherwise it will be the responsibility of an <a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_operation</span></code></a>
+to destroy the handler.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="the-handler-associated-allocator">
+<span id="handler-allocator"></span><h2>The Handler-Associated Allocator<a class="headerlink" href="#the-handler-associated-allocator" title="Link to this heading">#</a></h2>
+<p>An <a class="reference internal" href="#_CPPv415amongoc_handler" title="amongoc_handler"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a> may have an associated allocator <span class="math notranslate nohighlight">\(A\)</span>. This can be obtained
+using <a class="reference internal" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator" title="amongoc_handler_get_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_get_allocator()</span></code></a>, and is customizable by providing the
+<a class="reference internal" href="#_CPPv4N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator" title="amongoc_handler_vtable::get_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_handler_vtable::get_allocator()</span></code></a> function pointer on a handler.</p>
+<p>The associated allocator <span class="math notranslate nohighlight">\(A\)</span> will be used to allocate transient operation state
+for the operation to which it is bound. Note that an operation may use a
+different allocator for different aspects of its state depending on how the
+associated <a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a> was constructed. To ensure that all aspects of an
+operation use the same allocator <span class="math notranslate nohighlight">\(A\)</span>, use <span class="math notranslate nohighlight">\(A\)</span> when creating handlers and use the
+same <span class="math notranslate nohighlight">\(A\)</span> when creating emitters.</p>
+<p>High-level APIs will often deal with the creation of handlers, and will accept
+allocators in their interface to be bound with any handlers that they create.</p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../loop/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../bson/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">BSON Library</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-types">C Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_handler"><code class="docutils literal notranslate"><span class="pre">amongoc_handler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler1TE"><code class="docutils literal notranslate"><span class="pre">T</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8UserDataE"><code class="docutils literal notranslate"><span class="pre">UserData</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8userdataE"><code class="docutils literal notranslate"><span class="pre">userdata</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler6vtableE"><code class="docutils literal notranslate"><span class="pre">vtable</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO15amongoc_handler9as_uniqueEv"><code class="docutils literal notranslate"><span class="pre">as_unique()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N15amongoc_handler8completeE14amongoc_statusRRN7amongoc10unique_boxE"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_handler_vtable"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_vtable</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable8completeEP15amongoc_handler14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable13register_stopEPK15amongoc_handlerPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">register_stop()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N22amongoc_handler_vtable13get_allocatorEPK15amongoc_handler14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">C++ Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handlerE"><code class="docutils literal notranslate"><span class="pre">unique_handler</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc14unique_handler14get_stop_tokenEv"><code class="docutils literal notranslate"><span class="pre">get_stop_token()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK7amongoc14unique_handler13get_allocatorEv"><code class="docutils literal notranslate"><span class="pre">get_allocator()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler4fromE9allocatorIERRDa"><code class="docutils literal notranslate"><span class="pre">from()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler8completeE14amongoc_statusRR10unique_box"><code class="docutils literal notranslate"><span class="pre">complete()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handler13register_stopEPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">register_stop()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NO7amongoc14unique_handler7releaseEv"><code class="docutils literal notranslate"><span class="pre">release()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc14unique_handlerclERR14emitter_result"><code class="docutils literal notranslate"><span class="pre">operator()()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418handler_stop_token"><code class="docutils literal notranslate"><span class="pre">handler_stop_token</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token18handler_stop_tokenERK15amongoc_handler"><code class="docutils literal notranslate"><span class="pre">handler_stop_token()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18handler_stop_token13stop_possibleEv"><code class="docutils literal notranslate"><span class="pre">stop_possible()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK18handler_stop_token14stop_requestedEv"><code class="docutils literal notranslate"><span class="pre">stop_requested()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN18handler_stop_token13callback_typeE"><code class="docutils literal notranslate"><span class="pre">callback_type</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token13callback_type13callback_typeE18handler_stop_tokenRR1F"><code class="docutils literal notranslate"><span class="pre">callback_type()</span></code></a></li>
+<li class="toc-h6 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N18handler_stop_token13callback_typeD0Ev"><code class="docutils literal notranslate"><span class="pre">~callback_type()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions-macros">Functions &amp; Macros</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv424amongoc_handler_completeP15amongoc_handler14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_complete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_register_stopPK15amongoc_handlerPvPFvPvE"><code class="docutils literal notranslate"><span class="pre">amongoc_register_stop()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv429amongoc_handler_get_allocatorPK15amongoc_handler14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_get_allocator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_handler_delete15amongoc_handler"><code class="docutils literal notranslate"><span class="pre">amongoc_handler_delete()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-handler-associated-allocator">The Handler-Associated Allocator</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

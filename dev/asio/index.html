@@ -1,0 +1,828 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Asio in amongoc &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'dev/asio';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="TLS Streams" href="../tls/" />
+    <link rel="prev" title="Query Objects" href="../queries/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../learn/">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../learn/bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../learn/bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../queries/">Query Objects</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/dev/asio.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Asio in amongoc</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asio-vs-boost-asio">Asio vs Boost.Asio</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-asio-asynchrony-model">The Asio Asynchrony Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-o-objects">I/O Objects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asynchronous-algorithms">Asynchronous Algorithms</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apis-of-note">APIs of Note</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asio-apis">Asio APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio10io_contextE"><code class="docutils literal notranslate"><span class="pre">io_context</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio15CompletionTokenE"><code class="docutils literal notranslate"><span class="pre">CompletionToken</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio8deferredE"><code class="docutils literal notranslate"><span class="pre">deferred</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio15AsyncReadStreamE"><code class="docutils literal notranslate"><span class="pre">AsyncReadStream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream5tokenE"><code class="docutils literal notranslate"><span class="pre">token</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream4bufsE"><code class="docutils literal notranslate"><span class="pre">bufs</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio16AsyncWriteStreamE"><code class="docutils literal notranslate"><span class="pre">AsyncWriteStream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream5tokenE"><code class="docutils literal notranslate"><span class="pre">token</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream4bufsE"><code class="docutils literal notranslate"><span class="pre">bufs</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#amongoc-apis-for-asio"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> APIs for Asio</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc18asio_as_nanosenderE"><code class="docutils literal notranslate"><span class="pre">asio_as_nanosender</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE"><code class="docutils literal notranslate"><span class="pre">const_buffer_sequence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE"><code class="docutils literal notranslate"><span class="pre">mutable_buffer_sequence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_streamE"><code class="docutils literal notranslate"><span class="pre">tcp_connection_rw_stream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4loopE"><code class="docutils literal notranslate"><span class="pre">loop</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4connE"><code class="docutils literal notranslate"><span class="pre">conn</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa"><code class="docutils literal notranslate"><span class="pre">async_read_some()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa"><code class="docutils literal notranslate"><span class="pre">async_write_some()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="asio-in-amongoc">
+<h1>Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code><a class="headerlink" href="#asio-in-amongoc" title="Link to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This page is for <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> developers and the documented components and
+behavior are not part of any public API guarantees.</p>
+</div>
+<p>This page will explain the basics of <a class="reference external" href="https://think-async.com/">Asio</a> and how it is used internally in
+<code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>.</p>
+<section id="asio-vs-boost-asio">
+<h2>Asio vs Boost.Asio<a class="headerlink" href="#asio-vs-boost-asio" title="Link to this heading">#</a></h2>
+<p>Asio comes in two flavors: Boost, and non-Boost (i.e. “Standalone”).</p>
+<p>Boost.Asio is an automatically-converted version of Asio that has all APIs moved
+from <code class="docutils literal notranslate"><span class="pre">::asio</span></code> to the <code class="docutils literal notranslate"><span class="pre">::boost::asio</span></code> namespace, and makes use of some Boost
+libraries in place of standard library components. The following differences are
+of note:</p>
+<ol class="arabic simple">
+<li><p>All components in <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="o">::</span><span class="n">asio</span><span class="o">::</span></code> are in <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="o">::</span><span class="n">boost</span><span class="o">::</span><span class="n">asio</span><span class="o">::</span></code></p></li>
+<li><p>Asio accepts an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">asio</span><span class="o">::</span><span class="n">error_code</span></code>, which is a typedef to
+<a class="reference external" href="https://en.cppreference.com/w/cpp/error/error_code" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::error_code</span></code></a> in standalone Asio, and a typedef of
+<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">boost</span><span class="o">::</span><span class="n">system</span><span class="o">::</span><span class="n">error_code</span></code> in Boost.Asio.<a class="footnote-reference brackets" href="#fn-sys-link" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p></li>
+</ol>
+</section>
+<section id="the-asio-asynchrony-model">
+<h2>The Asio Asynchrony Model<a class="headerlink" href="#the-asio-asynchrony-model" title="Link to this heading">#</a></h2>
+<p>Asio asynchrony is created using asynchronous APIs that accept an object known
+as a <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a>, which informs the operation how
+to initiate and how to complete.</p>
+<p>Asio’s async API’s can be further broken down into two classes: I/O <em>objects</em>,
+and asynchronous <em>algorithms</em>.</p>
+<section id="i-o-objects">
+<span id="asio-io-objs"></span><h3>I/O Objects<a class="headerlink" href="#i-o-objects" title="Link to this heading">#</a></h3>
+<p>Asio I/O objects are objects that abstract the implementaion of an underlying
+system resource that performs asynchronous (or synchronous) operations. The
+low-level Asio I/O objects must be associated with an <a class="reference internal" href="#_CPPv4N4asio10io_contextE" title="asio::io_context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::io_context</span></code></a>.</p>
+<p>The Asio I/O objects are only used within <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>’s default event loop
+implementation.</p>
+</section>
+<section id="asynchronous-algorithms">
+<span id="asio-algo"></span><h3>Asynchronous Algorithms<a class="headerlink" href="#asynchronous-algorithms" title="Link to this heading">#</a></h3>
+<p>Asio’s <em>asynchronous algorithms</em> are <em>extremely powerful</em> APIs that do not rely
+on a particular event loop or any particular I/O object implementation. Instead,
+the algorithms are written generically in terms of asynchronous object concepts,
+such as <a class="reference internal" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncReadStream</span></code></a> and <a class="reference internal" href="#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a>. As long as the
+operands to the algorithms meet the generic concept requirements, the algorithms
+will Just Work™.</p>
+<p>The Asio algorithms are used as the basis for the wire protocol implementation
+in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>. The <a class="reference internal" href="#_CPPv4N7amongoc24tcp_connection_rw_streamE" title="amongoc::tcp_connection_rw_stream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::tcp_connection_rw_stream</span></code></a> type implements
+<a class="reference internal" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncReadStream</span></code></a> and <a class="reference internal" href="#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a>, so it can be used for any
+Asio algorithm that expects such an interface.</p>
+</section>
+</section>
+<section id="apis-of-note">
+<h2>APIs of Note<a class="headerlink" href="#apis-of-note" title="Link to this heading">#</a></h2>
+<section id="asio-apis">
+<h3>Asio APIs<a class="headerlink" href="#asio-apis" title="Link to this heading">#</a></h3>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N4asio10io_contextE">
+<span id="_CPPv3N4asio10io_contextE"></span><span id="_CPPv2N4asio10io_contextE"></span><span id="asio::io_context"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">io_context</span></span></span><a class="headerlink" href="#_CPPv4N4asio10io_contextE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This is the default Asio event loop type. <a class="reference internal" href="#asio-io-objs"><span class="std std-ref">I/O objects</span></a>
+are created and associated with an <a class="reference internal" href="#_CPPv4N4asio10io_contextE" title="asio::io_context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">io_context</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/io_context.html">The Asio documentation for io_context</a></p>
+</div>
+<p>In <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, <a class="reference internal" href="#_CPPv4N4asio10io_contextE" title="asio::io_context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">io_context</span></code></a> is used as the backing implementation of the
+<a class="reference internal" href="../../ref/loop/#_CPPv425amongoc_default_loop_initP12amongoc_loop" title="amongoc_default_loop_init"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">default</span> <span class="pre">event</span> <span class="pre">loop</span></code></a>.</p>
+<p>At no other place in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is <a class="reference internal" href="#_CPPv4N4asio10io_contextE" title="asio::io_context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::io_context</span></code></a> used for any purpose.
+<code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> allows the user to provide their own event loop, so we cannot assume
+that we have an Asio <a class="reference internal" href="#_CPPv4N4asio10io_contextE" title="asio::io_context"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">io_context</span></code></a> available.</p>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4asio15CompletionTokenE">
+<span id="_CPPv3I0EN4asio15CompletionTokenE"></span><span id="_CPPv2I0EN4asio15CompletionTokenE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CompletionToken</span></span></span><a class="headerlink" href="#_CPPv4I0EN4asio15CompletionTokenE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This is an exposition-only concept from Asio for <a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/overview/model/completion_tokens.html">CompletionToken</a> objects.</p>
+<p>A CompletionToken is an object that tells an asynchronous operation API function
+two things:</p>
+<ol class="arabic simple">
+<li><p>How to <em>initiate</em> an operation</p></li>
+<li><p>How to <em>complete</em> an operation</p></li>
+</ol>
+<p>Completion tokens are further subdivided by the type of completion signature
+they expect. For example, <a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/WriteToken.html">WriteToken</a>, <a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/ReadToken.html">ReadToken</a>, <a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/HandshakeToken.html">HandshakeToken</a>.</p>
+<p>In the simplest case, a <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a> is simply a callback function that
+accepts arguments for information about the completed operation. When such a
+callback is used as a token, the operation is initiated immediately and the
+function is called when it completes.</p>
+<p><a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a>s can also customize the initiation and return value of the
+initiating function in order to change the way the operation is initiated.
+Asio ships with several completion tokens that tweak the way a function is
+invoked. For example, <a class="reference internal" href="#_CPPv4N4asio8deferredE" title="asio::deferred"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::deferred</span></code></a> is a completion token that causes the
+operation to return an <em>initiator</em> function, that will only start the
+operation when it is called.</p>
+<p><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> defines one custom <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a> of interest:
+<a class="reference internal" href="#_CPPv4N7amongoc18asio_as_nanosenderE" title="amongoc::asio_as_nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::asio_as_nanosender</span></code></a></p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4asio8deferredE">
+<span id="_CPPv3N4asio8deferredE"></span><span id="_CPPv2N4asio8deferredE"></span><span id="asio::deferred__auto"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">deferred</span></span></span><a class="headerlink" href="#_CPPv4N4asio8deferredE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a> that defers the initiation of an associated operation.
+<a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/deferred.html">Refer to the Asio documentation.</a></p>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4asio15AsyncReadStreamE">
+<span id="_CPPv3I0EN4asio15AsyncReadStreamE"></span><span id="_CPPv2I0EN4asio15AsyncReadStreamE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">AsyncReadStream</span></span></span><a class="headerlink" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4asio15AsyncReadStream5tokenE">
+<span id="_CPPv3N4asio15AsyncReadStream5tokenE"></span><span id="_CPPv2N4asio15AsyncReadStream5tokenE"></span><span id="asio::AsyncReadStream::token__CompletionToken"></span><a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><span class="n"><span class="pre">CompletionToken</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">token</span></span></span><a class="headerlink" href="#_CPPv4N4asio15AsyncReadStream5tokenE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4asio15AsyncReadStream4bufsE">
+<span id="_CPPv3N4asio15AsyncReadStream4bufsE"></span><span id="_CPPv2N4asio15AsyncReadStream4bufsE"></span><span id="asio::AsyncReadStream::bufs__amongoc::wire::mutable_buffer_sequence"></span><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE" title="amongoc::wire::mutable_buffer_sequence"><span class="n"><span class="pre">mutable_buffer_sequence</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufs</span></span></span><a class="headerlink" href="#_CPPv4N4asio15AsyncReadStream4bufsE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4asio15AsyncReadStream6streamE">
+<span id="_CPPv3N4asio15AsyncReadStream6streamE"></span><span id="_CPPv2N4asio15AsyncReadStream6streamE"></span><span id="asio::AsyncReadStream::stream__TR"></span><a class="reference internal" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">stream</span></span></span><a class="headerlink" href="#_CPPv4N4asio15AsyncReadStream6streamE" title="Link to this definition">#</a><br /></dt>
+<dd><p class="rubric">Requires</p>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4asio15AsyncReadStream6streamE" title="asio::AsyncReadStream::stream"><span class="n">stream</span></a><span class="p">.</span><span class="n">async_read_some</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4asio15AsyncReadStream4bufsE" title="asio::AsyncReadStream::bufs"><span class="n">bufs</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4asio15AsyncReadStream5tokenE" title="asio::AsyncReadStream::token"><span class="n">token</span></a><span class="p">)</span></span></p></li>
+</ul>
+<p>Must read at least one byte of data from the underlying stream into the
+buffers <a class="reference internal" href="#_CPPv4N4asio15AsyncReadStream4bufsE" title="asio::AsyncReadStream::bufs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bufs</span></code></a>. When finished, must complete with
+<span class="cpp-expr sig sig-inline cpp"><span class="kt">void</span><span class="p">(</span><span class="n">asio</span><span class="p">::</span><span class="n">error_code</span><span class="p">,</span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/size_t" title="(in cppreference v0)"><span class="n">std::size_t</span></a><span class="p">)</span></span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When we define <a class="reference internal" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">AsyncReadStream</span></code></a> types in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>, we assume
+that <a class="reference internal" href="#_CPPv4N4asio15AsyncReadStream5tokenE" title="asio::AsyncReadStream::token"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">token</span></code></a> is a regular completion handler: It does not use the full
+<a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">CompletionToken</span></code></a> interface.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN4asio16AsyncWriteStreamE">
+<span id="_CPPv3I0EN4asio16AsyncWriteStreamE"></span><span id="_CPPv2I0EN4asio16AsyncWriteStreamE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">asio</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">AsyncWriteStream</span></span></span><a class="headerlink" href="#_CPPv4I0EN4asio16AsyncWriteStreamE" title="Link to this definition">#</a><br /></dt>
+<dd><dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N4asio16AsyncWriteStream5tokenE">
+<span id="_CPPv3N4asio16AsyncWriteStream5tokenE"></span><span id="_CPPv2N4asio16AsyncWriteStream5tokenE"></span><span id="asio::AsyncWriteStream::token__CompletionToken"></span><a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><span class="n"><span class="pre">CompletionToken</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">token</span></span></span><a class="headerlink" href="#_CPPv4N4asio16AsyncWriteStream5tokenE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4asio16AsyncWriteStream4bufsE">
+<span id="_CPPv3N4asio16AsyncWriteStream4bufsE"></span><span id="_CPPv2N4asio16AsyncWriteStream4bufsE"></span><span id="asio::AsyncWriteStream::bufs__amongoc::wire::const_buffer_sequence"></span><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE" title="amongoc::wire::const_buffer_sequence"><span class="n"><span class="pre">const_buffer_sequence</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bufs</span></span></span><a class="headerlink" href="#_CPPv4N4asio16AsyncWriteStream4bufsE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N4asio16AsyncWriteStream6streamE">
+<span id="_CPPv3N4asio16AsyncWriteStream6streamE"></span><span id="_CPPv2N4asio16AsyncWriteStream6streamE"></span><span id="asio::AsyncWriteStream::stream__TR"></span><a class="reference internal" href="#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">stream</span></span></span><a class="headerlink" href="#_CPPv4N4asio16AsyncWriteStream6streamE" title="Link to this definition">#</a><br /></dt>
+<dd><p class="rubric">Requires</p>
+<ul class="simple">
+<li><p><span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N4asio16AsyncWriteStream6streamE" title="asio::AsyncWriteStream::stream"><span class="n">stream</span></a><span class="p">.</span><span class="n">async_write_some</span><span class="p">(</span><a class="reference internal" href="#_CPPv4N4asio16AsyncWriteStream4bufsE" title="asio::AsyncWriteStream::bufs"><span class="n">bufs</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N4asio16AsyncWriteStream5tokenE" title="asio::AsyncWriteStream::token"><span class="n">token</span></a><span class="p">)</span></span></p></li>
+</ul>
+<p>Must write at least one byte of data into the underlying stream from the
+buffers <a class="reference internal" href="#_CPPv4N4asio16AsyncWriteStream4bufsE" title="asio::AsyncWriteStream::bufs"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bufs</span></code></a>, and complete with
+<span class="cpp-expr sig sig-inline cpp"><span class="kt">void</span><span class="p">(</span><span class="n">asio</span><span class="p">::</span><span class="n">error_code</span><span class="p">,</span><span class="w"> </span><a class="reference external" href="https://en.cppreference.com/w/cpp/types/size_t" title="(in cppreference v0)"><span class="n">std::size_t</span></a><span class="p">)</span></span>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="amongoc-apis-for-asio">
+<h3><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> APIs for Asio<a class="headerlink" href="#amongoc-apis-for-asio" title="Link to this heading">#</a></h3>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc18asio_as_nanosenderE">
+<span id="_CPPv3N7amongoc18asio_as_nanosenderE"></span><span id="_CPPv2N7amongoc18asio_as_nanosenderE"></span><span id="amongoc::asio_as_nanosender__auto"></span><span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">asio_as_nanosender</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc18asio_as_nanosenderE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This object implements the <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::CompletionToken</span></code></a> interface and causes any
+Asio asynchronous operation APIs to return a <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc10nanosenderE" title="amongoc::nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">nanosender</span></code></a> instead of
+initiating the operation. This allows any Asio API to be used with the
+<code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc10nanosenderE" title="amongoc::nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">nanosender</span></code></a>s transparently. The <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc7sends_tE" title="amongoc::sends_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">sends_t</span></code></a> of the resulting
+nanosender is based on the completion signature of the associated operation
+via the following table:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Asio completion signature</p></th>
+<th class="head"><p>Resulting <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc7sends_tE" title="amongoc::sends_t"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">sends_t</span></code></a></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">void</span><span class="p">()</span></code></p></td>
+<td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib::unit</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">void</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">error_code</span><span class="p">)</span></code></p></td>
+<td><p><a class="reference internal" href="../result/#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result&lt;mlib::unit,</span> <span class="pre">std::error_code&gt;</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">void</span><span class="p">(</span><span class="n">asio</span><span class="o">::</span><span class="n">error_code</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span></code> (for some type <span class="math notranslate nohighlight">\(T\)</span>)</p></td>
+<td><p><a class="reference internal" href="../result/#_CPPv4I00EN7amongoc6resultE" title="amongoc::result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">result&lt;T,</span> <span class="pre">std::error_code&gt;</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Asio supports operations that have more than one completion signature, but
+<a class="reference internal" href="#_CPPv4N7amongoc18asio_as_nanosenderE" title="amongoc::asio_as_nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio_as_nanosender</span></code></a> does not currently support this, and we do not use any
+Asio operations that do this.</p>
+<p>When <a class="reference internal" href="#_CPPv4N7amongoc18asio_as_nanosenderE" title="amongoc::asio_as_nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio_as_nanosender</span></code></a> is used as an <a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::CompletionToken</span></code></a> for an
+operation, the return value from the Asio API will be an unspecified type that
+implements <a class="reference internal" href="../nanosenders/#_CPPv4I0EN7amongoc10nanosenderE" title="amongoc::nanosender"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">nanosender</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp concept">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE">
+<span id="_CPPv3I0EN7amongoc4wire21const_buffer_sequenceE"></span><span id="_CPPv2I0EN7amongoc4wire21const_buffer_sequenceE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">const_buffer_sequence</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE">
+<span id="_CPPv3I0EN7amongoc4wire23mutable_buffer_sequenceE"></span><span id="_CPPv2I0EN7amongoc4wire23mutable_buffer_sequenceE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="k"><span class="pre">concept</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">mutable_buffer_sequence</span></span></span><a class="headerlink" href="#_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE" title="Link to this definition">#</a><br /></dt>
+<dd><p>These concepts correspond to Asio’s <a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/ConstBufferSequence.html">ConstBufferSequence</a> and
+<a class="reference external" href="https://think-async.com/Asio/asio-1.30.2/doc/asio/reference/MutableBufferSequence.html">MutableBufferSequence</a> concepts.</p>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc24tcp_connection_rw_streamE">
+<span id="_CPPv3N7amongoc24tcp_connection_rw_streamE"></span><span id="_CPPv2N7amongoc24tcp_connection_rw_streamE"></span><span id="amongoc::tcp_connection_rw_stream"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">amongoc</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">tcp_connection_rw_stream</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc24tcp_connection_rw_streamE" title="Link to this definition">#</a><br /></dt>
+<dd><p>This is a move-only class type that partially implements
+<a class="reference internal" href="#_CPPv4I0EN4asio15AsyncReadStreamE" title="asio::AsyncReadStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncReadStream</span></code></a> and <a class="reference internal" href="#_CPPv4I0EN4asio16AsyncWriteStreamE" title="asio::AsyncWriteStream"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::AsyncWriteStream</span></code></a>.</p>
+<dl class="cpp member">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc24tcp_connection_rw_stream4loopE">
+<span id="_CPPv3N7amongoc24tcp_connection_rw_stream4loopE"></span><span id="_CPPv2N7amongoc24tcp_connection_rw_stream4loopE"></span><span id="amongoc::tcp_connection_rw_stream::loop__amongoc_loopP"></span><a class="reference internal" href="../../ref/loop/#_CPPv412amongoc_loop" title="amongoc_loop"><span class="n"><span class="pre">amongoc_loop</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">loop</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4loopE" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc24tcp_connection_rw_stream4connE">
+<span id="_CPPv3N7amongoc24tcp_connection_rw_stream4connE"></span><span id="_CPPv2N7amongoc24tcp_connection_rw_stream4connE"></span><span id="amongoc::tcp_connection_rw_stream::conn__unique_box"></span><a class="reference internal" href="../../ref/box/#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><span class="n"><span class="pre">unique_box</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">conn</span></span></span><a class="headerlink" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4connE" title="Link to this definition">#</a><br /></dt>
+<dd><p><a class="reference internal" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4loopE" title="amongoc::tcp_connection_rw_stream::loop"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">loop</span></code></a> is the event loop associated with the connection <a class="reference internal" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4connE" title="amongoc::tcp_connection_rw_stream::conn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">conn</span></code></a>. <a class="reference internal" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4connE" title="amongoc::tcp_connection_rw_stream::conn"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">conn</span></code></a> is an
+opaque box that was obtained using <a class="reference internal" href="../../ref/loop/#_CPPv4N19amongoc_loop_vtable11tcp_connectEP12amongoc_loop12amongoc_view15amongoc_handler" title="amongoc_loop_vtable::tcp_connect"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop_vtable::tcp_connect()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa">
+<span id="_CPPv3N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa"></span><span id="_CPPv2N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa"></span><span id="amongoc::tcp_connection_rw_stream::async_read_some__wire::mutable_buffer_sequenceRR.autoRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_read_some</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE" title="amongoc::wire::mutable_buffer_sequence"><span class="n"><span class="pre">mutable_buffer_sequence</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bufs</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa">
+<span id="_CPPv3N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa"></span><span id="_CPPv2N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa"></span><span id="amongoc::tcp_connection_rw_stream::async_write_some__wire::const_buffer_sequenceRR.autoRR"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">async_write_some</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">wire</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE" title="amongoc::wire::const_buffer_sequence"><span class="n"><span class="pre">const_buffer_sequence</span></span></a><span class="w"> </span><span class="k"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">bufs</span></span>, <span class="kt"><span class="pre">auto</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cb</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa" title="Link to this definition">#</a><br /></dt>
+<dd><p>Implement the low-level read/write operations that Asio expects in order to
+construct <a class="reference internal" href="#asio-algo"><span class="std std-ref">high-level I/O algorithms</span></a>.</p>
+<p>The <a class="reference internal" href="#_CPPv4N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa" title="amongoc::tcp_connection_rw_stream::async_write_some::cb"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">cb</span></code></a> parameter must be a regular completion callback. The full
+<a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::CompletionToken</span></code></a> interface is not implemented.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Don’t use these directly. Instead, use the Asio
+<a class="reference internal" href="#asio-algo"><span class="std std-ref">algorithms</span></a>, which will allow you to use a proper
+<a class="reference internal" href="#_CPPv4I0EN4asio15CompletionTokenE" title="asio::CompletionToken"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">asio::CompletionToken</span></code></a> and have stronger behavioral guarantees.</p>
+</div>
+<p>These member functions will invoke <a class="reference internal" href="../../ref/loop/#_CPPv4N19amongoc_loop_vtable13tcp_read_someEP12amongoc_loop12amongoc_viewPK22amongoc_mutable_buffer6size_t15amongoc_handler" title="amongoc_loop_vtable::tcp_read_some"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop_vtable::tcp_read_some()</span></code></a> and
+<a class="reference internal" href="../../ref/loop/#_CPPv4N19amongoc_loop_vtable14tcp_write_someEP12amongoc_loop12amongoc_viewPK20amongoc_const_buffer6size_t15amongoc_handler" title="amongoc_loop_vtable::tcp_write_some"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop_vtable::tcp_write_some()</span></code></a>, respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="fn-sys-link" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>This difference is the primary reason that we use standalone Asio instead of
+Boost.Asio: Using <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="n">boost</span><span class="o">::</span><span class="n">system</span><span class="o">::</span><span class="n">error_code</span></code> requires linking to the
+Boost.System library, whereas standalone Asio does not require any such
+linking.</p>
+<p>If, in the future, we otherwise would require linking to Boost.System for any
+other reason, it may be beneficial to switch to Boost.Asio simply to reduce
+the build complexity.</p>
+</aside>
+</aside>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../queries/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Query Objects</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../tls/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">TLS Streams</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asio-vs-boost-asio">Asio vs Boost.Asio</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-asio-asynchrony-model">The Asio Asynchrony Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#i-o-objects">I/O Objects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asynchronous-algorithms">Asynchronous Algorithms</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apis-of-note">APIs of Note</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asio-apis">Asio APIs</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio10io_contextE"><code class="docutils literal notranslate"><span class="pre">io_context</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio15CompletionTokenE"><code class="docutils literal notranslate"><span class="pre">CompletionToken</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio8deferredE"><code class="docutils literal notranslate"><span class="pre">deferred</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio15AsyncReadStreamE"><code class="docutils literal notranslate"><span class="pre">AsyncReadStream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream5tokenE"><code class="docutils literal notranslate"><span class="pre">token</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream4bufsE"><code class="docutils literal notranslate"><span class="pre">bufs</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio15AsyncReadStream6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN4asio16AsyncWriteStreamE"><code class="docutils literal notranslate"><span class="pre">AsyncWriteStream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream5tokenE"><code class="docutils literal notranslate"><span class="pre">token</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream4bufsE"><code class="docutils literal notranslate"><span class="pre">bufs</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N4asio16AsyncWriteStream6streamE"><code class="docutils literal notranslate"><span class="pre">stream</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#amongoc-apis-for-asio"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> APIs for Asio</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc18asio_as_nanosenderE"><code class="docutils literal notranslate"><span class="pre">asio_as_nanosender</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc4wire21const_buffer_sequenceE"><code class="docutils literal notranslate"><span class="pre">const_buffer_sequence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN7amongoc4wire23mutable_buffer_sequenceE"><code class="docutils literal notranslate"><span class="pre">mutable_buffer_sequence</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_streamE"><code class="docutils literal notranslate"><span class="pre">tcp_connection_rw_stream</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4loopE"><code class="docutils literal notranslate"><span class="pre">loop</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream4connE"><code class="docutils literal notranslate"><span class="pre">conn</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream15async_read_someERRN4wire23mutable_buffer_sequenceERRDa"><code class="docutils literal notranslate"><span class="pre">async_read_some()</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N7amongoc24tcp_connection_rw_stream16async_write_someERRN4wire21const_buffer_sequenceERRDa"><code class="docutils literal notranslate"><span class="pre">async_write_some()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
