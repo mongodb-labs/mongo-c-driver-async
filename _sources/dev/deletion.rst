@@ -71,6 +71,7 @@ Deletion APIs
     Any specialization of `unique_deleter` must have a function call operation
     that performs the actual deletion operation.
 
+
 .. struct:: template <auto... MemPointers> mlib::delete_members
 
   This struct template creates a deletion invocable that deletes the members of
