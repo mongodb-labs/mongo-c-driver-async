@@ -2,12 +2,15 @@
 Dynamically Types Boxes
 #######################
 
-.. header-file:: amongoc/box.h
+.. header-file::
+  amongoc/box.h
+  amongoc/box.hpp
 
   This header defines types and functions for dealing with `amongoc_box`, a
   generic container of arbitrary values.
 
 .. |this-header| replace:: :header-file:`amongoc/box.h`
+.. |cxx-header| replace:: :header-file:`amongoc/box.hpp`
 
 Types
 #####
@@ -88,7 +91,7 @@ Types
 
   `amongoc::box` is a type alias of `::amongoc_box`
 
-  :header: |this-header|
+  :header: |cxx-header|
 
 
 .. class:: amongoc::unique_box
@@ -96,7 +99,7 @@ Types
   |C++ API| Wraps an `amongoc_box`, restricting copying and ensuring destruction to
   prevent programmer error. The `unique_box` is move-only.
 
-  :header: |this-header|
+  :header: |cxx-header|
 
   .. note::
 
