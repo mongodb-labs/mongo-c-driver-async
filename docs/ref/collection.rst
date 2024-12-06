@@ -18,7 +18,7 @@ Collection & Data API
 Types
 #####
 
-.. struct:: amongoc_collection
+.. type:: amongoc_collection
 
   An incomplete type that acts as a handle on a collection within a database and
   associated client. Create using `amongoc_collection_new` and destroy with
@@ -74,7 +74,12 @@ Types
 Functions & Macros
 ##################
 
-.. function:: amongoc_collection* amongoc_collection_new(amongoc_client client, __string_convertible db_name, __string_convertible coll_name)
+.. seealso::
+
+  Refer to the :doc:`coll-ops/index` page for methods that perform CRUD
+  operations on a collection.
+
+.. function:: amongoc_collection* amongoc_collection_new(amongoc_client* client, __string_convertible db_name, __string_convertible coll_name)
 
   Create a new handle to a database collection. Does not perform any I/O, just
   creates a client-side handle.
