@@ -88,13 +88,13 @@ def main(argv: Sequence[str]):
             )
 
         if commit_branch is not None:
-            if delete_prior:
-                try:
+            try:
+                if delete_prior:
                     shutil.rmtree(scratch_dir)
-                except FileNotFoundError:
-                    pass
-            if next(iter(scratch_dir.iterdir()), None) is not None:
-                raise RuntimeError(f"Scratch directory [{scratch_dir}] is not empty")
+                if next(iter(scratch_dir.iterdir()), None) is not None:
+                    raise RuntimeError(f"Scratch directory [{scratch_dir}] is not empty")
+            except FileNotFoundError:
+                pass
             # Clone the remote
             if not skip_remote_clone:
                 print(f"Cloning existing pages into [{scratch_dir}]")
