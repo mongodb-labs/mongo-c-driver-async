@@ -25,7 +25,7 @@ Types
 Functions & Macros
 ##################
 
-.. function:: amongoc_database* amongoc_database_new(amongoc_client cl, __string_convertible name)
+.. function:: amongoc_database* amongoc_database_new(amongoc_client* cl, __string_convertible name)
 
   Create a new database handle associated with client `cl` for the database
   named `name`.

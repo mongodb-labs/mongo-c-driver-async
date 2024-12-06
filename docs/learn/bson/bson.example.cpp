@@ -132,7 +132,7 @@ void get_view() {
     bson_insert(&m, "foo", "bar");
 
     // Pass a view to `do_something`
-    do_something(bson_as_view(d));
+    do_something(bson_view_from(d));
 
     bson_delete(d);
 }
@@ -235,10 +235,10 @@ int main() {
     bson_doc tmp = bson_new();
     bson_mut m   = bson_mutate(&tmp);
     bson_insert(&m, "foo", "bar");
-    inspect_data(bson_as_view(tmp));
-    do_loop(bson_as_view(tmp));
-    foreach_loop(bson_as_view(tmp));
-    subdoc_iter(bson_as_view(tmp));
+    inspect_data(bson_view_from(tmp));
+    do_loop(bson_view_from(tmp));
+    foreach_loop(bson_view_from(tmp));
+    subdoc_iter(bson_view_from(tmp));
     bson_delete(tmp);
 }
 

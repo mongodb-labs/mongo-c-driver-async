@@ -34,7 +34,7 @@ Type: `amongoc_loop`
 
     The arbitrary user data associated with the event loop.
 
-  .. member:: amongoc_loop_vtable vtable
+  .. member:: amongoc_loop_vtable const* vtable
 
     The virtual method table for the event loop
 

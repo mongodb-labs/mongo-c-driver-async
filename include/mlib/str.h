@@ -105,7 +105,7 @@ mlib_constexpr mlib_str_view _mlib_str_view_cstr(const char* s) mlib_noexcept {
  * @brief Return the longest prefix of `str` that does not contain embedded null
  * characters.
  */
-#define mlib_str_view_chopnulls(S) _mlib_str_view_chopnulls(mlib_as_str_view(S))
+#define mlib_str_view_chopnulls(S) _mlib_str_view_chopnulls(mlib_str_view_from(S))
 mlib_constexpr mlib_str_view _mlib_str_view_chopnulls(mlib_str_view str) mlib_noexcept {
     size_t len = mlib_strnlen(str.data, str.len);
     str.len    = len;
@@ -120,7 +120,7 @@ mlib_constexpr mlib_str_view _mlib_str_view_chopnulls(mlib_str_view str) mlib_no
  * @param len The number of characters to view. Automatically clamped to the
  * remaining length.
  */
-#define mlib_str_subview(S, Pos, Len) _mlib_str_subview(mlib_as_str_view((S)), Pos, Len)
+#define mlib_str_subview(S, Pos, Len) _mlib_str_subview(mlib_str_view_from((S)), Pos, Len)
 mlib_constexpr mlib_str_view _mlib_str_subview(mlib_str_view s,
                                                size_t        at,
                                                size_t        len) mlib_noexcept {
@@ -242,7 +242,7 @@ inline mlib_str_view _mlib_str_mut_as_view(mlib_str_mut m) mlib_noexcept {
     return mlib_str_view_data(m.data, _mlib_str_length(m.str));
 }
 
-#define mlib_as_str_view(X)                                                                        \
+#define mlib_str_view_from(X)                                                                      \
     MLIB_LANG_PICK(_Generic((X),                                                                   \
         mlib_str: _mlib_str_as_view,                                                               \
         mlib_str_view: _mlib_str_view_self,                                                        \
@@ -257,13 +257,13 @@ inline const char* _mlib_string_empty(void) mlib_noexcept {
     return buf + sizeof(size_t);
 }
 
-#define mlib_strlen(S) mlib_as_str_view((S)).len
+#define mlib_strlen(S) mlib_str_view_from((S)).len
 
 /**
  * @brief Get the code unit at the zero-based offset within the string, with
  * negative index wrapping.
  */
-#define mlib_str_at(S, Off) _mlib_str_at(mlib_as_str_view(S), Off)
+#define mlib_str_at(S, Off) _mlib_str_at(mlib_str_view_from(S), Off)
 mlib_constexpr char _mlib_str_at(mlib_str_view s, ptrdiff_t offset) mlib_noexcept {
     if (offset >= 0) {
         return s.data[offset];
@@ -276,7 +276,7 @@ mlib_constexpr char _mlib_str_at(mlib_str_view s, ptrdiff_t offset) mlib_noexcep
 /**
  * @brief Compare if two strings are equivalent
  */
-#define mlib_str_eq(A, B) _mlib_str_eq(mlib_as_str_view(A), mlib_as_str_view(B))
+#define mlib_str_eq(A, B) _mlib_str_eq(mlib_str_view_from(A), mlib_str_view_from(B))
 mlib_constexpr bool _mlib_str_eq(mlib_str_view a, mlib_str_view b) mlib_noexcept {
     if (a.len != b.len) {
         return false;
@@ -385,8 +385,8 @@ mlib_str_copy_data(const char* s, size_t len, mlib_allocator alloc) mlib_noexcep
     MLIB_PASTE(_mlibStrCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))                                     \
     (__VA_ARGS__)
 
-#define _mlibStrCopyArgc_1(S) _mlib_str_copy(mlib_as_str_view((S)), mlib_default_allocator)
-#define _mlibStrCopyArgc_2(S, Alloc) _mlib_str_copy(mlib_as_str_view((S)), Alloc)
+#define _mlibStrCopyArgc_1(S) _mlib_str_copy(mlib_str_view_from((S)), mlib_default_allocator)
+#define _mlibStrCopyArgc_2(S, Alloc) _mlib_str_copy(mlib_str_view_from((S)), Alloc)
 inline mlib_str_mut _mlib_str_copy(mlib_str_view s, mlib_allocator alloc) mlib_noexcept {
     return mlib_str_copy_data(s.data, s.len, alloc);
 }
@@ -425,7 +425,7 @@ inline void mlib_str_assign(mlib_str* s, mlib_str from) mlib_noexcept {
  * substring of another string.
  */
 #define mlib_str_find(Given, Needle)                                                               \
-    _mlib_str_find(mlib_as_str_view(Given), mlib_as_str_view(Needle))
+    _mlib_str_find(mlib_str_view_from(Given), mlib_str_view_from(Needle))
 mlib_constexpr int _mlib_str_find(mlib_str_view given, mlib_str_view needle) mlib_noexcept {
     if (needle.len > given.len) {
         return 0 - (int)needle.len;
@@ -447,7 +447,7 @@ mlib_constexpr int _mlib_str_find(mlib_str_view given, mlib_str_view needle) mli
  * substring of another string.
  */
 #define mlib_str_rfind(Given, Needle)                                                              \
-    _mlib_str_rfind(mlib_as_str_view(Given), mlib_as_str_view(Needle))
+    _mlib_str_rfind(mlib_str_view_from(Given), mlib_str_view_from(Needle))
 mlib_constexpr int _mlib_str_rfind(mlib_str_view given, mlib_str_view needle) mlib_noexcept {
     if (needle.len > given.len) {
         return 0 - (int)needle.len;
@@ -475,13 +475,13 @@ mlib_constexpr int _mlib_str_rfind(mlib_str_view given, mlib_str_view needle) ml
 #define mlib_str_splice(...)                                                                       \
     MLIB_PASTE(_mlibStrSpliceArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
 #define _mlibStrSpliceArgc_4(String, Pos, DelCount, Insert)                                        \
-    _mlib_str_splice(mlib_as_str_view(String),                                                     \
+    _mlib_str_splice(mlib_str_view_from(String),                                                   \
                      Pos,                                                                          \
                      DelCount,                                                                     \
-                     mlib_as_str_view(Insert),                                                     \
+                     mlib_str_view_from(Insert),                                                   \
                      mlib_default_allocator)
 #define _mlibStrSpliceArgc_5(String, Pos, DelCount, Insert, Alloc)                                 \
-    _mlib_str_splice(mlib_as_str_view(String), Pos, DelCount, mlib_as_str_view(Insert), Alloc)
+    _mlib_str_splice(mlib_str_view_from(String), Pos, DelCount, mlib_str_view_from(Insert), Alloc)
 inline mlib_str _mlib_str_splice(mlib_str_view  s,
                                  size_t         at,
                                  size_t         del_count,
@@ -515,7 +515,8 @@ inline mlib_str _mlib_str_splice(mlib_str_view  s,
 /**
  * @brief Append the given suffix to the given string
  */
-#define mlib_str_append(S, Suffix) _mlib_str_append(mlib_as_str_view(S), mlib_as_str_view(Suffix))
+#define mlib_str_append(S, Suffix)                                                                 \
+    _mlib_str_append(mlib_str_view_from(S), mlib_str_view_from(Suffix))
 // Must use an indirect call to avoid double-evaluation of `S`
 inline mlib_str _mlib_str_append(mlib_str_view s, mlib_str_view suffix) mlib_noexcept {
     return mlib_str_splice(s, s.len, 0, suffix);
@@ -544,7 +545,7 @@ inline mlib_str _mlib_str_append(mlib_str_view s, mlib_str_view suffix) mlib_noe
 /**
  * @brief Erase `len` characters from the end of the string
  */
-#define mlib_str_remove_suffix(S, Count) _mlib_str_remove_suffix(mlib_as_str_view(S), (Count))
+#define mlib_str_remove_suffix(S, Count) _mlib_str_remove_suffix(mlib_str_view_from(S), (Count))
 inline mlib_str _mlib_str_remove_suffix(mlib_str_view s, size_t len) mlib_noexcept {
     assert(s.len >= len);
     return mlib_str_erase(s, s.len - len, len);
@@ -553,7 +554,7 @@ inline mlib_str _mlib_str_remove_suffix(mlib_str_view s, size_t len) mlib_noexce
 /**
  * @brief Obtain a substring of the given string
  */
-#define mlib_substr(S, Pos, Len) _mlib_substr(mlib_as_str_view((S)), (Pos), (Len))
+#define mlib_substr(S, Pos, Len) _mlib_substr(mlib_str_view_from((S)), (Pos), (Len))
 inline mlib_str _mlib_substr(mlib_str_view s, size_t at, size_t len) mlib_noexcept {
     assert(at <= s.len);
     const size_t remain = s.len - at;

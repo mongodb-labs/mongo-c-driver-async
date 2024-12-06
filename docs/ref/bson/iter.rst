@@ -121,7 +121,7 @@ Document Iteration
   document, respectively.
 
   :C++ API: Use the ``begin()`` and ``end()`` member function of the object `B`
-  :param B: A BSON document to be viewed. Passed through `bson_as_view`.
+  :param B: A BSON document to be viewed. Passed through `bson_view_from`.
   :return: A `bson_iterator` referring to the respective positions.
 
   .. important::
@@ -175,8 +175,8 @@ Document Iteration
   Obtain a `bson_iterator` referring to the first element within ``B`` that has
   the key ``Key``
 
-  :param B: A BSON document object, passed through `bson_as_view`.
-  :param Key: A key to search for. Passed through `mlib_as_str_view`.
+  :param B: A BSON document object, passed through `bson_view_from`.
+  :param Key: A key to search for. Passed through `mlib_str_view_from`.
   :return: A `bson_iterator`. If the expected key was found, returns an
     iterator referring to that element.
 
@@ -200,7 +200,7 @@ Looping
 
   :param IterName: An identifier that will be the name of the `bson_iterator`
     that will be in scope for the loop body.
-  :param Viewable: A BSON document object, passed through `bson_as_view`
+  :param Viewable: A BSON document object, passed through `bson_view_from`
   :param FirstIter: A first iterator to begin iteration.
   :param LastIter: The iterator at which to stop the loop.
 
@@ -241,7 +241,7 @@ Element Properties
   Test whether the `it` element key is equal to the given string.
 
   :param it: The element to inspect.
-  :param K: A string to compare against. Passed through `mlib_as_str_view`
+  :param K: A string to compare against. Passed through `mlib_str_view_from`
 
   .. note:: |macro-impl|
 

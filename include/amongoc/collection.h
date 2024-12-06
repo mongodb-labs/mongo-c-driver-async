@@ -31,7 +31,7 @@ mlib_extern_c_begin();
  * @brief Obtain a CRUD handle to a collection within a database
  */
 #define amongoc_collection_new(Client, DbName, CollName)                                           \
-    _amongoc_collection_new(Client, mlib_as_str_view(DbName), mlib_as_str_view(CollName))
+    _amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
 amongoc_collection* _amongoc_collection_new(amongoc_client* cl,
                                             mlib_str_view   db_name,
                                             mlib_str_view   coll_name) mlib_noexcept;

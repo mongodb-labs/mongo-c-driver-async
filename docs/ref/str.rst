@@ -136,7 +136,7 @@ String View Creation
 ********************
 
 .. function::
-  mlib_str_view mlib_as_str_view(__string_convertible S)
+  mlib_str_view mlib_str_view_from(__string_convertible S)
 
   Coerce a string-like object `S` to a `mlib_str_view`.
 

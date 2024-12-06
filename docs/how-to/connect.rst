@@ -78,7 +78,7 @@ sub-operation in the program. For this reason, we declare the instance in
 
 This will zero-initialize the contents of the struct. This is important so that
 the declared `amongoc_client` object is also null, ensuring that the later call
-to `amongoc_conn_destroy` will be a no-op if that field is never initialized.
+to `amongoc_client_delete` will be a no-op if that field is never initialized.
 
 We will pass the state around by-reference in a box using `amongoc_box_pointer`.
 
@@ -156,7 +156,7 @@ object that was owned by the box is now owned by the storage destination.
   :end-at: bson_delete
 
 We build a MongoDB command ``{ hello: "1", $db: "test" }`` and prepare to send
-it as a command with `amongoc_conn_command`. We can delete the prepared BSON
+it as a command with `amongoc_client_command`. We can delete the prepared BSON
 document here as a copy of the data is now stored within the prepared operation
 in ``em``.
 
@@ -190,7 +190,7 @@ simple:
   :end-before: end.
 
 We simply extract a `bson_view` of the response data from the ``resp_data`` box
-that was provided by `amongoc_conn_command` and print it to standard output.
+that was provided by `amongoc_client_command` and print it to standard output.
 After we finish printing it, we destroy the data and return `amongoc_nil`. This
 is the final value for the program.
 
@@ -230,7 +230,7 @@ work has completed, and we destroy the operation with
 operation.
 
 We also now have a copy of the connection that was created with
-`amongoc_client_new`. We destroy that with `amongoc_conn_destroy`. If the
+`amongoc_client_new`. We destroy that with `amongoc_client_delete`. If the
 connect operation failed, the connection object will have remained
 zero-initialized and the call will be a no-op.
 

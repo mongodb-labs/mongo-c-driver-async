@@ -21,7 +21,7 @@ mlib_extern_c_begin();
  * @param loop The event loop to be used
  * @param uri The connection URI string that specifies that peer and connection options
  */
-#define amongoc_client_new(Loop, URI) _amongoc_client_new((Loop), mlib_as_str_view((URI)))
+#define amongoc_client_new(Loop, URI) _amongoc_client_new((Loop), mlib_str_view_from((URI)))
 amongoc_emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri) mlib_noexcept;
 
 /// Destroy an amongoc_client created with amongoc_client_new

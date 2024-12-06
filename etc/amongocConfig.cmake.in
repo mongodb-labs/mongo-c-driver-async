@@ -15,6 +15,7 @@ if(AMONGOC_FIND_DEPENDENCIES)
     find_dependency(Boost CONFIG COMPONENTS URL Container)
     find_dependency(fmt)
     find_dependency(OpenSSL)
+    find_dependency(Threads)
 endif()
 
 # Target exports file that is install alongside this package-config file

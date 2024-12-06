@@ -20,7 +20,7 @@
 /**
  * @brief Convert an arbitrary value into a `bson_value_ref`
  */
-#define bson_as_value_ref(X)                                                                       \
+#define bson_value_ref_from(X)                                                                     \
     MLIB_IF_CXX(bson_value_ref::from((X))) MLIB_IF_NOT_CXX(_bsonAsValue((X)))
 
 #if mlib_is_cxx()
@@ -29,11 +29,11 @@ namespace bson {
 
 #if mlib_have_cxx20()
 template <typename T>
-concept as_value_convertbile = requires(const T& obj) { ::bson_as_value_ref(obj); };
+concept as_value_convertbile = requires(const T& obj) { ::bson_value_ref_from(obj); };
 #endif
 
 template <typename T>
-using as_value_ref_t = decltype(::bson_as_value_ref(std::declval<T>()));
+using as_value_ref_t = decltype(::bson_value_ref_from(std::declval<T>()));
 
 }  // namespace bson
 
@@ -128,12 +128,12 @@ mlib_assoc_deleter(bson_value, bson_value_delete);
     }                                                                                              \
     mlib_static_assert(true, "")
 DECL_CONVERSION(double, bson_type_double, double_, arg);
-DECL_CONVERSION(mlib_str, bson_type_utf8, utf8, mlib_as_str_view(arg));
-DECL_CONVERSION(mlib_str_mut, bson_type_utf8, utf8, mlib_as_str_view(arg));
+DECL_CONVERSION(mlib_str, bson_type_utf8, utf8, mlib_str_view_from(arg));
+DECL_CONVERSION(mlib_str_mut, bson_type_utf8, utf8, mlib_str_view_from(arg));
 DECL_CONVERSION(mlib_str_view, bson_type_utf8, utf8, arg);
 DECL_CONVERSION(bson_view, bson_type_document, document, arg);
-DECL_CONVERSION(bson_doc, bson_type_document, document, bson_as_view(arg));
-DECL_CONVERSION(bson_mut, bson_type_document, document, bson_as_view(arg));
+DECL_CONVERSION(bson_doc, bson_type_document, document, bson_view_from(arg));
+DECL_CONVERSION(bson_mut, bson_type_document, document, bson_view_from(arg));
 DECL_CONVERSION(bson_array_view, bson_type_array, array, arg);
 DECL_CONVERSION(bson_binary_view, bson_type_binary, binary, arg);
 DECL_CONVERSION(bson_oid, bson_type_oid, oid, arg);
@@ -149,7 +149,7 @@ DECL_CONVERSION(int64_t, bson_type_int64, int64, arg);
 DECL_CONVERSION(bson_decimal128, bson_type_decimal128, decimal128, arg);
 // From C string
 inline bson_value_ref _bson_value_ref_from_cstring(const char* s) mlib_noexcept {
-    return _bson_value_ref_from_mlib_str_view(mlib_as_str_view(s));
+    return _bson_value_ref_from_mlib_str_view(mlib_str_view_from(s));
 }
 mlib_constexpr bson_value_ref _bson_value_ref_dup(bson_value_ref ref) mlib_noexcept { return ref; }
 mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_noexcept {
@@ -168,11 +168,11 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
     case bson_type_code:
     case bson_type_symbol:
     case bson_type_utf8:
-        ret.utf8 = mlib_as_str_view(val.string);
+        ret.utf8 = mlib_str_view_from(val.string);
         break;
     case bson_type_document:
     case bson_type_array:
-        ret.document = bson_as_view(val.document);
+        ret.document = bson_view_from(val.document);
         break;
     case bson_type_binary:
         ret.binary.subtype  = val.binary.subtype;
@@ -190,7 +190,7 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
         break;
     case bson_type_regex:
     case bson_type_dbpointer:
-        ret.dbpointer.collection = mlib_as_str_view(val.dbpointer.collection);
+        ret.dbpointer.collection = mlib_str_view_from(val.dbpointer.collection);
         ret.dbpointer.object_id  = val.dbpointer.object_id;
         break;
     case bson_type_codewscope:
@@ -244,8 +244,8 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
 
 #define bson_value_copy(...)                                                                       \
     MLIB_PASTE(_bsonValueCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _bsonValueCopyArgc_1(X) _bson_value_copy(bson_as_value_ref((X)), mlib_default_allocator)
-#define _bsonValueCopyArgc_2(X, Alloc) _bson_value_copy(bson_as_value_ref((X)), (Alloc))
+#define _bsonValueCopyArgc_1(X) _bson_value_copy(bson_value_ref_from((X)), mlib_default_allocator)
+#define _bsonValueCopyArgc_2(X, Alloc) _bson_value_copy(bson_value_ref_from((X)), (Alloc))
 static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
                                                   mlib_allocator alloc) mlib_noexcept {
     bson_value ret MLIB_IF_CXX(= {});
@@ -359,6 +359,6 @@ constexpr bson_value_ref bson_value_ref::from(bson_value const& v) noexcept {
 
 template <typename T, typename>
 constexpr bool bson_value::operator==(const T& val) const noexcept {
-    return bson_as_value_ref(*this) == val;
+    return bson_value_ref_from(*this) == val;
 }
 #endif  // C++

@@ -1,6 +1,6 @@
-#####################################################
-Meta-Reference: Non-Standard Documentation Attributes
-#####################################################
+########################################
+Meta-Reference: Documentation Attributes
+########################################
 
 Some APIs in this documentation contain non-standard language attributes on
 functions, parameters, types, and variables. These only appear in the
@@ -9,15 +9,19 @@ the actual compilation or behavior of the program, and are intended to act as
 common shorthands for behavioral guarantees of the annotated APIs.
 
 
+Non-Standard Attributes
+#######################
+
 |attr.transfer|
-###############
+***************
 
 .. doc-attr:: [[transfer]]
 
-  The |attr.transfer| has two significant points:
+  Understanding the meaning of |attr.transfer| is essential to understanding
+  object lifetimes in |amongoc|. The |attr.transfer| has two significant points:
 
   1. If a function parameter is annotated with |attr.transfer|, it means that
-     passing an value to that function will invalidate the value in the caller's
+     passing a value to that function will invalidate the value in the caller's
      scope.
   2. When an object is passed through a parameter that is marked with
      |attr.transfer|, it becomes the responsibility of the called function to
@@ -25,9 +29,30 @@ common shorthands for behavioral guarantees of the annotated APIs.
      eventually pass the object to another function that has an |attr.transfer|
      attribute.\ [#box-trivial-note]_
 
+  According to point **1**: If you pass an :term:`lvalue` to an object |V|
+  through a parameter marked |attr.transfer|, then the |V| object is now
+  *invalid*. See: :ref:`after-transfer`.
+
+  According to point **2**: If you pass a function pointer to an API, and the
+  function pointer type has |attr.transfer| parameters, then any value passed
+  in through that parameter now *owns* the respective object, and it must
+  handle it properly::
+
+    // `call_through` transfers ownership of an object through `i`
+    extern int call_through(void (*callback)(int [[transfer]] i));
+
+    // For use with `call_through`
+    int my_callback(int i) {
+      // We own the `i` object!
+    }
+
+    int my_code() {
+      call_through(&my_callback);
+    }
+
 
 Example: POSIX ``close``
-************************
+========================
 
 A correct use of |attr.transfer| would be on the ``close()`` POSIX API::
 
@@ -48,11 +73,11 @@ assigned on ``[1]``, it is inherently erroneous: The call to ``close()`` on
 descriptor, and the behavior of line ``[3]`` is unspecified.\ [#ebadf]_
 
 Because ``close()`` "poisons" the bit-pattern of the passed file descriptor, it
-would be correct to annotate the parameter with |attr.transfer|
+would be correct to annotate the parameter with |attr.transfer|.
 
 
 Example: C ``free``
-*******************
+===================
 
 The C function ``free`` could also be annotated as |attr.transfer| on the passed
 pointer value::
@@ -65,7 +90,7 @@ become poisoned and should not be used for any subsequent operation.
 
 
 Example: `amongoc_box_destroy`
-******************************
+==============================
 
 The `amongoc_box_destroy` function takes an `amongoc_box` by-value, and its parameter
 is annotated with |attr.transfer|.
@@ -80,8 +105,10 @@ destroy the box a second time::
   amongoc_box_destroy(got_box);         // UNDEFINED BEHAVIOR
 
 
+.. _after-transfer:
+
 Dealing with Transferred Objects
-********************************
+================================
 
 After passing an object to a |attr.transfer| function parameter, the only legal\
 [#box-trivial-note]_ operations on that object are reassignment (replacing the
@@ -89,7 +116,7 @@ object with a live value) or discarding (letting the object leave scope).
 
 
 |attr.nullable|
-###############
+***************
 
 .. doc-attr:: [[nullable]]
 
@@ -103,7 +130,7 @@ object with a live value) or discarding (letting the object leave scope).
 
 
 |attr.zero-init|
-################
+****************
 
 .. doc-attr:: [[zero_initializable]]
 
@@ -121,7 +148,7 @@ object with a live value) or discarding (letting the object leave scope).
 .. _zero-init:
 
 Zero Initialization / Empty Initialization
-******************************************
+==========================================
 
 `Zero initialization`__ (C++) and `empty initialization`__ (C) are similar
 concepts with similar behavior. For convenience, this documentation refers to
@@ -141,7 +168,7 @@ __ https://en.cppreference.com/w/c/language/initialization
 
 
 |attr.type|
-###########
+***********
 
 .. doc-attr:: [[type(T)]]
 
@@ -157,7 +184,7 @@ __ https://en.cppreference.com/w/c/language/initialization
 
 
 |attr.storage|
-##############
+**************
 
 .. doc-attr:: [[storage]]
 
@@ -168,7 +195,7 @@ __ https://en.cppreference.com/w/c/language/initialization
 
 
 :doc-attr:`[[optional]]`
-########################
+************************
 
 .. doc-attr:: [[optional]]
 
@@ -179,8 +206,11 @@ __ https://en.cppreference.com/w/c/language/initialization
   method is required.
 
 
-The `__type` Parameter
-######################
+Parameter Types
+###############
+
+`__type` Parameters
+*******************
 
 .. type:: __type
 
@@ -191,7 +221,7 @@ The `__type` Parameter
 
 
 Unspecified Types
-#################
+*****************
 
 .. type:: __unspecified
 
@@ -201,6 +231,29 @@ Unspecified Types
   Dereferencing a pointer-to or accessing the members of an `__unspecified` type
   is not guaranteed to have well-defined behavior. A pointer-to-`__unspecified`
   should be considered a stronger-typed |void|.
+
+
+Documentation Fields
+####################
+
+Field: **Allocation**
+*********************
+
+Some functions are annotated with an **Allocation** documentation field. This
+specifies how the function will allocate dynamic memory. If this field is
+ommitted, either the function does not allocate, uses the standard library
+allocator, or it accepts an `mlib_allocator` directly.
+
+
+Field: **Zero-initialized**
+***************************
+
+The **Zero-initialized** field appears on some data types and specifies the
+semantics of that type when it has been
+:ref:`zero/empty initialized <zero-init>`, if any.
+
+If a type does not have such a field, assume that it has no defined semantics
+when zero-initialized.
 
 
 .. rubric:: Footnotes

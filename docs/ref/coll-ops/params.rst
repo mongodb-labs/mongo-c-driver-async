@@ -2,7 +2,7 @@
 Common Parameters
 #################
 
-Several of the :doc:`collation operations <index>` accept an overlapping set of
+Several of the :doc:`collection operations <index>` accept an overlapping set of
 named parameters, passed via fields of an aggregate type associated with the
 operation. This page will document the semantics of those parameters.
 

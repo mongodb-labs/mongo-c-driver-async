@@ -17,7 +17,8 @@ mlib_extern_c_begin();
 /**
  * @brief Obtain a manipulator for the a named database on the given client
  */
-#define amongoc_database_new(Client, DbName) _amongoc_database_new(Client, mlib_as_str_view(DbName))
+#define amongoc_database_new(Client, DbName)                                                       \
+    _amongoc_database_new(Client, mlib_str_view_from(DbName))
 amongoc_database* _amongoc_database_new(amongoc_client* cl, mlib_str_view db_name) mlib_noexcept;
 
 /**

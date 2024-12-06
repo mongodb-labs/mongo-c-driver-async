@@ -95,12 +95,13 @@ Third-Party Dependencies
 
 The following external libraries are required by |amongoc|:
 
-- Catch2_ - Only required for testing and only imported if
-  :cmake:variable:`BUILD_TESTING` is enabled.
-- Asio_ - Used for asynchronous I/O (Note: Not ``Boost.Asio``!)
+- OpenSSL
 - Boost.URL_
 - `{fmt}`_
-- neo-fun_
+- Catch2_ - Only required for testing and only imported if
+  :cmake:variable:`BUILD_TESTING` is enabled.
+- Asio_ - Used for asynchronous I/O (Build-time only) (Note: Not ``Boost.Asio``!)
+- neo-fun_ (Build-time only)
 
 .. _Catch2: https://github.com/catchorg/Catch2
 .. _Asio: https://think-async.com/Asio/
@@ -202,8 +203,9 @@ can be disabled by changing :cmake:variable:`AMONGOC_FIND_DEPENDENCIES`.
   The following imported targets are used by the imported ``amongoc::amongoc``
   target:
 
-  - ``neo::fun``
-  - ``asio::asio``
   - ``fmt::fmt``
   - ``Boost::url``
-
+  - ``Boost::container``
+  - ``OpenSSL::SSL``
+  - ``Threads::Threads`` (from the
+    :cmake:module:`FindThreads <module:FindThreads>` module)

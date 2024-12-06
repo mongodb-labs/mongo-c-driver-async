@@ -29,7 +29,7 @@ Types
   :header: :header-file:`bson/view.h`
 
   .. note:: This type should not be created manually. It should be created using
-    `bson_as_view`, `bson_view_from_data`, or `bson_view_null`.
+    `bson_view_from`, `bson_view_from_data`, or `bson_view_null`.
 
 
   C++ Members
@@ -137,13 +137,15 @@ Types
 .. type::
   __bson_viewable
 
-  A parameter annotated as `__bson_viewable` accepts any type that can be viewed
-  with the BSON iteration APIs. This includes:
+  A parameter annotated as `__bson_viewable` accepts any type that can be
+  converted to `bson_view`. This includes:
 
   - `bson_view`
   - `bson_doc`
   - `bson_array_view`
   - `bson_mut`
+  - `bson::document`
+  - `bson::mutator`
 
 
 Constants
@@ -167,7 +169,7 @@ View Inspection
 ***************
 
 .. function::
-  bson_view bson_as_view(__bson_viewable [[nullable]] B)
+  bson_view bson_view_from(__bson_viewable [[nullable]] B)
 
   Obtain a `bson_view` for the given document-like object. This is also used by
   other :term:`function-like macro`\ s to coerce `bson_mut` and `bson_doc` to
