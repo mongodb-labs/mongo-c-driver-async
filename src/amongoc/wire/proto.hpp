@@ -31,7 +31,7 @@ namespace amongoc::wire {
 namespace trace {
 
 // Global toggle for enabling message tracing
-constexpr bool enabled = true;
+constexpr bool enabled = false;
 
 // Print information for a message header
 void message_header(std::string_view prefix,
