@@ -5,16 +5,19 @@ Configuring, Building, & Using
 .. default-domain:: std
 .. default-role:: any
 
-Building |amongoc| is supported with the following build tools:
+Building |amongoc| requires a C++20 compiler. The following tools are known to
+work:
 
 - CMake_ 3.25 or newer
-- GCC ≥12.0 **or** Clang ≥17.0
+- GCC ≥12.0\ [#fn-redhat-issue]_ **or** Clang ≥17.0
 - Earthly_ 0.8 or newer (for :ref:`building with Earthly <building.earthly>`)
+
+Building on Windows or with MSVC is not currently supported.
 
 .. _CMake: https://cmake.org/
 .. _Earthly: https://earthly.dev/
 
-.. _building.cmake-deps:
+.. _building.deps:
 
 Third-Party Dependencies
 ########################
@@ -144,9 +147,8 @@ The following CMake_ configuration options are supported:
   configuration to download and build the dependencies required by |amongoc|.
 
   If you want to manage dependencies yourself, disable this toggle. You will
-  need to ensure that the
-  :ref:`configure-time dependencies <building.cmake-deps>` are available to
-  :external:cmake:command:`find_package <command:find_package>`.
+  need to ensure that the :ref:`configure-time dependencies <building.deps>` are
+  available to :external:cmake:command:`find_package <command:find_package>`.
 
 
 .. _building.earthly:
@@ -166,14 +168,15 @@ Earthfile that eases building by using containerization.
   .. earthly-target::
     +build-alpine
     +build-debian
+    +build-fedora
     +build-rl
 
-    Build targets that build for Alpine Linux (with libmusl), Debian, and
-    RockyLinux (for RedHat-compatible binaries).
+    Build targets that build for Alpine Linux (with libmusl), Debian, Fedora,
+    and RockyLinux (for RedHat-compatible binaries).
 
-    The Alpine and Debian build uses the system's default toolchain. The
-    RockyLinux build uses the RedHat devtoolset to obtain an up-to-date compiler
-    for producing RedHat-compatible binaries.
+    The Alpine, Fedora, and Debian build uses the system's default toolchain.
+    The RockyLinux build uses the RedHat devtoolset\ [#fn-redhat-issue]_ to
+    obtain an up-to-date compiler for producing RedHat-compatible binaries.
 
     .. earthly-artifact::
       +build-xyz/pkg
@@ -183,6 +186,27 @@ Earthfile that eases building by using containerization.
       ``/pkg`` artifact contains binary packages create by CPack: A ``.tar.gz``
       archive, a ``.zip`` archive, and a self-extracting shell script ``.sh``.
       The ``/install`` artifact contains an install tree from the build.
+
+
+    .. rubric:: Example
+
+    To build and obtain a package for Debian-compatible systems, the following
+    command can be used to obtain the packages for the `+build-debian` target:
+
+    .. code-block:: console
+
+      $ earthly -a +build-debian/pkg deb-pkg
+      ## [Earthly output] ##
+      $ ls deb-pkg
+      amongoc-0.1.0-linux-x86_64.sh*
+      amongoc-0.1.0-linux-x86_64.tar.gz
+      amongoc-0.1.0-linux-x86_64.zip
+
+    The resuling ``.sh`` script can be used to install the built library and
+    headers.
+
+    The same command can work for the `+build-alpine`, `+build-fedora`, and
+    `+build-rl` targets.
 
 
 Importing in CMake
@@ -233,3 +257,10 @@ packages that were used in the |amongoc| build.
   during import. If disabled, then |amongoc| will assume that the necessary
   imported targets will be defined elsewhere by the importing package.
 
+
+.. rubric:: Footnotes
+
+.. [#fn-redhat-issue]
+
+  There is a known issue with the RedHat dev toolset that result in certain
+  internal symbols being incorrectly discarded and producing link-time errors.
