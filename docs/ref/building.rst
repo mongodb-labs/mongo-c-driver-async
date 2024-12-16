@@ -14,6 +14,73 @@ Building |amongoc| is supported with the following build tools:
 .. _CMake: https://cmake.org/
 .. _Earthly: https://earthly.dev/
 
+.. _building.cmake-deps:
+
+Third-Party Dependencies
+########################
+
+When configuring and building |amongoc| with CMake, the configuration script
+will attempt to automatically obtain build-time dependencies using vcpkg_. This
+behavior can be disabled by setting :cmake:variable:`AMONGOC_USE_PMM` to
+``OFF``. Relying on vcpkg_ will attempt to build the third-party dependencies
+during project configuration, which may require additional configure-time
+dependencies.
+
+The following external libraries are required when **building** |amongoc|. If
+not relying vcpkg_, then they will need to be installed and available before
+configuring the project:
+
+- OpenSSL
+- Boost.URL and Boost.Container
+- `{fmt}`_
+- **If using vcpkg to install dependencies** (the default), then you will also
+  need to have Tar, cURL, Perl, Zip/Unzip, pkg-config, Make, and Bash. On Linux,
+  you will also need the linux development headers.
+
+The following packages are downloaded using CMake's FetchContent, and need not
+be manually installed:
+
+- Catch2_ - Only required for testing and only imported if
+  :cmake:variable:`BUILD_TESTING` is enabled.
+- Asio_ - Used for asynchronous I/O (Build-time only) (Note: Not ``Boost.Asio``!)
+- neo-fun_ (Build-time only)
+
+.. _Catch2: https://github.com/catchorg/Catch2
+.. _Asio: https://think-async.com/Asio/
+.. _{fmt}: https://fmt.dev/
+.. _neo-fun: https://github.com/vector-of-bool/neo-fun
+
+The following table details the dependencies of the imported
+``amongoc::amongoc`` target, along with the common Linux packages that contain
+them:
+
+.. list-table::
+  :header-rows: 1
+  :widths: 1, 2, 2, 2
+
+  - - Targets
+    - RedHat
+    - Debian
+    - Alpine
+
+  - - ``fmt::fmt``
+    - ``fmt-devel`` (may require EPEL)
+    - ``libfmt-dev``
+    - ``fmt-dev``
+  - - ``Boost::url`` + ``Boost::container``
+    - ``boost-devel``
+    - ``libboost-{url,container}-dev`` (may require a version infix)
+    - ``boost-dev``
+  - - ``OpenSSL::SSL``
+    - ``openssl-devel``
+    - ``libssl-dev``
+    - ``openssl-dev``
+  - - ``Threads::Threads``
+    - CMake built-in
+    - CMake built-in
+    - CMake built-in
+
+
 
 Build Configuration
 ###################
@@ -65,12 +132,13 @@ The following CMake_ configuration options are supported:
   AMONGOC_USE_PMM
 
   Toggle usage of PMM_ to automatically download and import dependencies at
-  configure-time.
+  configure-time using vcpkg_.
 
   .. _PMM: https://github.com/vector-of-bool/pmm
   .. _vcpkg: https://vcpkg.io/
 
-  :default: ``ON``
+  :default: ``ON`` if configuring |amongoc| as the top-level project, ``OFF``
+    otherwise (e.g. when added as a sub-project)
 
   If this toggle is enabled, then vcpkg_ will be executed during CMake
   configuration to download and build the dependencies required by |amongoc|.
@@ -81,41 +149,13 @@ The following CMake_ configuration options are supported:
   :external:cmake:command:`find_package <command:find_package>`.
 
 
-.. _building.cmake-deps:
-
-Third-Party Dependencies
-########################
-
-.. sidebar::
-
-  .. note::
-
-    At time of writing, neo-fun_ does not ship an installable CMake package and
-    is installed using a custom vcpkg_ port in ``etc/vcpkg-ports/neo-fun``.
-
-The following external libraries are required by |amongoc|:
-
-- OpenSSL
-- Boost.URL_
-- `{fmt}`_
-- Catch2_ - Only required for testing and only imported if
-  :cmake:variable:`BUILD_TESTING` is enabled.
-- Asio_ - Used for asynchronous I/O (Build-time only) (Note: Not ``Boost.Asio``!)
-- neo-fun_ (Build-time only)
-
-.. _Catch2: https://github.com/catchorg/Catch2
-.. _Asio: https://think-async.com/Asio/
-.. _Boost.URL: https://www.boost.io/libraries/url/
-.. _{fmt}: https://fmt.dev/
-.. _neo-fun: https://github.com/vector-of-bool/neo-fun
-
-
 .. _building.earthly:
 
 Building with Earthly
 #####################
 
 Earthly_ is a container-based build automation tool. |amongoc| ships with an
+Earthfile that eases building by using containerization.
 
 .. file:: Earthfile
 
@@ -144,15 +184,6 @@ Earthly_ is a container-based build automation tool. |amongoc| ships with an
       archive, a ``.zip`` archive, and a self-extracting shell script ``.sh``.
       The ``/install`` artifact contains an install tree from the build.
 
-  .. earthly-target:: +build-multi
-
-    Builds all of `+build-alpine`, `+build-debian`, and `+build-rl` at once.
-
-    .. earthly-artifact:: +build-multi/
-
-      The root artifact directory contains all artifacts from all other build
-      targets.
-
 
 Importing in CMake
 ##################
@@ -179,12 +210,14 @@ can be linked into an application::
   add_executbale(my-program main.c)
   target_link_libraries(my-program PRIVATE amongoc::amongoc)
 
-Dependency Imports
-******************
-
 By default, the |amongoc| CMake package will attempt to import dependencies
 using :cmake:command:`find_dependency <command:find_dependency>`. This import
 can be disabled by changing :cmake:variable:`AMONGOC_FIND_DEPENDENCIES`.
+
+**If you build** |amongoc| using vcpkg_ (the default) it is highly recommended
+to use vcpkg in your own project to install |amongoc|'s dependencies, as it is
+not guaranteed that the packages provided elsewhere will be compatible with the
+packages that were used in the |amongoc| build.
 
 .. cmake:variable:: AMONGOC_FIND_DEPENDENCIES
 
@@ -200,12 +233,3 @@ can be disabled by changing :cmake:variable:`AMONGOC_FIND_DEPENDENCIES`.
   during import. If disabled, then |amongoc| will assume that the necessary
   imported targets will be defined elsewhere by the importing package.
 
-  The following imported targets are used by the imported ``amongoc::amongoc``
-  target:
-
-  - ``fmt::fmt``
-  - ``Boost::url``
-  - ``Boost::container``
-  - ``OpenSSL::SSL``
-  - ``Threads::Threads`` (from the
-    :cmake:module:`FindThreads <module:FindThreads>` module)
