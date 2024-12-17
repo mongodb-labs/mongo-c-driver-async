@@ -102,7 +102,6 @@ BOOTSTRAP_DEPS:
         WORKDIR $src_tmp
         COPY --dir vcpkg*.json $src_tmp
         COPY tools/pmm.cmake $src_tmp/tools/
-        COPY --dir etc/vcpkg-ports $src_tmp/etc/
         RUN printf %s "cmake_minimum_required(VERSION 3.20)
             project(tmp)
             include(tools/pmm.cmake)
