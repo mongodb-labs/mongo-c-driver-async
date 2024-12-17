@@ -28,10 +28,12 @@ For more information on building, refer to
 
 ## Links
 
+- [GitHub Repository][github]
 - [Documentation Home][docs]
   - [Tutorials][docs-learn]
   - [Reference: Configuring, Building, and Using][docs-building]
 
+[github]: https://github.com/mongodb-labs/mongo-c-driver-async
 [docs]: https://mongodb-labs.github.io/mongo-c-driver-async/
 [docs-learn]: https://mongodb-labs.github.io/mongo-c-driver-async/learn/
 [docs-building]: https://mongodb-labs.github.io/mongo-c-driver-async/ref/building/
