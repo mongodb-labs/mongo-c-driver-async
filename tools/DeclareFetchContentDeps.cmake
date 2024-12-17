@@ -17,8 +17,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     neo-fun
-    GIT_REPOSITORY https://github.com/vector-of-bool/neo-fun.git
-    GIT_TAG 0.14.1
+    URL https://github.com/vector-of-bool/neo-fun/archive/refs/tags/0.14.1.tar.gz
+    URL_HASH SHA256=bff0fbc5244f8e0148f41e9322206e1af217a819b9dae487c691db04e38aac32
     OVERRIDE_FIND_PACKAGE
 )
 file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/neo-funExtra.cmake" [=[
@@ -39,8 +39,8 @@ file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/neo-funExtra.cmake" [=[
 
 FetchContent_Declare(
     asio
-    GIT_REPOSITORY https://github.com/chriskohlhoff/asio.git
-    GIT_TAG asio-1-32-0
+    URL https://github.com/chriskohlhoff/asio/archive/refs/tags/asio-1-32-0.tar.gz
+    URL_HASH SHA256=f1b94b80eeb00bb63a3c8cef5047d4e409df4d8a3fe502305976965827d95672
     OVERRIDE_FIND_PACKAGE
 )
 file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/asioExtra.cmake" [[
@@ -54,7 +54,7 @@ file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/asioExtra.cmake" [[
 
 FetchContent_Declare(
     Catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v3.7.1
+    URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.7.1.tar.gz
+    URL_HASH SHA256=c991b247a1a0d7bb9c39aa35faf0fe9e19764213f28ffba3109388e62ee0269c
     OVERRIDE_FIND_PACKAGE
 )
