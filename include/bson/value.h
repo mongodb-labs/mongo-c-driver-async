@@ -235,10 +235,15 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
         bson_dbpointer_view: _bson_value_ref_from_bson_dbpointer_view,                             \
         bson_code_view: _bson_value_ref_from_bson_code_view,                                       \
         bson_symbol_view: _bson_value_ref_from_bson_symbol_view,                                   \
+        int8_t: _bson_value_ref_from_int32_t,                                                      \
+        uint8_t: _bson_value_ref_from_int32_t,                                                     \
+        int16_t: _bson_value_ref_from_int32_t,                                                     \
+        uint16_t: _bson_value_ref_from_int32_t,                                                    \
         int32_t: _bson_value_ref_from_int32_t,                                                     \
         bson_timestamp: _bson_value_ref_from_bson_timestamp,                                       \
         bson_decimal128: _bson_value_ref_from_bson_decimal128,                                     \
         int64_t: _bson_value_ref_from_int64_t,                                                     \
+        uint32_t: _bson_value_ref_from_int64_t,                                                    \
         bson_value: _bson_value_ref_from_value,                                                    \
         bson_value_ref: _bson_value_ref_dup)((X))
 
