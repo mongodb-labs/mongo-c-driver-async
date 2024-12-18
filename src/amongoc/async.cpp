@@ -12,6 +12,8 @@
 #include <amongoc/loop.hpp>
 #include <amongoc/operation.hpp>
 
+#include <mlib/allocate_unique.hpp>
+
 #include <new>
 
 using namespace amongoc;
@@ -106,7 +108,7 @@ amongoc_operation amongoc_tie(amongoc_emitter em,
     }
 }
 
-amongoc_operation amongoc_detach(amongoc_emitter em, mlib_allocator alloc) mlib_noexcept {
+amongoc_operation(amongoc_detach)(amongoc_emitter em, mlib_allocator alloc) mlib_noexcept {
     // Connect to a handler that simply discards the result values
     return amongoc_tie(em, nullptr, nullptr, alloc);
 }
@@ -125,4 +127,25 @@ emitter amongoc_alloc_failure() noexcept {
     emitter                       ret  = {};
     ret.vtable                         = &vtab;
     return ret;
+}
+
+void amongoc_detach_start(amongoc_emitter emit) mlib_noexcept {
+    auto em = std::move(emit).as_unique();
+    struct consigned_operation {
+        // Dynamically allocated so it has a stable address
+        mlib::unique_ptr<unique_operation> oper;
+        // Notify box that we are relocatable
+        using enable_trivially_relocatable [[maybe_unused]] = consigned_operation;
+        // The handler function, simply discarding the result
+        void operator()(emitter_result&&) const {}
+        // Take the allocator from the unique pointer
+        mlib::allocator<> get_allocator() const noexcept { return oper.get_deleter().alloc; }
+    };
+    consigned_operation co{mlib::allocate_unique<unique_operation>(::mlib_default_allocator)};
+    // Take a stable reference to the operation state storage
+    auto& oper = *co.oper;
+    // Create the operation state and store it in the dynamic location
+    oper = std::move(em).connect(unique_handler::from(std::move(co)));
+    // Launch immediately
+    oper.start();
 }

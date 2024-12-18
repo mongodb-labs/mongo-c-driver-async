@@ -419,4 +419,10 @@ amongoc_operation amongoc_tie(amongoc_emitter em,
  */
 amongoc_operation amongoc_detach(amongoc_emitter emit, mlib_allocator alloc) mlib_noexcept;
 
+/**
+ * @brief Launch an operation associated with an emitter. The associate operation state is
+ * deallocated automatically when the operation completes.
+ */
+void amongoc_detach_start(amongoc_emitter emit) mlib_noexcept;
+
 mlib_extern_c_end();

@@ -290,6 +290,20 @@ Other
     This function is equivalent to :expr:`amongoc_tie(em, nullptr, nullptr, alloc)`
 
 
+.. function::
+  void amongoc_detach_start(amongoc_emitter [[transfer]] em)
+
+  Launch the asynchronous operation defined by an emitter.
+
+  :param em: |attr.transfer| An emitter that defines an asynchronous control
+    flow to be executed.
+  :allocation: The operation state is allocated using `mlib_default_allocator`.
+
+  This will internally create an `amongoc_operation` state object,
+  `start it <amongoc_start>` immediately, and destroy the operation state when
+  the operation completes.
+
+
 Types
 #####
 
