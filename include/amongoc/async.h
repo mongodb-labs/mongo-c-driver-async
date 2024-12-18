@@ -31,7 +31,7 @@ mlib_extern_c_begin();
  */
 typedef amongoc_box (*amongoc_then_transformer)(amongoc_box     userdata,
                                                 amongoc_status* status,
-                                                amongoc_box     value) mlib_noexcept;
+                                                amongoc_box     value);
 
 /**
  * @brief Function type for the `amongoc_let` transformation callback
@@ -45,7 +45,7 @@ typedef amongoc_box (*amongoc_then_transformer)(amongoc_box     userdata,
  */
 typedef amongoc_emitter (*amongoc_let_transformer)(amongoc_box    userdata,
                                                    amongoc_status status,
-                                                   amongoc_box    value) mlib_noexcept;
+                                                   amongoc_box    value);
 
 /// Flags to control the behavior of asynchronous utilities
 enum amongoc_async_flags {
@@ -82,6 +82,91 @@ amongoc_emitter amongoc_then(amongoc_emitter em,
                              amongoc_box              userdata,
                              amongoc_then_transformer tr) mlib_noexcept;
 
+#if mlib_is_cxx()
+extern "C++" {
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, amongoc_async_default, mlib_default_allocator, amongoc_nil, tr);
+}
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         amongoc_box              userdata,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, amongoc_async_default, mlib_default_allocator, userdata, tr);
+}
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         amongoc_async_flags      flags,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, flags, mlib_default_allocator, amongoc_nil, tr);
+}
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         mlib_allocator           alloc,
+                                         amongoc_box              userdata,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, amongoc_async_default, alloc, userdata, tr);
+}
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         amongoc_async_flags      flags,
+                                         amongoc_box              userdata,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, flags, mlib_default_allocator, userdata, tr);
+}
+inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
+                                         amongoc_async_flags      flags,
+                                         mlib_allocator           alloc,
+                                         amongoc_box              userdata,
+                                         amongoc_then_transformer tr) mlib_noexcept {
+    return ::amongoc_then(em, flags, alloc, userdata, tr);
+}
+}
+#define amongoc_then(...) _amongoc_then_cxx(__VA_ARGS__)
+#else
+#define amongoc_then(...) MLIB_PASTE(_amongocThenArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+// clang-format off
+// 2-args: An emitter and continuation
+#define _amongocThenArgc_2(Emitter, Then)                                                          \
+    amongoc_then((Emitter), amongoc_async_default, mlib_default_allocator, amongoc_nil, (Then))
+// 3-args: One of:
+//   - then(em, userdata, cb)
+//   - then(em, flags, cb)
+#define _amongocThenArgc_3(Emitter, UdOrFlags, Then)                                                  \
+    mlib_generic(_amongoc_then_cxx, _amongoc_then_em_ud_cb, (UdOrFlags), \
+        amongoc_box:              _amongoc_then_em_ud_cb, \
+        enum amongoc_async_flags: _amongoc_then_em_fl_cb \
+    )(Emitter, UdOrFlags, Then)
+// 4-args: One of:
+//      - then(em, alloc, userdata, cb)
+//      - then(em, flags, userdata, cb)
+#define _amongocThenArgc_4(Emitter, AllocOrFlags, Userdata, Then) \
+    mlib_generic(_amongoc_then_cxx, _amongoc_then_em_al_ud_cb, (AllocOrFlags), \
+        mlib_allocator:           _amongoc_then_em_al_ud_cb, \
+        enum amongoc_async_flags: _amongoc_then_em_fl_ud_cb\
+    )((Emitter, AllocOrFlags, Userdata, Then))
+#define _amongocThenArgc_5 amongoc_then
+// clang-format on
+static inline amongoc_emitter _amongoc_then_em_ud_cb(amongoc_emitter          em,
+                                                     amongoc_box              userdata,
+                                                     amongoc_then_transformer tr) mlib_noexcept {
+    return amongoc_then(em, amongoc_async_default, mlib_default_allocator, userdata, tr);
+}
+static inline amongoc_emitter _amongoc_then_em_fl_cb(amongoc_emitter          em,
+                                                     enum amongoc_async_flags fl,
+                                                     amongoc_then_transformer tr) mlib_noexcept {
+    return amongoc_then(em, fl, mlib_default_allocator, amongoc_nil, tr);
+}
+static inline amongoc_emitter _amongoc_then_em_al_ud_cb(amongoc_emitter          em,
+                                                        mlib_allocator           alloc,
+                                                        amongoc_box              userdata,
+                                                        amongoc_then_transformer tr) mlib_noexcept {
+    return amongoc_then(em, amongoc_async_default, alloc, userdata, tr);
+}
+static inline amongoc_emitter _amongoc_then_em_fl_ud_cb(amongoc_emitter          em,
+                                                        enum amongoc_async_flags flags,
+                                                        amongoc_box              userdata,
+                                                        amongoc_then_transformer tr) mlib_noexcept {
+    return amongoc_then(em, flags, mlib_default_allocator, userdata, tr);
+}
+#endif
+
 /**
  * @brief Transform the result of an asynchronous operation and continue to a
  * new asynchronous operation.
@@ -100,6 +185,91 @@ amongoc_emitter amongoc_let(amongoc_emitter          em,
                             mlib_allocator           alloc,
                             amongoc_box              userdata,
                             amongoc_let_transformer  tr) mlib_noexcept;
+
+#if mlib_is_cxx()
+extern "C++" {
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, amongoc_async_default, mlib_default_allocator, amongoc_nil, tr);
+}
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        amongoc_box             userdata,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, amongoc_async_default, mlib_default_allocator, userdata, tr);
+}
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        amongoc_async_flags     flags,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, flags, mlib_default_allocator, amongoc_nil, tr);
+}
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        mlib_allocator          alloc,
+                                        amongoc_box             userdata,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, amongoc_async_default, alloc, userdata, tr);
+}
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        amongoc_async_flags     flags,
+                                        amongoc_box             userdata,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, flags, mlib_default_allocator, userdata, tr);
+}
+inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
+                                        amongoc_async_flags     flags,
+                                        mlib_allocator          alloc,
+                                        amongoc_box             userdata,
+                                        amongoc_let_transformer tr) mlib_noexcept {
+    return ::amongoc_let(em, flags, alloc, userdata, tr);
+}
+}
+#define amongoc_let(...) _amongoc_let_cxx(__VA_ARGS__)
+#else
+#define amongoc_let(...) MLIB_PASTE(_amongocLetArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+// clang-format off
+// 2-args: An emitter and continuation
+#define _amongocLetArgc_2(Emitter, Then)                                                          \
+    amongoc_let((Emitter), amongoc_async_default, mlib_default_allocator, amongoc_nil, (Then))
+// 3-args: One of:
+//   - then(em, userdata, cb)
+//   - then(em, flags, cb)
+#define _amongocLetArgc_3(Emitter, UdOrFlags, Then)                                                  \
+    mlib_generic(_amongoc_let_cxx, _amongoc_let_em_ud_cb, (UdOrFlags), \
+        amongoc_box:              _amongoc_let_em_ud_cb, \
+        enum amongoc_async_flags: _amongoc_let_em_fl_cb \
+    )(Emitter, UdOrFlags, Then)
+// 4-args: One of:
+//      - then(em, alloc, userdata, cb)
+//      - then(em, flags, userdata, cb)
+#define _amongocLetArgc_4(Emitter, AllocOrFlags, Userdata, Then) \
+    mlib_generic(_amongoc_let_cxx, _amongoc_let_em_al_ud_cb, (AllocOrFlags), \
+        mlib_allocator:           _amongoc_let_em_al_ud_cb, \
+        enum amongoc_async_flags: _amongoc_let_em_fl_ud_cb\
+    )((Emitter, AllocOrFlags, Userdata, Then))
+#define _amongocLetArgc_5 amongoc_let
+// clang-format on
+static inline amongoc_emitter _amongoc_let_em_ud_cb(amongoc_emitter         em,
+                                                    amongoc_box             userdata,
+                                                    amongoc_let_transformer tr) mlib_noexcept {
+    return amongoc_let(em, amongoc_async_default, mlib_default_allocator, userdata, tr);
+}
+static inline amongoc_emitter _amongoc_let_em_fl_cb(amongoc_emitter          em,
+                                                    enum amongoc_async_flags fl,
+                                                    amongoc_let_transformer  tr) mlib_noexcept {
+    return amongoc_let(em, fl, mlib_default_allocator, amongoc_nil, tr);
+}
+static inline amongoc_emitter _amongoc_let_em_al_ud_cb(amongoc_emitter         em,
+                                                       mlib_allocator          alloc,
+                                                       amongoc_box             userdata,
+                                                       amongoc_let_transformer tr) mlib_noexcept {
+    return amongoc_let(em, amongoc_async_default, alloc, userdata, tr);
+}
+static inline amongoc_emitter _amongoc_let_em_fl_ud_cb(amongoc_emitter          em,
+                                                       enum amongoc_async_flags flags,
+                                                       amongoc_box              userdata,
+                                                       amongoc_let_transformer  tr) mlib_noexcept {
+    return amongoc_let(em, flags, mlib_default_allocator, userdata, tr);
+}
+#endif
 
 /**
  * @brief Create an emitter that resolves immediately with the given status and value

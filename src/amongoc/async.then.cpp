@@ -38,11 +38,11 @@ static unique_emitter _then(CompressedEmitter&&      em,
                                                                                              ud)}));
 }
 
-emitter amongoc_then(emitter                  in,
-                     amongoc_async_flags      flags,
-                     mlib_allocator           alloc_,
-                     box                      userdata_,
-                     amongoc_then_transformer tr) noexcept {
+emitter(amongoc_then)(emitter                  in,
+                      amongoc_async_flags      flags,
+                      mlib_allocator           alloc_,
+                      box                      userdata_,
+                      amongoc_then_transformer tr) noexcept {
     auto alloc = mlib::allocator<>{alloc_};
     return mlib_fwd(in)
         .as_unique()
