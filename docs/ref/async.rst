@@ -273,7 +273,9 @@ Other
     the returned `amongoc_operation` completes or is destroyed.
 
 
-.. function:: amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em, mlib_allocator alloc)
+.. function::
+  amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em)
+  amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em, mlib_allocator alloc)
 
   Create a "detached" operation for an emitter.
 
