@@ -156,6 +156,13 @@ if(BUILD_TESTING)
     include(GenURITests)
     target_sources(amongoc-test PRIVATE ${URITest_SOURCES})
 
+    # Add compile-time tests for generic function signatures
+    target_sources(amongoc-test PRIVATE
+        tests/sigcheck.test.cpp
+        tests/sigcheck.test.c
+        tests/sigcheck.test.h
+    )
+
     # Don't add the testproject tests if we are already building as a test project
     if(NOT DEFINED HOST_PROJECT_CMAKE_SOURCE_DIR)
         include(TestProject)
