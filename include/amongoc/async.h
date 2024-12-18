@@ -120,28 +120,30 @@ inline amongoc_emitter _amongoc_then_cxx(amongoc_emitter          em,
 }
 #define amongoc_then(...) _amongoc_then_cxx(__VA_ARGS__)
 #else
-#define amongoc_then(...) MLIB_PASTE(_amongocThenArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define amongoc_then(...) MLIB_ARGC_PICK(_amongocThen, __VA_ARGS__)
 // clang-format off
 // 2-args: An emitter and continuation
-#define _amongocThenArgc_2(Emitter, Then)                                                          \
+#define _amongocThen_argc_2(Emitter, Then)                                                          \
     amongoc_then((Emitter), amongoc_async_default, mlib_default_allocator, amongoc_nil, (Then))
 // 3-args: One of:
 //   - then(em, userdata, cb)
 //   - then(em, flags, cb)
-#define _amongocThenArgc_3(Emitter, UdOrFlags, Then)                                                  \
+#define _amongocThen_argc_3(Emitter, UdOrFlags, Then)                                                  \
     mlib_generic(_amongoc_then_cxx, _amongoc_then_em_ud_cb, (UdOrFlags), \
         amongoc_box:              _amongoc_then_em_ud_cb, \
-        enum amongoc_async_flags: _amongoc_then_em_fl_cb \
-    )(Emitter, UdOrFlags, Then)
+        enum amongoc_async_flags: _amongoc_then_em_fl_cb, \
+        int: _amongoc_then_em_fl_cb \
+    )((Emitter), (UdOrFlags), (Then))
 // 4-args: One of:
 //      - then(em, alloc, userdata, cb)
 //      - then(em, flags, userdata, cb)
-#define _amongocThenArgc_4(Emitter, AllocOrFlags, Userdata, Then) \
+#define _amongocThen_argc_4(Emitter, AllocOrFlags, Userdata, Then) \
     mlib_generic(_amongoc_then_cxx, _amongoc_then_em_al_ud_cb, (AllocOrFlags), \
         mlib_allocator:           _amongoc_then_em_al_ud_cb, \
-        enum amongoc_async_flags: _amongoc_then_em_fl_ud_cb\
-    )((Emitter, AllocOrFlags, Userdata, Then))
-#define _amongocThenArgc_5 amongoc_then
+        enum amongoc_async_flags: _amongoc_then_em_fl_ud_cb, \
+        int: _amongoc_then_em_fl_ud_cb \
+    )((Emitter), (AllocOrFlags), (Userdata), (Then))
+#define _amongocThen_argc_5 amongoc_then
 // clang-format on
 static inline amongoc_emitter _amongoc_then_em_ud_cb(amongoc_emitter          em,
                                                      amongoc_box              userdata,
@@ -224,28 +226,30 @@ inline amongoc_emitter _amongoc_let_cxx(amongoc_emitter         em,
 }
 #define amongoc_let(...) _amongoc_let_cxx(__VA_ARGS__)
 #else
-#define amongoc_let(...) MLIB_PASTE(_amongocLetArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define amongoc_let(...) MLIB_ARGC_PICK(_amongocLet, __VA_ARGS__)
 // clang-format off
 // 2-args: An emitter and continuation
-#define _amongocLetArgc_2(Emitter, Then)                                                          \
-    amongoc_let((Emitter), amongoc_async_default, mlib_default_allocator, amongoc_nil, (Then))
+#define _amongocLet_argc_2(Emitter, Let)                                                          \
+    amongoc_let((Emitter), amongoc_async_default, mlib_default_allocator, amongoc_nil, (Let))
 // 3-args: One of:
 //   - then(em, userdata, cb)
 //   - then(em, flags, cb)
-#define _amongocLetArgc_3(Emitter, UdOrFlags, Then)                                                  \
+#define _amongocLet_argc_3(Emitter, UdOrFlags, Let)                                                  \
     mlib_generic(_amongoc_let_cxx, _amongoc_let_em_ud_cb, (UdOrFlags), \
         amongoc_box:              _amongoc_let_em_ud_cb, \
-        enum amongoc_async_flags: _amongoc_let_em_fl_cb \
-    )(Emitter, UdOrFlags, Then)
+        enum amongoc_async_flags: _amongoc_let_em_fl_cb, \
+        int: _amongoc_let_em_fl_cb \
+    )((Emitter), (UdOrFlags), (Let))
 // 4-args: One of:
 //      - then(em, alloc, userdata, cb)
 //      - then(em, flags, userdata, cb)
-#define _amongocLetArgc_4(Emitter, AllocOrFlags, Userdata, Then) \
+#define _amongocLet_argc_4(Emitter, AllocOrFlags, Userdata, Let) \
     mlib_generic(_amongoc_let_cxx, _amongoc_let_em_al_ud_cb, (AllocOrFlags), \
         mlib_allocator:           _amongoc_let_em_al_ud_cb, \
-        enum amongoc_async_flags: _amongoc_let_em_fl_ud_cb\
-    )((Emitter, AllocOrFlags, Userdata, Then))
-#define _amongocLetArgc_5 amongoc_let
+        enum amongoc_async_flags: _amongoc_let_em_fl_ud_cb, \
+        int: _amongoc_let_em_fl_ud_cb \
+    )((Emitter), (AllocOrFlags), (Userdata), (Let))
+#define _amongocLet_argc_5 amongoc_let
 // clang-format on
 static inline amongoc_emitter _amongoc_let_em_ud_cb(amongoc_emitter         em,
                                                     amongoc_box             userdata,
@@ -281,6 +285,50 @@ static inline amongoc_emitter _amongoc_let_em_fl_ud_cb(amongoc_emitter          
  */
 amongoc_emitter
 amongoc_just(amongoc_status st, amongoc_box value, mlib_allocator alloc) mlib_noexcept;
+
+#define amongoc_just(...) MLIB_ARGC_PICK(_amongocJust, __VA_ARGS__)
+#define _amongocJust_argc_0(...) amongoc_just(amongoc_okay, amongoc_nil, mlib_default_allocator)
+// clang-format off
+#define _amongocJust_argc_1(Arg) \
+    mlib_generic(_amongoc_just_generic, amongoc_just, (Arg), \
+        amongoc_status: _amongoc_just_status, \
+        amongoc_box: _amongoc_just_value)(Arg)
+#define _amongocJust_argc_2(FirstArg, SecondArg) \
+    mlib_generic(_amongoc_just_generic, amongoc_just, (FirstArg), \
+        amongoc_status: _amongoc_just_st_value, \
+        amongoc_box: _amongoc_just_val_alloc)((FirstArg), (SecondArg))
+#define _amongocJust_argc_3(Status, Value, Alloc) amongoc_just((Status), (Value), (Alloc))
+// clang-format on
+static inline amongoc_emitter _amongoc_just_status(amongoc_status st) mlib_noexcept {
+    return amongoc_just(st, amongoc_nil, mlib_default_allocator);
+}
+static inline amongoc_emitter _amongoc_just_value(amongoc_box val) mlib_noexcept {
+    return amongoc_just(amongoc_okay, val, mlib_default_allocator);
+}
+static inline amongoc_emitter _amongoc_just_st_value(amongoc_status st,
+                                                     amongoc_box    value) mlib_noexcept {
+    return amongoc_just(st, value, mlib_default_allocator);
+}
+static inline amongoc_emitter _amongoc_just_val_alloc(amongoc_box    value,
+                                                      mlib_allocator alloc) mlib_noexcept {
+    return amongoc_just(amongoc_okay, value, alloc);
+}
+#if mlib_is_cxx()
+extern "C++" {
+inline amongoc_emitter _amongoc_just_generic(amongoc_status st, amongoc_box value) noexcept {
+    return ::amongoc_just(st, value, ::mlib_default_allocator);
+}
+inline amongoc_emitter _amongoc_just_generic(amongoc_box value, mlib_allocator alloc) noexcept {
+    return ::amongoc_just(amongoc_okay, value, alloc);
+}
+inline amongoc_emitter _amongoc_just_generic(amongoc_status st) noexcept {
+    return ::amongoc_just(st, ::amongoc_nil, ::mlib_default_allocator);
+}
+inline amongoc_emitter _amongoc_just_generic(amongoc_box value) noexcept {
+    return ::amongoc_just(::amongoc_okay, value, ::mlib_default_allocator);
+}
+}
+#endif
 
 /**
  * @brief Create a continuation that replaces an emitter's result with the given

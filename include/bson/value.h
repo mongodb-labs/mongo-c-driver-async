@@ -247,10 +247,9 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
         bson_value: _bson_value_ref_from_value,                                                    \
         bson_value_ref: _bson_value_ref_dup)((X))
 
-#define bson_value_copy(...)                                                                       \
-    MLIB_PASTE(_bsonValueCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _bsonValueCopyArgc_1(X) _bson_value_copy(bson_value_ref_from((X)), mlib_default_allocator)
-#define _bsonValueCopyArgc_2(X, Alloc) _bson_value_copy(bson_value_ref_from((X)), (Alloc))
+#define bson_value_copy(...) MLIB_ARGC_PICK(_bsonValueCopy, __VA_ARGS__)
+#define _bsonValueCopy_argc_1(X) _bson_value_copy(bson_value_ref_from((X)), mlib_default_allocator)
+#define _bsonValueCopy_argc_2(X, Alloc) _bson_value_copy(bson_value_ref_from((X)), (Alloc))
 static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
                                                   mlib_allocator alloc) mlib_noexcept {
     bson_value ret MLIB_IF_CXX(= {});

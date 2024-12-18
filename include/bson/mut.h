@@ -321,12 +321,9 @@ inline bson_iterator bson_insert_code_with_scope(bson_mut*      doc,
  * - `bson_insert(bson_mut, string-like, value-like)`
  * - `bson_insert(bson_mut, bson_iterator, string-like, value-like)`
  */
-#define bson_insert(...) _bsonInsert(__VA_ARGS__)
-#define _bsonInsert(...) MLIB_PASTE(_bsonInsertArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-
-#define _bsonInsertArgc_3(Mut, Key, Value) _bsonInsertAt(Mut, bson_end(*(Mut)), (Key), Value)
-#define _bsonInsertArgc_4(Mut, Pos, Key, Value) _bsonInsertAt(Mut, (Pos), (Key), Value)
-
+#define bson_insert(...) MLIB_ARGC_PICK(_bsonInsert, __VA_ARGS__)
+#define _bsonInsert_argc_3(Mut, Key, Value) _bsonInsertAt(Mut, bson_end(*(Mut)), (Key), Value)
+#define _bsonInsert_argc_4(Mut, Pos, Key, Value) _bsonInsertAt(Mut, (Pos), (Key), Value)
 #define _bsonInsertAt(Mut, Position, Key, Value)                                                   \
     _bson_insert_value((Mut), (Position), mlib_str_view_from(Key), bson_value_ref_from(Value))
 
@@ -530,9 +527,9 @@ inline bson_iterator bson_erase_one(bson_mut* const doc, const bson_iterator pos
     return bson_erase_range(doc, pos, bson_next(pos));
 }
 
-#define bson_erase(...) MLIB_PASTE(_bsonEraseArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _bsonEraseArgc_2(Doc, Pos) bson_erase_one((Doc), (Pos))
-#define _bsonEraseArgc_3(Doc, First, Last) bson_erase_range((Doc), (First), (Last))
+#define bson_erase(...) MLIB_ARGC_PICK(_bsonErase, __VA_ARGS__)
+#define _bsonErase_argc_2(Doc, Pos) bson_erase_one((Doc), (Pos))
+#define _bsonErase_argc_3(Doc, First, Last) bson_erase_range((Doc), (First), (Last))
 
 /**
  * @brief Obtain a mutator for the subdocument at the given position within

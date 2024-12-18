@@ -342,10 +342,10 @@ inline bool mlib_str_mut_resize(mlib_str_mut* s, size_t new_len) mlib_noexcept {
  * @note The @ref mlib_str_mut::str member MUST eventually be given to
  * @ref mlib_str_delete().
  */
-#define mlib_str_new(...) MLIB_PASTE(_mlibStrNewArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _mlibStrNewArgc_0() _mlib_str_new(0, mlib_default_allocator)
-#define _mlibStrNewArgc_1(N) _mlib_str_new(N, mlib_default_allocator)
-#define _mlibStrNewArgc_2(N, Alloc) _mlib_str_new(N, Alloc)
+#define mlib_str_new(...) MLIB_ARGC_PICK(_mlibStrNew, __VA_ARGS__)
+#define _mlibStrNew_argc_0() _mlib_str_new(0, mlib_default_allocator)
+#define _mlibStrNew_argc_1(N) _mlib_str_new(N, mlib_default_allocator)
+#define _mlibStrNew_argc_2(N, Alloc) _mlib_str_new(N, Alloc)
 
 inline mlib_str_mut _mlib_str_new(size_t len, mlib_allocator alloc) mlib_noexcept {
     mlib_str_mut ret;
@@ -381,12 +381,9 @@ mlib_str_copy_data(const char* s, size_t len, mlib_allocator alloc) mlib_noexcep
  * @param s A string view to copy from
  * @return mlib_str A new string copied from the given view
  */
-#define mlib_str_copy(...)                                                                         \
-    MLIB_PASTE(_mlibStrCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))                                     \
-    (__VA_ARGS__)
-
-#define _mlibStrCopyArgc_1(S) _mlib_str_copy(mlib_str_view_from((S)), mlib_default_allocator)
-#define _mlibStrCopyArgc_2(S, Alloc) _mlib_str_copy(mlib_str_view_from((S)), Alloc)
+#define mlib_str_copy(...) MLIB_ARGC_PICK(_mlibStrCopy, __VA_ARGS__)
+#define _mlibStrCopy_argc_1(S) _mlib_str_copy(mlib_str_view_from((S)), mlib_default_allocator)
+#define _mlibStrCopy_argc_2(S, Alloc) _mlib_str_copy(mlib_str_view_from((S)), Alloc)
 inline mlib_str_mut _mlib_str_copy(mlib_str_view s, mlib_allocator alloc) mlib_noexcept {
     return mlib_str_copy_data(s.data, s.len, alloc);
 }

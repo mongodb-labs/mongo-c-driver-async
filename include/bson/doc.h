@@ -222,10 +222,10 @@ typedef struct bson_mut {
 #if mlib_is_cxx()
 #define _bsonNew(...) _bson_new_generic(__VA_ARGS__)
 #else
-#define _bsonNew(...) MLIB_PASTE(_bsonNewArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define _bsonNew(...) MLIB_ARGC_PICK(_bsonNew, __VA_ARGS__)
 #endif
-#define _bsonNewArgc_0() _bson_new(5, mlib_default_allocator)
-#define _bsonNewArgc_1(X)                                                                          \
+#define _bsonNew_argc_0() _bson_new(5, mlib_default_allocator)
+#define _bsonNew_argc_1(X)                                                                         \
     _Generic(X,                                                                                    \
         mlib_allocator: _bson_new_with_alloc,                                                      \
         bson_doc: _bson_copy_doc,                                                                  \
@@ -233,7 +233,7 @@ typedef struct bson_mut {
         bson_array_view: _bson_copy_array_view_with_default_allocator,                             \
         struct bson_mut: _bson_copy_mut_with_default_allocator,                                    \
         default: _bson_new_reserve_with_default_alloc)(X)
-#define _bsonNewArgc_2(ReserveOrDoc, Alloc)                                                        \
+#define _bsonNew_argc_2(ReserveOrDoc, Alloc)                                                       \
     _Generic((ReserveOrDoc),                                                                       \
         bson_doc: _bson_copy_doc_with_allocator,                                                   \
         bson_view: _bson_copy_view_with_allocator,                                                 \

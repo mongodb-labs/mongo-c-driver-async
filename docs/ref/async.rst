@@ -111,20 +111,36 @@ Asynchronous Continuations
   the result of another asynchronous operation.
 
 
-Other
-*****
+Immediate Completion
+********************
 
-.. function:: amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+.. function::
+  [[1]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+  [[2]] amongoc_emitter [[type(nil)]] amongoc_just(amongoc_status st)
+  [[3]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_box [[transfer, type(T)]] value)
+  [[4]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value)
+  [[5]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+  [[6]] amongoc_emitter [[type(nil)]] amongoc_just()
 
   Create an emitter that will resolve immediately with the given status and
   result value.
 
-  :param st: The result status.
-  :param value: |attr.transfer| The result value.
+  :param st: The result status. If omitted, `amongoc_okay`.
+  :param value: |attr.transfer| The result value. If omitted, `amongoc_nil`
   :param alloc: |opstate-alloc|
+  :allocation: Signatures (2) and (6) do not allocate. Signatures (3) and (4) use `mlib_default_allocator`.
   :return: A new `amongoc_emitter` |R| whose result status will be `st` and
     result value will be `value`
   :header: |this-header|
+
+  .. rubric:: Overloads
+
+  1. Specify the status, the result value, and an allocator
+  2. Specify only the status. The result value is `amongoc_nil`. This overload does not allocate any memory.
+  3. Specify the result value. Uses the default allocator, with `amongoc_okay` status.
+  4. Specify a result status and result value. Uses the default allocator.
+  5. Specify a result value and an allocator, with `amongoc_okay` status
+  6. Resolve with `amongoc_okay` and `amongoc_nil`. Does not allocate.
 
   .. note::
 
@@ -139,6 +155,9 @@ Other
     Unless allocation fails, status `st` and result `value` will always be sent
     to the handler.
 
+
+Other
+*****
 
 .. function::
   amongoc_emitter [[type(T)]] amongoc_then_just( \
