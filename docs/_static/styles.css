@@ -32,3 +32,17 @@ a.reference.external::after {
   content: '⭧';
   font-size: 80%;
 }
+
+.highlight {
+
+  /* Separate line numbers visually */
+  .linenos {
+    border-right: 1px solid var(--pst-color-border);
+    margin-right: 10px;
+  }
+
+  /* Italicize comments */
+  .c1 {
+    font-style: italic;
+  }
+}
