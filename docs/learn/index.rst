@@ -8,3 +8,4 @@ Tutorials
 
   bson/index
   box
+  connect
