@@ -50,8 +50,8 @@ amongoc_client* amongoc_collection_get_client(amongoc_collection const*) mlib_no
 /**
  * @brief Get the allocator associated with the given collection
  */
-inline mlib_allocator
-amongoc_collection_get_allocator(amongoc_collection const* coll) mlib_noexcept {
+mlib_always_inline mlib_allocator amongoc_collection_get_allocator(amongoc_collection const* coll)
+    mlib_noexcept {
     return amongoc_client_get_allocator(amongoc_collection_get_client(coll));
 }
 
@@ -142,9 +142,10 @@ amongoc_emitter amongoc_delete_ex(amongoc_collection* coll,
  * @return amongoc_emitter Resolves to an `int64_t` for the number of documents
  * deleted (either zero or one)
  */
-inline amongoc_emitter amongoc_delete_one(amongoc_collection*          coll,
-                                          bson_view                    filter,
-                                          amongoc_delete_params const* params) mlib_noexcept {
+mlib_always_inline amongoc_emitter amongoc_delete_one(amongoc_collection*          coll,
+                                                      bson_view                    filter,
+                                                      amongoc_delete_params const* params)
+    mlib_noexcept {
     return amongoc_delete_ex(coll, filter, true, params);
 }
 
@@ -157,10 +158,10 @@ inline amongoc_emitter amongoc_delete_one(amongoc_collection*          coll,
  * @return amongoc_emitter Resolves to an `int64_t` for the number of documents
  * deleted
  */
-inline amongoc_emitter
-amongoc_delete_many(amongoc_collection*                 coll,
-                    bson_view                           filter,
-                    struct amongoc_delete_params const* params) mlib_noexcept {
+mlib_always_inline amongoc_emitter amongoc_delete_many(amongoc_collection*                 coll,
+                                                       bson_view                           filter,
+                                                       struct amongoc_delete_params const* params)
+    mlib_noexcept {
     return amongoc_delete_ex(coll, filter, false, params);
 }
 
@@ -214,9 +215,10 @@ amongoc_emitter amongoc_insert_ex(amongoc_collection*          coll,
 /**
  * @brief Insert a single document into the collection
  */
-inline amongoc_emitter amongoc_insert_one(amongoc_collection*          coll,
-                                          bson_view                    doc,
-                                          amongoc_insert_params const* params) mlib_noexcept {
+mlib_always_inline amongoc_emitter amongoc_insert_one(amongoc_collection*          coll,
+                                                      bson_view                    doc,
+                                                      amongoc_insert_params const* params)
+    mlib_noexcept {
     return amongoc_insert_ex(coll, &doc, 1, params);
 }
 
@@ -296,7 +298,7 @@ amongoc_emitter amongoc_find_and_modify(amongoc_collection*             coll,
                                         size_t                          pipeline_len,
                                         const amongoc_find_plus_params* params) mlib_noexcept;
 
-inline amongoc_emitter
+mlib_always_inline amongoc_emitter
 amongoc_find_one_and_delete(amongoc_collection*             coll,
                             bson_view                       filter,
                             const amongoc_find_plus_params* params) mlib_noexcept {
@@ -308,7 +310,7 @@ amongoc_find_one_and_delete(amongoc_collection*             coll,
                                    params);
 }
 
-inline amongoc_emitter
+mlib_always_inline amongoc_emitter
 amongoc_find_one_and_replace(amongoc_collection*             coll,
                              bson_view                       filter,
                              bson_view                       replacement,
@@ -316,7 +318,7 @@ amongoc_find_one_and_replace(amongoc_collection*             coll,
     return amongoc_find_and_modify(coll, filter, false, &replacement, 0, params);
 }
 
-inline amongoc_emitter
+mlib_always_inline amongoc_emitter
 amongoc_find_one_and_update(amongoc_collection*             coll,
                             bson_view                       filter,
                             bson_view const*                update_or_pipeline,
