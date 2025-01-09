@@ -7,7 +7,7 @@
 > to breaking changes at any time.
 
 <!-- Any information written here must be kept in-sync with the relevant
-documenation pages, noted in comments. -->
+documentation pages, noted in comments. -->
 
 This is `amongoc`, a C11 MongoDB asynchronous client library. It implements a
 subset of the MongoDB driver APIs.

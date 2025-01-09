@@ -202,7 +202,7 @@ Earthfile that eases building by using containerization.
       amongoc-0.1.0-linux-x86_64.tar.gz
       amongoc-0.1.0-linux-x86_64.zip
 
-    The resuling ``.sh`` script can be used to install the built library and
+    The resulting ``.sh`` script can be used to install the built library and
     headers.
 
     The same command can work for the `+build-alpine`, `+build-fedora`, and
@@ -262,5 +262,5 @@ packages that were used in the |amongoc| build.
 
 .. [#fn-redhat-issue]
 
-  There is a known issue with the RedHat dev toolset that result in certain
+  There is a known issue with the RedHat dev toolset that results in certain
   internal symbols being incorrectly discarded and producing link-time errors.
