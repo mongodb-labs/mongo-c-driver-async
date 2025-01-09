@@ -111,6 +111,9 @@ target_sources(amongoc
         FILES ${src_headers}
 )
 
+# Prevent any code from emitting a `neo_assert` that would require downstream linking
+target_compile_definitions(amongoc PRIVATE NEO_ENABLE_CHECKS=0)
+
 # Enable C++23 features on the target
 # We currently only use C++23 for `auto(). Future revisions
 # can remove these requirements for greater portability.
