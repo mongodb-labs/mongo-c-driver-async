@@ -6,5 +6,5 @@ How-to Guides
   :caption: Guides
   :maxdepth: 2
 
-  connect
+  communicate
   looping

@@ -172,7 +172,7 @@ Types
       - Result
     - - `__bson_viewable`
       - `bson_type_document`
-    - - `bson_array`
+    - - `bson_array_view`
       - `bson_type_array`
     - - `__string_convertible`
       - `bson_type_utf8`
@@ -182,13 +182,13 @@ Types
       - `bson_type_oid`
     - - `bson_datetime`
       - `bson_type_datetime`
-    - - `bson_regex`
+    - - `bson_regex_view`
       - `bson_type_regex`
-    - - `bson_dbpointer`
+    - - `bson_dbpointer_view`
       - `bson_type_dbpointer`
-    - - `bson_code`
+    - - `bson_code_view`
       - `bson_type_code`
-    - - `bson_symbol`
+    - - `bson_symbol_view`
       - `bson_type_symbol`
     - - `int32_t`
       - `bson_type_int32`
@@ -222,6 +222,7 @@ Functions & Macros
 
 .. function::
   bson_value bson_value_copy(__bson_value_convertible V)
+  bson_value bson_value_copy(__bson_value_convertible V, mlib_allocator alloc)
 
   Create a copy of `V` stored in a dynamically typed `bson_value`. The returned
   value must eventually be destroyed.

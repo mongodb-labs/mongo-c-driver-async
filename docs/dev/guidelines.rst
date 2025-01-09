@@ -372,9 +372,7 @@ portion of the file. These should be simple wrappers around the C types (e.g.
 ==============================================
 
 This can create a semantic ambiguity when a C struct is constructed in a C
-header. If you really need it, make sure that all calls to that constructor
-within C headers are syntactically valid and semantically equivalent when
-compiled in C and C++ modes (See: `amongoc_status`).
+header.
 
 **Instead, prefer** to use the named-constructor idiom: Use |static| member
 functions that construct instances of the object (e.g. `amongoc_status::from`).

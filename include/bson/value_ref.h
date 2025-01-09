@@ -91,6 +91,7 @@ typedef struct bson_value_ref {
     DECL_CONVERSION(bson_symbol_view, ::bson_type_symbol, symbol, arg);
     DECL_CONVERSION(std::int32_t, ::bson_type_int32, int32, arg);
     DECL_CONVERSION(bson_timestamp, ::bson_type_timestamp, timestamp, arg);
+    DECL_CONVERSION(std::uint32_t, ::bson_type_int64, int64, arg);
     DECL_CONVERSION(std::int64_t, ::bson_type_int64, int64, arg);
     DECL_CONVERSION(bson_decimal128, ::bson_type_decimal128, decimal128, arg);
     DECL_CONVERSION(bson::null, ::bson_type_null, int32, 0);

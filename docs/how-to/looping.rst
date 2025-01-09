@@ -100,9 +100,9 @@ countdown reaches zero.
   :end-at: }
 
 The `amongoc_just` function creates a pseudo-async operation that resolves
-immediately with the given result. Here, we create a successful status with
-`amongoc_okay` and use `amongoc_box_uint64` to create a box that stores the
-final calculation. This result value box will appear at the end of our loop.
+immediately with the given result. Here, we use `amongoc_box_uint64` to create a
+box that stores the final calculation. This result value box will appear at the
+end of our loop.
 
 
 Starting a Timer

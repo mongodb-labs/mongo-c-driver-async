@@ -235,17 +235,21 @@ mlib_constexpr bson_value_ref _bson_value_ref_from_value(bson_value val) mlib_no
         bson_dbpointer_view: _bson_value_ref_from_bson_dbpointer_view,                             \
         bson_code_view: _bson_value_ref_from_bson_code_view,                                       \
         bson_symbol_view: _bson_value_ref_from_bson_symbol_view,                                   \
+        int8_t: _bson_value_ref_from_int32_t,                                                      \
+        uint8_t: _bson_value_ref_from_int32_t,                                                     \
+        int16_t: _bson_value_ref_from_int32_t,                                                     \
+        uint16_t: _bson_value_ref_from_int32_t,                                                    \
         int32_t: _bson_value_ref_from_int32_t,                                                     \
         bson_timestamp: _bson_value_ref_from_bson_timestamp,                                       \
         bson_decimal128: _bson_value_ref_from_bson_decimal128,                                     \
         int64_t: _bson_value_ref_from_int64_t,                                                     \
+        uint32_t: _bson_value_ref_from_int64_t,                                                    \
         bson_value: _bson_value_ref_from_value,                                                    \
         bson_value_ref: _bson_value_ref_dup)((X))
 
-#define bson_value_copy(...)                                                                       \
-    MLIB_PASTE(_bsonValueCopyArgc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
-#define _bsonValueCopyArgc_1(X) _bson_value_copy(bson_value_ref_from((X)), mlib_default_allocator)
-#define _bsonValueCopyArgc_2(X, Alloc) _bson_value_copy(bson_value_ref_from((X)), (Alloc))
+#define bson_value_copy(...) MLIB_ARGC_PICK(_bsonValueCopy, __VA_ARGS__)
+#define _bsonValueCopy_argc_1(X) _bson_value_copy(bson_value_ref_from((X)), mlib_default_allocator)
+#define _bsonValueCopy_argc_2(X, Alloc) _bson_value_copy(bson_value_ref_from((X)), (Alloc))
 static mlib_constexpr bson_value _bson_value_copy(bson_value_ref val,
                                                   mlib_allocator alloc) mlib_noexcept {
     bson_value ret MLIB_IF_CXX(= {});

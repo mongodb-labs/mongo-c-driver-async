@@ -354,14 +354,16 @@ _FUNCS = [
     *(
         f"amongoc_{f}"
         for f in (
+            "detach_start",
+            "detach",
+            "is_error",
             "just",
             "let",
-            "start",
-            "tie",
-            "then",
-            "timeout",
             "schedule_later",
-            "is_error",
+            "start",
+            "then",
+            "tie",
+            "timeout",
         )
     ),
     *(

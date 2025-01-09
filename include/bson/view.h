@@ -18,31 +18,6 @@ typedef struct bson_view bson_view;
 struct bson_iterator;
 
 /**
- * @brief Obtain a pointer to the beginning of the data for the given document.
- */
-#define bson_data(X) _bson_data_as_const((X)._bson_document_data)
-
-/**
- * @brief Obtain a mutable pointer to the beginning of the data for the given
- * document.
- *
- * @note This only works if the object is a mutable document reference (e.g. not
- * bson_view)
- */
-#define bson_mut_data(X) _bson_data_as_mut((X)._bson_document_data)
-
-/**
- * @brief Obtain the byte-size of the BSON document referred to by the given
- * bson_view.
- */
-#define bson_size(...) _bson_byte_size(bson_data((__VA_ARGS__)))
-
-/**
- * @brief Obtain the byte-size of the given BSON document, as a signed integer
- */
-#define bson_ssize(...) _bson_byte_ssize(bson_data((__VA_ARGS__)))
-
-/**
  * @brief A type specifically representing a nullable read-only view of a BSON
  * document.
  */
@@ -64,12 +39,26 @@ typedef struct bson_view {
     using size_type = std::uint32_t;
 
     // Return a pointer to the document data
-    [[nodiscard]] inline const bson_byte* data() const noexcept { return ::bson_data(*this); }
+    [[nodiscard]] inline const bson_byte* data() const noexcept {
+        return this->_bson_document_data;
+    }
 
     /**
      * @brief Obtain the size of the document data, in bytes
      */
-    [[nodiscard]] inline size_type byte_size() const noexcept { return ::bson_size(*this); }
+    [[nodiscard]] inline size_type byte_size() const noexcept {
+        return ::_bson_byte_size(this->data());
+    }
+
+    /**
+     * @brief Handle any type that is explicit-convertible to a view.
+     *
+     * The `static_cast` in the return type will SFINAE-away invalid operands
+     */
+    template <typename T>
+    [[nodiscard]] constexpr static auto from(T o) noexcept -> decltype(static_cast<bson_view>(o)) {
+        return static_cast<bson_view>(o);
+    }
 
 #if mlib_have_cxx20()
     /**
@@ -166,12 +155,16 @@ typedef struct bson_array_view {
     }
 
     // Return a pointer to the array data
-    [[nodiscard]] inline const bson_byte* data() const noexcept { return ::bson_data(*this); }
+    [[nodiscard]] inline const bson_byte* data() const noexcept {
+        return this->_bson_document_data;
+    }
 
     /**
      * @brief Obtain the size of the array data, in bytes
      */
-    [[nodiscard]] inline size_type byte_size() const noexcept { return ::bson_size(*this); }
+    [[nodiscard]] inline size_type byte_size() const noexcept {
+        return ::_bson_byte_size(this->data());
+    }
 
 #if mlib_have_cxx20()
     [[nodiscard]] std::span<const bson_byte> bytes() const noexcept;
@@ -278,7 +271,9 @@ inline bson_view bson_view_from_data(const bson_byte* const data,
 /**
  * @brief Obtain a bson_view for the given document-like entity.
  */
-#define bson_view_from(...) _bson_view_from_ptr(bson_data(__VA_ARGS__))
+#define bson_view_from(...)                                                                        \
+    MLIB_LANG_PICK(_bson_view_from_ptr((__VA_ARGS__)._bson_document_data))                         \
+    (bson_view::from(__VA_ARGS__))
 inline bson_view _bson_view_from_ptr(const bson_byte* p) mlib_noexcept {
     if (!p) {
         return bson_view_null;
@@ -287,6 +282,31 @@ inline bson_view _bson_view_from_ptr(const bson_byte* p) mlib_noexcept {
     BV_ASSERT(len >= 0);
     return bson_view_from_data(p, (uint32_t)len, NULL);
 }
+
+/**
+ * @brief Obtain a pointer to the beginning of the data for the given document.
+ */
+#define bson_data(X) _bson_data_as_const(bson_view_from(X)._bson_document_data)
+
+/**
+ * @brief Obtain a mutable pointer to the beginning of the data for the given
+ * document.
+ *
+ * @note This only works if the object is a mutable document reference (e.g. not
+ * bson_view)
+ */
+#define bson_mut_data(X) _bson_data_as_mut((X)._bson_document_data)
+
+/**
+ * @brief Obtain the byte-size of the BSON document referred to by the given
+ * bson_view.
+ */
+#define bson_size(...) _bson_byte_size(bson_data((__VA_ARGS__)))
+
+/**
+ * @brief Obtain the byte-size of the given BSON document, as a signed integer
+ */
+#define bson_ssize(...) _bson_byte_ssize(bson_data((__VA_ARGS__)))
 
 mlib_extern_c_end();
 

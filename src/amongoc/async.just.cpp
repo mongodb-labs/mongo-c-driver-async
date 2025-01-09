@@ -4,7 +4,7 @@
 
 using namespace amongoc;
 
-emitter amongoc_just(status st, box value, mlib_allocator alloc_) noexcept {
+emitter(amongoc_just)(status st, box value, mlib_allocator alloc_) noexcept {
     // Make unique outside of just_1 to reduce code size of just_1
     auto&&            uniq = mlib_fwd(value).as_unique();
     mlib::allocator<> alloc{alloc_};

@@ -320,6 +320,13 @@
 #define mlib_empty_aggregate_c_compat                                          \
   MLIB_LANG_PICK(char _placeholder)(static_assert(true, ""))
 
+/**
+ * @brief Expand to a call expression `Prefix##_argc_N(...)`, where `N` is the
+ * number of macro arguments.
+ */
+#define MLIB_ARGC_PICK(Prefix, ...)                                            \
+  MLIB_PASTE_3(Prefix, _argc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+
 #if mlib_is_cxx()
 
 namespace mlib {

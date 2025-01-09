@@ -33,10 +33,8 @@ amongoc_emitter loop_step(amongoc_box state_ptr, amongoc_status prev_status, amo
     fprintf(stderr, "%d seconds remain, current value: %lu\n", s->countdown, cur);
     // Check if we are done
     if (s->countdown == 0) {
-        // No more looping to do. Return a final null result
-        return amongoc_just(amongoc_okay,
-                            amongoc_box_uint64(cur),
-                            amongoc_loop_get_allocator(s->loop));
+        // No more looping to do. Return a final result
+        return amongoc_just(amongoc_box_uint64(cur));
     }
     // Decrement the counter and start a sleep of one second
     --s->countdown;
@@ -44,11 +42,7 @@ amongoc_emitter loop_step(amongoc_box state_ptr, amongoc_status prev_status, amo
     amongoc_emitter em  = amongoc_schedule_later(s->loop, dur);
     // Connect the sleep to this function so that we will be called again after
     // the delay has elapsed. Return this as the new operation for the loop.
-    return amongoc_let(em,
-                       amongoc_async_forward_errors,
-                       amongoc_loop_get_allocator(s->loop),
-                       state_ptr,
-                       loop_step);
+    return amongoc_let(em, amongoc_async_forward_errors, state_ptr, loop_step);
 }
 // end.
 

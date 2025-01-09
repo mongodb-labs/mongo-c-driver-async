@@ -60,11 +60,7 @@ amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, a
                                                 bson_view_from(mut));
     bson_delete(doc);
 
-    em = amongoc_then(em,
-                      amongoc_async_forward_errors,
-                      mlib_default_allocator,
-                      state_ptr,
-                      after_hello);
+    em = amongoc_then(em, amongoc_async_forward_errors, state_ptr, after_hello);
     return em;
 }
 // end.
@@ -89,7 +85,6 @@ int main(int argc, char const* const* argv) {
 
     em = amongoc_let(em,
                      amongoc_async_forward_errors,
-                     mlib_default_allocator,
                      amongoc_box_pointer(&state),
                      after_connect_say_hello);
 

@@ -3,6 +3,7 @@
 #include <amongoc/box.hpp>
 #include <amongoc/emitter_result.hpp>
 #include <amongoc/handler.h>
+#include <amongoc/relocation.hpp>
 
 namespace amongoc {
 
@@ -124,12 +125,25 @@ struct unique_handler : mlib::unique<::amongoc_handler> {
             "The from() invocable must be callable as fn(emitter_result&&)");
     }
 
+    /**
+     * @brief Create a handler that invokes the given invocable when it completes.
+     *
+     * @param fn The invocable. Must have an associated allocator
+     */
+    template <typename F>
+        requires mlib::has_mlib_allocator<F>
+    static unique_handler from(F&& fn) noexcept(box_inlinable_type<F>) {
+        auto a = mlib::get_allocator(fn);
+        return from(a, mlib_fwd(fn));
+    }
+
 private:
     // Implement the wrapper for invocable objects, used by from()
     template <typename R>
     struct wrapper {
         mlib::allocator<>       _alloc;
         [[no_unique_address]] R _fn;
+        AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<R>, wrapper);
 
         static void _complete(amongoc_handler* self, status st, box result) noexcept {
             auto& fn = self->userdata.view.as<wrapper>()._fn;
@@ -156,6 +170,7 @@ private:
             : _fn(mlib_fwd(r)) {}
 
         [[no_unique_address]] R _fn;
+        AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<R>, wrapper);
 
         static void _complete(amongoc_handler* self, status st, box result) noexcept {
             auto& fn = self->userdata.view.as<wrapper>()._fn;

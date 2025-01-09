@@ -448,8 +448,8 @@ static bool _is_update_spec_doc(bson_view s) {
 }
 
 static emitter _invalid_update_doc_em(mlib::allocator<> a) {
-    return amongoc_just(amongoc_status{&amongoc_client_category,
-                                       ::amongoc_client_errc_invalid_update_document},
+    return amongoc_just((amongoc_status{&amongoc_client_category,
+                                        ::amongoc_client_errc_invalid_update_document}),
                         amongoc_nil,
                         a.c_allocator());
 }

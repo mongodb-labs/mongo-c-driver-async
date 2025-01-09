@@ -14,9 +14,23 @@ Asynchronous Utility APIs
 Functions
 #########
 
+Synchronous Continuations
+*************************
+
 .. function::
-  amongoc_emitter [[type(U)]] amongoc_then(\
-      amongoc_emitter [[transfer, type(T)]] em, \
+  [[1]] amongoc_emitter [[type(U)]] \
+    amongoc_then(amongoc_emitter [[transfer, type(T)]] in, amongoc_then_transformer [[type(In=T, Out=U)]] tr)
+  [[2]] amongoc_emitter [[type(U)]] \
+    amongoc_then(amongoc_emitter [[transfer, type(T)]] in, amongoc_box [[transfer, type(User)]] userdata, amongoc_then_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[3]] amongoc_emitter [[type(U)]] \
+    amongoc_then(amongoc_emitter [[transfer, type(T)]] in, amongoc_async_flags flags, amongoc_then_transformer [[type(In=T, Out=U)]] tr)
+  [[4]] amongoc_emitter [[type(U)]] \
+    amongoc_then(amongoc_emitter [[transfer, type(T)]] in, amongoc_async_flags flags, amongoc_box [[transfer, type(User)]] userdata, amongoc_then_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[5]] amongoc_emitter [[type(U)]] \
+    amongoc_then(amongoc_emitter [[transfer, type(T)]] in, mlib_allocator alloc, amongoc_box [[transfer, type(User)]] userdata, amongoc_then_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[6]] amongoc_emitter [[type(U)]] \
+    amongoc_then( \
+      amongoc_emitter [[transfer, type(T)]] in, \
       amongoc_async_flags flags, \
       mlib_allocator alloc, \
       amongoc_box [[transfer, type(UserData)]] userdata, \
@@ -24,7 +38,7 @@ Functions
 
   Connect a continuation to an `amongoc_emitter`.
 
-  :param em: |attr.transfer| The emitter to be composed.
+  :param in: |attr.transfer| The emitter to be composed.
   :param flags: Options for the behavior of the transformed emitter.
   :param alloc: |opstate-alloc|
   :param userdata: |attr.transfer| Arbitrary userdata that will be forwarded to `tr`.
@@ -32,7 +46,7 @@ Functions
   :return: A new `amongoc_emitter` |R|
   :header: |this-header|
 
-  When the emitter `em` resolves, its result status and value will be given to
+  When the emitter `in` resolves, its result status and value will be given to
   `tr`. The return value from `tr` will become the new result value of the
   returned emitter |R|. The transform function `tr` may also modify the final
   status to change the result status of |R|.
@@ -43,10 +57,35 @@ Functions
     result, use `amongoc_let` instead. `amongoc_then` is only for synchronous
     continuations.
 
+  Overloads:
+
+  1. Equivalent to :expr:`amongoc_then(in, amongoc_async_default, mlib_default_allocator, amongoc_nil, tr)`
+  2. Equivalent to :expr:`amongoc_then(in, amongoc_async_default, mlib_default_allocator, userdata, tr)`
+  3. Equivalent to :expr:`amongoc_then(in, flags, mlib_default_allocator, amongoc_nil, tr)`
+  4. Equivalent to :expr:`amongoc_then(in, flags, mlib_default_allocator, userdata, tr)`
+  5. Equivalent to :expr:`amongoc_then(in, amongoc_async_default, alloc, userdata, tr)`
+  6. Specifies all five parameters
+
+  .. note:: |macro-impl|.
+
+
+Asynchronous Continuations
+**************************
 
 .. function::
-  amongoc_emitter [[type(U)]] amongoc_let(\
-      amongoc_emitter [[transfer, type(T)]] em, \
+  [[1]] amongoc_emitter [[type(U)]] \
+    amongoc_let(amongoc_emitter [[transfer, type(T)]] in, amongoc_let_transformer [[type(In=T, Out=U)]] tr)
+  [[2]] amongoc_emitter [[type(U)]] \
+    amongoc_let(amongoc_emitter [[transfer, type(T)]] in, amongoc_box [[transfer, type(User)]] userdata, amongoc_let_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[3]] amongoc_emitter [[type(U)]] \
+    amongoc_let(amongoc_emitter [[transfer, type(T)]] in, amongoc_async_flags flags, amongoc_let_transformer [[type(In=T, Out=U)]] tr)
+  [[4]] amongoc_emitter [[type(U)]] \
+    amongoc_let(amongoc_emitter [[transfer, type(T)]] in, amongoc_async_flags flags, amongoc_box [[transfer, type(User)]] userdata, amongoc_let_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[5]] amongoc_emitter [[type(U)]] \
+    amongoc_let(amongoc_emitter [[transfer, type(T)]] in, mlib_allocator alloc, amongoc_box [[transfer, type(User)]] userdata, amongoc_let_transformer [[type(In=T, Out=U, User=User)]] tr)
+  [[6]] amongoc_emitter [[type(U)]] \
+    amongoc_let( \
+      amongoc_emitter [[transfer, type(T)]] in, \
       amongoc_async_flags flags, \
       mlib_allocator alloc, \
       amongoc_box [[transfer, type(UserData)]] userdata, \
@@ -72,17 +111,36 @@ Functions
   the result of another asynchronous operation.
 
 
-.. function:: amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+Immediate Completion
+********************
+
+.. function::
+  [[1]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+  [[2]] amongoc_emitter [[type(nil)]] amongoc_just(amongoc_status st)
+  [[3]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_box [[transfer, type(T)]] value)
+  [[4]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_status st, amongoc_box [[transfer, type(T)]] value)
+  [[5]] amongoc_emitter [[type(T)]] amongoc_just(amongoc_box [[transfer, type(T)]] value, mlib_allocator alloc)
+  [[6]] amongoc_emitter [[type(nil)]] amongoc_just()
 
   Create an emitter that will resolve immediately with the given status and
   result value.
 
-  :param st: The result status.
-  :param value: |attr.transfer| The result value.
+  :param st: The result status. If omitted, `amongoc_okay`.
+  :param value: |attr.transfer| The result value. If omitted, `amongoc_nil`
   :param alloc: |opstate-alloc|
+  :allocation: Signatures (2) and (6) do not allocate. Signatures (3) and (4) use `mlib_default_allocator`.
   :return: A new `amongoc_emitter` |R| whose result status will be `st` and
     result value will be `value`
   :header: |this-header|
+
+  .. rubric:: Overloads
+
+  1. Specify the status, the result value, and an allocator
+  2. Specify only the status. The result value is `amongoc_nil`. This overload does not allocate any memory.
+  3. Specify the result value. Uses the default allocator, with `amongoc_okay` status.
+  4. Specify a result status and result value. Uses the default allocator.
+  5. Specify a result value and an allocator, with `amongoc_okay` status
+  6. Resolve with `amongoc_okay` and `amongoc_nil`. Does not allocate.
 
   .. note::
 
@@ -97,6 +155,9 @@ Functions
     Unless allocation fails, status `st` and result `value` will always be sent
     to the handler.
 
+
+Other
+*****
 
 .. function::
   amongoc_emitter [[type(T)]] amongoc_then_just( \
@@ -212,7 +273,9 @@ Functions
     the returned `amongoc_operation` completes or is destroyed.
 
 
-.. function:: amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em, mlib_allocator alloc)
+.. function::
+  amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em)
+  amongoc_operation amongoc_detach(amongoc_emitter [[transfer]] em, mlib_allocator alloc)
 
   Create a "detached" operation for an emitter.
 
@@ -227,6 +290,20 @@ Functions
   .. hint::
 
     This function is equivalent to :expr:`amongoc_tie(em, nullptr, nullptr, alloc)`
+
+
+.. function::
+  void amongoc_detach_start(amongoc_emitter [[transfer]] em)
+
+  Launch the asynchronous operation defined by an emitter.
+
+  :param em: |attr.transfer| An emitter that defines an asynchronous control
+    flow to be executed.
+  :allocation: The operation state is allocated using `mlib_default_allocator`.
+
+  This will internally create an `amongoc_operation` state object,
+  `start it <amongoc_start>` immediately, and destroy the operation state when
+  the operation completes.
 
 
 Types
