@@ -10,8 +10,6 @@
 
 using namespace amongoc;
 
-extern inline amongoc_status const* _amongocStatusGetOkayStatus(void) noexcept;
-
 namespace {
 
 class unknown_error_category : public std::error_category {

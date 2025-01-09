@@ -332,11 +332,11 @@ wrapped in :cpp:`extern "C"`.
 **********************************
 
 If a C function is declared |inline| *and not* |static|, then there *must* exist
-an :cpp:`extern inline` declaration of that function in *exactly one* C
-translation unit. This differs from C++, where an |inline| function is emitted
-in each TU in which it is used, and the linker merges them at the final step. In
-C, this consolidation must be done explicitly using an :cpp:`extern inline`
-declaration.
+an :cpp:`extern inline` declaration of that function in *exactly one* **C**
+translation unit (not in a C++ translation unit). This differs from C++, where
+an |inline| function is emitted in each TU in which it is used, and the linker
+merges them at the final step. In C, this consolidation must be done explicitly
+using an :cpp:`extern inline` declaration.
 
 .. note:: There is no way to automatically verify this, because it will only
   generate an error if the compiler decides *not* to do the inlining and expects
