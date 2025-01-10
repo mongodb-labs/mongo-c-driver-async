@@ -22,37 +22,6 @@
 
 using namespace amongoc;
 
-extern inline amongoc_emitter amongoc_delete_one(amongoc_collection*          coll,
-                                                 bson_view                    filter,
-                                                 amongoc_delete_params const* params) noexcept;
-
-extern inline amongoc_emitter
-amongoc_delete_many(amongoc_collection*                 coll,
-                    bson_view                           filter,
-                    struct amongoc_delete_params const* params) noexcept;
-
-extern inline amongoc_emitter amongoc_insert_one(amongoc_collection           coll,
-                                                 bson_view                    doc,
-                                                 amongoc_insert_params const* params) mlib_noexcept;
-
-extern inline amongoc_emitter
-amongoc_find_one_and_delete(amongoc_collection*             coll,
-                            bson_view                       filter,
-                            const amongoc_find_plus_params* params) mlib_noexcept;
-
-extern inline amongoc_emitter
-amongoc_find_one_and_replace(amongoc_collection*             coll,
-                             bson_view                       filter,
-                             bson_view                       replacement,
-                             const amongoc_find_plus_params* params) mlib_noexcept;
-
-extern inline amongoc_emitter
-amongoc_find_one_and_update(amongoc_collection*             coll,
-                            bson_view                       filter,
-                            bson_view const*                update_or_pipeline,
-                            size_t                          pipeline_len,
-                            const amongoc_find_plus_params* params) mlib_noexcept;
-
 constexpr const amongoc_status_category_vtable amongoc_crud_category = {
     .name = [] { return "amongoc.crud"; },
     .strdup_message =
@@ -114,9 +83,6 @@ _parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
 void amongoc_collection_delete(amongoc_collection* coll) noexcept {
     mlib::delete_via_associated_allocator(coll);
 }
-
-extern inline mlib_allocator
-amongoc_collection_get_allocator(amongoc_collection const* coll) noexcept;
 
 amongoc_client* amongoc_collection_get_client(amongoc_collection const* coll) noexcept {
     return &coll->client;
@@ -368,7 +334,7 @@ emitter amongoc_cursor_next(amongoc_cursor curs_) noexcept {
  */
 static mlib::unique<amongoc_write_result>
 _parse_write_result(bson_view resp,
-                    int64_t(amongoc_write_result::*n_field),
+                    int64_t(amongoc_write_result::* n_field),
                     mlib::allocator<> alloc) {
     mlib::unique<amongoc_write_result> ret;
     using namespace bson::parse;

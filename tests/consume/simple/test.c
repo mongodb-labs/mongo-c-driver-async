@@ -12,6 +12,7 @@ int main() {
     amongoc_operation op = amongoc_tie(em, &status, &box, mlib_default_allocator);
     amongoc_start(&op);
     amongoc_operation_delete(op);
+    printf("%p", &amongoc_insert_one);  // Checks linking
     assert(status.code == 0);
     assert(status.category == &amongoc_generic_category);
     assert(*amongoc_box_cast(int*, box) == 42);

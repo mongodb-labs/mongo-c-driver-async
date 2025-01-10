@@ -62,5 +62,3 @@ void amongoc_client_delete(amongoc_client* cl) noexcept {
 amongoc_loop* amongoc_client_get_event_loop(amongoc_client const* cl) noexcept {
     return &cl->_pool.loop();
 }
-
-extern inline mlib_allocator amongoc_client_get_allocator(amongoc_client const* cl) noexcept;
