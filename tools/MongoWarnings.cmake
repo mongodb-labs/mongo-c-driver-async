@@ -77,7 +77,7 @@ mongo_add_warning_options(
     # Definite use of uninitialized value
     gnu-like:-Werror=uninitialized msvc:/we4700
     # GCC Seems to generate false positives on this. Investigate?
-    gnu-like:-Wno-maybe-uninitialized
+    gnu:-Wno-maybe-uninitialized
 
     # Aside: Disable CRT insecurity warnings
     msvc:/D_CRT_SECURE_NO_WARNINGS
