@@ -15,6 +15,7 @@
 #include <mlib/config.h>
 #include <mlib/object_t.hpp>
 
+#include <algorithm>  // std::ranges::copy
 #include <csignal>
 #include <iterator>
 #include <string>

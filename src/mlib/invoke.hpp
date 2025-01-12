@@ -2,6 +2,7 @@
 
 #include <mlib/config.h>
 
+#include <concepts>
 #include <utility>
 
 namespace mlib {

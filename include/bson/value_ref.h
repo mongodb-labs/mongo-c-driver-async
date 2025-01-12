@@ -10,6 +10,8 @@
 
 #if mlib_is_cxx()
 #include <mlib/type_traits.hpp>
+
+#include <exception>  // std::terminate
 #endif
 
 struct bson_value;

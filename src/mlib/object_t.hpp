@@ -2,6 +2,7 @@
 
 #include "./invoke.hpp"
 
+#include <memory>  // std::addressof
 #include <type_traits>
 
 namespace mlib {
