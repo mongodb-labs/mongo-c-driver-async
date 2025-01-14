@@ -41,9 +41,9 @@ build-fedora:
 build-multi:
     FROM alpine
     # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
-    COPY +build-debian/ out/debian/
-    COPY +build-alpine/ out/alpine/
-    COPY +build-fedora/ out/fedora/
+    COPY (+build-debian/ --use_vcpkg=false) out/debian/
+    COPY (+build-alpine/ --use_vcpkg=false) out/alpine/
+    COPY (+build-fedora/ --use_vcpkg=false) out/fedora/
     SAVE ARTIFACT out/* /
 
 matrix:
@@ -133,7 +133,7 @@ BUILD:
     LET __use_vcpkg=$(echo "$use_vcpkg" | tr "[:lower:]" "[:upper:]")
     # Configure
     RUN $launcher cmake -S . -B _build -G "Ninja Multi-Config" \
-        -D CMAKE_CROSS_CONFIGS="Debug;Release" \
+        -D CMAKE_CROSS_CONFIGS="all" \
         -D CMAKE_INSTALL_PREFIX=$prefix \
         -D AMONGOC_USE_PMM=$__use_vcpkg \
         -D BUILD_TESTING=$__test \
@@ -144,9 +144,10 @@ BUILD:
     IF test "$install_prefix" != ""
         RUN cmake --install _build --prefix="$install_prefix" --config Debug
         RUN cmake --install _build --prefix="$install_prefix" --config Release
+        RUN cmake --install _build --prefix="$install_prefix" --config RelWithDebInfo
     END
     IF test "$cpack_out" != ""
         RUN cmake -E chdir _build \
-            cpack -B "$cpack_out" -C "Debug;Release" -G "STGZ;TGZ;ZIP" && \
+            cpack -B "$cpack_out" -C "Debug;Release;RelWithDebInfo" -G "STGZ;TGZ;ZIP" && \
             rm "$cpack_out/_CPack_Packages" -rf
     END
