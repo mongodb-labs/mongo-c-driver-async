@@ -71,6 +71,8 @@ set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
 
 # Debug binaries will have a `-dbg` suffix to allow multi-conf installation
 set(CMAKE_DEBUG_POSTFIX -dbg)
+set(CMAKE_RELWITHDEBINFO_POSTFIX -reldbg)
+set(CMAKE_MINSIZEREL_POSTFIX -minsize)
 
 # Collect compiled source files
 file(
