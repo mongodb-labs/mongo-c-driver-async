@@ -4,12 +4,13 @@
 > This is NOT a supported MongoDB product!
 >
 > The content of this repository should be considered experimental and subject
-> to breaking changes at any time.
+> to breaking changes at any time. It is not suitable for production.
+>
 
 <!-- Any information written here must be kept in-sync with the relevant
 documentation pages, noted in comments. -->
 
-This is `amongoc`, a C11 MongoDB asynchronous client library. It implements a
+This is `amongoc`, an early prototype for a C11 MongoDB asynchronous client library. It implements a
 subset of the MongoDB driver APIs.
 
 <!-- Details in ref/building.rst -->
@@ -22,10 +23,14 @@ are recommended:
 
 Building on Windows or with MSVC is not currently supported.
 
+Builds are only currently tested with Debian 12 and Alpine 3.20. Support for other platforms may be considered in the future, but are not currently planned for this prototype.
+
 For more information on building, refer to
 [the reference documentation][docs-building].
 
+## Feedback
 
+Feedback on the interface is welcome on GitHub issues and discussions. Though further development on this experimental repository is not planned, feedback may help inform future directions towards a production-ready project.
 ## Links
 
 - [GitHub Repository][github]

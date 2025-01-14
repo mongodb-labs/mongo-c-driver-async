@@ -14,6 +14,10 @@ work:
 
 Building on Windows or with MSVC is not currently supported.
 
+Builds are only currently tested with Debian 12 and Alpine 3.20. Support for
+other platforms may be considered in the future, but are not currently planned
+for this prototype.
+
 .. _CMake: https://cmake.org/
 .. _Earthly: https://earthly.dev/
 
