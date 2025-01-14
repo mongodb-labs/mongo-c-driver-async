@@ -2,23 +2,23 @@ VERSION 0.8
 
 build-alpine:
     FROM alpine:3.20
-    # Install build deps. Some deps are for vcpkg bootstrapping
-    RUN apk add build-base git cmake gcc g++ ninja make curl zip unzip tar \
-            pkgconfig linux-headers ccache python3 perl bash
-    DO +BOOTSTRAP_BUILD_INSTALL_EXPORT
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
+        --build_deps "build-base git cmake gcc g++ ninja make ccache python3" \
+        --vcpkg_bs_deps "pkgconfig linux-headers perl bash tar zip unzip curl" \
+        --third_deps "fmt-dev boost-dev openssl-dev"
 
 build-debian:
     FROM debian:12
-    RUN apt-get update && \
-        apt-get -y install build-essential cmake git curl zip unzip tar ninja-build \
-            pkg-config python3 ccache
-    # Spec test generation requires a Python newer than what is on Debian 12
-    DO +BOOTSTRAP_BUILD_INSTALL_EXPORT --BUILD_SPEC_TESTS=FALSE
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
+        # Spec test generation requires a Python newer than what is on Debian 12
+        --BUILD_SPEC_TESTS=FALSE \
+        --build_deps "build-essential cmake git ninja-build python3 ccache" \
+        --vcpkg_bs_deps "perl pkg-config linux-libc-dev curl zip unzip" \
+        --third_deps "libfmt-dev libboost-url1.81-dev libboost-container1.81-dev libssl-dev"
 
 build-rl:
     FROM rockylinux:8
-    RUN dnf -y install zip unzip git gcc-toolset-12 python3.12 epel-release && \
-        dnf -y install ccache
+    RUN dnf -y install epel-release unzip
     LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
     RUN curl "$cmake_url" -Lo cmake.sh && \
         sh cmake.sh --exclude-subdir --prefix=/usr/local/ --skip-license
@@ -26,14 +26,41 @@ build-rl:
     RUN curl -L "$ninja_url" -o ninja.zip && \
         unzip ninja.zip -d /usr/local/bin/
     CACHE ~/.ccache  # Epel Ccache still uses the old cache location
-    DO +BOOTSTRAP_BUILD_INSTALL_EXPORT --launcher "scl run gcc-toolset-12 --"
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
+        --launcher "scl run gcc-toolset-12 --" \
+        --build_deps "gcc-toolset-12 python3.12 ccache" \
+        --vcpkg_bs_deps "zip unzip git perl"
+
+build-fedora:
+    FROM fedora:41
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
+        --build_deps "cmake ninja-build git gcc gcc-c++ python3.12 ccache" \
+        --vcpkg_bs_deps "zip unzip perl" \
+        --third_deps "boost-devel boost-url fmt-devel openssl-devel"
 
 build-multi:
     FROM alpine
     # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
     COPY +build-debian/ out/debian/
     COPY +build-alpine/ out/alpine/
+    COPY +build-fedora/ out/fedora/
     SAVE ARTIFACT out/* /
+
+matrix:
+    BUILD +run \
+        --target +build-debian --target +build-alpine --target +build-fedora \
+        --use_vcpkg=true --use_vcpkg=false \
+        --test=false --test=true
+
+run:
+    LOCALLY
+    ARG --required target
+    BUILD --pass-args $target
+
+# Miscellaneous system init
+INIT:
+    FUNCTION
+    COPY --chmod=755 tools/__install /usr/local/bin/__install
 
 BOOTSTRAP_BUILD_INSTALL_EXPORT:
     FUNCTION
@@ -45,26 +72,46 @@ BOOTSTRAP_BUILD_INSTALL_EXPORT:
     SAVE ARTIFACT /tmp/pkg/* /pkg/
     SAVE ARTIFACT /opt/amongoc/* /install/
 
-# Warms-up the user-local vcpkg cache of packages based on the packages we install for our build
+# Install dependencies, possibly warming up the user-local vcpkg cache if vcpkg is used
 BOOTSTRAP_DEPS:
     FUNCTION
-    ARG launcher
-    # Required when bootstrapping vcpkg on Alpine:
-    ENV VCPKG_FORCE_SYSTEM_BINARIES=1
-    # Bootstrap dependencies
-    LET src_tmp=/s-tmp
-    WORKDIR $src_tmp
-    COPY --dir vcpkg*.json $src_tmp
-    COPY tools/pmm.cmake $src_tmp/tools/
-    COPY --dir etc/vcpkg-ports $src_tmp/etc/
-    RUN printf %s "cmake_minimum_required(VERSION 3.20)
-        project(tmp)
-        include(tools/pmm.cmake)
-        pmm(VCPKG REVISION 2024.08.23)
-        " > $src_tmp/CMakeLists.txt
-    # Running CMake now will prepare our dependencies without configuring the rest of the project
-    CACHE ~/.cache/vcpkg
-    RUN $launcher cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+    DO +INIT
+    # Dependencies that are required for the build. Always installed
+    ARG build_deps
+    RUN __install $build_deps
+    # Switch behavior based on whether we use vcpkg
+    ARG use_vcpkg=true
+    IF ! $use_vcpkg
+        # No vcpkg. Install system dependencies
+        ARG third_deps
+        RUN __install $third_deps
+        # Install system deps for testing, if needed
+        ARG test_deps
+        ARG test=true
+        IF $test
+            RUN __install $test_deps
+        END
+    ELSE
+        # vcpkg may have dependencies that need to be installed to bootstrap
+        ARG vcpkg_bs_deps
+        RUN __install $vcpkg_bs_deps
+        # Required when bootstrapping vcpkg on Alpine:
+        ENV VCPKG_FORCE_SYSTEM_BINARIES=1
+        # Bootstrap dependencies
+        LET src_tmp=/s-tmp
+        WORKDIR $src_tmp
+        COPY --dir vcpkg*.json $src_tmp
+        COPY tools/pmm.cmake $src_tmp/tools/
+        RUN printf %s "cmake_minimum_required(VERSION 3.20)
+            project(tmp)
+            include(tools/pmm.cmake)
+            pmm(VCPKG REVISION 2024.08.23)
+            " > $src_tmp/CMakeLists.txt
+        # Running CMake now will prepare our dependencies without configuring the rest of the project
+        CACHE ~/.cache/vcpkg
+        ARG launcher
+        RUN $launcher cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+    END
 
 COPY_SRC:
     FUNCTION
@@ -77,14 +124,22 @@ BUILD:
     ARG launcher
     DO +COPY_SRC
     CACHE ~/.cache/ccache
-    ARG BUILD_TESTING=TRUE
+    # Toggle testing
+    ARG test=true
+    LET __test=$(echo $test | tr [:lower:] [:upper:])
     ARG BUILD_SPEC_TESTS=TRUE
+    # Toggle PMM in the build
+    ARG use_vcpkg=true
+    LET __use_vcpkg=$(echo "$use_vcpkg" | tr "[:lower:]" "[:upper:]")
+    # Configure
     RUN $launcher cmake -S . -B _build -G "Ninja Multi-Config" \
         -D CMAKE_CROSS_CONFIGS="Debug;Release" \
         -D CMAKE_INSTALL_PREFIX=$prefix \
-        -D BUILD_TESTING=$BUILD_TESTING \
+        -D AMONGOC_USE_PMM=$__use_vcpkg \
+        -D BUILD_TESTING=$__test \
         -D BUILD_SPEC_TESTS=$BUILD_SPEC_TESTS \
         -D CMAKE_DEFAULT_CONFIGS=all
+    # Build
     RUN $launcher cmake --build _build
     IF test "$install_prefix" != ""
         RUN cmake --install _build --prefix="$install_prefix" --config Debug

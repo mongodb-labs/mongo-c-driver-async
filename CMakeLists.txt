@@ -10,17 +10,23 @@ if(AMONGOC_USE_PMM)
     pmm(VCPKG REVISION 2024.08.23)
 endif()
 
-find_package(asio CONFIG REQUIRED)
-find_package(neo-fun CONFIG REQUIRED)
+# Set up `find_package()` to trigger FetchContent for certain deps
+include(DeclareFetchContentDeps)
+
+find_package(asio 1.25.0 REQUIRED)
 find_package(Boost CONFIG REQUIRED URL Container)
 find_package(fmt CONFIG REQUIRED)
+find_package(neo-fun REQUIRED)
 find_package(OpenSSL REQUIRED)
-
 find_package(Threads REQUIRED)
 
 # Enable testing with CTest
 # Note: We respect the BUILD_TESTING option from CTest.cmake
 include(CTest)
+
+if(BUILD_TESTING)
+    find_package(Catch2 CONFIG REQUIRED)
+endif()
 
 # Support modules
 include(CMakePackageConfigHelpers)
@@ -134,12 +140,17 @@ target_link_libraries(amongoc
     )
 if(BUILD_TESTING)
     # Add Catch integrations
-    find_package(Catch2 CONFIG REQUIRED)
     include(Catch)
 
     # Add tests
     add_executable(amongoc-test ${test_sources})
-    target_link_libraries(amongoc-test PRIVATE amongoc Catch2::Catch2)
+    target_link_libraries(amongoc-test PRIVATE
+        amongoc::amongoc
+        Catch2::Catch2
+        $<BUILD_INTERFACE:asio::asio>
+        $<BUILD_INTERFACE:neo::fun>
+        Boost::container
+        )
     target_include_directories(amongoc-test PRIVATE src)
     catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
         PROPERTIES SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
@@ -173,7 +184,7 @@ if(BUILD_TESTING)
         # tests will use these same packages when importing amongoc.
         # TODO: Add test cases that don't share dependencies with the parent build
         set(passthru_args
-            PASSTHRU_VARS neo-fun_DIR asio_DIR fmt_DIR
+            PASSTHRU_VARS fmt_DIR
             # Boost has a lot of variables that need to be forwarded:
             PASSTHRU_VARS_REGEX "[bB]oost.*(_DIR|_PATH)"
         )

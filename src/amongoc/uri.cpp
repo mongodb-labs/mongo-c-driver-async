@@ -146,8 +146,10 @@ result<connection_uri> connection_uri::parse(std::string_view                   
             auto res = std::from_chars(sv.data(), sv.data() + sv.size(), ret);
             if (res.ec != std::errc{}) {
                 warn.fire(defer_convert([&] {
-                    return uri_warning_event(
-                        format(alloc, "URI parameter {}: Invalid integer value '{}'", qp.key, sv));
+                    return uri_warning_event(format(alloc,
+                                                    "URI parameter {}: Invalid integer value '{}'",
+                                                    std::string_view(qp.key),
+                                                    std::string_view(sv)));
                 }));
                 return {};
             }
@@ -174,8 +176,8 @@ result<connection_uri> connection_uri::parse(std::string_view                   
                     return uri_warning_event(
                         format(alloc,
                                "URI parameter {}: Invalid boolean constant “{}”",
-                               qp.key,
-                               val));
+                               std::string_view(qp.key),
+                               std::string_view(val)));
                 }));
             }
             return {};  // nullopt
@@ -203,7 +205,7 @@ result<connection_uri> connection_uri::parse(std::string_view                   
                             format(alloc,
                                    "URI parameter “{}”: Value {} is outside the supported range "
                                    "(min: {}, max: {})",
-                                   qp.key,
+                                   std::string_view(qp.key),
                                    ival,
                                    min,
                                    max));
@@ -218,12 +220,12 @@ result<connection_uri> connection_uri::parse(std::string_view                   
             return [&](T value) {
                 if (out.has_value()) {
                     warn.fire(defer_convert([&] {
-                        if constexpr (fmt::formattable<T>) {
+                        if constexpr (fmt::is_formattable<T>::value) {
                             return uri_warning_event(
                                 format(alloc,
                                        "URI parameter “{}” was specified multiple "
                                        "times (previously “{}”, now “{}”)",
-                                       qp.key,
+                                       std::string_view(qp.key),
                                        *out,
                                        value));
                         } else {
@@ -231,7 +233,7 @@ result<connection_uri> connection_uri::parse(std::string_view                   
                                 format(alloc,
                                        "URI parameter “{}” was specified multiple "
                                        "times",
-                                       qp.key));
+                                       std::string_view(qp.key)));
                         }
                     }));
                 }
@@ -310,7 +312,7 @@ result<connection_uri> connection_uri::parse(std::string_view                   
             // Unknown parameter name
             warn.fire(defer_convert([&] -> uri_warning_event {
                 return uri_warning_event{
-                    amongoc::format(alloc, "Unknown URI parameter “{}”", qp.key)};
+                    amongoc::format(alloc, "Unknown URI parameter “{}”", std::string_view(qp.key))};
             }));
         }
         if (param_parse_status.is_error()) {
