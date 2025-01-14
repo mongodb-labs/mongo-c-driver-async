@@ -72,7 +72,11 @@ public:
         : _co(other.release()) {}
 
     // Move-assign
-    constexpr unique_co_handle& operator=(unique_co_handle&& other) const noexcept { reset(); }
+    constexpr unique_co_handle& operator=(unique_co_handle&& other) const noexcept {
+        reset();
+        this->_co = other.release();
+        return *this;
+    }
 
     ~unique_co_handle() { reset(); }
 

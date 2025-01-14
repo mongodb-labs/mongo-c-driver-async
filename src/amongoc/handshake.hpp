@@ -36,9 +36,6 @@ struct handshake_response {
     // Get the allocator for this object
     mlib::allocator<> get_allocator() const noexcept { return topologyVersion.get_allocator(); }
 
-    // The type of points-in-time
-    using time_point = std::chrono::utc_time<std::chrono::milliseconds>;
-
     // Common response fields
     bool isWritablePrimary = false;
     // TODO: This is not a string
@@ -46,7 +43,6 @@ struct handshake_response {
     std::size_t          maxBsonObjectSize   = 16 * 1024 * 1024;
     std::size_t          maxMessageSizeBytes = 48'000'000;
     std::size_t          maxWriteBatchSize   = 100'000;
-    time_point           localTime;
     std::chrono::minutes logicalSessionTimeoutMinutes{0};
     std::int32_t         connectionId;
     std::int32_t         minWireVersion{0};

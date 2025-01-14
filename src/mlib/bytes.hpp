@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <ranges>
+#include <system_error>
 #include <type_traits>
 
 namespace mlib {

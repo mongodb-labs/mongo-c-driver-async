@@ -129,8 +129,15 @@
 #define mlib_alignas(T) MLIB_LANG_PICK(_Alignas)(alignas)(T)
 #define mlib_alignof(T) MLIB_LANG_PICK(_Alignof)(alignof)(T)
 
+#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__)
+#define mlib_is_little_endian()                                                \
+  mlib_parenthesized_expression(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#elif defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN)
 #define mlib_is_little_endian()                                                \
   mlib_parenthesized_expression(__BYTE_ORDER == __LITTLE_ENDIAN)
+#else
+#error "Do not know how to detect endianness on this platform."
+#endif
 
 /**
  * @brief Expands to a `thread_local` specifier for the current language
