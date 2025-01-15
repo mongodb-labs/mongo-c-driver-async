@@ -244,11 +244,11 @@ inline mlib_str_view _mlib_str_mut_as_view(mlib_str_mut m) mlib_noexcept {
 
 #define mlib_str_view_from(X)                                                                      \
     MLIB_LANG_PICK(_Generic((X),                                                                   \
-        mlib_str: _mlib_str_as_view,                                                               \
-        mlib_str_view: _mlib_str_view_self,                                                        \
-        mlib_str_mut: _mlib_str_mut_as_view,                                                       \
-        char*: _mlib_str_view_cstr,                                                                \
-        const char*: _mlib_str_view_cstr)((X)))                                                    \
+                       mlib_str: _mlib_str_as_view,                                                \
+                       mlib_str_view: _mlib_str_view_self,                                         \
+                       mlib_str_mut: _mlib_str_mut_as_view,                                        \
+                       char*: _mlib_str_view_cstr,                                                 \
+                       const char*: _mlib_str_view_cstr)((X)))                                     \
     (mlib_str_view::from((X)))
 
 // Get a fixed pointer to an empty string buffer valid for use with an mlib_str

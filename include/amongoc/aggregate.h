@@ -41,10 +41,8 @@ amongoc_emitter _amongoc_aggregate_on(::amongoc_database*             db,
 #endif  // C++
 
 #define amongoc_aggregate(First, ...)                                                              \
-    mlib_generic( \
-        _amongoc_aggregate_on, \
-        amongoc_collection_aggregate, \
-        (First), \
-        struct amongoc_collection*: amongoc_collection_aggregate, \
-        struct amongoc_database*: amongoc_database_aggregate \
-    )((First), __VA_ARGS__)
+    mlib_generic(_amongoc_aggregate_on,                                                            \
+                 amongoc_collection_aggregate,                                                     \
+                 (First),                                                                          \
+                 struct amongoc_collection* : amongoc_collection_aggregate,                        \
+                 struct amongoc_database* : amongoc_database_aggregate)((First), __VA_ARGS__)

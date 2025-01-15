@@ -622,9 +622,8 @@ private:
     ::bson_mut _mut;
 
     template <typename V>
-    auto _do_emplace(iterator      pos,
-                     mlib_str_view key,
-                     V value) noexcept -> decltype(::bson_insert(&_mut, pos, key, value)) {
+    auto _do_emplace(iterator pos, mlib_str_view key, V value) noexcept
+        -> decltype(::bson_insert(&_mut, pos, key, value)) {
         return ::bson_insert(&_mut, pos, key, value);
     }
 
@@ -634,9 +633,8 @@ private:
     }
 
     template <typename V>
-    auto _emplace(iterator         pos,
-                  std::string_view key_,
-                  V const&         val) -> decltype(_do_emplace(pos, mlib_str_view{}, val)) {
+    auto _emplace(iterator pos, std::string_view key_, V const& val)
+        -> decltype(_do_emplace(pos, mlib_str_view{}, val)) {
         const mlib_str_view key = mlib_str_view::from(key_);
         const iterator      ret = _do_emplace(pos, key, val);
         if (ret == end()) {
@@ -660,8 +658,8 @@ public:
     }
 
     template <typename V>
-    auto
-    emplace(iterator pos, std::string_view key, V const& val) -> decltype(_emplace(pos, key, val)) {
+    auto emplace(iterator pos, std::string_view key, V const& val)
+        -> decltype(_emplace(pos, key, val)) {
         return _emplace(pos, key, val);
     }
 

@@ -62,7 +62,9 @@ TEST_CASE("Coroutine/co_task") {
 
 TEST_CASE("Coroutine/Discard co_task") {
     // Do nothing with the coroutine. Should not leak memory.
-    { auto co = cxx_coro(); }
+    {
+        auto co = cxx_coro();
+    }
 }
 
 TEST_CASE("Coroutine/Discard co_task operation") {

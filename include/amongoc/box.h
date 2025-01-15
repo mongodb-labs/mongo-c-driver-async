@@ -309,7 +309,12 @@ mlib_extern_c_end();
  */
 #define amongoc_box_data(Box) _amongocBoxData((Box))
 #define _amongocBoxData(B)                                                                         \
-    mlib_generic(_amongocBoxDataCxx, _amongocBoxConstDataPtr, &(B), const amongoc_box*: _amongocBoxConstDataPtr, amongoc_box*: _amongocBoxMutDataPtr, amongoc_view*: _amongocViewDataPtr)(&(B))
+    mlib_generic(_amongocBoxDataCxx,                                                               \
+                 _amongocBoxConstDataPtr,                                                          \
+                 &(B),                                                                             \
+                 const amongoc_box* : _amongocBoxConstDataPtr,                                     \
+                 amongoc_box* : _amongocBoxMutDataPtr,                                             \
+                 amongoc_view* : _amongocViewDataPtr)(&(B))
 
 inline const void* _amongocBoxConstDataPtr(const amongoc_box* b) mlib_noexcept {
     return _amongocBoxDataPtr((struct _amongoc_box_storage*)&b->_storage);

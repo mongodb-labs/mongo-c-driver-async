@@ -301,7 +301,7 @@ struct get_allocator_fn {
 /**
  * @brief Obtain the allocator associated with an object, if available
  */
-inline constexpr struct get_allocator_fn get_allocator {};
+inline constexpr struct get_allocator_fn get_allocator{};
 
 /**
  * @brief Obtain the type of allocator associated with an object

@@ -678,7 +678,7 @@ inline bson_iterator bson_view::end() const noexcept { return bson_end(*this); }
 inline bson_iterator bson_array_view::begin() const noexcept { return bson_begin(*this); }
 inline bson_iterator bson_array_view::end() const noexcept { return bson_end(*this); }
 inline bson_iterator bson_view::find(std::string_view key) const noexcept {
-    { return ::bson_find(*this, key); }
+    return ::bson_find(*this, key);
 }
 
 class bson_iterator::reference {

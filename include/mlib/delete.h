@@ -22,14 +22,16 @@
  */
 #define mlib_declare_member_deleter(...)                                                           \
     MLIB_IF_ELSE(mlib_have_cxx20())                                                                \
-    (using deleter = ::mlib::delete_members<__VA_ARGS__>)(mlib_static_assert(true))
+    (using deleter = ::mlib::delete_members<__VA_ARGS__>)(mlib_static_assert(true, ""))
 
 /**
  * @brief Place at global scope to declare the associated between a simple type
  * and a deletion function for that type. In C, expands to an empty declaration
  */
 #define mlib_assoc_deleter(T, DelFn)                                                               \
-    MLIB_IF_CXX(extern "C++" template <> struct mlib::unique_deleter<T> : ::mlib::just_invokes<DelFn> {};) mlib_static_assert(true, "")
+    MLIB_IF_CXX(extern "C++" template <>                                                           \
+                struct mlib::unique_deleter<T> : ::mlib::just_invokes<DelFn>{};)                   \
+    mlib_static_assert(true, "")
 
 /**
  * @brief Declares a C API function `FuncName` that invokes the default deletion
@@ -70,8 +72,8 @@ inline constexpr struct delete_unique_fn {
     }
 
     template <typename T>
-    constexpr auto
-    operator()(T&& inst) const noexcept -> decltype(mlib::unique_deleter<T>{}(inst)) {
+    constexpr auto operator()(T&& inst) const noexcept
+        -> decltype(mlib::unique_deleter<T>{}(inst)) {
         mlib::unique_deleter<T>{}(inst);
     }
 } delete_unique;
