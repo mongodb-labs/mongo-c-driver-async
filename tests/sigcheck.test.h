@@ -1,30 +1,32 @@
 #pragma once
 
-#include "amongoc/async.h"
-#include "amongoc/box.h"
-#include "amongoc/emitter.h"
-#include "amongoc/status.h"
 #include <amongoc/amongoc.h>
+#include <amongoc/async.h>
+#include <amongoc/box.h>
+#include <amongoc/emitter.h>
+#include <amongoc/status.h>
 
-#include "bson/iterator.h"
-#include "bson/mut.h"
-#include "bson/types.h"
-#include "bson/value.h"
-#include "bson/value_ref.h"
-#include "bson/view.h"
+#include <bson/mut.h>
+#include <bson/types.h>
+#include <bson/value.h>
+#include <bson/value_ref.h>
+#include <bson/view.h>
 
-#include "mlib/alloc.h"
+#include <mlib/alloc.h>
+#include <mlib/config.h>
+#include <mlib/str.h>
 
 #if mlib_is_cxx()
 #include <string>
 #endif
 
 mlib_extern_c_begin();
+mlib_diagnostic_push();
+mlib_gnu_warning_disable("-Wuninitialized");
 
 #define GLOBAL_SCOPE MLIB_IF_CXX(::)
 
 static inline void amongoc_test_all_signatures() {
-    // bson_new
     bson_view       some_bson_view  = bson_view_null;
     bson_array_view some_bson_array = bson_array_view_null;
     bson_doc        some_bson_doc   = bson_new();
@@ -202,4 +204,5 @@ static inline void amongoc_test_all_signatures() {
     some_emitter = GLOBAL_SCOPE amongoc_just();
 }
 
+mlib_diagnostic_pop();
 mlib_extern_c_end();

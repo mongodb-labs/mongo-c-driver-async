@@ -1,15 +1,18 @@
 
-#include "bson/iterator.h"
-#include "bson/value.h"
 #include <bson/doc.h>
+#include <bson/iterator.h>
 #include <bson/mut.h>
 #include <bson/types.h>
+#include <bson/value.h>
 #include <bson/view.h>
 
-#include "mlib/str.h"
 #include <mlib/alloc.h>
+#include <mlib/str.h>
 
 #include <stdio.h>
+
+mlib_diagnostic_push();
+mlib_gnu_warning_disable("-Wuninitialized");
 
 int main(int argc, char** argv) {
     puts(
@@ -52,7 +55,7 @@ int main(int argc, char** argv) {
     bson_key(iter);
     bson_iterator_type(iter);
     bson_iterator_data(iter);
-    bson_view_from(mut);
+    (void)bson_view_from(mut);
     bson_begin(doc);
     bson_end(doc);
     bson_iterator_eq(iter, iter);
