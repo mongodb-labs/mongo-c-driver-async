@@ -402,6 +402,7 @@ namespace co_detail {
 
 // Abstract base that defines the continuation behavior of the coroutine
 struct finisher_base {
+    virtual ~finisher_base() = default;
     // Callback during final coroutine suspension
     virtual std::coroutine_handle<> on_final_suspend() noexcept = 0;
     // Get the stop token for the coroutine
