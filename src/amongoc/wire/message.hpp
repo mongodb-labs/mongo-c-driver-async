@@ -231,6 +231,8 @@ public:
     decltype(auto) visit_content(auto&& fn) const { return std::visit(mlib_fwd(fn), content()); }
 
     std::int32_t opcode() const noexcept;
+    std::int32_t request_id() const noexcept { return _req_id; }
+    std::int32_t response_to() const noexcept { return _resp_to; }
 
     vector<asio::const_buffer> buffers(mlib::allocator<> a) const;
 
