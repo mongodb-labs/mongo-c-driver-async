@@ -3,6 +3,7 @@
 #include <mlib/type_traits.hpp>
 
 #include <memory>
+#include <type_traits>
 
 namespace mlib::detail {
 
@@ -12,8 +13,8 @@ namespace mlib::detail {
  */
 inline constexpr struct construct_at_fn {
     template <typename T, typename... Args>
-    mlib_always_inline constexpr auto
-    operator()(T* ptr, Args&&... args) const -> requires_t<T*, std::is_constructible<T, Args...>> {
+    mlib_always_inline constexpr auto operator()(T* ptr, Args&&... args) const
+        -> requires_t<T*, std::is_constructible<T, Args...>> {
 #if __cpp_constexpr_dynamic_alloc
         return std::construct_at(ptr, mlib_fwd(args)...);
 #else
@@ -26,29 +27,35 @@ inline constexpr struct construct_at_fn {
  * @brief Backport implementation of C++20 std::uninitialized_construct_using_allocator
  */
 struct uninitialized_construct_using_allocator_fn {
-    // Fallback construct if the object does not support allocator construction
+    // Fallback: Regular constructor with no allocator
     template <typename T, typename Alloc, typename... Args>
-    static constexpr requires_t<T*, std::is_constructible<T, Args...>>
-    impl(rank<0>, T* ptr, const Alloc&, Args&&... args) {
+    static constexpr T*
+    _try_trailing(std::false_type, T* ptr, const Alloc& alloc [[maybe_unused]], Args&&... args) {
         return construct_at(ptr, mlib_fwd(args)...);
     }
 
-    // Construct using a trailing allocator argument
-    template <typename T, typename Alloc, typename... Args, int = 0>
-    static constexpr requires_t<T*,
-                                std::uses_allocator<T, Alloc>,
-                                std::is_constructible<T, Args..., Alloc>>
-    impl(rank<1>, T* ptr, const Alloc& allocator, Args&&... args) {
-        return construct_at(ptr, mlib_fwd(args)..., allocator);
+    // Trailing uses-allocator construct:
+    template <typename T, typename Alloc, typename... Args>
+    static constexpr T* _try_trailing(std::true_type, T* ptr, const Alloc& alloc, Args&&... args) {
+        return construct_at(ptr, mlib_fwd(args)..., alloc);
     }
 
-    // Construct using a leading allocator with a tag
-    template <typename T, typename Alloc, typename... Args, int = 0, int = 0>
-    static constexpr requires_t<T*,
-                                std::uses_allocator<T, Alloc>,
-                                std::is_constructible<T, std::allocator_arg_t, Alloc, Args...>>
-    impl(rank<1>, T* ptr, const Alloc& allocator, Args&&... args) {
-        return construct_at(ptr, std::allocator_arg, allocator, mlib_fwd(args)...);
+    // No leading allocator construct: Try with trailing allocator:
+    template <typename T, typename Alloc, typename... Args>
+    static constexpr T*
+    _try_leading_with_tag(std::false_type, T* ptr, const Alloc& alloc, Args&&... args) {
+        return _try_trailing(std::conjunction<std::uses_allocator<T, Alloc>,
+                                              std::is_constructible<T, Args..., Alloc>>{},
+                             ptr,
+                             alloc,
+                             mlib_fwd(args)...);
+    }
+
+    // Leading tagged using-allocator construct:
+    template <typename T, typename Alloc, typename... Args>
+    static constexpr T*
+    _try_leading_with_tag(std::true_type, T* ptr, const Alloc& alloc, Args&&... args) {
+        return construct_at(ptr, std::allocator_arg, alloc, mlib_fwd(args)...);
     }
 
     /**
@@ -61,9 +68,13 @@ struct uninitialized_construct_using_allocator_fn {
      * @return T* a pointer to the constructed object
      */
     template <typename T, typename Alloc, typename... Args>
-    constexpr auto operator()(T* ptr, const Alloc& allocator, Args&&... args) const
-        -> decltype(impl(rank<2>{}, ptr, allocator, mlib_fwd(args)...)) {
-        return impl(rank<2>{}, ptr, allocator, mlib_fwd(args)...);
+    constexpr T* operator()(T* ptr, const Alloc& allocator, Args&&... args) const {
+        return _try_leading_with_tag(
+            std::conjunction<std::uses_allocator<T, Alloc>,
+                             std::is_constructible<T, std::allocator_arg_t, Alloc, Args...>>{},
+            ptr,
+            allocator,
+            mlib_fwd(args)...);
     }
 };
 
