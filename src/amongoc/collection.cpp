@@ -23,18 +23,18 @@
 using namespace amongoc;
 
 constexpr const amongoc_status_category_vtable amongoc_crud_category = {
-    .name = [] { return "amongoc.crud"; },
-    .strdup_message =
-        [](int c) {
-            switch (static_cast<::amongoc_crud_errc>(c)) {
-            case ::amongoc_crud_okay:
-                return strdup("okay");
-            case ::amongoc_crud_write_errors:
-                return strdup("The operation resulted in one or more write errors");
-            default:
-                return strdup("Unknown error");
-            }
-        },
+    .name    = [] { return "amongoc.crud"; },
+    .message = [](int c, char* buf, size_t buflen) -> const char* {
+        switch (static_cast<::amongoc_crud_errc>(c)) {
+        case ::amongoc_crud_okay:
+            return "okay";
+        case ::amongoc_crud_write_errors:
+            return "The operation resulted in one or more write errors";
+        default:
+            std::snprintf(buf, buflen, "%s:%d", ::amongoc_crud_category.name(), c);
+            return buf;
+        }
+    },
     .is_error        = nullptr,
     .is_cancellation = nullptr,
     .is_timeout      = nullptr,

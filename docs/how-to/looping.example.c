@@ -78,9 +78,8 @@ int main(int argc, char const* const* argv) {
     amongoc_default_loop_destroy(&loop);
 
     if (amongoc_is_error(status)) {
-        char* msg = amongoc_status_strdup_message(status);
+        amongoc_declmsg(msg, status);
         fprintf(stderr, "error: %s\n", msg);
-        free(msg);
         amongoc_box_destroy(result);
         return 2;
     } else {

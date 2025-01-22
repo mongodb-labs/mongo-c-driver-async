@@ -229,6 +229,7 @@ rst_prolog = """
 .. |static| replace:: :cpp:`static`
 .. |const| replace:: :cpp:`const`
 .. |void| replace:: :cpp:`void`
+.. |char| replace:: :cpp:`char`
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`

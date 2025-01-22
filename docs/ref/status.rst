@@ -60,7 +60,7 @@ Types
 
   .. function:: std__string message() const noexcept
 
-    :C API: `amongoc_status_strdup_message`
+    :C API: `amongoc_message`
 
   .. function:: bool is_error() const noexcept
 
@@ -112,14 +112,43 @@ Functions & Macros
     `amongoc_status::category`.
 
 
-.. function:: char* amongoc_status_strdup_message(amongoc_status)
+.. function:: const char* amongoc_message(amongoc_status st, char* buf, size_t buflen)
 
-  Obtain a *dynamically allocated* C string that describes the status in
-  human-readable form.
+  Obtain a human-readable message describing the status `st`.
 
-  .. important:: The returned string must be freed with ``free()``
+  :param st: The status to inspect.
+  :param buf: Pointer to a modifiable |char| array of at least `buflen` |char|\ s.
+    This argument may be a null pointer if `buflen` is zero.
+  :param buflen: The length of the |char| array pointed-to by `buf`, or zero
+    if `buf` is a null pointer.
+  :return: A non-null pointer |S| to a :term:`C string`.
 
-  :C++ API: `amongoc_status::message`
+  The buffer `buf` *may* be used by this function as storage for a
+  dynamically-generated message string, but the function is not required to
+  modify `buf`. The returned pointer |S| is never null, and may or may not be
+  equal to `buf`.
+
+  This function does not dynamically allocate any memory.
+
+  .. seealso:: :c:macro:`amongoc_declmsg` for concisely obtaining the message
+    from a status object.
+
+
+.. c:macro:: amongoc_declmsg(MsgVar, Status)
+
+  This statement-like macro will obtain the status message :term:`C string` from
+  the given status ``Status`` and place it in a variable identified by
+  ``MsgVar``.
+
+  :param MsgVar: Must be an identifier. This macro will declare a variable of
+    type ``const char*`` with this name, which will contain the message from
+    ``Status``.
+  :param Status: Any expression of type `amongoc_status`.
+
+  This macro is a shorthand for the following::
+
+    char __buffer[128];
+    const char* MsgVar = amongoc_message(Status, __buffer, sizeof __buffer)
 
 
 .. var:: const amongoc_status amongoc_okay
@@ -138,6 +167,8 @@ Status Categories
   status codes. The following "methods" are actually function pointers that
   may be customized by the user to provide new status code behaviors.
 
+  .. |the-code| replace:: The integer status code from `amongoc_status::code`
+
   .. rubric:: Customization Points
 
   .. function:: const char* name()
@@ -145,14 +176,32 @@ Status Categories
     :return: Must return a statically-allocated null-terminated string that
       uniquely identifies the category.
 
-  .. function:: char* strdup_message(int code)
+  .. function:: const char* message(int code, char* buf, size_t buflen)
 
-    .. |the-code| replace:: The integer status code from `amongoc_status::code`
+    .. seealso:: User code should use `amongoc_message` instead of calling this function directly.
 
     :param code: |the-code|
-    :return: Must return a dynamically allocated null-terminated string that
-      describes the status in a human-readable format. The returned string will
-      be freed with ``free()``.
+    :param buf: Pointer to an array of |char| at least `buflen` long. This may be null
+      if `buflen` is zero.
+    :param buflen: The length of the character array pointed-to by `buf`. If this
+      is zero, then `buf` may be a null pointer.
+    :return: Should return a pointer to a :term:`C string` that provides a
+      human-readable message describing the status code `code`. May return a null
+      pointer if there is a failure to generate the message text.
+
+    A valid implementation of `message` should do the following:
+
+    1. If the message for `code` is a statically allocated :term:`C string` |S|,
+       return |S| without inspecting `buf`.
+    2. If the message |M| needs to be dynamically generated and `buf` is not
+       null, generate the message string in `buf`, ensuring that `buf` contains
+       a nul terminator at :expr:`buf[buflen-1]` (use of ``snprintf`` is
+       recommended). Return `buf`.
+    3. Otherwise, return a fallback message string or a null pointer.
+
+    If this function returns a null pointer, then `amongoc_message` will replace
+    it with a fallback message telling the caller that the message text is
+    unavailable.
 
   .. function:: bool is_error(int code) [[optional]]
 
@@ -264,7 +313,7 @@ Built-In |amongoc| Categories
     source. In this case, no status messages or status semantics are defined, except
     that `amongoc_is_error` returns ``false`` only if the `amongoc_status::code` is ``0``.
 
-    The message returned from `amongoc_status_strdup_message` will always be
+    The message returned from `amongoc_message` will always be
     "``amongoc.unknown:<n>``" where ``<n>`` is the numeric value of the error
     code.
 

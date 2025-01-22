@@ -99,9 +99,8 @@ int main(int argc, char const* const* argv) {
     amongoc_default_loop_destroy(&loop);
 
     if (amongoc_is_error(fin_status)) {
-        char* m = amongoc_status_strdup_message(fin_status);
-        fprintf(stderr, "An error occurred: %s\n", m);
-        free(m);
+        amongoc_declmsg(msg, fin_status);
+        fprintf(stderr, "An error occurred: %s\n", msg);
         return 2;
     } else {
         printf("Okay\n");

@@ -20,8 +20,8 @@ mlib_extern_c_begin();
 struct amongoc_status_category_vtable {
     // Get the name of the category
     const char* (*name)(void);
-    // Dynamically allocate a new string for the message contained in the status
-    char* (*strdup_message)(int code);
+    // Obtain a human-readable message for the status
+    const char* (*message)(int code, char* obuf, size_t buflen);
     // Test whether a particular integer value is an error
     bool (*is_error)(int code);
     // Test whether a particular integer value represents cancellation
@@ -830,12 +830,26 @@ static inline bool amongoc_is_timeout(amongoc_status st) mlib_noexcept {
 /**
  * @brief Obtain a human-readable message describing the given status
  *
- * @return char* A dynamically allocated null-terminated C string describing the status.
- * @note The returned string must be freed with free()!
+ * @param st The status to be inspected
+ * @param buf Pointer to a modifyable character array of length `buflen`, or `NULL`
+ *    if `buflen` is zero
+ * @param buflen The length of the character array pointed-to by `buf`
+ * @return The pointer to the beginning of a null-terminated character array describing
+ * the status message.
  */
-static inline char* amongoc_status_strdup_message(amongoc_status s) {
-    return s.category->strdup_message(s.code);
+inline const char* amongoc_message(amongoc_status st, char* buf, size_t buflen) mlib_noexcept {
+    const char* s = st.category->message(st.code, buf, buflen);
+    if (s) {
+        return s;
+    }
+    return "Message text unavailable";
 }
+
+#define amongoc_declmsg(VarName, Status)                                                           \
+    _amongocDeclMsg(VarName, (Status), MLIB_PASTE(_amongoc_status_msg_mbuf, __LINE__))
+#define _amongocDeclMsg(VarName, Status, BufName)                                                  \
+    char        BufName[128];                                                                      \
+    const char* VarName = amongoc_message((Status), BufName, sizeof(BufName))
 
 /**
  * @brief Obtain the reason code if-and-only-if the given status corresponds to a TLS error

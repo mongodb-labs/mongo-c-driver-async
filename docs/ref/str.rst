@@ -112,7 +112,7 @@ Types
   - `mlib_str_view`
   - `mlib_str`
   - `mlib_str_mut`
-  - :cpp:`char [const]*` (null terminated C strings, inluding string literals)
+  - :cpp:`char [const]*` (:term:`C string`\ s, inluding string literals)
 
   From C++ code, any type convertible to `std__string_view` may be used.
 

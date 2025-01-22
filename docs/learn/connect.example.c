@@ -28,9 +28,8 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
     (void)userdata;
     // Check for an error
     if (amongoc_is_error(*status)) {
-        char* msg = amongoc_status_strdup_message(*status);
+        amongoc_declmsg(msg, *status);
         fprintf(stderr, "Error while connecting to server: %s\n", msg);
-        free(msg);
     } else {
         printf("Successfully connected!\n");
         amongoc_client* client;
