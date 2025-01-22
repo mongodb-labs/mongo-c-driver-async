@@ -28,7 +28,7 @@ struct loop_fixture {
     emitter_result run_to_completion(amongoc_emitter em) noexcept {
         emitter_result   ret;
         amongoc_box      box;
-        unique_operation op = ::amongoc_tie(em, &ret.status, &box, ::mlib_default_allocator);
+        unique_operation op = ::amongoc_tie(em, &ret.status, &box);
         op.start();
         loop.run();
         op.reset();

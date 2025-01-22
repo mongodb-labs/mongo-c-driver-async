@@ -202,6 +202,15 @@ static inline void amongoc_test_all_signatures() {
     some_emitter = GLOBAL_SCOPE amongoc_just(amongoc_okay, amongoc_nil);
     some_emitter = GLOBAL_SCOPE amongoc_just(amongoc_nil, mlib_default_allocator);
     some_emitter = GLOBAL_SCOPE amongoc_just();
+
+    // tie()
+    amongoc_operation op;
+    amongoc_status status = GLOBAL_SCOPE amongoc_okay;
+    (void)op;
+    op = GLOBAL_SCOPE amongoc_tie(some_emitter, &status);
+    op = GLOBAL_SCOPE amongoc_tie(some_emitter, &some_userdata);
+    op = GLOBAL_SCOPE amongoc_tie(some_emitter, &status, &some_userdata);
+    op = GLOBAL_SCOPE amongoc_tie(some_emitter, &status, &some_userdata, mlib_default_allocator);
 }
 
 mlib_diagnostic_pop();

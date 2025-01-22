@@ -89,7 +89,7 @@ int main(int argc, char const* const* argv) {
                      after_connect_say_hello);
 
     amongoc_status    fin_status = amongoc_okay;
-    amongoc_operation op         = amongoc_tie(em, &fin_status, NULL, mlib_default_allocator);
+    amongoc_operation op         = amongoc_tie(em, &fin_status);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
     amongoc_operation_delete(op);

@@ -140,7 +140,7 @@ emitter throws_early(mlib::allocator<>) {
 TEST_CASE("Coroutine/Throw before suspend") {
     auto   em = throws_early(::mlib_default_allocator);
     status st = ::amongoc_okay;
-    auto   op = ::amongoc_tie(em, &st, nullptr, ::mlib_default_allocator).as_unique();
+    auto   op = ::amongoc_tie(em, &st).as_unique();
     op.start();
     CHECK(st.as_error_code() == std::errc::address_in_use);
 }

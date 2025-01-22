@@ -61,10 +61,10 @@ emitter amongoc_schedule(amongoc_loop* loop) {
         .release();
 }
 
-amongoc_operation amongoc_tie(amongoc_emitter em,
-                              amongoc_status* status,
-                              amongoc_box*    value,
-                              mlib_allocator  alloc) mlib_noexcept {
+amongoc_operation(amongoc_tie)(amongoc_emitter em,
+                               amongoc_status* status,
+                               amongoc_box*    value,
+                               mlib_allocator  alloc) mlib_noexcept {
     // This function returns a different emitter depending on whether
     // the pointer values are null. If they are, we can returne an emitter
     // of a reduced size, reducing the need for memory allocations
