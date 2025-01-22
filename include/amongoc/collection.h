@@ -31,10 +31,10 @@ mlib_extern_c_begin();
  * @brief Obtain a CRUD handle to a collection within a database
  */
 #define amongoc_collection_new(Client, DbName, CollName)                                           \
-    _amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
-amongoc_collection* _amongoc_collection_new(amongoc_client* cl,
+    amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
+amongoc_collection*(amongoc_collection_new)(amongoc_client* cl,
                                             mlib_str_view   db_name,
-                                            mlib_str_view   coll_name) mlib_noexcept;
+                                            mlib_str_view   coll_name)mlib_noexcept;
 
 /**
  * @brief Delete a collection handle. Is a no-op for null handles.
