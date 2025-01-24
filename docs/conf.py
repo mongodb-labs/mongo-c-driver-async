@@ -415,6 +415,8 @@ class CustomCppLexer(CppLexer):
             (r"bson_type_\w+\b", token.Name.Constant),
             # Other macro
             (r"bson_foreach\w*\b", token.Keyword),
+            (r"amongoc_declmsg\b", token.Keyword),
+            (r"amongoc_if_error\b", token.Keyword),
             inherit,
         ],
     }

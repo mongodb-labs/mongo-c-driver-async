@@ -196,14 +196,14 @@ program. We check for errors, either printing the error message or printing the
 final result:
 
 .. literalinclude:: looping.example.c
-  :start-at: is_error
+  :start-at: if_error (status, msg)
   :end-at: return 0;
   :lineno-match:
 
-We use `amongoc_is_error` to test the final status for an error condition. If it
-is an error, we get and print the error message to stderr, and we must destroy
-the final result box because it may contain an unspecified value related to the
-error, but we don't want to do anything with it.
+We use :c:macro:`amongoc_if_error` to test the final status for an error
+condition. If it is an error, we get and print the error message to stderr, and
+we must destroy the final result box because it may contain an unspecified value
+related to the error, but we don't want to do anything with it.
 
 In the success case, we extract the value returned in `amongoc_just` as a
 ``uint64_t`` and print it to stdout. Note that because the box returned by

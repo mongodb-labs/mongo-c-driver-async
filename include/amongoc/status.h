@@ -871,8 +871,32 @@ mlib_extern_c_end();
 
 #define amongoc_okay mlib_parenthesized_expression(*_amongocStatusGetOkayStatus())
 
-#if mlib_is_cxx()
+/**
+ * @brief Branch on whether a status code is an error, and get the string message
+ * out of it in a single statement.
+ *
+ * @param Status An expression of type `amongoc_status`
+ * @param MsgVar An identifier, which will be declared as a C string for the status' message
+ */
+#define amongoc_if_error(...) MLIB_ARGC_PICK(_amongoc_if_error, __VA_ARGS__)
+#define _amongoc_if_error_argc_2(Status, MsgVar)                                                   \
+    _amongoc_if_error_argc_3((Status), MsgVar, MLIB_PASTE(_amongoc_status_tmp_lno_, __LINE__))
+#define _amongoc_if_error_argc_3(Status, MsgVar, StatusVar)                                        \
+    _amongocIfErrorBlock((Status),                                                                 \
+                         MsgVar,                                                                   \
+                         StatusVar,                                                                \
+                         MLIB_PASTE(_amongoc_oncevar_lno_, __LINE__),                              \
+                         MLIB_PASTE(_amongoc_msgbuf_lno_, __LINE__))
+// clang-format off
+#define _amongocIfErrorBlock(Status, MsgVar, StatusVar, OnceVar, MsgBuf) \
+    for (int OnceVar = 1; OnceVar; OnceVar = 0) \
+    for (amongoc_status const StatusVar = (Status); OnceVar; OnceVar = 0) \
+    if (amongoc_is_error(StatusVar)) \
+    for (char MsgBuf[128]; OnceVar; OnceVar = 0) \
+    for (const char* MsgVar = amongoc_message(StatusVar, MsgBuf, sizeof MsgBuf); OnceVar; OnceVar = 0)
+// clang-format on
 
+#if mlib_is_cxx()
 namespace amongoc {
 
 using status = ::amongoc_status;

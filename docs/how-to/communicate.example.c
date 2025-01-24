@@ -74,8 +74,7 @@ int main(int argc, char const* const* argv) {
 
     amongoc_loop   loop;
     amongoc_status status = amongoc_default_loop_init(&loop);
-    if (amongoc_is_error(status)) {
-        amongoc_declmsg(msg, status);
+    amongoc_if_error (status, msg) {
         fprintf(stderr, "Error setting up the event loop: %s\n", msg);
         return 2;
     }
@@ -102,8 +101,7 @@ int main(int argc, char const* const* argv) {
     amongoc_client_delete(state.client);
     amongoc_default_loop_destroy(&loop);
 
-    if (amongoc_is_error(status)) {
-        amongoc_declmsg(msg, status);
+    amongoc_if_error (status, msg) {
         fprintf(stderr, "An error occurred: %s\n", msg);
         return 2;
     } else {

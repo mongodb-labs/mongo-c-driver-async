@@ -82,6 +82,7 @@ IncludeCategories:
 InsertNewlineAtEOF: true
 IfMacros:
   - mlib_math_catch
+  - amongoc_if_error
 AllowBreakBeforeNoexceptSpecifier: Always
 ---
 # For some reason, Clang sees some files as Objective-C. Add this section just to appease it.

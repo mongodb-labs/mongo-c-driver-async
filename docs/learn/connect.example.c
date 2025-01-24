@@ -9,8 +9,7 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
 int main(void) {
     amongoc_loop   loop;
     amongoc_status status = amongoc_default_loop_init(&loop);
-    if (amongoc_is_error(status)) {
-        amongoc_declmsg(msg, status);
+    amongoc_if_error (status, msg) {
         fprintf(stderr, "Failed to prepare the event loop: %s\n", msg);
         return 2;
     }
@@ -32,8 +31,7 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
     // We don't use the userdata
     (void)userdata;
     // Check for an error
-    if (amongoc_is_error(*status)) {
-        amongoc_declmsg(msg, *status);
+    amongoc_if_error (*status, msg) {
         fprintf(stderr, "Error while connecting to server: %s\n", msg);
     } else {
         printf("Successfully connected!\n");

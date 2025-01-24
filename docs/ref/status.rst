@@ -83,6 +83,8 @@ Functions & Macros
     The defintion of what constitutes an error depends on the
     `amongoc_status::category`.
 
+  .. seealso:: :c:macro:`amongoc_if_error`
+
 
 .. function:: bool amongoc_is_cancellation(amongoc_status st)
 
@@ -130,8 +132,12 @@ Functions & Macros
 
   This function does not dynamically allocate any memory.
 
-  .. seealso:: :c:macro:`amongoc_declmsg` for concisely obtaining the message
-    from a status object.
+  .. seealso::
+
+    - :c:macro:`amongoc_declmsg` for concisely obtaining the message from a
+      status object.
+    - :c:macro:`amongoc_if_error` to check for an error and extract the message
+      in a single line.
 
 
 .. c:macro:: amongoc_declmsg(MsgVar, Status)
@@ -150,6 +156,34 @@ Functions & Macros
     char __buffer[128];
     const char* MsgVar = amongoc_message(Status, __buffer, sizeof __buffer)
 
+
+.. c:macro::
+  amongoc_if_error(Status, MsgVar, StatusVar)
+
+  Create a branch on whether the given status represents an error. This macro
+  supports being called with two arguments, or with three::
+
+    amongoc_if_error (status, msg_varname) {
+      fprintf(stderr, "Error message: %s\n", msg_varname)
+    }
+
+  ::
+
+    amongoc_if_error (status, msg_varname, status_varname) {
+      fprintf(stderr, "Error code %d has message: %s\n", status_varname.code, msg_varname);
+    }
+
+  :param Status: The first argument must be an expression of type `amongoc_status`. This is
+    the status to be inspected.
+  :param MsgVar: This argument should be a plain identifier, which will be declared within
+    the scope of the statement as the :term:`C string` for the status.
+  :param StatusVar: If provided, a variable of type `amongoc_status` will be declared within
+    the statment scope that captures the value of the ``Status`` argument.
+
+  .. hint::
+
+    If you are using ``clang-format``, add ``amongoc_if_error`` to the
+    ``IfMacros`` for your ``clang-format`` configuration.
 
 .. var:: const amongoc_status amongoc_okay
 
