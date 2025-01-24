@@ -4,7 +4,8 @@ Insert
 
 .. function::
   amongoc_emitter [[type(amongoc_write_result)]] amongoc_insert_ex(amongoc_collection* coll, const bson_view* documents, size_t n_docs, amongoc_insert_params const* [[nullable]] params)
-  amongoc_emitter [[type(amongoc_write_result)]] amongoc_insert_one(amongoc_collection* coll, bson_view doc, amongoc_insert_params const* [[nullable]] params)
+  amongoc_emitter [[type(amongoc_write_result)]] amongoc_insert_one(amongoc_collection* coll, __bson_viewable doc)
+  amongoc_emitter [[type(amongoc_write_result)]] amongoc_insert_one(amongoc_collection* coll, __bson_viewable doc, amongoc_insert_params const* [[nullable]] params)
 
   Insert data into the collection. Resolves with an `amongoc_write_result`.
 

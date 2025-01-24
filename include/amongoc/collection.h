@@ -220,6 +220,12 @@ inline amongoc_emitter amongoc_insert_one(amongoc_collection*          coll,
     return amongoc_insert_ex(coll, &doc, 1, params);
 }
 
+#define amongoc_insert_one(...) MLIB_ARGC_PICK(_amongoc_insert_one, __VA_ARGS__)
+#define _amongoc_insert_one_argc_2(Coll, Doc)                                                      \
+    amongoc_insert_one((Coll), bson_view_from((Doc)), NULL)
+#define _amongoc_insert_one_argc_3(Coll, Doc, Params)                                              \
+    amongoc_insert_one((Coll), bson_view_from((Doc)), (Params))
+
 // d88888b d888888b d8b   db d8888b.
 // 88'       `88'   888o  88 88  `8D
 // 88ooo      88    88V8o 88 88   88

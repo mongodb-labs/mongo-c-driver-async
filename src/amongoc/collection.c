@@ -9,9 +9,10 @@ amongoc_delete_many(amongoc_collection*                 coll,
                     bson_view                           filter,
                     struct amongoc_delete_params const* params) mlib_noexcept;
 
-extern inline amongoc_emitter amongoc_insert_one(amongoc_collection*          coll,
-                                                 bson_view                    doc,
-                                                 amongoc_insert_params const* params) mlib_noexcept;
+extern inline amongoc_emitter(amongoc_insert_one)(amongoc_collection*          coll,
+                                                  bson_view                    doc,
+                                                  amongoc_insert_params const* params)
+    mlib_noexcept;
 
 extern inline amongoc_emitter
 amongoc_find_one_and_delete(amongoc_collection*             coll,
