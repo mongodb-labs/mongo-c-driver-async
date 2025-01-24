@@ -6,6 +6,7 @@
 #include <amongoc/emitter.h>
 #include <amongoc/status.h>
 
+#include <bson/format.h>
 #include <bson/mut.h>
 #include <bson/types.h>
 #include <bson/value.h>
@@ -211,6 +212,11 @@ static inline void amongoc_test_all_signatures() {
     op = GLOBAL_SCOPE amongoc_tie(some_emitter, &some_userdata);
     op = GLOBAL_SCOPE amongoc_tie(some_emitter, &status, &some_userdata);
     op = GLOBAL_SCOPE amongoc_tie(some_emitter, &status, &some_userdata, mlib_default_allocator);
+
+    mlib_ostream os = mlib_ostream_from(stderr);
+    GLOBAL_SCOPE bson_write_repr(&some_string, some_bson_doc);
+    GLOBAL_SCOPE bson_write_repr(os, some_bson_doc);
+    GLOBAL_SCOPE bson_write_repr(stderr, some_bson_doc);
 }
 
 mlib_diagnostic_pop();
