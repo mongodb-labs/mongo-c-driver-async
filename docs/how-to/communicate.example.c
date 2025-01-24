@@ -72,8 +72,13 @@ int main(int argc, char const* const* argv) {
     }
     const char* const uri = argv[1];
 
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+    amongoc_loop   loop;
+    amongoc_status status = amongoc_default_loop_init(&loop);
+    if (amongoc_is_error(status)) {
+        amongoc_declmsg(msg, status);
+        fprintf(stderr, "Error setting up the event loop: %s\n", msg);
+        return 2;
+    }
 
     struct app_state state = {0};
 
@@ -88,8 +93,7 @@ int main(int argc, char const* const* argv) {
                      amongoc_box_pointer(&state),
                      after_connect_say_hello);
 
-    amongoc_status    fin_status = amongoc_okay;
-    amongoc_operation op         = amongoc_tie(em, &fin_status);
+    amongoc_operation op = amongoc_tie(em, &status);
     amongoc_start(&op);
     amongoc_default_loop_run(&loop);
     amongoc_operation_delete(op);
@@ -98,8 +102,8 @@ int main(int argc, char const* const* argv) {
     amongoc_client_delete(state.client);
     amongoc_default_loop_destroy(&loop);
 
-    if (amongoc_is_error(fin_status)) {
-        amongoc_declmsg(msg, fin_status);
+    if (amongoc_is_error(status)) {
+        amongoc_declmsg(msg, status);
         fprintf(stderr, "An error occurred: %s\n", msg);
         return 2;
     } else {

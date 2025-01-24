@@ -797,6 +797,8 @@ struct amongoc_status {
     constexpr bool operator!=(amongoc_status const& other) const noexcept {
         return not(*this == other);
     }
+
+    inline void throw_for_error() const;
 #endif
 };
 
@@ -895,4 +897,9 @@ private:
 
 bool amongoc_status::is_error() const noexcept { return amongoc_is_error(*this); }
 
+void amongoc_status::throw_for_error() const {
+    if (this->is_error()) {
+        throw amongoc::exception(*this);
+    }
+}
 #endif

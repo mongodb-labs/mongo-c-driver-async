@@ -8,9 +8,11 @@
 
 mlib_extern_c_begin();
 
-extern amongoc_status        amongoc_default_loop_init_with_allocator(amongoc_loop* loop,
-                                                                      mlib_allocator) mlib_noexcept;
-static inline amongoc_status amongoc_default_loop_init(amongoc_loop* loop) mlib_noexcept {
+mlib_nodiscard("This function may fail to allocate resources") extern amongoc_status
+    amongoc_default_loop_init_with_allocator(amongoc_loop* loop, mlib_allocator) mlib_noexcept;
+
+mlib_nodiscard("This function may fail to allocate resources") static inline amongoc_status
+    amongoc_default_loop_init(amongoc_loop* loop) mlib_noexcept {
     return amongoc_default_loop_init_with_allocator(loop, mlib_default_allocator);
 }
 
@@ -24,7 +26,7 @@ namespace amongoc {
 
 struct default_event_loop {
 public:
-    default_event_loop() { ::amongoc_default_loop_init(&_loop); }
+    default_event_loop() { ::amongoc_default_loop_init(&_loop).throw_for_error(); }
     ~default_event_loop() { ::amongoc_default_loop_destroy(&_loop); }
 
     default_event_loop(default_event_loop&&) = delete;

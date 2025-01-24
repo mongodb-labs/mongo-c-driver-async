@@ -46,7 +46,7 @@ The first "interesting" code will declare and initialize the default event loop:
 .. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: loop;
-  :end-at: );
+  :end-at: }
 
 .. seealso:: `amongoc_loop` and `amongoc_default_loop_init`
 
@@ -204,7 +204,7 @@ the first continuation, we use `amongoc_tie` to convert the emitter to an
 
 .. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: fin_status
+  :start-at: amongoc_tie
   :end-at: amongoc_tie
 
 This will allow us to see the final result status of the program in
