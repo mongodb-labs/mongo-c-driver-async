@@ -240,7 +240,7 @@ Print the Final Result
 
 .. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: if_error
+  :start-at: // Final status
   :end-before: end.
 
 Finally, we inspect the `amongoc_status` that was produced by our operation and
