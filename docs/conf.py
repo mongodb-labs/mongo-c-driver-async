@@ -338,6 +338,7 @@ _TYPES = [
             "default_loop",
             "client",
             "collection",
+            "cursor",
         )
     ),
     *(
