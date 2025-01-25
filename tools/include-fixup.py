@@ -23,7 +23,7 @@ pats = [
     "**/*.hpp",
 ]
 
-dirs = ["src/", "include/"]
+dirs = ["src/", "include/", "tests/", "docs/"]
 
 dirs = map(Path, dirs)
 source_files = itertools.chain.from_iterable(

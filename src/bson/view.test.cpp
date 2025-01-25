@@ -174,7 +174,7 @@ TEST_CASE("bson/view/foreach/break") {
     bson_iterator last_seen{};
     int           nth = 0;
     // There are three elements, but we stop at two
-    bson_foreach(iter, v) {
+    bson_foreach (iter, v) {
         last_seen = iter;
         ++nth;
         if (nth == 2) {
@@ -219,7 +219,7 @@ TEST_CASE("bson/view/foreach/error iterator") {
 
     int  nth       = 0;
     bool got_error = false;
-    bson_foreach(iter, v) {
+    bson_foreach (iter, v) {
         switch (nth++) {
         case 0:
             CHECK(iter->key() == "r");
@@ -252,7 +252,7 @@ TEST_CASE("bson/view/foreach/Once evaluation") {
         return doc;
     };
 
-    bson_foreach(it, get()) {
+    bson_foreach (it, get()) {
         (void)it;
         // Empty
     }

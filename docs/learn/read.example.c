@@ -1,11 +1,4 @@
-#include "amongoc/async.h"
-#include "amongoc/box.h"
-#include "amongoc/client.h"
-#include "amongoc/collection.h"
-#include "amongoc/default_loop.h"
 #include <amongoc/amongoc.h>
-
-#include "bson/format.h"
 
 // Application state
 typedef struct {

@@ -35,7 +35,7 @@ build:
 test: build
 	cmake -E chdir "$(BUILD_DIR)" ctest -C "$(CONFIG)" --output-on-failure -j8
 
-all_sources := $(shell find $(THIS_DIR)/src/ $(THIS_DIR)/include/ $(THIS_DIR)/tests/ -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp')
+all_sources := $(shell find $(THIS_DIR)/src/ $(THIS_DIR)/include/ $(THIS_DIR)/tests/ $(THIS_DIR)/docs/ -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp')
 format-check: poetry-install
 	$(POETRY) run python tools/include-fixup.py --check
 	$(POETRY) run $(MAKE) _format-check
