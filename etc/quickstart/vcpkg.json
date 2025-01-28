@@ -1,0 +1,8 @@
+{
+    "dependencies": [
+        "fmt",
+        "openssl",
+        "boost-container",
+        "boost-url"
+    ]
+}
