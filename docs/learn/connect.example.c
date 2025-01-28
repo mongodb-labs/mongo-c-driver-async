@@ -35,7 +35,7 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
         printf("Successfully connected!\n");
         amongoc_client* client;
         amongoc_box_take(client, result);
-        // `cl` now stores a valid client. We don't do anything else, so just delete it:
+        // `client` now stores a valid client. We don't do anything else, so just delete it:
         amongoc_client_delete(client);
     }
     amongoc_box_destroy(result);
