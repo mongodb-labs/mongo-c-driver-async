@@ -8,7 +8,7 @@
 #include <bson/doc.h>
 
 void c_create() {
-    // Create a new document boject
+    // Create a new document object
     bson_doc doc = bson_new();
 
     // Do stuff
