@@ -122,7 +122,7 @@ the server:
 .. literalinclude:: read.example.c
   :caption: Set up the Collection
   :start-at: Create a new collection handle
-  :end-at: }
+  :end-before: Initiate a read operation.
   :lineno-match:
 
 `amongoc_collection_new` does not actually communicate with the server: It only

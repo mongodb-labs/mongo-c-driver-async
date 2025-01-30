@@ -26,7 +26,7 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
     bson_view resp = bson_view_from(amongoc_box_cast(bson_doc, resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
-    bson_write_repr(stderr, resp);
+    bson_write_repr(stdout, resp);
     fputs("\n", stdout);
     amongoc_box_destroy(resp_data);
     return amongoc_nil;

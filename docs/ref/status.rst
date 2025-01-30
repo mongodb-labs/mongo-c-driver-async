@@ -178,7 +178,7 @@ Functions & Macros
   :param MsgVar: This argument should be a plain identifier, which will be declared within
     the scope of the statement as the :term:`C string` for the status.
   :param StatusVar: If provided, a variable of type `amongoc_status` will be declared within
-    the statment scope that captures the value of the ``Status`` argument.
+    the statement scope that captures the value of the ``Status`` argument.
 
   .. hint::
 
@@ -229,7 +229,7 @@ Status Categories
        return |S| without inspecting `buf`.
     2. If the message |M| needs to be dynamically generated and `buf` is not
        null, generate the message string in `buf`, ensuring that `buf` contains
-       a nul terminator at :expr:`buf[buflen-1]` (use of ``snprintf`` is
+       a nul terminator. The written length with nul terminator must not exceed :expr:`buflen` (use of ``snprintf`` is
        recommended). Return `buf`.
     3. Otherwise, return a fallback message string or a null pointer.
 

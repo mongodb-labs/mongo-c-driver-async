@@ -185,7 +185,6 @@ struct bson_writer {
     void write_value(bool b) { write("{}", b); }
     void write_value(std::int32_t i) { write("{}:i32", i); }
     void write_value(std::int64_t i) { write("{}:i64", i); }
-    void write_value(std::uint64_t i) { write("{}:u64", i); }
     void write_value(double i) { write("{}:f64", i); }
     void write_value(bson::null) { write("null"); }
     void write_value(bson::undefined) { write("undefined"); }
