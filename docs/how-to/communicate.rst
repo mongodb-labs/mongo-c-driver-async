@@ -46,7 +46,7 @@ The first "interesting" code will declare and initialize the default event loop:
 .. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: loop;
-  :end-at: );
+  :end-at: }
 
 .. seealso:: `amongoc_loop` and `amongoc_default_loop_init`
 
@@ -204,14 +204,11 @@ the first continuation, we use `amongoc_tie` to convert the emitter to an
 
 .. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: fin_status
+  :start-at: amongoc_tie
   :end-at: amongoc_tie
 
 This will allow us to see the final result status of the program in
-``fin_status`` after the returned operation ``op`` completes. We pass ``NULL``
-for the `amongoc_tie::value` parameter, indicating that we do not care what the
-final result value will be (in a successful case, this would just be the
-`amongoc_nil` returned from ``after_hello``).
+``fin_status`` after the returned operation ``op`` completes.
 
 
 Start the Operation, Run the Loop, and Clean Up
@@ -243,7 +240,7 @@ Print the Final Result
 
 .. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: is_error
+  :start-at: // Final status
   :end-before: end.
 
 Finally, we inspect the `amongoc_status` that was produced by our operation and

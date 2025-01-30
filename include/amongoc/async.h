@@ -412,6 +412,47 @@ amongoc_operation amongoc_tie(amongoc_emitter em,
                               amongoc_box*    value,
                               mlib_allocator  alloc) mlib_noexcept;
 
+#define amongoc_tie(...) MLIB_ARGC_PICK(_amongoc_tie, __VA_ARGS__)
+#define _amongoc_tie_argc_4(Em, StatusPtr, ValuePtr, Alloc)                                        \
+    amongoc_tie(Em, StatusPtr, ValuePtr, Alloc)
+#define _amongoc_tie_argc_2(Em, StatusOrValuePtr)                                                  \
+    mlib_generic(_amongoc_tie_cxx,                                                                 \
+                 amongoc_tie,                                                                      \
+                 (StatusOrValuePtr),                                                               \
+                 amongoc_status* : _amongoc_tie_status,                                            \
+                 amongoc_box* : _amongoc_tie_value)((Em), (StatusOrValuePtr))
+#define _amongoc_tie_argc_3(Em, StatusPtr, ValuePtr)                                               \
+    amongoc_tie((Em), (StatusPtr), (ValuePtr), mlib_default_allocator)
+
+inline amongoc_operation _amongoc_tie_status(amongoc_emitter em,
+                                             amongoc_status* status) mlib_noexcept {
+    return amongoc_tie(em, status, NULL, mlib_default_allocator);
+}
+inline amongoc_operation _amongoc_tie_value(amongoc_emitter em, amongoc_box* value) mlib_noexcept {
+    return amongoc_tie(em, NULL, value, mlib_default_allocator);
+}
+
+#if mlib_is_cxx()
+extern "C++" {
+inline amongoc_operation _amongoc_tie_cxx(amongoc_emitter em, amongoc_status* status) noexcept {
+    return amongoc_tie(em, status, nullptr, mlib_default_allocator);
+}
+inline amongoc_operation _amongoc_tie_cxx(amongoc_emitter em, amongoc_box* value) noexcept {
+    return amongoc_tie(em, nullptr, value, mlib_default_allocator);
+}
+inline amongoc_operation
+_amongoc_tie_cxx(amongoc_emitter em, amongoc_status* status, amongoc_box* value) noexcept {
+    return amongoc_tie(em, status, value, mlib_default_allocator);
+}
+inline amongoc_operation _amongoc_tie_cxx(amongoc_emitter em,
+                                          amongoc_status* status,
+                                          amongoc_box*    value,
+                                          mlib_allocator  alloc) noexcept {
+    return amongoc_tie(em, status, value, alloc);
+}
+}
+#endif  // C++
+
 /**
  * @brief Create a "detached" operation from an emitter. This returns a simple operation
  * object that can be started. The final result from the emitter will simply be destroyed

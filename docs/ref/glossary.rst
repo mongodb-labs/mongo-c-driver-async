@@ -73,6 +73,16 @@ Terminology
 
     This contrasts with :term:`function-like macros <function-like macro>`.
 
+  C string
+
+    A *C string* is a contiguous array of |char| that is terminated with a nul
+    character (a |char| with integral value :cpp:`0`). A C string is typically
+    represented with a pointer-to-|char| in C code, where the pointer refers to
+    the first character in the character array. The "length" of a *C string* is
+    the number of characters in the array that precede the nul terminator. i.e.
+    a C string of length 3 will have three non-zero characters and one nul
+    character, requiring an array of length 4.
+
   translation unit
 
     In C and C++, a *translation unit* consists of the total textual input given

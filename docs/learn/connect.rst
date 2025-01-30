@@ -29,7 +29,7 @@ programs:
 .. literalinclude:: connect.example.c
   :caption: Create a default event loop
   :start-at: int main
-  :end-at: default_loop_init
+  :end-at: }
   :lineno-match:
   :dedent:
 

@@ -25,7 +25,7 @@ amongoc::wire::checking_pool_client amongoc_client::checking_wire_client() {
     return amongoc::wire::checking_client(amongoc::pool_client(_pool));
 }
 
-emitter _amongoc_client_new(amongoc_loop* loop, mlib_str_view uri_str) noexcept {
+emitter(amongoc_client_new)(amongoc_loop* loop, mlib_str_view uri_str) noexcept {
     // Note: We copy the URI here before making the connect operation, because
     // we want to hold a copy of the URI string.
     auto uri = connection_uri::parse(uri_str, loop->get_allocator());

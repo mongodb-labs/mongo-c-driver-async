@@ -1,8 +1,8 @@
-#include "bson/iterator.h"
-#include "bson/mut.h"
-#include "bson/types.h"
-#include "bson/view.h"
 #include <bson/doc.h>
+#include <bson/iterator.h>
+#include <bson/mut.h>
+#include <bson/types.h>
+#include <bson/view.h>
 
 // ex: [create-c]
 #include <bson/doc.h>
@@ -157,7 +157,7 @@ void do_loop(bson_view data) {
 
 // ex: [foreach]
 void foreach_loop(bson_view data) {
-    bson_foreach(it, data) {
+    bson_foreach (it, data) {
         // `it` refers to the current element.
         printf("Got an element: %s\n", bson_key(it).data);
     }
@@ -207,7 +207,7 @@ bool subdoc_iter(bson_view top) {
     }
 
     // Iterate over each element of the array
-    bson_foreach(sub_iter, val.array) {
+    bson_foreach (sub_iter, val.array) {
         if (bson_iterator_get_error(sub_iter)) {
             // Iterating over a child element encountered an error
             fprintf(stderr,

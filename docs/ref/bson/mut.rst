@@ -313,9 +313,9 @@ Utilities
 .. function::
   bson_u32_string bson_u32_string_create(uint32_t i)
 
-  Create a small C string representing the base-10 encoding of the given 32-bit
-  integer `i`. The string is not dynamically allocated, so no deallocation is
-  necessary. The character array in the returned small string is
+  Create a small :term:`C string` representing the base-10 encoding of the given
+  32-bit integer `i`. The string is not dynamically allocated, so no
+  deallocation is necessary. The character array in the returned small string is
   null-terminated.
 
 

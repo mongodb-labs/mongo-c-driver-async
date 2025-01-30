@@ -22,13 +22,19 @@ class unknown_error_category : public std::error_category {
 struct io_category_cls : std::error_category {
     const char* name() const noexcept override { return "amongoc.io"; }
     std::string message(int ec) const noexcept override {
+        char buf[128];
+        return message_noalloc(ec, buf, sizeof buf);
+    }
+
+    const char* message_noalloc(int ec, char* buf, size_t buflen) const noexcept {
         switch (static_cast<::amongoc_io_errc>(ec)) {
-        case amongoc_errc_connection_closed:
+        case ::amongoc_errc_connection_closed:
             return "connection closed";
-        case amongoc_errc_short_read:
+        case ::amongoc_errc_short_read:
             return "short read";
         default:
-            return fmt::format("amongoc.io:{}", ec);
+            std::snprintf(buf, buflen, "amongoc.io:%d", ec);
+            return buf;
         }
     }
 } io_category_inst;
@@ -36,12 +42,17 @@ struct io_category_cls : std::error_category {
 struct server_category_cls : std::error_category {
     const char* name() const noexcept override { return "amongoc.server"; }
     std::string message(int ec) const noexcept override {
-        std::string_view sv = _message_cstr(ec);
-        if (sv.empty()) {
-            // Unknown error code
-            return fmt::format("amongoc.server:{}", ec);
+        char buf[128];
+        return this->message_noalloc(ec, buf, sizeof buf);
+    }
+
+    const char* message_noalloc(int ec, char* buf, size_t buflen) const noexcept {
+        auto str = _message_cstr(ec);
+        if (str) {
+            return str;
         }
-        return std::string(sv);
+        std::snprintf(buf, buflen, "amongoc.server:%d", ec);
+        return buf;
     }
 
     const char* _message_cstr(int ec) const noexcept {
@@ -726,20 +737,27 @@ struct server_category_cls : std::error_category {
             }
         }
         }
-        return "";
+        return nullptr;
     }
 } server_category_inst;
 
 struct client_category_cls : std::error_category {
     const char* name() const noexcept override { return "amongoc.client"; }
     std::string message(int ec) const noexcept override {
+        char buf[128];
+        return this->message_noalloc(ec, buf, sizeof buf);
+    }
+
+    const char* message_noalloc(int ec, char* buf, size_t buflen) const noexcept {
         switch (static_cast<::amongoc_client_errc>(ec)) {
         case amongoc_client_errc_okay:
             return "no error";
         case amongoc_client_errc_invalid_update_document:
             return "invalid document for an ‘update’ operation";
+        default:
+            std::snprintf(buf, buflen, "amongoc.client:%d", ec);
+            return buf;
         }
-        return fmt::format("amongoc.client:{}", ec);
     }
 } client_category_inst;
 
@@ -749,25 +767,47 @@ struct tls_category_cls : std::error_category {
         const char* msg = ::ERR_error_string(static_cast<unsigned long>(ec), nullptr);
         return msg ? msg : fmt::format("amongoc.tls:{}", ec);
     }
+
+    const char* message_noalloc(int ec, char* buf, size_t buflen) const noexcept {
+        const char* msg = ::ERR_error_string(static_cast<unsigned long>(ec), nullptr);
+        if (msg) {
+            return msg;
+        }
+        std::snprintf(buf, buflen, "amongoc.tls:%d", ec);
+        return buf;
+    }
 } tls_category_inst;
+
+const char* get_msg(const auto& cat, int c, char* buf, size_t buflen) {
+    std::string msg = cat.message(c);
+    std::snprintf(buf, buflen, "%*s", (int)msg.size(), msg.data());
+    return buf;
+}
+
+const char* get_msg(const auto& cat, int c, char* buf, size_t buflen)
+    requires requires(const char* msg) { msg = cat.message_noalloc(c, buf, buflen); }
+{
+    return cat.message_noalloc(c, buf, buflen);
+}
 
 // Inherit some status attributes from a C++ category
 template <auto GetCategory>
 struct from_cxx_category {
     static const char* name() noexcept { return GetCategory().name(); }
-    static char*       message(int c) {
-        std::string msg = GetCategory().message(c);
-        return ::strdup(msg.data());
+    static const char* message(int c, char* buf, size_t buflen) noexcept {
+        return get_msg(GetCategory(), c, buf, buflen);
     }
 };
 
 struct generic_category_attrs : from_cxx_category<std::generic_category> {
-    static bool is_timeout(int e) { return e == ETIMEDOUT; }
-    static bool is_cancellation(int e) { return e == ECANCELED; }
+    static bool        is_timeout(int e) { return e == ETIMEDOUT; }
+    static bool        is_cancellation(int e) { return e == ECANCELED; }
+    static const char* message(int c, char*, size_t) noexcept { return std::strerror(c); }
 };
 struct system_category_attrs : from_cxx_category<std::system_category> {
-    static bool is_timeout(int e) { return e == ETIMEDOUT; }
-    static bool is_cancellation(int e) { return e == ECANCELED; }
+    static bool        is_timeout(int e) { return e == ETIMEDOUT; }
+    static bool        is_cancellation(int e) { return e == ECANCELED; }
+    static const char* message(int c, char*, size_t) noexcept { return std::strerror(c); }
 };
 
 struct netdb_category_attrs : from_cxx_category<asio::error::get_netdb_category> {};
@@ -802,7 +842,7 @@ constexpr auto get_is_cancellation<T> = &T::is_cancellation;
     /* Definition of the category global instance */                                               \
     constexpr ::amongoc_status_category_vtable MLIB_PASTE_3(amongoc_, Ident, _category) = {        \
         .name            = &Attrs::name,                                                           \
-        .strdup_message  = &Attrs::message,                                                        \
+        .message         = &Attrs::message,                                                        \
         .is_error        = get_is_error<Attrs>,                                                    \
         .is_cancellation = get_is_cancellation<Attrs>,                                             \
         .is_timeout      = get_is_timeout<Attrs>,                                                  \
@@ -812,10 +852,8 @@ AMONGOC_STATUS_CATEGORY_X_LIST();
 #undef DefCategory
 
 std::string status::message() const noexcept {
-    auto        s = amongoc_status_strdup_message(*this);
-    std::string str(s);
-    free(s);
-    return str;
+    amongoc_declmsg(msg, *this);
+    return msg;
 }
 
 status status::from(const std::error_code& ec) noexcept {

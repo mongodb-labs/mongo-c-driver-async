@@ -253,7 +253,11 @@ Other
   :header: |this-header|
 
 
-.. function:: amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value, mlib_allocator alloc)
+.. function::
+  amongoc_operation amongoc_tie(amongoc_emitter [[transfer]] em, amongoc_status* [[storage]] st)
+  amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_box* [[storage, type(T)]] value)
+  amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value)
+  amongoc_operation amongoc_tie(amongoc_emitter [[transfer, type(T)]] em, amongoc_status* [[storage]] st, amongoc_box* [[storage, type(T)]] value, mlib_allocator alloc)
 
   Create an `amongoc_operation` object that captures the emitter's results in
   the given locations.

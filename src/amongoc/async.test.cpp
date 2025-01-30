@@ -45,7 +45,7 @@ TEST_CASE("Async/Transform with the C API") {
 
 TEST_CASE("Async/Timeout") {
     amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+    amongoc_default_loop_init(&loop).throw_for_error();
     // One minute delay (too slow)
     auto dur          = timespec{};
     dur.tv_sec        = 60;
@@ -93,7 +93,7 @@ emitter waits(amongoc_loop& loop) {
 
 TEST_CASE("Async/let") {
     amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+    amongoc_default_loop_init(&loop).throw_for_error();
     auto em = amongoc_let(waits(loop),
                           amongoc_async_forward_errors,
                           mlib_default_allocator,

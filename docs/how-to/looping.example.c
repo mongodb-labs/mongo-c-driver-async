@@ -20,7 +20,9 @@ typedef struct {
  *
  * @param state_ptr Pointer to the `state` for the program
  */
-amongoc_emitter loop_step(amongoc_box state_ptr, amongoc_status prev_status, amongoc_box prev_res) {
+amongoc_emitter loop_step(amongoc_box    state_ptr,  //
+                          amongoc_status prev_status,
+                          amongoc_box    prev_res) {
     (void)prev_res;
     (void)prev_status;
     // Print our status
@@ -60,7 +62,10 @@ int main(int argc, char const* const* argv) {
 
     // Create a default loop
     amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+    amongoc_if_error (amongoc_default_loop_init(&loop), msg) {
+        fprintf(stderr, "Error initializing event loop: %s\n", msg);
+        return 1;
+    }
 
     // Seed the initial sum
     state app_state = {.countdown = delay, .loop = &loop, .a = 0, .b = 1};
@@ -70,22 +75,19 @@ int main(int argc, char const* const* argv) {
     // Tie the final result for later, and start the program
     amongoc_status    status;
     amongoc_box       result;
-    amongoc_operation op = amongoc_tie(em, &status, &result, mlib_default_allocator);
+    amongoc_operation op = amongoc_tie(em, &status, &result);
     amongoc_start(&op);
     // Run the program within the event loop
     amongoc_default_loop_run(&loop);
     amongoc_operation_delete(op);
     amongoc_default_loop_destroy(&loop);
 
-    if (amongoc_is_error(status)) {
-        char* msg = amongoc_status_strdup_message(status);
+    amongoc_if_error (status, msg) {
         fprintf(stderr, "error: %s\n", msg);
-        free(msg);
         amongoc_box_destroy(result);
         return 2;
-    } else {
-        // Get the value returned with `amongoc_just` in `loop_step`
-        printf("Got final value: %lu\n", amongoc_box_cast(uint64_t, result));
     }
+    // Get the value returned with `amongoc_just` in `loop_step`
+    printf("Got final value: %lu\n", amongoc_box_cast(uint64_t, result));
     return 0;
 }

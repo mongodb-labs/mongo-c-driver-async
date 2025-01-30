@@ -7,8 +7,12 @@
 amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box result);
 
 int main(void) {
-    amongoc_loop loop;
-    amongoc_default_loop_init(&loop);
+    amongoc_loop   loop;
+    amongoc_status status = amongoc_default_loop_init(&loop);
+    amongoc_if_error (status, msg) {
+        fprintf(stderr, "Failed to prepare the event loop: %s\n", msg);
+        return 2;
+    }
 
     // Initiate a connection
     amongoc_emitter em = amongoc_client_new(&loop, "mongodb://localhost:27017");
@@ -27,10 +31,8 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
     // We don't use the userdata
     (void)userdata;
     // Check for an error
-    if (amongoc_is_error(*status)) {
-        char* msg = amongoc_status_strdup_message(*status);
+    amongoc_if_error (*status, msg) {
         fprintf(stderr, "Error while connecting to server: %s\n", msg);
-        free(msg);
     } else {
         printf("Successfully connected!\n");
         amongoc_client* client;

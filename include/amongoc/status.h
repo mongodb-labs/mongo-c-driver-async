@@ -20,8 +20,8 @@ mlib_extern_c_begin();
 struct amongoc_status_category_vtable {
     // Get the name of the category
     const char* (*name)(void);
-    // Dynamically allocate a new string for the message contained in the status
-    char* (*strdup_message)(int code);
+    // Obtain a human-readable message for the status
+    const char* (*message)(int code, char* obuf, size_t buflen);
     // Test whether a particular integer value is an error
     bool (*is_error)(int code);
     // Test whether a particular integer value represents cancellation
@@ -797,6 +797,8 @@ struct amongoc_status {
     constexpr bool operator!=(amongoc_status const& other) const noexcept {
         return not(*this == other);
     }
+
+    inline void throw_for_error() const;
 #endif
 };
 
@@ -830,12 +832,26 @@ static inline bool amongoc_is_timeout(amongoc_status st) mlib_noexcept {
 /**
  * @brief Obtain a human-readable message describing the given status
  *
- * @return char* A dynamically allocated null-terminated C string describing the status.
- * @note The returned string must be freed with free()!
+ * @param st The status to be inspected
+ * @param buf Pointer to a modifyable character array of length `buflen`, or `NULL`
+ *    if `buflen` is zero
+ * @param buflen The length of the character array pointed-to by `buf`
+ * @return The pointer to the beginning of a null-terminated character array describing
+ * the status message.
  */
-static inline char* amongoc_status_strdup_message(amongoc_status s) {
-    return s.category->strdup_message(s.code);
+inline const char* amongoc_message(amongoc_status st, char* buf, size_t buflen) mlib_noexcept {
+    const char* s = st.category->message(st.code, buf, buflen);
+    if (s) {
+        return s;
+    }
+    return "Message text unavailable";
 }
+
+#define amongoc_declmsg(VarName, Status)                                                           \
+    _amongocDeclMsg(VarName, (Status), MLIB_PASTE(_amongoc_status_msg_mbuf, __LINE__))
+#define _amongocDeclMsg(VarName, Status, BufName)                                                  \
+    char        BufName[128];                                                                      \
+    const char* VarName = amongoc_message((Status), BufName, sizeof(BufName))
 
 /**
  * @brief Obtain the reason code if-and-only-if the given status corresponds to a TLS error
@@ -855,8 +871,32 @@ mlib_extern_c_end();
 
 #define amongoc_okay mlib_parenthesized_expression(*_amongocStatusGetOkayStatus())
 
-#if mlib_is_cxx()
+/**
+ * @brief Branch on whether a status code is an error, and get the string message
+ * out of it in a single statement.
+ *
+ * @param Status An expression of type `amongoc_status`
+ * @param MsgVar An identifier, which will be declared as a C string for the status' message
+ */
+#define amongoc_if_error(...) MLIB_ARGC_PICK(_amongoc_if_error, __VA_ARGS__)
+#define _amongoc_if_error_argc_2(Status, MsgVar)                                                   \
+    _amongoc_if_error_argc_3((Status), MsgVar, MLIB_PASTE(_amongoc_status_tmp_lno_, __LINE__))
+#define _amongoc_if_error_argc_3(Status, MsgVar, StatusVar)                                        \
+    _amongocIfErrorBlock((Status),                                                                 \
+                         MsgVar,                                                                   \
+                         StatusVar,                                                                \
+                         MLIB_PASTE(_amongoc_oncevar_lno_, __LINE__),                              \
+                         MLIB_PASTE(_amongoc_msgbuf_lno_, __LINE__))
+// clang-format off
+#define _amongocIfErrorBlock(Status, MsgVar, StatusVar, OnceVar, MsgBuf) \
+    for (int OnceVar = 1; OnceVar; OnceVar = 0) \
+    for (amongoc_status const StatusVar = (Status); OnceVar; OnceVar = 0) \
+    if (amongoc_is_error(StatusVar)) \
+    for (char MsgBuf[128]; OnceVar; OnceVar = 0) \
+    for (const char* MsgVar = amongoc_message(StatusVar, MsgBuf, sizeof MsgBuf); OnceVar; OnceVar = 0)
+// clang-format on
 
+#if mlib_is_cxx()
 namespace amongoc {
 
 using status = ::amongoc_status;
@@ -881,4 +921,9 @@ private:
 
 bool amongoc_status::is_error() const noexcept { return amongoc_is_error(*this); }
 
+void amongoc_status::throw_for_error() const {
+    if (this->is_error()) {
+        throw amongoc::exception(*this);
+    }
+}
 #endif

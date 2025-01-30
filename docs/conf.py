@@ -229,6 +229,7 @@ rst_prolog = """
 .. |static| replace:: :cpp:`static`
 .. |const| replace:: :cpp:`const`
 .. |void| replace:: :cpp:`void`
+.. |char| replace:: :cpp:`char`
 .. |A| replace:: :math:`A`
 .. |A'| replace:: :math:`A'`
 .. |B| replace:: :math:`B`
@@ -337,6 +338,7 @@ _TYPES = [
             "default_loop",
             "client",
             "collection",
+            "cursor",
         )
     ),
     *(
@@ -414,6 +416,8 @@ class CustomCppLexer(CppLexer):
             (r"bson_type_\w+\b", token.Name.Constant),
             # Other macro
             (r"bson_foreach\w*\b", token.Keyword),
+            (r"amongoc_declmsg\b", token.Keyword),
+            (r"amongoc_if_error\b", token.Keyword),
             inherit,
         ],
     }

@@ -31,10 +31,10 @@ mlib_extern_c_begin();
  * @brief Obtain a CRUD handle to a collection within a database
  */
 #define amongoc_collection_new(Client, DbName, CollName)                                           \
-    _amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
-amongoc_collection* _amongoc_collection_new(amongoc_client* cl,
+    amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
+amongoc_collection*(amongoc_collection_new)(amongoc_client* cl,
                                             mlib_str_view   db_name,
-                                            mlib_str_view   coll_name) mlib_noexcept;
+                                            mlib_str_view   coll_name)mlib_noexcept;
 
 /**
  * @brief Delete a collection handle. Is a no-op for null handles.
@@ -219,6 +219,12 @@ inline amongoc_emitter amongoc_insert_one(amongoc_collection*          coll,
                                           amongoc_insert_params const* params) mlib_noexcept {
     return amongoc_insert_ex(coll, &doc, 1, params);
 }
+
+#define amongoc_insert_one(...) MLIB_ARGC_PICK(_amongoc_insert_one, __VA_ARGS__)
+#define _amongoc_insert_one_argc_2(Coll, Doc)                                                      \
+    amongoc_insert_one((Coll), bson_view_from((Doc)), NULL)
+#define _amongoc_insert_one_argc_3(Coll, Doc, Params)                                              \
+    amongoc_insert_one((Coll), bson_view_from((Doc)), (Params))
 
 // d88888b d888888b d8b   db d8888b.
 // 88'       `88'   888o  88 88  `8D
