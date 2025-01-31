@@ -34,6 +34,7 @@ Feedback on the interface is welcome on GitHub issues and discussions. Though fu
 ## Links
 
 - [GitHub Repository][github]
+- [Quickstart](./etc/quickstart)
 - [Documentation Home][docs]
   - [Tutorials][docs-learn]
   - [Reference: Configuring, Building, and Using][docs-building]

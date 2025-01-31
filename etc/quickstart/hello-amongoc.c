@@ -1,15 +1,16 @@
-#include <amongoc/amongoc.h>  // Make all APIs visible
+#include <amongoc/amongoc.h> // Make all APIs visible
 
 #include <stdio.h>
 #include <stdlib.h>
-// end:headers
 
-amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box result);
+amongoc_box on_connect(amongoc_box userdata, amongoc_status *status, amongoc_box result);
 
-int main(void) {
-    amongoc_loop   loop;
+int main(void)
+{
+    amongoc_loop loop;
     amongoc_status status = amongoc_default_loop_init(&loop);
-    amongoc_if_error (status, msg) {
+    amongoc_if_error(status, msg)
+    {
         fprintf(stderr, "Failed to prepare the event loop: %s\n", msg);
         return 2;
     }
@@ -26,16 +27,19 @@ int main(void) {
     return 0;
 }
 
-// on_connect def
-amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box result) {
+amongoc_box on_connect(amongoc_box userdata, amongoc_status *status, amongoc_box result)
+{
     // We don't use the userdata
     (void)userdata;
     // Check for an error
-    amongoc_if_error (*status, msg) {
+    amongoc_if_error(*status, msg)
+    {
         fprintf(stderr, "Error while connecting to server: %s\n", msg);
-    } else {
+    }
+    else
+    {
         printf("Successfully connected!\n");
-        amongoc_client* client;
+        amongoc_client *client;
         amongoc_box_take(client, result);
         // `client` now stores a valid client. We don't do anything else, so just delete it:
         amongoc_client_delete(client);
@@ -43,4 +47,3 @@ amongoc_box on_connect(amongoc_box userdata, amongoc_status* status, amongoc_box
     amongoc_box_destroy(result);
     return amongoc_nil;
 }
-// on_connect end
