@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -280,6 +284,87 @@
 
 
 
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/async.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/async.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/async.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-download-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
     <i class="fas fa-download"></i>
@@ -383,16 +468,48 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_then_just()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_scheduleP12amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_schedule_laterP12amongoc_loop8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule_later()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_alloc_failurev"><code class="docutils literal notranslate"><span class="pre">amongoc_alloc_failure()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronous-continuations">Synchronous Continuations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asynchronous-continuations">Asynchronous Continuations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#immediate-completion">Immediate Completion</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_justv"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other">Other</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_then_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_scheduleP12amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_schedule_laterP12amongoc_loop8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule_later()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_alloc_failurev"><code class="docutils literal notranslate"><span class="pre">amongoc_alloc_failure()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_detach_start15amongoc_emitter"><code class="docutils literal notranslate"><span class="pre">amongoc_detach_start()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">
@@ -437,12 +554,65 @@ document.write(`
 
 <section id="functions">
 <h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
+<section id="synchronous-continuations">
+<h3>Synchronous Continuations<a class="headerlink" href="#synchronous-continuations" title="Link to this heading">#</a></h3>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer">
-<span id="_CPPv312amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_async_flags.mlib_allocator.amongoc_box.amongoc_then_transformer"></span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span>,</dd>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv424amongoc_then_transformer" title="amongoc_then_transformer"><span class="n"><span class="pre">amongoc_then_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_box.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv424amongoc_then_transformer" title="amongoc_then_transformer"><span class="n"><span class="pre">amongoc_then_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_async_flags.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">3</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv424amongoc_then_transformer" title="amongoc_then_transformer"><span class="n"><span class="pre">amongoc_then_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_async_flags.amongoc_box.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">4</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv424amongoc_then_transformer" title="amongoc_then_transformer"><span class="n"><span class="pre">amongoc_then_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.mlib_allocator.amongoc_box.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">5</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv424amongoc_then_transformer" title="amongoc_then_transformer"><span class="n"><span class="pre">amongoc_then_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer">
+<span id="_CPPv312amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="_CPPv212amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"></span><span id="amongoc_then__amongoc_emitter.amongoc_async_flags.mlib_allocator.amongoc_box.amongoc_then_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">6</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
 <dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
 <dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
 <dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(UserData)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
@@ -454,7 +624,7 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>em</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The emitter to be composed.</p></li>
+<li><p><strong>in</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The emitter to be composed.</p></li>
 <li><p><strong>flags</strong> – Options for the behavior of the transformed emitter.</p></li>
 <li><p><strong>alloc</strong> – The allocator for the emitter and operation state.</p></li>
 <li><p><strong>userdata</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> Arbitrary userdata that will be forwarded to <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a>.</p></li>
@@ -468,24 +638,91 @@ document.write(`
 <dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
 </dd>
 </dl>
-<p>When the emitter <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::em"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">em</span></code></a> resolves, its result status and value will be given to
+<p>When the emitter <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">in</span></code></a> resolves, its result status and value will be given to
 <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a>. The return value from <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a> will become the new result value of the
 returned emitter <span class="math notranslate nohighlight">\(R\)</span>. The transform function <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a> may also modify the final
 status to change the result status of <span class="math notranslate nohighlight">\(R\)</span>.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>If you need to start another asynchronous operation to define the new
-result, use <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> instead. <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> is only for synchronous
+result, use <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> instead. <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> is only for synchronous
 continuations.</p>
+</div>
+<p>Overloads:</p>
+<ol class="arabic simple">
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><span class="n">amongoc_then</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><span class="n">in</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N19amongoc_async_flags21amongoc_async_defaultE" title="amongoc_async_default"><span class="n">amongoc_async_default</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><span class="n">amongoc_nil</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><span class="n">tr</span></a><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><span class="n">amongoc_then</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><span class="n">in</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N19amongoc_async_flags21amongoc_async_defaultE" title="amongoc_async_default"><span class="n">amongoc_async_default</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::userdata"><span class="n">userdata</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><span class="n">tr</span></a><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><span class="n">amongoc_then</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><span class="n">in</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::flags"><span class="n">flags</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><span class="n">amongoc_nil</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><span class="n">tr</span></a><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><span class="n">amongoc_then</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><span class="n">in</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::flags"><span class="n">flags</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::userdata"><span class="n">userdata</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><span class="n">tr</span></a><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><span class="n">amongoc_then</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::in"><span class="n">in</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv4N19amongoc_async_flags21amongoc_async_defaultE" title="amongoc_async_default"><span class="n">amongoc_async_default</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::alloc"><span class="n">alloc</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::userdata"><span class="n">userdata</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then::tr"><span class="n">tr</span></a><span class="p">)</span></span></p></li>
+<li><p>Specifies all five parameters</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is implemented as a C preprocessor macro.</p>
 </div>
 </dd></dl>
 
+</section>
+<section id="asynchronous-continuations">
+<h3>Asynchronous Continuations<a class="headerlink" href="#asynchronous-continuations" title="Link to this heading">#</a></h3>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer">
-<span id="_CPPv311amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_async_flags.mlib_allocator.amongoc_box.amongoc_let_transformer"></span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span>,</dd>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv423amongoc_let_transformer" title="amongoc_let_transformer"><span class="n"><span class="pre">amongoc_let_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_box.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv423amongoc_let_transformer" title="amongoc_let_transformer"><span class="n"><span class="pre">amongoc_let_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_async_flags.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">3</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv423amongoc_let_transformer" title="amongoc_let_transformer"><span class="n"><span class="pre">amongoc_let_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_async_flags.amongoc_box.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">4</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv423amongoc_let_transformer" title="amongoc_let_transformer"><span class="n"><span class="pre">amongoc_let_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.mlib_allocator.amongoc_box.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">5</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
+<dd><a class="reference internal" href="#_CPPv423amongoc_let_transformer" title="amongoc_let_transformer"><span class="n"><span class="pre">amongoc_let_transformer</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(In=T,</span> <span class="pre">Out=U,</span> <span class="pre">User=User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tr</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer">
+<span id="_CPPv311amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="_CPPv211amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"></span><span id="amongoc_let__amongoc_emitter.amongoc_async_flags.mlib_allocator.amongoc_box.amongoc_let_transformer"></span><span class="p"><span class="pre">[[</span></span><span class="pre">6</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(U)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_let</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">in</span></span>,</dd>
 <dd><a class="reference internal" href="#_CPPv419amongoc_async_flags" title="amongoc_async_flags"><span class="n"><span class="pre">amongoc_async_flags</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">flags</span></span>,</dd>
 <dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
 <dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(UserData)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">userdata</span></span>,</dd>
@@ -512,7 +749,7 @@ launched immediately upon completion of the input operation.</p>
 <dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
 </dd>
 </dl>
-<p>When the input emitter <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let::em"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">em</span></code></a> resolves, the transformer function <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a> will be
+<p>When the input emitter <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">em</span></code> resolves, the transformer function <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let::tr"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">tr</span></code></a> will be
 called to obtain a new emitter <span class="math notranslate nohighlight">\(e'\)</span>. The new emitter <span class="math notranslate nohighlight">\(e'\)</span> will be
 launched immediately, and its result will be used as the result of the
 composed emitter <span class="math notranslate nohighlight">\(R\)</span>.</p>
@@ -520,9 +757,12 @@ composed emitter <span class="math notranslate nohighlight">\(R\)</span>.</p>
 the result of another asynchronous operation.</p>
 </dd></dl>
 
+</section>
+<section id="immediate-completion">
+<h3>Immediate Completion<a class="headerlink" href="#immediate-completion" title="Link to this heading">#</a></h3>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator">
-<span id="_CPPv312amongoc_just14amongoc_status11amongoc_box14mlib_allocator"></span><span id="_CPPv212amongoc_just14amongoc_status11amongoc_box14mlib_allocator"></span><span id="amongoc_just__amongoc_status.amongoc_box.mlib_allocator"></span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span>
+<span id="_CPPv312amongoc_just14amongoc_status11amongoc_box14mlib_allocator"></span><span id="_CPPv212amongoc_just14amongoc_status11amongoc_box14mlib_allocator"></span><span id="amongoc_just__amongoc_status.amongoc_box.mlib_allocator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">1</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
@@ -531,24 +771,66 @@ the result of another asynchronous operation.</p>
 </dl>
 
 <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_just14amongoc_status">
+<span id="_CPPv312amongoc_just14amongoc_status"></span><span id="_CPPv212amongoc_just14amongoc_status"></span><span id="amongoc_just__amongoc_status"></span><span class="p"><span class="pre">[[</span></span><span class="pre">2</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(nil)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_just14amongoc_status" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_just11amongoc_box">
+<span id="_CPPv312amongoc_just11amongoc_box"></span><span id="_CPPv212amongoc_just11amongoc_box"></span><span id="amongoc_just__amongoc_box"></span><span class="p"><span class="pre">[[</span></span><span class="pre">3</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_just11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_just14amongoc_status11amongoc_box">
+<span id="_CPPv312amongoc_just14amongoc_status11amongoc_box"></span><span id="_CPPv212amongoc_just14amongoc_status11amongoc_box"></span><span id="amongoc_just__amongoc_status.amongoc_box"></span><span class="p"><span class="pre">[[</span></span><span class="pre">4</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_just11amongoc_box14mlib_allocator">
+<span id="_CPPv312amongoc_just11amongoc_box14mlib_allocator"></span><span id="_CPPv212amongoc_just11amongoc_box14mlib_allocator"></span><span id="amongoc_just__amongoc_box.mlib_allocator"></span><span class="p"><span class="pre">[[</span></span><span class="pre">5</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+<dd><a class="reference internal" href="../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_just11amongoc_box14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv412amongoc_justv">
+<span id="_CPPv312amongoc_justv"></span><span id="_CPPv212amongoc_justv"></span><span id="amongoc_just"></span><span class="p"><span class="pre">[[</span></span><span class="pre">6</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(nil)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_just</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv412amongoc_justv" title="Link to this definition">#</a><br /></dt>
 <dd><p>Create an emitter that will resolve immediately with the given status and
 result value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>st</strong> – The result status.</p></li>
-<li><p><strong>value</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The result value.</p></li>
+<li><p><strong>st</strong> – The result status. If omitted, <a class="reference internal" href="../status/#_CPPv412amongoc_okay" title="amongoc_okay"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a>.</p></li>
+<li><p><strong>value</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> The result value. If omitted, <a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a></p></li>
 <li><p><strong>alloc</strong> – The allocator for the emitter and operation state.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new <a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a> <span class="math notranslate nohighlight">\(R\)</span> whose result status will be <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator" title="amongoc_just::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a> and
-result value will be <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator" title="amongoc_just::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a></p>
+<dt class="field-even">Allocation<span class="colon">:</span></dt>
+<dd class="field-even"><p>Signatures (2) and (6) do not allocate. Signatures (3) and (4) use <a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_default_allocator</span></code></a>.</p>
 </dd>
-<dt class="field-odd">Header<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A new <a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a> <span class="math notranslate nohighlight">\(R\)</span> whose result status will be <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box" title="amongoc_just::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a> and
+result value will be <a class="reference internal" href="#_CPPv412amongoc_just11amongoc_box14mlib_allocator" title="amongoc_just::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a></p>
+</dd>
+<dt class="field-even">Header<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Overloads</p>
+<ol class="arabic simple">
+<li><p>Specify the status, the result value, and an allocator</p></li>
+<li><p>Specify only the status. The result value is <a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>. This overload does not allocate any memory.</p></li>
+<li><p>Specify the result value. Uses the default allocator, with <a class="reference internal" href="../status/#_CPPv412amongoc_okay" title="amongoc_okay"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a> status.</p></li>
+<li><p>Specify a result status and result value. Uses the default allocator.</p></li>
+<li><p>Specify a result value and an allocator, with <a class="reference internal" href="../status/#_CPPv412amongoc_okay" title="amongoc_okay"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a> status</p></li>
+<li><p>Resolve with <a class="reference internal" href="../status/#_CPPv412amongoc_okay" title="amongoc_okay"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a> and <a class="reference internal" href="../box/#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a>. Does not allocate.</p></li>
+</ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The returned emitter here is not tied to any event loop, and it will call
@@ -559,11 +841,14 @@ on its associated <a class="reference internal" href="../operation/#_CPPv417amon
 <p class="admonition-title">Note</p>
 <p>This operation does not support cancellation and will never encounter an
 error during its completion except a potential <a class="reference internal" href="#_CPPv421amongoc_alloc_failurev" title="amongoc_alloc_failure"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_alloc_failure()</span></code></a>.
-Unless allocation fails, status <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator" title="amongoc_just::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a> and result <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator" title="amongoc_just::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a> will always be sent
+Unless allocation fails, status <a class="reference internal" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box" title="amongoc_just::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a> and result <a class="reference internal" href="#_CPPv412amongoc_just11amongoc_box14mlib_allocator" title="amongoc_just::value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">value</span></code></a> will always be sent
 to the handler.</p>
 </div>
 </dd></dl>
 
+</section>
+<section id="other">
+<h3>Other<a class="headerlink" href="#other" title="Link to this heading">#</a></h3>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator">
 <span id="_CPPv317amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"></span><span id="_CPPv217amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"></span><span id="amongoc_then_just__amongoc_emitter.amongoc_async_flags.amongoc_status.amongoc_box.mlib_allocator"></span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_then_just</span></span></span><span class="sig-paren">(</span>
@@ -722,6 +1007,34 @@ completion status. This may be returned by any API returning an
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status">
+<span id="_CPPv311amongoc_tie15amongoc_emitterP14amongoc_status"></span><span id="_CPPv211amongoc_tie15amongoc_emitterP14amongoc_status"></span><span id="amongoc_tie__amongoc_emitter.amongoc_statusP"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_tie</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span>,</dd>
+<dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">storage</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_tie15amongoc_emitterP11amongoc_box">
+<span id="_CPPv311amongoc_tie15amongoc_emitterP11amongoc_box"></span><span id="_CPPv211amongoc_tie15amongoc_emitterP11amongoc_box"></span><span id="amongoc_tie__amongoc_emitter.amongoc_boxP"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_tie</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">storage,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_tie15amongoc_emitterP11amongoc_box" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box">
+<span id="_CPPv311amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box"></span><span id="_CPPv211amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box"></span><span id="amongoc_tie__amongoc_emitter.amongoc_statusP.amongoc_boxP"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_tie</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span>,</dd>
+<dd><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">storage</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>,</dd>
+<dd><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">storage,</span> <span class="pre">type(T)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box" title="Link to this definition">#</a><br /></dt>
 <dt class="sig sig-object cpp" id="_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator">
 <span id="_CPPv311amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"></span><span id="_CPPv211amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"></span><span id="amongoc_tie__amongoc_emitter.amongoc_statusP.amongoc_boxP.mlib_allocator"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_tie</span></span></span><span class="sig-paren">(</span>
 
@@ -759,6 +1072,8 @@ the returned <a class="reference internal" href="../operation/#_CPPv417amongoc_o
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv414amongoc_detach15amongoc_emitter">
+<span id="_CPPv314amongoc_detach15amongoc_emitter"></span><span id="_CPPv214amongoc_detach15amongoc_emitter"></span><span id="amongoc_detach__amongoc_emitter"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_detach</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv414amongoc_detach15amongoc_emitter" title="Link to this definition">#</a><br /></dt>
 <dt class="sig sig-object cpp" id="_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator">
 <span id="_CPPv314amongoc_detach15amongoc_emitter14mlib_allocator"></span><span id="_CPPv214amongoc_detach15amongoc_emitter14mlib_allocator"></span><span id="amongoc_detach__amongoc_emitter.mlib_allocator"></span><a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><span class="n"><span class="pre">amongoc_operation</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_detach</span></span></span><span class="sig-paren">(</span>
 
@@ -785,10 +1100,29 @@ result value from the emitter <a class="reference internal" href="#_CPPv414among
 resolves.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
-<p>This function is equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><span class="n">amongoc_tie</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator" title="amongoc_detach::em"><span class="n">em</span></a><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator" title="amongoc_detach::alloc"><span class="n">alloc</span></a><span class="p">)</span></span></p>
+<p>This function is equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status" title="amongoc_tie"><span class="n">amongoc_tie</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator" title="amongoc_detach::em"><span class="n">em</span></a><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator" title="amongoc_detach::alloc"><span class="n">alloc</span></a><span class="p">)</span></span></p>
 </div>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv420amongoc_detach_start15amongoc_emitter">
+<span id="_CPPv320amongoc_detach_start15amongoc_emitter"></span><span id="_CPPv220amongoc_detach_start15amongoc_emitter"></span><span id="amongoc_detach_start__amongoc_emitter"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_detach_start</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">em</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv420amongoc_detach_start15amongoc_emitter" title="Link to this definition">#</a><br /></dt>
+<dd><p>Launch the asynchronous operation defined by an emitter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>em</strong> – <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> An emitter that defines an asynchronous control
+flow to be executed.</p>
+</dd>
+<dt class="field-even">Allocation<span class="colon">:</span></dt>
+<dd class="field-even"><p>The operation state is allocated using <a class="reference internal" href="../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_default_allocator</span></code></a>.</p>
+</dd>
+</dl>
+<p>This will internally create an <a class="reference internal" href="../operation/#_CPPv417amongoc_operation" title="amongoc_operation"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_operation</span></code></a> state object,
+<a class="reference internal" href="../operation/#_CPPv413amongoc_startP17amongoc_operation" title="amongoc_start"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">start</span> <span class="pre">it</span></code></a> immediately, and destroy the operation state when
+the operation completes.</p>
+</dd></dl>
+
+</section>
 </section>
 <section id="types">
 <h2>Types<a class="headerlink" href="#types" title="Link to this heading">#</a></h2>
@@ -822,7 +1156,7 @@ resolves.</p>
 <dd></dd></dl>
 
 <p>The function pointer types used to transform an emitter result for
-<a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, respectively.</p>
+<a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, respectively.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Header<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
@@ -832,7 +1166,7 @@ resolves.</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N23amongoc_let_transformer8userdataE">
 <span id="_CPPv3N23amongoc_let_transformer8userdataE"></span><span id="_CPPv2N23amongoc_let_transformer8userdataE"></span><span id="amongoc_let_transformer::userdata__amongoc_box"></span><a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><span class="n"><span class="pre">amongoc_box</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">transfer,</span> <span class="pre">type(User)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">userdata</span></span></span><a class="headerlink" href="#_CPPv4N23amongoc_let_transformer8userdataE" title="Link to this definition">#</a><br /></dt>
-<dd><p>The <code class="docutils literal notranslate"><span class="pre">userdata</span></code> value that was given to <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a>/<a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>.</p>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">userdata</span></code> value that was given to <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a>/<a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>.</p>
 <p>Note the <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> attribute: It is responsibility of the callee to
 clean up this object.</p>
 <div class="admonition note">
@@ -851,7 +1185,7 @@ cleaned up by code that is outside of your control.</p>
 <dt class="sig sig-object cpp" id="_CPPv4N23amongoc_let_transformer8inout_stE">
 <span id="_CPPv3N23amongoc_let_transformer8inout_stE"></span><span id="_CPPv2N23amongoc_let_transformer8inout_stE"></span><span id="amongoc_let_transformer::inout_st__amongoc_statusP"></span><a class="reference internal" href="../status/#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">inout_st</span></span></span><a class="headerlink" href="#_CPPv4N23amongoc_let_transformer8inout_stE" title="Link to this definition">#</a><br /></dt>
 <dd><p>The resolve status of the input emitter.</p>
-<p>For <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a>, <a class="reference internal" href="#_CPPv4N23amongoc_let_transformer8inout_stE" title="amongoc_let_transformer::inout_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">inout_st</span></code></a> is a non-null pointer to a status object that
+<p>For <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a>, <a class="reference internal" href="#_CPPv4N23amongoc_let_transformer8inout_stE" title="amongoc_let_transformer::inout_st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">inout_st</span></code></a> is a non-null pointer to a status object that
 may be modified by the transformer. The modified status will then be used as
 the result status of the composed emitter.</p>
 </dd></dl>
@@ -866,7 +1200,7 @@ this object.</p>
 
 <p>The <code class="docutils literal notranslate"><span class="pre">then</span></code> transformer is expected to return an <a class="reference internal" href="../box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>, while the
 <code class="docutils literal notranslate"><span class="pre">let</span></code> transformer must return an <a class="reference internal" href="../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_emitter</span></code></a>. For an explanation of
-this behavior, refer to <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, respectively.</p>
+this behavior, refer to <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>, respectively.</p>
 </dd></dl>
 
 </section>
@@ -875,7 +1209,7 @@ this behavior, refer to <a class="reference internal" href="#_CPPv412amongoc_the
 <dl class="cpp enum">
 <dt class="sig sig-object cpp" id="_CPPv419amongoc_async_flags">
 <span id="_CPPv319amongoc_async_flags"></span><span id="_CPPv219amongoc_async_flags"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_async_flags</span></span></span><a class="headerlink" href="#_CPPv419amongoc_async_flags" title="Link to this definition">#</a><br /></dt>
-<dd><p>Flags to control the behavior of <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></p>
+<dd><p>Flags to control the behavior of <a class="reference internal" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer" title="amongoc_then"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a> and <a class="reference internal" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Header<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#header-file-amongoc-async.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">amongoc/async.h</span></code></a></p>
@@ -947,16 +1281,48 @@ to the next handler.</p>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_then_just()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_scheduleP12amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_schedule_laterP12amongoc_loop8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule_later()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_alloc_failurev"><code class="docutils literal notranslate"><span class="pre">amongoc_alloc_failure()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#synchronous-continuations">Synchronous Continuations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_then()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#asynchronous-continuations">Asynchronous Continuations</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer"><code class="docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#immediate-completion">Immediate Completion</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just14amongoc_status11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_just11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_justv"><code class="docutils literal notranslate"><span class="pre">amongoc_just()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#other">Other</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_then_just()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_scheduleP12amongoc_loop"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv422amongoc_schedule_laterP12amongoc_loop8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_schedule_later()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec"><code class="docutils literal notranslate"><span class="pre">amongoc_timeout()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_alloc_failurev"><code class="docutils literal notranslate"><span class="pre">amongoc_alloc_failure()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">amongoc_detach()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv420amongoc_detach_start15amongoc_emitter"><code class="docutils literal notranslate"><span class="pre">amongoc_detach_start()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types">Types</a><ul class="nav section-nav flex-column">

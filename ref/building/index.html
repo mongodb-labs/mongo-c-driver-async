@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -280,6 +284,87 @@
 
 
 
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/building.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/building.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/building.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-download-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
     <i class="fas fa-download"></i>
@@ -382,12 +467,11 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-dependencies">Third-Party Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-earthly">Building with Earthly</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-in-cmake">Importing in CMake</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-imported-target">Using the Imported Target</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-imports">Dependency Imports</a></li>
 </ul>
 </li>
 </ul>
@@ -403,12 +487,86 @@ document.write(`
                   
   <section id="configuring-building-using">
 <h1>Configuring, Building, &amp; Using<a class="headerlink" href="#configuring-building-using" title="Link to this heading">#</a></h1>
-<p>Building <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> is supported with the following build tools:</p>
+<p>Building <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> requires a C++20 compiler. The following tools are known to
+work:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://cmake.org/">CMake</a> 3.25 or newer</p></li>
-<li><p>GCC ≥12.0 <strong>or</strong> Clang ≥17.0</p></li>
+<li><p>GCC ≥12.0<a class="footnote-reference brackets" href="#fn-redhat-issue" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> <strong>or</strong> Clang ≥17.0</p></li>
 <li><p><a class="reference external" href="https://earthly.dev/">Earthly</a> 0.8 or newer (for <a class="reference internal" href="#building-earthly"><span class="std std-ref">building with Earthly</span></a>)</p></li>
 </ul>
+<p>Building on Windows or with MSVC is not currently supported.</p>
+<p>Builds are only currently tested with Debian 12 and Alpine 3.20. Support for
+other platforms may be considered in the future, but are not currently planned
+for this prototype.</p>
+<section id="third-party-dependencies">
+<span id="building-deps"></span><h2>Third-Party Dependencies<a class="headerlink" href="#third-party-dependencies" title="Link to this heading">#</a></h2>
+<p>When configuring and building <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> with CMake, the configuration script
+will attempt to automatically obtain build-time dependencies using <a class="reference external" href="https://vcpkg.io/">vcpkg</a>. This
+behavior can be disabled by setting <span class="target" id="index-0-variable:AMONGOC_USE_PMM"></span><a class="reference internal" href="#variable:AMONGOC_USE_PMM" title="AMONGOC_USE_PMM"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">AMONGOC_USE_PMM</span></code></a> to
+<code class="docutils literal notranslate"><span class="pre">OFF</span></code>. Relying on <a class="reference external" href="https://vcpkg.io/">vcpkg</a> will attempt to build the third-party dependencies
+during project configuration, which may require additional configure-time
+dependencies.</p>
+<p>The following external libraries are required when <strong>building</strong> <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>. If
+not relying <a class="reference external" href="https://vcpkg.io/">vcpkg</a>, then they will need to be installed and available before
+configuring the project:</p>
+<ul class="simple">
+<li><p>OpenSSL</p></li>
+<li><p>Boost.URL and Boost.Container</p></li>
+<li><p><a class="reference external" href="https://fmt.dev/">{fmt}</a></p></li>
+<li><p><strong>If using vcpkg to install dependencies</strong> (the default), then you will also
+need to have Tar, cURL, Perl, Zip/Unzip, pkg-config, Make, and Bash. On Linux,
+you will also need the linux development headers.</p></li>
+</ul>
+<p>The following packages are downloaded using CMake’s FetchContent, and need not
+be manually installed:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/catchorg/Catch2">Catch2</a> - Only required for testing and only imported if
+<span class="target" id="index-0-variable:BUILD_TESTING"></span><a class="reference internal" href="#variable:BUILD_TESTING" title="BUILD_TESTING"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">BUILD_TESTING</span></code></a> is enabled.</p></li>
+<li><p><a class="reference external" href="https://think-async.com/Asio/">Asio</a> - Used for asynchronous I/O (Build-time only) (Note: Not <code class="docutils literal notranslate"><span class="pre">Boost.Asio</span></code>!)</p></li>
+<li><p><a class="reference external" href="https://github.com/vector-of-bool/neo-fun">neo-fun</a> (Build-time only)</p></li>
+</ul>
+<p>The following table details the dependencies of the imported
+<code class="docutils literal notranslate"><span class="pre">amongoc::amongoc</span></code> target, along with the common Linux packages that contain
+them:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 14.3%" />
+<col style="width: 28.6%" />
+<col style="width: 28.6%" />
+<col style="width: 28.6%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Targets</p></th>
+<th class="head"><p>RedHat</p></th>
+<th class="head"><p>Debian</p></th>
+<th class="head"><p>Alpine</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">fmt::fmt</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fmt-devel</span></code> (may require EPEL)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libfmt-dev</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">fmt-dev</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Boost::url</span></code> + <code class="docutils literal notranslate"><span class="pre">Boost::container</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boost-devel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libboost-{url,container}-dev</span></code> (may require a version infix)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boost-dev</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">OpenSSL::SSL</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openssl-devel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">libssl-dev</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">openssl-dev</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Threads::Threads</span></code></p></td>
+<td><p>CMake built-in</p></td>
+<td><p>CMake built-in</p></td>
+<td><p>CMake built-in</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 <section id="build-configuration">
 <h2>Build Configuration<a class="headerlink" href="#build-configuration" title="Link to this heading">#</a></h2>
 <p>The following <a class="reference external" href="https://cmake.org/">CMake</a> configuration options are supported:</p>
@@ -416,14 +574,14 @@ document.write(`
 <dt class="sig sig-object cmake" id="variable:AMONGOC_INSTALL_CMAKEDIR">
 <span class="sig-name descname"><span class="pre">AMONGOC_INSTALL_CMAKEDIR</span></span><a class="headerlink" href="#variable:AMONGOC_INSTALL_CMAKEDIR" title="Link to this definition">#</a></dt>
 <dd><p>Set the installation path for CMake package files that are to be found using
-<span class="target" id="index-0-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.2)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a></p>
+<span class="target" id="index-0-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="code highlight sh docutils literal highlight-sh"><span class="si">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="si">}</span>/cmake</code></p>
 </dd>
 </dl>
 <p>This is based on the similar variables that are used in
-<span class="target" id="index-0-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.2)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a>.</p>
+<span class="target" id="index-0-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a>.</p>
 </dd></dl>
 
 <dl class="cmake variable">
@@ -451,7 +609,7 @@ default.</p>
 <dl class="cmake variable">
 <dt class="sig sig-object cmake" id="variable:BUILD_TESTING">
 <span class="sig-name descname"><span class="pre">BUILD_TESTING</span></span><a class="headerlink" href="#variable:BUILD_TESTING" title="Link to this definition">#</a></dt>
-<dd><p>This variables comes from the <span class="target" id="index-0-module:module:CTest"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest" title="(in CMake v3.31.2)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">CTest</span></code></a> CMake
+<dd><p>This variables comes from the <span class="target" id="index-0-module:module:CTest"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">CTest</span></code></a> CMake
 module and can toggle the generation/building of tests.</p>
 </dd></dl>
 
@@ -463,7 +621,7 @@ module and can toggle the generation/building of tests.</p>
 <dt class="sig sig-object cmake" id="variable:CMAKE_INSTALL_INCLUDEDIR">
 <span class="sig-name descname"><span class="pre">CMAKE_INSTALL_INCLUDEDIR</span></span><a class="headerlink" href="#variable:CMAKE_INSTALL_INCLUDEDIR" title="Link to this definition">#</a></dt>
 <dd><p>These variables come from
-<span class="target" id="index-1-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.2)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a> and control
+<span class="target" id="index-1-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a> and control
 the paths to installed files for separate package components. Refer to that
 module for details.</p>
 </dd></dl>
@@ -472,44 +630,25 @@ module for details.</p>
 <dt class="sig sig-object cmake" id="variable:AMONGOC_USE_PMM">
 <span class="sig-name descname"><span class="pre">AMONGOC_USE_PMM</span></span><a class="headerlink" href="#variable:AMONGOC_USE_PMM" title="Link to this definition">#</a></dt>
 <dd><p>Toggle usage of <a class="reference external" href="https://github.com/vector-of-bool/pmm">PMM</a> to automatically download and import dependencies at
-configure-time.</p>
+configure-time using <a class="reference external" href="https://vcpkg.io/">vcpkg</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">ON</span></code></p>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">ON</span></code> if configuring <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> as the top-level project, <code class="docutils literal notranslate"><span class="pre">OFF</span></code>
+otherwise (e.g. when added as a sub-project)</p>
 </dd>
 </dl>
 <p>If this toggle is enabled, then <a class="reference external" href="https://vcpkg.io/">vcpkg</a> will be executed during CMake
 configuration to download and build the dependencies required by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>.</p>
 <p>If you want to manage dependencies yourself, disable this toggle. You will
-need to ensure that the
-<a class="reference internal" href="#building-cmake-deps"><span class="std std-ref">configure-time dependencies</span></a> are available to
-<span class="target" id="index-1-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.2)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a>.</p>
+need to ensure that the <a class="reference internal" href="#building-deps"><span class="std std-ref">configure-time dependencies</span></a> are
+available to <span class="target" id="index-1-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a>.</p>
 </dd></dl>
 
 </section>
-<section id="third-party-dependencies">
-<span id="building-cmake-deps"></span><h2>Third-Party Dependencies<a class="headerlink" href="#third-party-dependencies" title="Link to this heading">#</a></h2>
-<aside class="sidebar">
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>At time of writing, <a class="reference external" href="https://github.com/vector-of-bool/neo-fun">neo-fun</a> does not ship an installable CMake package and
-is installed using a custom <a class="reference external" href="https://vcpkg.io/">vcpkg</a> port in <code class="docutils literal notranslate"><span class="pre">etc/vcpkg-ports/neo-fun</span></code>.</p>
-</div>
-</aside>
-<p>The following external libraries are required by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>:</p>
-<ul class="simple">
-<li><p>OpenSSL</p></li>
-<li><p><a class="reference external" href="https://www.boost.io/libraries/url/">Boost.URL</a></p></li>
-<li><p><a class="reference external" href="https://fmt.dev/">{fmt}</a></p></li>
-<li><p><a class="reference external" href="https://github.com/catchorg/Catch2">Catch2</a> - Only required for testing and only imported if
-<span class="target" id="index-0-variable:BUILD_TESTING"></span><a class="reference internal" href="#variable:BUILD_TESTING" title="BUILD_TESTING"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">BUILD_TESTING</span></code></a> is enabled.</p></li>
-<li><p><a class="reference external" href="https://think-async.com/Asio/">Asio</a> - Used for asynchronous I/O (Build-time only) (Note: Not <code class="docutils literal notranslate"><span class="pre">Boost.Asio</span></code>!)</p></li>
-<li><p><a class="reference external" href="https://github.com/vector-of-bool/neo-fun">neo-fun</a> (Build-time only)</p></li>
-</ul>
-</section>
 <section id="building-with-earthly">
 <span id="building-earthly"></span><h2>Building with Earthly<a class="headerlink" href="#building-with-earthly" title="Link to this heading">#</a></h2>
-<p><a class="reference external" href="https://earthly.dev/">Earthly</a> is a container-based build automation tool. <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> ships with an</p>
+<p><a class="reference external" href="https://earthly.dev/">Earthly</a> is a container-based build automation tool. <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> ships with an
+Earthfile that eases building by using containerization.</p>
 <dl class="std file">
 <dt class="sig sig-object std" id="file-Earthfile">
 <span class="sig-name descname"><span class="pre">Earthfile</span></span><span class="w"> </span><em class="property"><span class="pre">(repository</span> <span class="pre">file)</span></em><a class="headerlink" href="#file-Earthfile" title="Link to this definition">#</a></dt>
@@ -519,13 +658,15 @@ is installed using a custom <a class="reference external" href="https://vcpkg.io
 <span class="sig-name descname"><span class="pre">+build-alpine</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-alpine" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object std" id="earthly-target-build-debian">
 <span class="sig-name descname"><span class="pre">+build-debian</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-debian" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object std" id="earthly-target-build-fedora">
+<span class="sig-name descname"><span class="pre">+build-fedora</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-fedora" title="Link to this definition">#</a></dt>
 <dt class="sig sig-object std" id="earthly-target-build-rl">
 <span class="sig-name descname"><span class="pre">+build-rl</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-rl" title="Link to this definition">#</a></dt>
-<dd><p>Build targets that build for Alpine Linux (with libmusl), Debian, and
-RockyLinux (for RedHat-compatible binaries).</p>
-<p>The Alpine and Debian build uses the system’s default toolchain. The
-RockyLinux build uses the RedHat devtoolset to obtain an up-to-date compiler
-for producing RedHat-compatible binaries.</p>
+<dd><p>Build targets that build for Alpine Linux (with libmusl), Debian, Fedora,
+and RockyLinux (for RedHat-compatible binaries).</p>
+<p>The Alpine, Fedora, and Debian build uses the system’s default toolchain.
+The RockyLinux build uses the RedHat devtoolset<a class="footnote-reference brackets" href="#fn-redhat-issue" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> to
+obtain an up-to-date compiler for producing RedHat-compatible binaries.</p>
 <dl class="std earthly-artifact">
 <dt class="sig sig-object std" id="earthly-artifact-build-xyz-pkg">
 <span class="sig-prename descclassname"><span class="pre">+build-xyz</span></span><span class="sig-name descname"><span class="pre">/pkg</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">artifact)</span></em><a class="headerlink" href="#earthly-artifact-build-xyz-pkg" title="Link to this definition">#</a></dt>
@@ -537,19 +678,21 @@ archive, a <code class="docutils literal notranslate"><span class="pre">.zip</sp
 The <code class="docutils literal notranslate"><span class="pre">/install</span></code> artifact contains an install tree from the build.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="std earthly-target">
-<dt class="sig sig-object std" id="earthly-target-build-multi">
-<span class="sig-name descname"><span class="pre">+build-multi</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">target)</span></em><a class="headerlink" href="#earthly-target-build-multi" title="Link to this definition">#</a></dt>
-<dd><p>Builds all of <a class="reference internal" href="#earthly-target-build-alpine"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-alpine</span></code></a>, <a class="reference internal" href="#earthly-target-build-debian"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-debian</span></code></a>, and <a class="reference internal" href="#earthly-target-build-rl"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-rl</span></code></a> at once.</p>
-<dl class="std earthly-artifact">
-<dt class="sig sig-object std" id="earthly-artifact-build-multi">
-<span class="sig-prename descclassname"><span class="pre">+build-multi</span></span><span class="sig-name descname"><span class="pre">/</span></span><span class="w"> </span><em class="property"><span class="pre">(Earthly</span> <span class="pre">artifact)</span></em><a class="headerlink" href="#earthly-artifact-build-multi" title="Link to this definition">#</a></dt>
-<dd><p>The root artifact directory contains all artifacts from all other build
-targets.</p>
-</dd></dl>
-
+<p class="rubric">Example</p>
+<p>To build and obtain a package for Debian-compatible systems, the following
+command can be used to obtain the packages for the <a class="reference internal" href="#earthly-target-build-debian"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-debian</span></code></a> target:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>earthly<span class="w"> </span>-a<span class="w"> </span>+build-debian/pkg<span class="w"> </span>deb-pkg
+<span class="gp">#</span><span class="c1"># [Earthly output] ##</span>
+<span class="gp">$ </span>ls<span class="w"> </span>deb-pkg
+<span class="go">amongoc-0.1.0-linux-x86_64.sh*</span>
+<span class="go">amongoc-0.1.0-linux-x86_64.tar.gz</span>
+<span class="go">amongoc-0.1.0-linux-x86_64.zip</span>
+</pre></div>
+</div>
+<p>The resulting <code class="docutils literal notranslate"><span class="pre">.sh</span></code> script can be used to install the built library and
+headers.</p>
+<p>The same command can work for the <a class="reference internal" href="#earthly-target-build-alpine"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-alpine</span></code></a>, <a class="reference internal" href="#earthly-target-build-fedora"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-fedora</span></code></a>, and
+<a class="reference internal" href="#earthly-target-build-rl"><code class="xref any std std-earthly-target docutils literal notranslate"><span class="pre">+build-rl</span></code></a> targets.</p>
 </dd></dl>
 
 </dd></dl>
@@ -573,12 +716,13 @@ can be linked into an application:</p>
 <span class="nf">target_link_libraries(</span><span class="nb">my-program</span><span class="w"> </span><span class="no">PRIVATE</span><span class="w"> </span><span class="nb">amongoc</span><span class="o">::</span><span class="nb">amongoc</span><span class="nf">)</span>
 </pre></div>
 </div>
-</section>
-<section id="dependency-imports">
-<h3>Dependency Imports<a class="headerlink" href="#dependency-imports" title="Link to this heading">#</a></h3>
 <p>By default, the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> CMake package will attempt to import dependencies
-using <span class="target" id="index-0-command:command:find_dependency"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html#command:find_dependency" title="(in CMake v3.31.2)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_dependency</span></code></a>. This import
+using <span class="target" id="index-0-command:command:find_dependency"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html#command:find_dependency" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_dependency</span></code></a>. This import
 can be disabled by changing <span class="target" id="index-0-variable:AMONGOC_FIND_DEPENDENCIES"></span><a class="reference internal" href="#variable:AMONGOC_FIND_DEPENDENCIES" title="AMONGOC_FIND_DEPENDENCIES"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">AMONGOC_FIND_DEPENDENCIES</span></code></a>.</p>
+<p><strong>If you build</strong> <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> using <a class="reference external" href="https://vcpkg.io/">vcpkg</a> (the default) it is highly recommended
+to use vcpkg in your own project to install <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>’s dependencies, as it is
+not guaranteed that the packages provided elsewhere will be compatible with the
+packages that were used in the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> build.</p>
 <dl class="cmake variable">
 <dt class="sig sig-object cmake" id="variable:AMONGOC_FIND_DEPENDENCIES">
 <span class="sig-name descname"><span class="pre">AMONGOC_FIND_DEPENDENCIES</span></span><a class="headerlink" href="#variable:AMONGOC_FIND_DEPENDENCIES" title="Link to this definition">#</a></dt>
@@ -596,18 +740,17 @@ call <code class="docutils literal notranslate"><span class="pre">find_package</
 <p>If enabled (the default), then <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> will try to find its dependencies
 during import. If disabled, then <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> will assume that the necessary
 imported targets will be defined elsewhere by the importing package.</p>
-<p>The following imported targets are used by the imported <code class="docutils literal notranslate"><span class="pre">amongoc::amongoc</span></code>
-target:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">fmt::fmt</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Boost::url</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Boost::container</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">OpenSSL::SSL</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Threads::Threads</span></code> (from the
-<span class="target" id="index-0-module:module:FindThreads"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/FindThreads.html#module:FindThreads" title="(in CMake v3.31.2)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">FindThreads</span></code></a> module)</p></li>
-</ul>
 </dd></dl>
 
+<p class="rubric">Footnotes</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="fn-redhat-issue" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>There is a known issue with the RedHat dev toolset that results in certain
+internal symbols being incorrectly discarded and producing link-time errors.</p>
+</aside>
+</aside>
 </section>
 </section>
 </section>
@@ -657,12 +800,11 @@ target:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#third-party-dependencies">Third-Party Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-configuration">Build Configuration</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-with-earthly">Building with Earthly</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#importing-in-cmake">Importing in CMake</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-imported-target">Using the Imported Target</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-imports">Dependency Imports</a></li>
 </ul>
 </li>
 </ul>

@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Writing Data &#8212; amongoc 0.1.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=e7471476"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'learn/write';</script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" />
+    <link rel="next" title="Reading Data" href="../read/" />
+    <link rel="prev" title="Connecting to a MongoDB Server" href="../connect/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search/"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">amongoc 0.1.0 documentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="../bson/">BSON Handling</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../bson/lifetime/">Creation &amp; Destruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/inserting/">Adding Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bson/reading/">Reading BSON Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../read/">Reading Data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../ref/">Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/meta-attrs/">Meta-Reference: Documentation Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/api-patterns/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> API Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/building/">Configuring, Building, &amp; Using</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/box/">Dynamically Types Boxes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/status/">Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/emitter/">Emitter API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/operation/">Operation API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/async/">Asynchronous Utility APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/alloc/">Dynamic Memory Allocation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/client/">Client API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/database/">Database Handle API</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/collection/">Collection &amp; Data API</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../../ref/coll-ops/">Collection Operations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/params/">Common Parameters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/aggregate/">Aggregate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/count/">Count</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/delete/">Delete</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/distinct/">Distinct</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/drop/">Drop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/find/">Find</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/insert/">Insert</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/replace/">Replace</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ref/coll-ops/update/">Update</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/loop/">Type: <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_loop</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/handler/">Handler APIs</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../ref/bson/">BSON Library</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/types/">BSON Value Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/value/">BSON Values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/view/">BSON Reading</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/iter/">BSON Iteration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/doc/">BSON Documents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ref/bson/mut/">BSON Modifying</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/str/">Strings &amp; String Views</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/vec/">Vector Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/time/">Time Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../ref/glossary/">Terminology</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/why-async/">Why Asynchrony?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/consider/">Design Considerations in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../explain/async-model/">Our Asynchrony Model</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../dev/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Developer Documentation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/guidelines/">Development Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/deletion/">C Object Deletion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/nanosenders/">Nanosenders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/coroutines/">Couroutines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/result/"><code class="docutils literal notranslate"><span class="pre">result&lt;T&gt;</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/queries/">Query Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/asio/">Asio in <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/tls/">TLS Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/documenting/">Documenting <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-building/">Declaratively Building BSON Documents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../dev/bson-parsing/">Declaratively Parsing BSON Objects</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/learn/write.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/learn/write.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Flearn/write.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/learn/write.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Writing Data</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-application-state-type">Declaring Application State Type</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-with-a-connection">Starting with a Connection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declare-the-application-state-object">Declare the Application State Object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-first-continuation">Create the First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-continuation">Define the Continuation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-the-application-state">Update the Application State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-collection-handle">Create a Collection Handle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-some-data-to-insert">Create Some Data to Insert</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-insert-operation">Create the Insert Operation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-full-continuation">The Full Continuation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tie-start-and-run-the-operation">Tie, Start, and Run the Operation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-checking">Error Checking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-full-program">The Full Program</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="writing-data">
+<h1>Writing Data<a class="headerlink" href="#writing-data" title="Link to this heading">#</a></h1>
+<p>This tutorial will cover the basics of writing data into a MongoDB server
+asynchronously. This page will assume that you have read the content of
+the <a class="reference internal" href="../connect/"><span class="doc">Connecting to a MongoDB Server</span></a> tutorial. It will assume that you have a program that
+includes the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> headers and know how to connect to a server.</p>
+<section id="declaring-application-state-type">
+<h2>Declaring Application State Type<a class="headerlink" href="#declaring-application-state-type" title="Link to this heading">#</a></h2>
+<p>This program will require that certain objects outlive the sub-operations, so we
+will need to persist them outside the event loop and pass them to our
+continuation. We declare a simple aggregate type to hold these objects:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Application State Struct</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 5</span><span class="c1">// Application state</span>
+<span class="linenos"> 6</span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="c1">// The client object</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="kt">amongoc_client</span><span class="o">*</span><span class="w"> </span><span class="n">client</span><span class="p">;</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="c1">// The collection object which we will write into</span>
+<span class="linenos">10</span><span class="w">    </span><span class="kt">amongoc_collection</span><span class="o">*</span><span class="w"> </span><span class="n">coll</span><span class="p">;</span>
+<span class="linenos">11</span><span class="p">}</span><span class="w"> </span><span class="n">app_state</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="starting-with-a-connection">
+<h2>Starting with a Connection<a class="headerlink" href="#starting-with-a-connection" title="Link to this heading">#</a></h2>
+<p>We’ll start with the basics of setting up an event loop and creating a
+connection <a class="reference internal" href="../../ref/glossary/#term-emitter"><span class="xref std std-term">emitter</span></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Setting up an event loop</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">15</span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">16</span><span class="w">    </span><span class="kt">amongoc_loop</span><span class="w">   </span><span class="n">loop</span><span class="p">;</span>
+<span class="linenos">17</span><span class="w">    </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_default_loop_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">18</span><span class="w">    </span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">19</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Failed to initialize event loop: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span>
+<span class="linenos">20</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">21</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">22</span><span class="w">    </span><span class="c1">// Connect</span>
+<span class="linenos">23</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mongodb://localhost:27017&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="declare-the-application-state-object">
+<h2>Declare the Application State Object<a class="headerlink" href="#declare-the-application-state-object" title="Link to this heading">#</a></h2>
+<p>Declare an instance of <code class="docutils literal notranslate"><span class="pre">app_state</span></code>, which will be passed through the program
+by address. We zero-initialize it so that the pointer members are null, making
+deletion a no-op in case they are never initialized later.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Application state object</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">25</span><span class="w">    </span><span class="c1">// Application state object</span>
+<span class="linenos">26</span><span class="w">    </span><span class="n">app_state</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="create-the-first-continuation">
+<h2>Create the First Continuation<a class="headerlink" href="#create-the-first-continuation" title="Link to this heading">#</a></h2>
+<p>We have the pending connection object and the application state, so now we can
+set the first continuation:</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">The first continuation</span><a class="headerlink" href="#id4" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">28</span><span class="w">    </span><span class="c1">// Set the continuation for the connection:</span>
+<span class="linenos">29</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_let</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w">                            </span><span class="c1">// [1]</span>
+<span class="linenos">30</span><span class="w">                     </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span><span class="w">  </span><span class="c1">// [2]</span>
+<span class="linenos">31</span><span class="w">                     </span><span class="nf">amongoc_box_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">state</span><span class="p">),</span><span class="w">   </span><span class="c1">// [3]</span>
+<span class="linenos">32</span><span class="w">                     </span><span class="n">on_connect</span><span class="p">);</span><span class="w">                   </span><span class="c1">// [4]</span>
+</pre></div>
+</div>
+</div>
+<p>The arguments are as follows:</p>
+<ol class="arabic simple">
+<li><p>Passing the emitter we got from <a class="reference internal" href="../../ref/client/#_CPPv418amongoc_client_newP12amongoc_loop20__string_convertible" title="amongoc_client_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client_new()</span></code></a>, and replacing it with
+the new operation emitter returned by <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="../../ref/async/#_CPPv4N19amongoc_async_flags28amongoc_async_forward_errorsE" title="amongoc_async_forward_errors"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_async_forward_errors</span></code></a> is a behavior control flag for <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>
+that tells the operation to skip our continuation if the input operation
+generates an error.</p></li>
+<li><p>We pass the address of the <code class="docutils literal notranslate"><span class="pre">state</span></code> object by wrapping it with
+<a class="reference internal" href="../../ref/box/#_CPPv419amongoc_box_pointerPKv" title="amongoc_box_pointer"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_pointer()</span></code></a>, passing it as the <code class="docutils literal notranslate"><span class="pre">userdata</span></code> parameter of
+<a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_connect</span></code> is the name of the function that will handle the continuation.</p></li>
+</ol>
+</section>
+<section id="define-the-continuation">
+<h2>Define the Continuation<a class="headerlink" href="#define-the-continuation" title="Link to this heading">#</a></h2>
+<p>Now we can look at the definition of <code class="docutils literal notranslate"><span class="pre">on_connect</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Continuation signature</span><a class="headerlink" href="#id5" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">53</span><span class="c1">// Continuation after connection completes</span>
+<span class="linenos">54</span><span class="k">static</span><span class="w"> </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">on_connect</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">55</span><span class="w">    </span><span class="c1">// We don&#39;t use the status here</span>
+<span class="linenos">56</span><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">status</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">state_</span></code> parameter is the userdata box that was given to <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> in
+the previous section. The <code class="docutils literal notranslate"><span class="pre">client</span></code> parameter is a box that contains the
+<a class="reference internal" href="../../ref/client/#_CPPv414amongoc_client" title="amongoc_client"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client</span></code></a> pointer from the connection operation. The <code class="docutils literal notranslate"><span class="pre">status</span></code> parameter
+here is the status of the connection operation, but we don’t care about this
+here since we used <a class="reference internal" href="../../ref/async/#_CPPv4N19amongoc_async_flags28amongoc_async_forward_errorsE" title="amongoc_async_forward_errors"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_async_forward_errors</span></code></a> to ask <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> to skip
+this function if the status would otherwise indicate an error (i.e.
+<code class="docutils literal notranslate"><span class="pre">on_connect</span></code> will only be called if the connection actually succeeds).</p>
+<section id="update-the-application-state">
+<h3>Update the Application State<a class="headerlink" href="#update-the-application-state" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">on_connect</span></code> is passed the pointer to the application state as well as a box
+containing a pointer to the <a class="reference internal" href="../../ref/client/#_CPPv414amongoc_client" title="amongoc_client"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_client</span></code></a>. We can extract the box value and
+store the client pointer within our application state struct:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Update the Application State</span><a class="headerlink" href="#id6" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">57</span><span class="w">    </span><span class="c1">// Store the client from the connect operation</span>
+<span class="linenos">58</span><span class="w">    </span><span class="n">app_state</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_</span><span class="p">);</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="n">client</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p>We store it in the application state object so that we can later delete the
+client handle when the program completes.</p>
+</section>
+<section id="create-a-collection-handle">
+<h3>Create a Collection Handle<a class="headerlink" href="#create-a-collection-handle" title="Link to this heading">#</a></h3>
+<p>Now that we have a valid client, we can create a handle to a collection on
+the server:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Set up the Collection</span><a class="headerlink" href="#id7" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">61</span><span class="w">    </span><span class="c1">// Create a new collection handle</span>
+<span class="linenos">62</span><span class="w">    </span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_collection_new</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;write-test-db&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">);</span>
+<span class="linenos">63</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">64</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="linenos">65</span><span class="w">    </span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference internal" href="../../ref/collection/#_CPPv422amongoc_collection_newP14amongoc_client20__string_convertible20__string_convertible" title="amongoc_collection_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_collection_new()</span></code></a> does not actually communicate with the server: It only
+creates a client-side handle that can be used to perform operations related to
+that collection. The server-side collection will be created automatically when
+we begin writing data into it.</p>
+<p>We store the returned collection handle in the state struct so that we can later
+delete it.</p>
+</section>
+<section id="create-some-data-to-insert">
+<h3>Create Some Data to Insert<a class="headerlink" href="#create-some-data-to-insert" title="Link to this heading">#</a></h3>
+<p>To insert data, we first need data to be inserted. We can create that with the
+BSON APIs:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Create a Document</span><a class="headerlink" href="#id8" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="w">    </span><span class="c1">// Create a document to be inserted</span>
+<span class="w">    </span><span class="c1">// Data: { &quot;foo&quot;: &quot;bar&quot;, &quot;answer&quot;: 42 }</span>
+<span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">bson_data</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">bson_mut</span><span class="w"> </span><span class="n">mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_mutate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">doc</span><span class="p">);</span>
+<span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;answer&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../bson/"><span class="doc">BSON Handling</span></a> for tutorials on the BSON APIs.</p>
+</div>
+</section>
+<section id="create-the-insert-operation">
+<h3>Create the Insert Operation<a class="headerlink" href="#create-the-insert-operation" title="Link to this heading">#</a></h3>
+<p>Inserting a single document can be done with <a class="reference internal" href="../../ref/coll-ops/insert/#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable" title="amongoc_insert_one"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Insert the Data</span><a class="headerlink" href="#id9" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">76</span><span class="w">    </span><span class="c1">// Insert the single document:</span>
+<span class="linenos">77</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">insert_em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amongoc_insert_one</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">,</span><span class="w"> </span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">78</span><span class="w">    </span><span class="c1">// Delete our copy of the doc</span>
+<span class="linenos">79</span><span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">80</span><span class="w">    </span><span class="c1">// Tell the runtime to continue into the next operation:</span>
+<span class="linenos">81</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">insert_em</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference internal" href="../../ref/coll-ops/insert/#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable" title="amongoc_insert_one"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a> will take a copy of the data, so we can delete it
+immediately. We then return the resulting insert emitter from <code class="docutils literal notranslate"><span class="pre">on_connect</span></code> to
+tell <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer" title="amongoc_let"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_let()</span></code></a> to continue the composed operation.</p>
+</section>
+<section id="the-full-continuation">
+<h3>The Full Continuation<a class="headerlink" href="#the-full-continuation" title="Link to this heading">#</a></h3>
+<p>Here is the full <code class="docutils literal notranslate"><span class="pre">on_connect</span></code> function:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">The <code class="docutils literal notranslate"><span class="pre">on_connect</span></code> function</span><a class="headerlink" href="#id10" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">53</span><span class="c1">// Continuation after connection completes</span>
+<span class="linenos">54</span><span class="k">static</span><span class="w"> </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">on_connect</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">55</span><span class="w">    </span><span class="c1">// We don&#39;t use the status here</span>
+<span class="linenos">56</span><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">status</span><span class="p">;</span>
+<span class="linenos">57</span><span class="w">    </span><span class="c1">// Store the client from the connect operation</span>
+<span class="linenos">58</span><span class="w">    </span><span class="n">app_state</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_</span><span class="p">);</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">60</span>
+<span class="linenos">61</span><span class="w">    </span><span class="c1">// Create a new collection handle</span>
+<span class="linenos">62</span><span class="w">    </span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_collection_new</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;write-test-db&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">);</span>
+<span class="linenos">63</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">64</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="linenos">65</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">66</span>
+<span class="linenos">67</span><span class="w">    </span><span class="c1">// Create a document to be inserted</span>
+<span class="linenos">68</span><span class="w">    </span><span class="c1">// Data: { &quot;foo&quot;: &quot;bar&quot;, &quot;answer&quot;: 42 }</span>
+<span class="linenos">69</span><span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+<span class="linenos">70</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">bson_data</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">71</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="linenos">72</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">73</span><span class="w">    </span><span class="kt">bson_mut</span><span class="w"> </span><span class="n">mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_mutate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">74</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p">);</span>
+<span class="linenos">75</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;answer&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
+<span class="linenos">76</span><span class="w">    </span><span class="c1">// Insert the single document:</span>
+<span class="linenos">77</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">insert_em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amongoc_insert_one</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">,</span><span class="w"> </span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">78</span><span class="w">    </span><span class="c1">// Delete our copy of the doc</span>
+<span class="linenos">79</span><span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">80</span><span class="w">    </span><span class="c1">// Tell the runtime to continue into the next operation:</span>
+<span class="linenos">81</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">insert_em</span><span class="p">;</span>
+<span class="linenos">82</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+<section id="tie-start-and-run-the-operation">
+<h2>Tie, Start, and Run the Operation<a class="headerlink" href="#tie-start-and-run-the-operation" title="Link to this heading">#</a></h2>
+<p>Going back to <code class="docutils literal notranslate"><span class="pre">main</span></code>, we can now tie the operation, start it, and run the
+event loop:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Run the Program</span><a class="headerlink" href="#id11" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">34</span><span class="w">    </span><span class="kt">amongoc_operation</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_tie</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">status</span><span class="p">);</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nf">amongoc_start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">36</span><span class="w">    </span><span class="nf">amongoc_default_loop_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span><span class="w">    </span><span class="c1">// Clean up:</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nf">amongoc_operation_delete</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nf">amongoc_collection_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">coll</span><span class="p">);</span>
+<span class="linenos">41</span><span class="w">    </span><span class="nf">amongoc_client_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">42</span><span class="w">    </span><span class="nf">amongoc_default_loop_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<p><a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a> tells the emitter to store its final status in the given pointer
+destination, and returns an operation that can be initiated with
+<a class="reference internal" href="../../ref/operation/#_CPPv413amongoc_startP17amongoc_operation" title="amongoc_start"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_start()</span></code></a>. We then give control to the event loop with
+<a class="reference internal" href="../../ref/loop/#_CPPv424amongoc_default_loop_runP12amongoc_loop" title="amongoc_default_loop_run"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_default_loop_run()</span></code></a>. After this returns, the operation object is
+finished, so we delete it with <a class="reference internal" href="../../ref/operation/#_CPPv424amongoc_operation_delete17amongoc_operation" title="amongoc_operation_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_operation_delete()</span></code></a>.</p>
+<p>We are also finished with the collection handle and the client, so we delete
+those here as well. Those struct members will have been filled in by
+<code class="docutils literal notranslate"><span class="pre">on_connect</span></code>.</p>
+</section>
+<section id="error-checking">
+<h2>Error Checking<a class="headerlink" href="#error-checking" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">status</span></code> object will have been filled during <a class="reference internal" href="../../ref/loop/#_CPPv424amongoc_default_loop_runP12amongoc_loop" title="amongoc_default_loop_run"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_default_loop_run()</span></code></a>
+due to the call to <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>. We can check it for errors and print them out
+now:</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Check the Final Status</span><a class="headerlink" href="#id12" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos">44</span><span class="w">    </span><span class="c1">// Print the final result</span>
+<span class="linenos">45</span><span class="w">    </span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">46</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;An error occurred: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span>
+<span class="linenos">47</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">48</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">49</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;okay</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">50</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="the-full-program">
+<h2>The Full Program<a class="headerlink" href="#the-full-program" title="Link to this heading">#</a></h2>
+<p>Here is the full sample program, in its entirety:</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">write.example.c</span></code></span><a class="headerlink" href="#id13" title="Link to this code">#</a></div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;amongoc/amongoc.h&gt;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="c1">// Application state</span>
+<span class="linenos"> 6</span><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos"> 7</span><span class="w">    </span><span class="c1">// The client object</span>
+<span class="linenos"> 8</span><span class="w">    </span><span class="kt">amongoc_client</span><span class="o">*</span><span class="w"> </span><span class="n">client</span><span class="p">;</span>
+<span class="linenos"> 9</span><span class="w">    </span><span class="c1">// The collection object which we will write into</span>
+<span class="linenos">10</span><span class="w">    </span><span class="kt">amongoc_collection</span><span class="o">*</span><span class="w"> </span><span class="n">coll</span><span class="p">;</span>
+<span class="linenos">11</span><span class="p">}</span><span class="w"> </span><span class="n">app_state</span><span class="p">;</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="k">static</span><span class="w"> </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">on_connect</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">16</span><span class="w">    </span><span class="kt">amongoc_loop</span><span class="w">   </span><span class="n">loop</span><span class="p">;</span>
+<span class="linenos">17</span><span class="w">    </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_default_loop_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">18</span><span class="w">    </span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">19</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Failed to initialize event loop: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span>
+<span class="linenos">20</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">21</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">22</span><span class="w">    </span><span class="c1">// Connect</span>
+<span class="linenos">23</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_client_new</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mongodb://localhost:27017&quot;</span><span class="p">);</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="w">    </span><span class="c1">// Application state object</span>
+<span class="linenos">26</span><span class="w">    </span><span class="n">app_state</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="w">    </span><span class="c1">// Set the continuation for the connection:</span>
+<span class="linenos">29</span><span class="w">    </span><span class="n">em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_let</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w">                            </span><span class="c1">// [1]</span>
+<span class="linenos">30</span><span class="w">                     </span><span class="no">amongoc_async_forward_errors</span><span class="p">,</span><span class="w">  </span><span class="c1">// [2]</span>
+<span class="linenos">31</span><span class="w">                     </span><span class="nf">amongoc_box_pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">state</span><span class="p">),</span><span class="w">   </span><span class="c1">// [3]</span>
+<span class="linenos">32</span><span class="w">                     </span><span class="n">on_connect</span><span class="p">);</span><span class="w">                   </span><span class="c1">// [4]</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="w">    </span><span class="kt">amongoc_operation</span><span class="w"> </span><span class="n">op</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_tie</span><span class="p">(</span><span class="n">em</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">status</span><span class="p">);</span>
+<span class="linenos">35</span><span class="w">    </span><span class="nf">amongoc_start</span><span class="p">(</span><span class="o">&amp;</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">36</span><span class="w">    </span><span class="nf">amongoc_default_loop_run</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">37</span>
+<span class="linenos">38</span><span class="w">    </span><span class="c1">// Clean up:</span>
+<span class="linenos">39</span><span class="w">    </span><span class="nf">amongoc_operation_delete</span><span class="p">(</span><span class="n">op</span><span class="p">);</span>
+<span class="linenos">40</span><span class="w">    </span><span class="nf">amongoc_collection_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">coll</span><span class="p">);</span>
+<span class="linenos">41</span><span class="w">    </span><span class="nf">amongoc_client_delete</span><span class="p">(</span><span class="n">state</span><span class="p">.</span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">42</span><span class="w">    </span><span class="nf">amongoc_default_loop_destroy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">loop</span><span class="p">);</span>
+<span class="linenos">43</span>
+<span class="linenos">44</span><span class="w">    </span><span class="c1">// Print the final result</span>
+<span class="linenos">45</span><span class="w">    </span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">46</span><span class="w">        </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;An error occurred: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">);</span>
+<span class="linenos">47</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="linenos">48</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">49</span><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;okay</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="linenos">50</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="linenos">51</span><span class="p">}</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="c1">// Continuation after connection completes</span>
+<span class="linenos">54</span><span class="k">static</span><span class="w"> </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">on_connect</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">state_</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_status</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="w"> </span><span class="n">client</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">55</span><span class="w">    </span><span class="c1">// We don&#39;t use the status here</span>
+<span class="linenos">56</span><span class="w">    </span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">status</span><span class="p">;</span>
+<span class="linenos">57</span><span class="w">    </span><span class="c1">// Store the client from the connect operation</span>
+<span class="linenos">58</span><span class="w">    </span><span class="n">app_state</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_box_cast</span><span class="p">(</span><span class="n">app_state</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">state_</span><span class="p">);</span>
+<span class="linenos">59</span><span class="w">    </span><span class="nf">amongoc_box_take</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="n">client</span><span class="p">);</span>
+<span class="linenos">60</span>
+<span class="linenos">61</span><span class="w">    </span><span class="c1">// Create a new collection handle</span>
+<span class="linenos">62</span><span class="w">    </span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">amongoc_collection_new</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">client</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;write-test-db&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;main&quot;</span><span class="p">);</span>
+<span class="linenos">63</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">64</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="linenos">65</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">66</span>
+<span class="linenos">67</span><span class="w">    </span><span class="c1">// Create a document to be inserted</span>
+<span class="linenos">68</span><span class="w">    </span><span class="c1">// Data: { &quot;foo&quot;: &quot;bar&quot;, &quot;answer&quot;: 42 }</span>
+<span class="linenos">69</span><span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">();</span>
+<span class="linenos">70</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">bson_data</span><span class="p">(</span><span class="n">doc</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="linenos">71</span><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">amongoc_alloc_failure</span><span class="p">();</span>
+<span class="linenos">72</span><span class="w">    </span><span class="p">}</span>
+<span class="linenos">73</span><span class="w">    </span><span class="kt">bson_mut</span><span class="w"> </span><span class="n">mut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_mutate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">74</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;foo&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;bar&quot;</span><span class="p">);</span>
+<span class="linenos">75</span><span class="w">    </span><span class="nf">bson_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mut</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;answer&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
+<span class="linenos">76</span><span class="w">    </span><span class="c1">// Insert the single document:</span>
+<span class="linenos">77</span><span class="w">    </span><span class="kt">amongoc_emitter</span><span class="w"> </span><span class="n">insert_em</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amongoc_insert_one</span><span class="p">(</span><span class="n">state</span><span class="o">-&gt;</span><span class="n">coll</span><span class="p">,</span><span class="w"> </span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">78</span><span class="w">    </span><span class="c1">// Delete our copy of the doc</span>
+<span class="linenos">79</span><span class="w">    </span><span class="nf">bson_delete</span><span class="p">(</span><span class="n">doc</span><span class="p">);</span>
+<span class="linenos">80</span><span class="w">    </span><span class="c1">// Tell the runtime to continue into the next operation:</span>
+<span class="linenos">81</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">insert_em</span><span class="p">;</span>
+<span class="linenos">82</span><span class="p">}</span>
+<span class="linenos">83</span><span class="c1">// end:on_connect</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../connect/"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Connecting to a MongoDB Server</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../read/"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Reading Data</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declaring-application-state-type">Declaring Application State Type</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#starting-with-a-connection">Starting with a Connection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#declare-the-application-state-object">Declare the Application State Object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-first-continuation">Create the First Continuation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-the-continuation">Define the Continuation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-the-application-state">Update the Application State</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-collection-handle">Create a Collection Handle</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-some-data-to-insert">Create Some Data to Insert</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-insert-operation">Create the Insert Operation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-full-continuation">The Full Continuation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tie-start-and-run-the-operation">Tie, Start, and Run the Operation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#error-checking">Error Checking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-full-program">The Full Program</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By MongoDB
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, MongoDB.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

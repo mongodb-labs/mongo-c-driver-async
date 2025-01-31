@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/dev/guidelines.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/dev/guidelines.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fdev/guidelines.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -745,11 +830,11 @@ wrapped in <code class="code highlight cpp c++ docutils literal highlight-c++"><
 <section id="be-aware-of-c-s-inline-rules">
 <h3><strong>Be aware</strong> of C’s <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> rules<a class="headerlink" href="#be-aware-of-c-s-inline-rules" title="Link to this heading">#</a></h3>
 <p>If a C function is declared <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> <em>and not</em> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code>, then there <em>must</em> exist
-an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code> declaration of that function in <em>exactly one</em> C
-translation unit. This differs from C++, where an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function is emitted
-in each TU in which it is used, and the linker merges them at the final step. In
-C, this consolidation must be done explicitly using an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code>
-declaration.</p>
+an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code> declaration of that function in <em>exactly one</em> <strong>C</strong>
+translation unit (not in a C++ translation unit). This differs from C++, where
+an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kr">inline</span></code> function is emitted in each TU in which it is used, and the linker
+merges them at the final step. In C, this consolidation must be done explicitly
+using an <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">extern</span><span class="w"> </span><span class="kr">inline</span></code> declaration.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There is no way to automatically verify this, because it will only
@@ -777,9 +862,7 @@ portion of the file. These should be simple wrappers around the C types (e.g.
 <section id="avoid-adding-c-constructors-to-c-structs">
 <h4><strong>Avoid</strong> adding C++ constructors to C structs<a class="headerlink" href="#avoid-adding-c-constructors-to-c-structs" title="Link to this heading">#</a></h4>
 <p>This can create a semantic ambiguity when a C struct is constructed in a C
-header. If you really need it, make sure that all calls to that constructor
-within C headers are syntactically valid and semantically equivalent when
-compiled in C and C++ modes (See: <a class="reference internal" href="../../ref/status/#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a>).</p>
+header.</p>
 <p><strong>Instead, prefer</strong> to use the named-constructor idiom: Use <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">static</span></code> member
 functions that construct instances of the object (e.g. <a class="reference internal" href="../../ref/status/#_CPPv4N14amongoc_status4fromE15std__error_code" title="amongoc_status::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::from()</span></code></a>).</p>
 </section>

@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -45,7 +45,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'learn/box';</script>
     <link rel="index" title="Index" href="../../genindex/" />
     <link rel="search" title="Search" href="../../search/" />
-    <link rel="next" title="How-to Guides" href="../../how-to/" />
+    <link rel="next" title="Connecting to a MongoDB Server" href="../connect/" />
     <link rel="prev" title="Reading BSON Data" href="../bson/reading/" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/learn/box.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/learn/box.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Flearn/box.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -448,7 +533,7 @@ another value.</p>
 </section>
 <section id="initializing-a-box-with-a-value">
 <h2>Initializing a Box with a Value<a class="headerlink" href="#initializing-a-box-with-a-value" title="Link to this heading">#</a></h2>
-<p>To initialize the value stored in a box, use <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>. Pass an
+<p>To initialize the value stored in a box, use <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>. Pass an
 <a class="reference internal" href="../../ref/glossary/#term-lvalue"><span class="xref std std-term">lvalue</span></a> expression referring to an <a class="reference internal" href="../../ref/box/#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> as the first argument,
 and a type as the second:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">do_work</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="o">*</span><span class="p">);</span>
@@ -466,8 +551,8 @@ and a type as the second:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> will zero-initialize enough storage for the requested type
-and returns a pointer to that storage. <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> may or may not
+<p><a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> will zero-initialize enough storage for the requested type
+and returns a pointer to that storage. <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> may or may not
 dynamically allocate the object, depending on several factors.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -486,7 +571,7 @@ For example <a class="reference internal" href="../../ref/box/#_CPPv415amongoc_b
 <section id="initializing-a-box-with-a-custom-type">
 <h2>Initializing a Box with a Custom Type<a class="headerlink" href="#initializing-a-box-with-a-custom-type" title="Link to this heading">#</a></h2>
 <p>Suppose we have a more complex type that we wish to store in a box. To do this,
-we just use the same <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>, passing our custom type as the second
+we just use the same <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>, passing our custom type as the second
 argument:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">do_work</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">amongoc_box</span><span class="o">*</span><span class="p">);</span>
 
@@ -516,7 +601,7 @@ function that doesn’t know about what is stored in the box, but that function
 may need to destroy the box. If our custom type needs to execute some kind of
 destructor, then we will need to associate that destructor with the generated
 box. This can be done by passing a destructor function as the third argument
-to <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>:</p>
+to <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">takes_box</span><span class="p">(</span><span class="kt">amongoc_box</span><span class="p">);</span>
 
 <span class="k">struct</span><span class="w"> </span><span class="nc">user_info</span><span class="w"> </span><span class="p">{</span>
@@ -639,11 +724,11 @@ associated box:</p>
       </div>
     </a>
     <a class="right-next"
-       href="../../how-to/"
+       href="../connect/"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">How-to Guides</p>
+        <p class="prev-next-title">Connecting to a MongoDB Server</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -1,11 +1,11 @@
-###################
-Connect to a Server
-###################
+###########################
+Communicating with a Server
+###########################
 
 This how-to guide will walk through the follow example program:
 
-.. literalinclude:: connect.example.c
-  :caption: ``connect.example.c``
+.. literalinclude:: communicate.example.c
+  :caption: ``communicate.example.c``
   :linenos:
 
 Headers
@@ -13,7 +13,7 @@ Headers
 
 We first include the "everything" library header:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :caption: Header file inclusions
   :lineno-match:
   :start-at: #include
@@ -29,7 +29,7 @@ Command-Line Arguments
 
 The first action we perform in ``main()`` is checking our arguments:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :caption: Argument checking
   :lineno-match:
   :start-at: int main
@@ -43,10 +43,10 @@ Initializing the Loop
 
 The first "interesting" code will declare and initialize the default event loop:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: loop;
-  :end-at: );
+  :end-at: }
 
 .. seealso:: `amongoc_loop` and `amongoc_default_loop_init`
 
@@ -62,7 +62,7 @@ Declare the App State
 We use a type ``app_state`` to store some state that is shared across the
 application:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: struct app_state
   :end-at: } app_state;
@@ -71,7 +71,7 @@ This state needs to be stored in a way that it outlives the scope of each
 sub-operation in the program. For this reason, we declare the instance in
 ``main()``:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: struct app_state state =
   :end-at: struct app_state state =
@@ -89,7 +89,7 @@ Create a Client with a Timeout
 We create a connect operation using `amongoc_client_new`, and then attach a
 timeout using `amongoc_timeout`
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: client_new
   :end-at: amongoc_timeout
@@ -102,7 +102,7 @@ and preferred for building composed asynchronous operations.
 Attach the First Continuation
 #############################
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: amongoc_let
   :end-at: say_hello);
@@ -122,7 +122,7 @@ The First Continuation
 The first step, after connecting to a server, is ``after_connect_say_hello``, a
 continuation function given to `amongoc_let`:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: ** after_connect
   :end-at: ) {
@@ -138,7 +138,7 @@ Upon success, the operation from `amongoc_client_new` will resolve with an
 `amongoc_client` in its boxed result value. We move the connection by-value
 from the box and store it in our application state:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: after_connect_say_hello(amongoc_box
   :end-at: take
@@ -150,7 +150,7 @@ object that was owned by the box is now owned by the storage destination.
 
 .. rubric:: Build and Prepare a Command
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: Create a "hello" command
   :end-at: bson_delete
@@ -163,7 +163,7 @@ in ``em``.
 
 .. rubric:: Attach the Second Continuation
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: em = amongoc_then(
   :end-at: after_hello);
@@ -184,7 +184,7 @@ The Second Continuation
 The second continuation after we receive a response from the server is very
 simple:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: after_hello()
   :end-before: end.
@@ -202,22 +202,19 @@ Going back to ``main()``, after our call to `amongoc_let` in which we attached
 the first continuation, we use `amongoc_tie` to convert the emitter to an
 `amongoc_operation`:
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: fin_status
+  :start-at: amongoc_tie
   :end-at: amongoc_tie
 
 This will allow us to see the final result status of the program in
-``fin_status`` after the returned operation ``op`` completes. We pass ``NULL``
-for the `amongoc_tie::value` parameter, indicating that we do not care what the
-final result value will be (in a successful case, this would just be the
-`amongoc_nil` returned from ``after_hello``).
+``fin_status`` after the returned operation ``op`` completes.
 
 
 Start the Operation, Run the Loop, and Clean Up
 ###############################################
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
   :start-at: amongoc_start
   :end-at: default_loop_destroy
@@ -241,9 +238,9 @@ Finally, we are done with the event loop, and we can destroy it with
 Print the Final Result
 ######################
 
-.. literalinclude:: connect.example.c
+.. literalinclude:: communicate.example.c
   :lineno-match:
-  :start-at: is_error
+  :start-at: // Final status
   :end-before: end.
 
 Finally, we inspect the `amongoc_status` that was produced by our operation and

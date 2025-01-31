@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/learn/bson/lifetime.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/learn/bson/lifetime.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Flearn/bson/lifetime.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -404,7 +489,7 @@ document.write(`
 BSON data.</p>
 <section id="creating-c">
 <h2>Creating (C)<a class="headerlink" href="#creating-c" title="Link to this heading">#</a></h2>
-<p>Creation of a new <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> is performed using <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a>. When you are done
+<p>Creation of a new <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> is performed using <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new8uint32_t14mlib_allocator" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a>. When you are done
 with a document object, it should be destroyed with <a class="reference internal" href="../../../ref/bson/doc/#_CPPv411bson_delete8bson_doc" title="bson_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_delete()</span></code></a>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bson/doc.h&gt;</span>
 
@@ -439,7 +524,7 @@ functions and APIs.</p>
 r-value to the <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> constructor.</p>
 <p>A C++ <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a> can be converted to a C <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> in two ways:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../ref/bson/doc/#_CPPv4NK4bson8document3getEv" title="bson::document::get"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::get()</span></code></a> will return an lvalue reference to the wrapped
+<li><p><a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8document3getEv" title="bson::document::get"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::get()</span></code></a> will return an lvalue reference to the wrapped
 <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>. This returned object should never be used with a <a class="reference internal" href="../../../ref/meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a>
 parameter.</p></li>
 <li><p><a class="reference internal" href="../../../ref/bson/doc/#_CPPv4NO4bson8document7releaseEv" title="bson::document::release"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document::release()</span></code></a> will relinquish ownership of the held <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> and
@@ -449,7 +534,7 @@ returned <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_
 </section>
 <section id="copying">
 <h2>Copying<a class="headerlink" href="#copying" title="Link to this heading">#</a></h2>
-<p>If you have an existing BSON object and want to duplicate it, <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> can
+<p>If you have an existing BSON object and want to duplicate it, <a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new8uint32_t14mlib_allocator" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> can
 also be used for that purpose:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">bson_doc</span><span class="o">*</span><span class="w"> </span><span class="n">get_some_bson_doc</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 
@@ -467,7 +552,7 @@ also be used for that purpose:</p>
 <p>When creating a BSON document, it may be useful to reserve additional memory for
 the document data that we will later insert data into. This can be done by
 passing an integer number of bytes when constructing the instance with
-<a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> or <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a>:</p>
+<a class="reference internal" href="../../../ref/bson/doc/#_CPPv48bson_new8uint32_t14mlib_allocator" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> or <a class="reference internal" href="../../../ref/bson/doc/#_CPPv4N4bson8documentE" title="bson::document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson::document</span></code></a>:</p>
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">reserve_space</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kt">bson_doc</span><span class="w"> </span><span class="n">large</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">bson_new</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// ...</span>

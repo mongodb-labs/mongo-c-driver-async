@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/bson/doc.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/bson/doc.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/bson/doc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -465,7 +550,7 @@ automatically copy and destroy document objects.</p>
 <dd class="field-even"><p><a class="reference internal" href="../../meta-attrs/#doc-attr-zero_initializable"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[zero_initializable]]</span></code></a> Represents a null <a class="reference internal" href="#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>. This is
 <em>not</em> equivalent to an <em>empty</em> <a class="reference internal" href="#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>. Calling <a class="reference internal" href="#_CPPv411bson_delete8bson_doc" title="bson_delete"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_delete()</span></code></a> on
 such a document is a no-op, but all other operations are undefined behavior.
-Use <a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> with no arguments to create an empty document object.</p>
+Use <a class="reference internal" href="#_CPPv48bson_new8uint32_t14mlib_allocator" title="bson_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_new()</span></code></a> with no arguments to create an empty document object.</p>
 </dd>
 <dt class="field-odd">Header<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#header-file-bson-doc.h"><code class="xref std std-header-file docutils literal notranslate"><span class="pre">bson/doc.h</span></code></a></p>
@@ -538,8 +623,8 @@ document <a class="reference internal" href="#_CPPv4N4bson8document8documentE9bs
 <li><p>Copy a document <a class="reference internal" href="#_CPPv4N4bson8document8documentE9bson_view14allocator_type" title="bson::document::document::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> using the default allocator.</p></li>
 <li><p>Constructs an empty document using an allocator.</p></li>
 <li><p>Constructs an empty document using an allocator, reserving capacity for
-<code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reserve_size</span></code> bytes of data.</p></li>
-<li><p>Takes ownership of the <a class="reference internal" href="#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> object <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">d</span></code>. <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">d</span></code> is reset to a null
+<a class="reference internal" href="#_CPPv4N4bson8document8documentE11std__size_t14allocator_type" title="bson::document::document::reserve_size"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reserve_size</span></code></a> bytes of data.</p></li>
+<li><p>Takes ownership of the <a class="reference internal" href="#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a> object <a class="reference internal" href="#_CPPv4N4bson8document8documentERR8bson_doc" title="bson::document::document::d"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">d</span></code></a>. <a class="reference internal" href="#_CPPv4N4bson8document8documentERR8bson_doc" title="bson::document::document::d"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">d</span></code></a> is reset to a null
 <a class="reference internal" href="#_CPPv48bson_doc" title="bson_doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_doc</span></code></a>.</p></li>
 <li><p>Copy a document <a class="reference internal" href="#_CPPv4N4bson8document8documentE9bson_view14allocator_type" title="bson::document::document::v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">v</span></code></a> using the given allocator.</p></li>
 </ol>
@@ -670,7 +755,7 @@ default and minimum is 5 bytes.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Allocation<span class="colon">:</span></dt>
-<dd class="field-even"><p>Uses <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code>, if provided. Overload <code class="docutils literal notranslate"><span class="pre">[[6]]</span></code> will inherit the allocator
+<dd class="field-even"><p>Uses <a class="reference internal" href="#_CPPv48bson_new14mlib_allocator" title="bson_new::alloc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code></a>, if provided. Overload <code class="docutils literal notranslate"><span class="pre">[[6]]</span></code> will inherit the allocator
 from <a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a>. Other overloads will use <a class="reference internal" href="../../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_default_allocator</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Header<span class="colon">:</span></dt>
@@ -679,13 +764,13 @@ from <a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" titl
 </dl>
 <p class="rubric">Overloads</p>
 <ol class="arabic simple">
-<li><p>Creates a new document with <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reserve</span></code> bytes of capacity using the given
-allocator <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code>.</p></li>
+<li><p>Creates a new document with <a class="reference internal" href="#_CPPv48bson_new8uint32_t" title="bson_new::reserve"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">reserve</span></code></a> bytes of capacity using the given
+allocator <a class="reference internal" href="#_CPPv48bson_new14mlib_allocator" title="bson_new::alloc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">alloc</span></code></a>.</p></li>
 <li><p>Copies the data from <a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">doc</span></code></a> into a new document that is created as-if by
-<span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><a class="reference internal" href="../view/#_CPPv49bson_size15__bson_viewable" title="bson_size"><span class="n">bson_size</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><span class="n">alloc</span><span class="p">)</span></span></p></li>
+<span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><a class="reference internal" href="../view/#_CPPv49bson_size15__bson_viewable" title="bson_size"><span class="n">bson_size</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv48bson_new14mlib_allocator" title="bson_new::alloc"><span class="n">alloc</span></a><span class="p">)</span></span></p></li>
 <li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">)</span></span></p></li>
-<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><span class="n">reserve</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">)</span></span></p></li>
-<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><span class="n">alloc</span><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new8uint32_t" title="bson_new::reserve"><span class="n">reserve</span></a><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">)</span></span></p></li>
+<li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><span class="m">5</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv48bson_new14mlib_allocator" title="bson_new::alloc"><span class="n">alloc</span></a><span class="p">)</span></span></p></li>
 <li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><a class="reference internal" href="../view/#_CPPv414bson_view_from15__bson_viewable" title="bson_view_from"><span class="n">bson_view_from</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="#_CPPv422bson_doc_get_allocator8bson_doc" title="bson_doc_get_allocator"><span class="n">bson_doc_get_allocator</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">)</span></span>.</p></li>
 <li><p>Equivalent to <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new"><span class="n">bson_new</span></a><span class="p">(</span><a class="reference internal" href="../view/#_CPPv414bson_view_from15__bson_viewable" title="bson_view_from"><span class="n">bson_view_from</span></a><span class="p">(</span><a class="reference internal" href="#_CPPv48bson_new15__bson_viewable" title="bson_new::doc"><span class="n">doc</span></a><span class="p">)</span><span class="p">,</span><span class="w"> </span><a class="reference internal" href="../../alloc/#_CPPv422mlib_default_allocator" title="mlib_default_allocator"><span class="n">mlib_default_allocator</span></a><span class="p">)</span></span></p></li>
 </ol>

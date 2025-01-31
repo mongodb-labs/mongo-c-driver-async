@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -280,6 +284,87 @@
 
 
 
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/coll-ops/insert.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/coll-ops/insert.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/coll-ops/insert.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-download-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
     <i class="fas fa-download"></i>
@@ -383,7 +468,8 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_insert_exP18amongoc_collectionPK9bson_view6size_tPK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_ex()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_params</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N21amongoc_insert_params26bypass_document_validationE"><code class="docutils literal notranslate"><span class="pre">bypass_document_validation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N21amongoc_insert_params7orderedE"><code class="docutils literal notranslate"><span class="pre">ordered</span></code></a></li>
@@ -415,16 +501,25 @@ document.write(`
 </dl>
 
 <span class="sig-paren">)</span><a class="headerlink" href="#_CPPv417amongoc_insert_exP18amongoc_collectionPK9bson_view6size_tPK21amongoc_insert_params" title="Link to this definition">#</a><br /></dt>
-<dt class="sig sig-object cpp" id="_CPPv418amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params">
-<span id="_CPPv318amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params"></span><span id="_CPPv218amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params"></span><span id="amongoc_insert_one__amongoc_collectionP.bson_view.amongoc_insert_paramsCP"></span><a class="reference internal" href="../../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(amongoc_write_result)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_insert_one</span></span></span><span class="sig-paren">(</span>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable">
+<span id="_CPPv318amongoc_insert_oneP18amongoc_collection15__bson_viewable"></span><span id="_CPPv218amongoc_insert_oneP18amongoc_collection15__bson_viewable"></span><span id="amongoc_insert_one__amongoc_collectionP.__bson_viewable"></span><a class="reference internal" href="../../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(amongoc_write_result)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_insert_one</span></span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><a class="reference internal" href="../../collection/#_CPPv418amongoc_collection" title="amongoc_collection"><span class="n"><span class="pre">amongoc_collection</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coll</span></span>,</dd>
-<dd><a class="reference internal" href="../../bson/view/#_CPPv49bson_view" title="bson_view"><span class="n"><span class="pre">bson_view</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">doc</span></span>,</dd>
+<dd><a class="reference internal" href="../../bson/view/#_CPPv415__bson_viewable" title="__bson_viewable"><span class="n"><span class="pre">__bson_viewable</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">doc</span></span>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable" title="Link to this definition">#</a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params">
+<span id="_CPPv318amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params"></span><span id="_CPPv218amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params"></span><span id="amongoc_insert_one__amongoc_collectionP.__bson_viewable.amongoc_insert_paramsCP"></span><a class="reference internal" href="../../emitter/#_CPPv415amongoc_emitter" title="amongoc_emitter"><span class="n"><span class="pre">amongoc_emitter</span></span></a><span class="w"> </span><span class="p"><span class="pre">[[</span></span><span class="pre">type(amongoc_write_result)</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_insert_one</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><a class="reference internal" href="../../collection/#_CPPv418amongoc_collection" title="amongoc_collection"><span class="n"><span class="pre">amongoc_collection</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">coll</span></span>,</dd>
+<dd><a class="reference internal" href="../../bson/view/#_CPPv415__bson_viewable" title="__bson_viewable"><span class="n"><span class="pre">__bson_viewable</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">doc</span></span>,</dd>
 <dd><a class="reference internal" href="#_CPPv421amongoc_insert_params" title="amongoc_insert_params"><span class="n"><span class="pre">amongoc_insert_params</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">[[</span></span><span class="pre">nullable</span><span class="p"><span class="pre">]]</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">params</span></span>,</dd>
 </dl>
 
-<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params" title="Link to this definition">#</a><br /></dt>
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params" title="Link to this definition">#</a><br /></dt>
 <dd><p>Insert data into the collection. Resolves with an <a class="reference internal" href="../../collection/#_CPPv420amongoc_write_result" title="amongoc_write_result"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_write_result</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -508,7 +603,8 @@ document.write(`
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417amongoc_insert_exP18amongoc_collectionPK9bson_view6size_tPK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_ex()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_one()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv421amongoc_insert_params"><code class="docutils literal notranslate"><span class="pre">amongoc_insert_params</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N21amongoc_insert_params26bypass_document_validationE"><code class="docutils literal notranslate"><span class="pre">bypass_document_validation</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N21amongoc_insert_params7orderedE"><code class="docutils literal notranslate"><span class="pre">ordered</span></code></a></li>

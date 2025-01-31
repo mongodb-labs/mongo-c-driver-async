@@ -6,5 +6,6 @@ How-to Guides
   :caption: Guides
   :maxdepth: 2
 
-  connect
+  status-handling
+  communicate
   looping

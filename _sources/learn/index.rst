@@ -8,3 +8,6 @@ Tutorials
 
   bson/index
   box
+  connect
+  write
+  read

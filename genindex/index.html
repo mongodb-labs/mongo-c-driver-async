@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -158,10 +158,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -276,6 +280,53 @@
 
 
 
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fgenindex.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
 <button onclick="toggleFullScreen()"
   class="btn btn-sm btn-fullscreen-button"
   title="Fullscreen mode"
@@ -382,17 +433,10 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    +build-multi
+    +build-fedora
 
       <ul>
-        <li><a href="../ref/building/#earthly-target-build-multi">Earthly target</a>
-</li>
-      </ul></li>
-      <li>
-    +build-multi/
-
-      <ul>
-        <li><a href="../ref/building/#earthly-artifact-build-multi">Earthly artifact</a>
+        <li><a href="../ref/building/#earthly-target-build-fedora">Earthly target</a>
 </li>
       </ul></li>
       <li>
@@ -731,6 +775,8 @@ document.write(`
         <li><a href="../dev/tls/#header-file-amongoc-tls-stream.hpp">header file</a>
 </li>
       </ul></li>
+      <li><a href="../ref/status/#c.amongoc_declmsg">amongoc_declmsg (C macro)</a>
+</li>
       <li>
     AMONGOC_FIND_DEPENDENCIES
 
@@ -738,6 +784,8 @@ document.write(`
         <li><a href="../ref/building/#variable:AMONGOC_FIND_DEPENDENCIES"><strong>variable</strong></a>, <a href="../ref/building/#index-0-variable:AMONGOC_FIND_DEPENDENCIES">[1]</a>
 </li>
       </ul></li>
+      <li><a href="../ref/status/#c.amongoc_if_error">amongoc_if_error (C macro)</a>
+</li>
       <li>
     AMONGOC_INSTALL_CMAKEDIR
 
@@ -749,7 +797,7 @@ document.write(`
     AMONGOC_USE_PMM
 
       <ul>
-        <li><a href="../ref/building/#variable:AMONGOC_USE_PMM"><strong>variable</strong></a>
+        <li><a href="../ref/building/#variable:AMONGOC_USE_PMM"><strong>variable</strong></a>, <a href="../ref/building/#index-0-variable:AMONGOC_USE_PMM">[1]</a>
 </li>
       </ul></li>
       <li><a href="../dev/nanosenders/#_CPPv4I0EN7amongoc22archetype_nanoreceiverE">archetype_nanoreceiver (C++ class)</a>
@@ -1355,7 +1403,7 @@ document.write(`
 </li>
       <li><a href="../ref/bson/value/#_CPPv419bson_value_as_int6414bson_value_refPb">bson_value_as_int64 (C++ function)</a>
 </li>
-      <li><a href="../ref/bson/value/#_CPPv415bson_value_copy24__bson_value_convertible">bson_value_copy (C++ function)</a>
+      <li><a href="../ref/bson/value/#_CPPv415bson_value_copy24__bson_value_convertible">bson_value_copy (C++ function)</a>, <a href="../ref/bson/value/#_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator">[1]</a>
 </li>
       <li><a href="../ref/bson/value/#_CPPv417bson_value_delete10bson_value">bson_value_delete (C++ function)</a>
 </li>
@@ -1479,6 +1527,8 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../ref/glossary/#term-C-linkage"><strong>C linkage</strong></a>
+</li>
+      <li><a href="../ref/glossary/#term-C-string"><strong>C string</strong></a>
 </li>
       <li><a href="../ref/glossary/#term-0"><strong>C++ linkage</strong></a>
 </li>
@@ -1676,7 +1726,9 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../ref/coll-ops/delete/#_CPPv4N21amongoc_delete_params3letE">delete_params::let (C++ member)</a>
 </li>
-      <li><a href="../ref/async/#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator">detach (C++ function)</a>
+      <li><a href="../ref/async/#_CPPv414amongoc_detach15amongoc_emitter">detach (C++ function)</a>, <a href="../ref/async/#_CPPv414amongoc_detach15amongoc_emitter14mlib_allocator">[1]</a>
+</li>
+      <li><a href="../ref/async/#_CPPv420amongoc_detach_start15amongoc_emitter">detach_start (C++ function)</a>
 </li>
       <li><a href="../ref/coll-ops/distinct/#_CPPv416amongoc_distinctP18amongoc_collection13mlib_str_view9bson_viewPK23amongoc_distinct_params">distinct (C++ function)</a>
 </li>
@@ -1719,8 +1771,6 @@ document.write(`
     Earthly artifact
 
       <ul>
-        <li><a href="../ref/building/#earthly-artifact-build-multi">+build-multi/</a>
-</li>
         <li><a href="../ref/building/#earthly-artifact-build-xyz-install">+build-xyz/install</a>
 </li>
         <li><a href="../ref/building/#earthly-artifact-build-xyz-pkg">+build-xyz/pkg</a>
@@ -1734,7 +1784,7 @@ document.write(`
 </li>
         <li><a href="../ref/building/#earthly-target-build-debian">+build-debian</a>
 </li>
-        <li><a href="../ref/building/#earthly-target-build-multi">+build-multi</a>
+        <li><a href="../ref/building/#earthly-target-build-fedora">+build-fedora</a>
 </li>
         <li><a href="../ref/building/#earthly-target-build-rl">+build-rl</a>
 </li>
@@ -2034,7 +2084,7 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../ref/coll-ops/insert/#_CPPv417amongoc_insert_exP18amongoc_collectionPK9bson_view6size_tPK21amongoc_insert_params">insert_ex (C++ function)</a>
 </li>
-      <li><a href="../ref/coll-ops/insert/#_CPPv418amongoc_insert_oneP18amongoc_collection9bson_viewPK21amongoc_insert_params">insert_one (C++ function)</a>
+      <li><a href="../ref/coll-ops/insert/#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewable">insert_one (C++ function)</a>, <a href="../ref/coll-ops/insert/#_CPPv418amongoc_insert_oneP18amongoc_collection15__bson_viewablePK21amongoc_insert_params">[1]</a>
 </li>
       <li><a href="../ref/coll-ops/insert/#_CPPv421amongoc_insert_params">insert_params (C++ struct)</a>
 </li>
@@ -2093,7 +2143,7 @@ document.write(`
       <li><a href="../dev/nanosenders/#_CPPv4I0EN7amongoc4justE">just (C++ class)</a>
 
       <ul>
-        <li><a href="../ref/async/#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator">(C++ function)</a>
+        <li><a href="../ref/async/#_CPPv412amongoc_just11amongoc_box">(C++ function)</a>, <a href="../ref/async/#_CPPv412amongoc_just11amongoc_box14mlib_allocator">[1]</a>, <a href="../ref/async/#_CPPv412amongoc_just14amongoc_status">[2]</a>, <a href="../ref/async/#_CPPv412amongoc_just14amongoc_status11amongoc_box">[3]</a>, <a href="../ref/async/#_CPPv412amongoc_just14amongoc_status11amongoc_box14mlib_allocator">[4]</a>, <a href="../ref/async/#_CPPv412amongoc_justv">[5]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2108,7 +2158,7 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../ref/glossary/#term-language-linkage"><strong>language linkage</strong></a>
 </li>
-      <li><a href="../dev/nanosenders/#_CPPv4I_10nanosender_NSt9invocableI7sends_tI1SEEEEIQ10nanosenderINSt15invoke_result_tI1H7sends_tI1SEEEEEN7amongoc3letE10nanosenderRR1SRR1H">let (C++ function)</a>, <a href="../dev/nanosenders/#_CPPv4N7amongoc3letERRDa">[1]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer">[2]</a>
+      <li><a href="../dev/nanosenders/#_CPPv4I_10nanosender_NSt9invocableI7sends_tI1SEEEEIQ10nanosenderINSt15invoke_result_tI1H7sends_tI1SEEEEEN7amongoc3letE10nanosenderRR1SRR1H">let (C++ function)</a>, <a href="../dev/nanosenders/#_CPPv4N7amongoc3letERRDa">[1]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter11amongoc_box23amongoc_let_transformer">[2]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter14mlib_allocator11amongoc_box23amongoc_let_transformer">[3]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags11amongoc_box23amongoc_let_transformer">[4]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box23amongoc_let_transformer">[5]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter19amongoc_async_flags23amongoc_let_transformer">[6]</a>, <a href="../ref/async/#_CPPv411amongoc_let15amongoc_emitter23amongoc_let_transformer">[7]</a>
 </li>
       <li><a href="../ref/async/#_CPPv423amongoc_let_transformer">let_transformer (C++ type)</a>
 </li>
@@ -2160,6 +2210,8 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="../ref/status/#_CPPv415amongoc_message14amongoc_statusPc6size_t">message (C++ function)</a>
+</li>
       <li>
     mlib/alloc.h
 
@@ -2309,12 +2361,12 @@ document.write(`
 </li>
       <li><a href="../dev/guidelines/#c.mlib_init">mlib_init (C macro)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../dev/guidelines/#c.mlib_is_clang">mlib_is_clang (C macro)</a>
 </li>
       <li><a href="../dev/guidelines/#c.mlib_is_cxx">mlib_is_cxx (C macro)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../dev/guidelines/#c.mlib_is_gcc">mlib_is_gcc (C macro)</a>
 </li>
       <li><a href="../dev/guidelines/#c.mlib_is_gnu_like">mlib_is_gnu_like (C macro)</a>
@@ -2423,8 +2475,6 @@ document.write(`
       <ul>
         <li><a href="../ref/building/#index-0-module:module:CTest">module:CTest</a>
 </li>
-        <li><a href="../ref/building/#index-0-module:module:FindThreads">module:FindThreads</a>
-</li>
         <li><a href="../ref/building/#index-0-module:module:GNUInstallDirs">module:GNUInstallDirs</a>, <a href="../ref/building/#index-1-module:module:GNUInstallDirs">[1]</a>
 </li>
       </ul></li>
@@ -2433,13 +2483,6 @@ document.write(`
 
       <ul>
         <li><a href="../ref/building/#index-0-module:module:CTest">module</a>
-</li>
-      </ul></li>
-      <li>
-    module:FindThreads
-
-      <ul>
-        <li><a href="../ref/building/#index-0-module:module:FindThreads">module</a>
 </li>
       </ul></li>
       <li>
@@ -2666,6 +2709,8 @@ document.write(`
         <li><a href="../ref/status/#index-8">amongoc.unknown</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     status codes
 
@@ -2677,8 +2722,6 @@ document.write(`
         <li><a href="../ref/status/#index-11"><strong>amongoc.tls</strong></a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="../ref/status/#_CPPv4NK14amongoc_status13as_error_codeEv">status::as_error_code (C++ function)</a>
 </li>
       <li><a href="../ref/status/#_CPPv4N14amongoc_status8categoryE">status::category (C++ member)</a>
@@ -2699,11 +2742,9 @@ document.write(`
 </li>
       <li><a href="../ref/status/#_CPPv4N30amongoc_status_category_vtable10is_timeoutEi">status_category_vtable::is_timeout (C++ function)</a>
 </li>
+      <li><a href="../ref/status/#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t">status_category_vtable::message (C++ function)</a>
+</li>
       <li><a href="../ref/status/#_CPPv4N30amongoc_status_category_vtable4nameEv">status_category_vtable::name (C++ function)</a>
-</li>
-      <li><a href="../ref/status/#_CPPv4N30amongoc_status_category_vtable14strdup_messageEi">status_category_vtable::strdup_message (C++ function)</a>
-</li>
-      <li><a href="../ref/status/#_CPPv429amongoc_status_strdup_message14amongoc_status">status_strdup_message (C++ function)</a>
 </li>
       <li><a href="../ref/status/#_CPPv425amongoc_status_tls_reason14amongoc_status">status_tls_reason (C++ function)</a>
 </li>
@@ -2729,13 +2770,13 @@ document.write(`
 </li>
       <li><a href="../dev/asio/#_CPPv4N7amongoc24tcp_connection_rw_stream4loopE">tcp_connection_rw_stream::loop (C++ member)</a>
 </li>
-      <li><a href="../dev/nanosenders/#_CPPv4I_10nanosender_NSt9invocableI7sends_tI1SEEEEN7amongoc4thenE10nanosenderRR1SRR1H">then (C++ function)</a>, <a href="../dev/nanosenders/#_CPPv4N7amongoc4thenERRDa">[1]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer">[2]</a>
+      <li><a href="../dev/nanosenders/#_CPPv4I_10nanosender_NSt9invocableI7sends_tI1SEEEEN7amongoc4thenE10nanosenderRR1SRR1H">then (C++ function)</a>, <a href="../dev/nanosenders/#_CPPv4N7amongoc4thenERRDa">[1]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter11amongoc_box24amongoc_then_transformer">[2]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter14mlib_allocator11amongoc_box24amongoc_then_transformer">[3]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags11amongoc_box24amongoc_then_transformer">[4]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags14mlib_allocator11amongoc_box24amongoc_then_transformer">[5]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter19amongoc_async_flags24amongoc_then_transformer">[6]</a>, <a href="../ref/async/#_CPPv412amongoc_then15amongoc_emitter24amongoc_then_transformer">[7]</a>
 </li>
       <li><a href="../ref/async/#_CPPv417amongoc_then_just15amongoc_emitter19amongoc_async_flags14amongoc_status11amongoc_box14mlib_allocator">then_just (C++ function)</a>
 </li>
       <li><a href="../ref/async/#_CPPv424amongoc_then_transformer">then_transformer (C++ type)</a>
 </li>
-      <li><a href="../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator">tie (C++ function)</a>
+      <li><a href="../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP11amongoc_box">tie (C++ function)</a>, <a href="../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status">[1]</a>, <a href="../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box">[2]</a>, <a href="../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator">[3]</a>
 </li>
       <li><a href="../ref/async/#_CPPv415amongoc_timeoutP12amongoc_loop15amongoc_emitter8timespec">timeout (C++ function)</a>
 </li>
@@ -2883,7 +2924,7 @@ document.write(`
 </li>
         <li><a href="../ref/building/#variable:AMONGOC_INSTALL_CMAKEDIR"><strong>AMONGOC_INSTALL_CMAKEDIR</strong></a>
 </li>
-        <li><a href="../ref/building/#variable:AMONGOC_USE_PMM"><strong>AMONGOC_USE_PMM</strong></a>
+        <li><a href="../ref/building/#variable:AMONGOC_USE_PMM"><strong>AMONGOC_USE_PMM</strong></a>, <a href="../ref/building/#index-0-variable:AMONGOC_USE_PMM">[1]</a>
 </li>
         <li><a href="../ref/building/#variable:BUILD_TESTING"><strong>BUILD_TESTING</strong></a>, <a href="../ref/building/#index-0-variable:BUILD_TESTING">[1]</a>
 </li>

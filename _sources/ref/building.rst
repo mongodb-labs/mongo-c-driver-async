@@ -5,14 +5,88 @@ Configuring, Building, & Using
 .. default-domain:: std
 .. default-role:: any
 
-Building |amongoc| is supported with the following build tools:
+Building |amongoc| requires a C++20 compiler. The following tools are known to
+work:
 
 - CMake_ 3.25 or newer
-- GCC ≥12.0 **or** Clang ≥17.0
+- GCC ≥12.0\ [#fn-redhat-issue]_ **or** Clang ≥17.0
 - Earthly_ 0.8 or newer (for :ref:`building with Earthly <building.earthly>`)
+
+Building on Windows or with MSVC is not currently supported.
+
+Builds are only currently tested with Debian 12 and Alpine 3.20. Support for
+other platforms may be considered in the future, but are not currently planned
+for this prototype.
 
 .. _CMake: https://cmake.org/
 .. _Earthly: https://earthly.dev/
+
+.. _building.deps:
+
+Third-Party Dependencies
+########################
+
+When configuring and building |amongoc| with CMake, the configuration script
+will attempt to automatically obtain build-time dependencies using vcpkg_. This
+behavior can be disabled by setting :cmake:variable:`AMONGOC_USE_PMM` to
+``OFF``. Relying on vcpkg_ will attempt to build the third-party dependencies
+during project configuration, which may require additional configure-time
+dependencies.
+
+The following external libraries are required when **building** |amongoc|. If
+not relying vcpkg_, then they will need to be installed and available before
+configuring the project:
+
+- OpenSSL
+- Boost.URL and Boost.Container
+- `{fmt}`_
+- **If using vcpkg to install dependencies** (the default), then you will also
+  need to have Tar, cURL, Perl, Zip/Unzip, pkg-config, Make, and Bash. On Linux,
+  you will also need the linux development headers.
+
+The following packages are downloaded using CMake's FetchContent, and need not
+be manually installed:
+
+- Catch2_ - Only required for testing and only imported if
+  :cmake:variable:`BUILD_TESTING` is enabled.
+- Asio_ - Used for asynchronous I/O (Build-time only) (Note: Not ``Boost.Asio``!)
+- neo-fun_ (Build-time only)
+
+.. _Catch2: https://github.com/catchorg/Catch2
+.. _Asio: https://think-async.com/Asio/
+.. _{fmt}: https://fmt.dev/
+.. _neo-fun: https://github.com/vector-of-bool/neo-fun
+
+The following table details the dependencies of the imported
+``amongoc::amongoc`` target, along with the common Linux packages that contain
+them:
+
+.. list-table::
+  :header-rows: 1
+  :widths: 1, 2, 2, 2
+
+  - - Targets
+    - RedHat
+    - Debian
+    - Alpine
+
+  - - ``fmt::fmt``
+    - ``fmt-devel`` (may require EPEL)
+    - ``libfmt-dev``
+    - ``fmt-dev``
+  - - ``Boost::url`` + ``Boost::container``
+    - ``boost-devel``
+    - ``libboost-{url,container}-dev`` (may require a version infix)
+    - ``boost-dev``
+  - - ``OpenSSL::SSL``
+    - ``openssl-devel``
+    - ``libssl-dev``
+    - ``openssl-dev``
+  - - ``Threads::Threads``
+    - CMake built-in
+    - CMake built-in
+    - CMake built-in
+
 
 
 Build Configuration
@@ -65,49 +139,20 @@ The following CMake_ configuration options are supported:
   AMONGOC_USE_PMM
 
   Toggle usage of PMM_ to automatically download and import dependencies at
-  configure-time.
+  configure-time using vcpkg_.
 
   .. _PMM: https://github.com/vector-of-bool/pmm
   .. _vcpkg: https://vcpkg.io/
 
-  :default: ``ON``
+  :default: ``ON`` if configuring |amongoc| as the top-level project, ``OFF``
+    otherwise (e.g. when added as a sub-project)
 
   If this toggle is enabled, then vcpkg_ will be executed during CMake
   configuration to download and build the dependencies required by |amongoc|.
 
   If you want to manage dependencies yourself, disable this toggle. You will
-  need to ensure that the
-  :ref:`configure-time dependencies <building.cmake-deps>` are available to
-  :external:cmake:command:`find_package <command:find_package>`.
-
-
-.. _building.cmake-deps:
-
-Third-Party Dependencies
-########################
-
-.. sidebar::
-
-  .. note::
-
-    At time of writing, neo-fun_ does not ship an installable CMake package and
-    is installed using a custom vcpkg_ port in ``etc/vcpkg-ports/neo-fun``.
-
-The following external libraries are required by |amongoc|:
-
-- OpenSSL
-- Boost.URL_
-- `{fmt}`_
-- Catch2_ - Only required for testing and only imported if
-  :cmake:variable:`BUILD_TESTING` is enabled.
-- Asio_ - Used for asynchronous I/O (Build-time only) (Note: Not ``Boost.Asio``!)
-- neo-fun_ (Build-time only)
-
-.. _Catch2: https://github.com/catchorg/Catch2
-.. _Asio: https://think-async.com/Asio/
-.. _Boost.URL: https://www.boost.io/libraries/url/
-.. _{fmt}: https://fmt.dev/
-.. _neo-fun: https://github.com/vector-of-bool/neo-fun
+  need to ensure that the :ref:`configure-time dependencies <building.deps>` are
+  available to :external:cmake:command:`find_package <command:find_package>`.
 
 
 .. _building.earthly:
@@ -116,6 +161,7 @@ Building with Earthly
 #####################
 
 Earthly_ is a container-based build automation tool. |amongoc| ships with an
+Earthfile that eases building by using containerization.
 
 .. file:: Earthfile
 
@@ -126,14 +172,15 @@ Earthly_ is a container-based build automation tool. |amongoc| ships with an
   .. earthly-target::
     +build-alpine
     +build-debian
+    +build-fedora
     +build-rl
 
-    Build targets that build for Alpine Linux (with libmusl), Debian, and
-    RockyLinux (for RedHat-compatible binaries).
+    Build targets that build for Alpine Linux (with libmusl), Debian, Fedora,
+    and RockyLinux (for RedHat-compatible binaries).
 
-    The Alpine and Debian build uses the system's default toolchain. The
-    RockyLinux build uses the RedHat devtoolset to obtain an up-to-date compiler
-    for producing RedHat-compatible binaries.
+    The Alpine, Fedora, and Debian build uses the system's default toolchain.
+    The RockyLinux build uses the RedHat devtoolset\ [#fn-redhat-issue]_ to
+    obtain an up-to-date compiler for producing RedHat-compatible binaries.
 
     .. earthly-artifact::
       +build-xyz/pkg
@@ -144,14 +191,26 @@ Earthly_ is a container-based build automation tool. |amongoc| ships with an
       archive, a ``.zip`` archive, and a self-extracting shell script ``.sh``.
       The ``/install`` artifact contains an install tree from the build.
 
-  .. earthly-target:: +build-multi
 
-    Builds all of `+build-alpine`, `+build-debian`, and `+build-rl` at once.
+    .. rubric:: Example
 
-    .. earthly-artifact:: +build-multi/
+    To build and obtain a package for Debian-compatible systems, the following
+    command can be used to obtain the packages for the `+build-debian` target:
 
-      The root artifact directory contains all artifacts from all other build
-      targets.
+    .. code-block:: console
+
+      $ earthly -a +build-debian/pkg deb-pkg
+      ## [Earthly output] ##
+      $ ls deb-pkg
+      amongoc-0.1.0-linux-x86_64.sh*
+      amongoc-0.1.0-linux-x86_64.tar.gz
+      amongoc-0.1.0-linux-x86_64.zip
+
+    The resulting ``.sh`` script can be used to install the built library and
+    headers.
+
+    The same command can work for the `+build-alpine`, `+build-fedora`, and
+    `+build-rl` targets.
 
 
 Importing in CMake
@@ -179,12 +238,14 @@ can be linked into an application::
   add_executbale(my-program main.c)
   target_link_libraries(my-program PRIVATE amongoc::amongoc)
 
-Dependency Imports
-******************
-
 By default, the |amongoc| CMake package will attempt to import dependencies
 using :cmake:command:`find_dependency <command:find_dependency>`. This import
 can be disabled by changing :cmake:variable:`AMONGOC_FIND_DEPENDENCIES`.
+
+**If you build** |amongoc| using vcpkg_ (the default) it is highly recommended
+to use vcpkg in your own project to install |amongoc|'s dependencies, as it is
+not guaranteed that the packages provided elsewhere will be compatible with the
+packages that were used in the |amongoc| build.
 
 .. cmake:variable:: AMONGOC_FIND_DEPENDENCIES
 
@@ -200,12 +261,10 @@ can be disabled by changing :cmake:variable:`AMONGOC_FIND_DEPENDENCIES`.
   during import. If disabled, then |amongoc| will assume that the necessary
   imported targets will be defined elsewhere by the importing package.
 
-  The following imported targets are used by the imported ``amongoc::amongoc``
-  target:
 
-  - ``fmt::fmt``
-  - ``Boost::url``
-  - ``Boost::container``
-  - ``OpenSSL::SSL``
-  - ``Threads::Threads`` (from the
-    :cmake:module:`FindThreads <module:FindThreads>` module)
+.. rubric:: Footnotes
+
+.. [#fn-redhat-issue]
+
+  There is a known issue with the RedHat dev toolset that results in certain
+  internal symbols being incorrectly discarded and producing link-time errors.

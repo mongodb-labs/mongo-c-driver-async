@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -45,8 +45,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/index';</script>
     <link rel="index" title="Index" href="../genindex/" />
     <link rel="search" title="Search" href="../search/" />
-    <link rel="next" title="Connect to a Server" href="connect/" />
-    <link rel="prev" title="Storing Values in a Type-Erased Box" href="../learn/box/" />
+    <link rel="next" title="How to Handle amongoc_status" href="status-handling/" />
+    <link rel="prev" title="Reading Data" href="../learn/read/" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">How-to Guides</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -280,6 +284,87 @@
 
 
 
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/how-to/index.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/how-to/index.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fhow-to/index.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
 <div class="dropdown dropdown-download-buttons">
   <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
     <i class="fas fa-download"></i>
@@ -389,18 +474,24 @@ document.write(`
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="connect/">Connect to a Server</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="connect/#headers">Headers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#command-line-arguments">Command-Line Arguments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#initializing-the-loop">Initializing the Loop</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#declare-the-app-state">Declare the App State</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#create-a-client-with-a-timeout">Create a Client with a Timeout</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#attach-the-first-continuation">Attach the First Continuation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#the-first-continuation">The First Continuation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#the-second-continuation">The Second Continuation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#tie-the-final-result">Tie the Final Result</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#start-the-operation-run-the-loop-and-clean-up">Start the Operation, Run the Loop, and Clean Up</a></li>
-<li class="toctree-l2"><a class="reference internal" href="connect/#print-the-final-result">Print the Final Result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="status-handling/#checking-for-errors">Checking for Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status-handling/#obtaining-an-error-message">Obtaining an Error Message</a></li>
+<li class="toctree-l2"><a class="reference internal" href="status-handling/#easy-error-handling">Easy Error Handling</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="communicate/">Communicating with a Server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#headers">Headers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#command-line-arguments">Command-Line Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#initializing-the-loop">Initializing the Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#declare-the-app-state">Declare the App State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#create-a-client-with-a-timeout">Create a Client with a Timeout</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#attach-the-first-continuation">Attach the First Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#the-first-continuation">The First Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#the-second-continuation">The Second Continuation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#tie-the-final-result">Tie the Final Result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#start-the-operation-run-the-loop-and-clean-up">Start the Operation, Run the Loop, and Clean Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="communicate/#print-the-final-result">Print the Final Result</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="looping/">Creating Asynchronous Loops</a><ul>
@@ -427,20 +518,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../learn/box/"
+       href="../learn/read/"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Storing Values in a Type-Erased Box</p>
+        <p class="prev-next-title">Reading Data</p>
       </div>
     </a>
     <a class="right-next"
-       href="connect/"
+       href="status-handling/"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Connect to a Server</p>
+        <p class="prev-next-title">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

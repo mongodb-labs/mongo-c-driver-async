@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/bson/value.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/bson/value.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/bson/value.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -451,6 +536,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417bson_value_delete10bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value_delete()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_ref_from24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_ref_from()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_value_as_bool14bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int3214bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int32()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int6414bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int64()</span></code></a></li>
@@ -721,7 +807,7 @@ of the <a class="reference internal" href="#_CPPv4N10bson_value4typeE" title="bs
 <tr class="row-even"><td><p><a class="reference internal" href="../view/#_CPPv415__bson_viewable" title="__bson_viewable"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__bson_viewable</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type18bson_type_documentE" title="bson_type_document"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_document</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_array</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../view/#_CPPv415bson_array_view" title="bson_array_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_array_view</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_arrayE" title="bson_type_array"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_array</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="../../str/#_CPPv420__string_convertible" title="__string_convertible"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">__string_convertible</span></code></a></p></td>
@@ -736,16 +822,16 @@ of the <a class="reference internal" href="#_CPPv4N10bson_value4typeE" title="bs
 <tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv413bson_datetime" title="bson_datetime"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_datetime</span></code></a></p></td>
 <td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_datetime</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_regex</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../types/#_CPPv415bson_regex_view" title="bson_regex_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_regex_view</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type15bson_type_regexE" title="bson_type_regex"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_regex</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_dbpointer</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv419bson_dbpointer_view" title="bson_dbpointer_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_dbpointer_view</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type19bson_type_dbpointerE" title="bson_type_dbpointer"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_dbpointer</span></code></a></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_code</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../types/#_CPPv414bson_code_view" title="bson_code_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_code_view</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type14bson_type_codeE" title="bson_type_code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_code</span></code></a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_symbol</span></code></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../types/#_CPPv416bson_symbol_view" title="bson_symbol_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_symbol_view</span></code></a></p></td>
 <td><p><a class="reference internal" href="../types/#_CPPv4N9bson_type16bson_type_symbolE" title="bson_type_symbol"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_type_symbol</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://en.cppreference.com/w/c/types/integer" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">int32_t</span></code></a></p></td>
@@ -790,7 +876,9 @@ given value.</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv415bson_value_copy24__bson_value_convertible">
 <span id="_CPPv315bson_value_copy24__bson_value_convertible"></span><span id="_CPPv215bson_value_copy24__bson_value_convertible"></span><span id="bson_value_copy____bson_value_convertible"></span><a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><span class="n"><span class="pre">bson_value</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">V</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415bson_value_copy24__bson_value_convertible" title="Link to this definition">#</a><br /></dt>
-<dd><p>Create a copy of <a class="reference internal" href="#_CPPv415bson_value_copy24__bson_value_convertible" title="bson_value_copy::V"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">V</span></code></a> stored in a dynamically typed <a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a>. The returned
+<dt class="sig sig-object cpp" id="_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator">
+<span id="_CPPv315bson_value_copy24__bson_value_convertible14mlib_allocator"></span><span id="_CPPv215bson_value_copy24__bson_value_convertible14mlib_allocator"></span><span id="bson_value_copy____bson_value_convertible.mlib_allocator"></span><a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><span class="n"><span class="pre">bson_value</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">bson_value_copy</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv424__bson_value_convertible" title="__bson_value_convertible"><span class="n"><span class="pre">__bson_value_convertible</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">V</span></span>, <a class="reference internal" href="../../alloc/#_CPPv414mlib_allocator" title="mlib_allocator"><span class="n"><span class="pre">mlib_allocator</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">alloc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a copy of <a class="reference internal" href="#_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator" title="bson_value_copy::V"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">V</span></code></a> stored in a dynamically typed <a class="reference internal" href="#_CPPv410bson_value" title="bson_value"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">bson_value</span></code></a>. The returned
 value must eventually be destroyed.</p>
 </dd></dl>
 
@@ -956,6 +1044,7 @@ a subdocument fails, returns <code class="code highlight cpp c++ docutils litera
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv417bson_value_delete10bson_value"><code class="docutils literal notranslate"><span class="pre">bson_value_delete()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_ref_from24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_ref_from()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415bson_value_copy24__bson_value_convertible14mlib_allocator"><code class="docutils literal notranslate"><span class="pre">bson_value_copy()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418bson_value_as_bool14bson_value_ref"><code class="docutils literal notranslate"><span class="pre">bson_value_as_bool()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int3214bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int32()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv419bson_value_as_int6414bson_value_refPb"><code class="docutils literal notranslate"><span class="pre">bson_value_as_int64()</span></code></a></li>

@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/dev/documenting.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/dev/documenting.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fdev/documenting.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -441,7 +526,7 @@ and an <em>expounding</em> description, if one is warranted.</p></li>
 Add an <em>expounding</em> description <em>below</em> the documentation fields.</p></li>
 <li><p>If an API allocates memory and the API does not accept an allocator
 parameter, include an <code class="docutils literal notranslate"><span class="pre">:allocation:</span></code> field that specifies how memory
-allocation is performed (e.g. <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_statusP11amongoc_box14mlib_allocator" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>).</p></li>
+allocation is performed (e.g. <a class="reference internal" href="../../ref/async/#_CPPv411amongoc_tie15amongoc_emitterP14amongoc_status" title="amongoc_tie"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_tie()</span></code></a>).</p></li>
 <li><p>Document header files using <a class="reference internal" href="#directive-header-file" title="header-file directive"><code class="xref rst rst-dir docutils literal notranslate"><span class="pre">header-file</span></code></a> directive. Refer to them
 using the <a class="reference internal" href="#role-header-file" title="header-file role"><code class="xref rst rst-role docutils literal notranslate"><span class="pre">header-file</span></code></a> inline role.</p></li>
 <li><p>Use the <code class="docutils literal notranslate"><span class="pre">:header:</span></code> field on an API component to link to the header file
@@ -466,7 +551,7 @@ instead be used to expression constraints about the values that are not
 obvious from the description or the API signature.</p></li>
 <li><p><strong>Don’t</strong> create multiple documentation entries for very similar function
 overloads. Instead, document them together under the same directive and
-explain the differences between them. (e.g. <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)</p></li>
+explain the differences between them. (e.g. <a class="reference internal" href="../../ref/box/#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)</p></li>
 <li><p>Use admonition directives to announce important things that the reader might
 otherwise miss. Avoid using bold “<strong>NOTE</strong>” and “<strong>WARNING</strong>” inline in the
 text unless using an admonition would seriously break the flow of the text.</p></li>

@@ -332,11 +332,11 @@ wrapped in :cpp:`extern "C"`.
 **********************************
 
 If a C function is declared |inline| *and not* |static|, then there *must* exist
-an :cpp:`extern inline` declaration of that function in *exactly one* C
-translation unit. This differs from C++, where an |inline| function is emitted
-in each TU in which it is used, and the linker merges them at the final step. In
-C, this consolidation must be done explicitly using an :cpp:`extern inline`
-declaration.
+an :cpp:`extern inline` declaration of that function in *exactly one* **C**
+translation unit (not in a C++ translation unit). This differs from C++, where
+an |inline| function is emitted in each TU in which it is used, and the linker
+merges them at the final step. In C, this consolidation must be done explicitly
+using an :cpp:`extern inline` declaration.
 
 .. note:: There is no way to automatically verify this, because it will only
   generate an error if the compiler decides *not* to do the inlining and expects
@@ -372,9 +372,7 @@ portion of the file. These should be simple wrappers around the C types (e.g.
 ==============================================
 
 This can create a semantic ambiguity when a C struct is constructed in a C
-header. If you really need it, make sure that all calls to that constructor
-within C headers are syntactically valid and semantically equivalent when
-compiled in C and C++ modes (See: `amongoc_status`).
+header.
 
 **Instead, prefer** to use the named-constructor idiom: Use |static| member
 functions that construct instances of the object (e.g. `amongoc_status::from`).

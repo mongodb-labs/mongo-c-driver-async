@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/str.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/str.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/str.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -563,7 +648,7 @@ null-terminated, but may contain embedded nulls.</p>
 <dd><p>A mutable string type. Convertible to <a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a> by accessing the <a class="reference internal" href="#_CPPv4N12mlib_str_mut3strE" title="mlib_str_mut::str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">str</span></code></a>
 member.</p>
 <p>Internally, this has an anonymous union member to implement the type pun.</p>
-<p>Creating a new string is done using <a class="reference internal" href="#_CPPv412mlib_str_new6size_t14mlib_allocator" title="mlib_str_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a> or <a class="reference internal" href="#_CPPv413mlib_str_copy20__string_convertible14mlib_allocator" title="mlib_str_copy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a>.</p>
+<p>Creating a new string is done using <a class="reference internal" href="#_CPPv412mlib_str_newv" title="mlib_str_new"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_new()</span></code></a> or <a class="reference internal" href="#_CPPv413mlib_str_copy20__string_convertible" title="mlib_str_copy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_copy()</span></code></a>.</p>
 <dl class="cpp member">
 <dt class="sig sig-object cpp" id="_CPPv4N12mlib_str_mut4dataE">
 <span id="_CPPv3N12mlib_str_mut4dataE"></span><span id="_CPPv2N12mlib_str_mut4dataE"></span><span id="mlib_str_mut::data__cP"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N12mlib_str_mut4dataE" title="Link to this definition">#</a><br /></dt>
@@ -596,7 +681,7 @@ the mutable string into an immutable copy.</p>
 <li><p><a class="reference internal" href="#_CPPv413mlib_str_view" title="mlib_str_view"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_view</span></code></a></p></li>
 <li><p><a class="reference internal" href="#_CPPv48mlib_str" title="mlib_str"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str</span></code></a></p></li>
 <li><p><a class="reference internal" href="#_CPPv412mlib_str_mut" title="mlib_str_mut"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">mlib_str_mut</span></code></a></p></li>
-<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span><span class="w"> </span><span class="p">[</span><span class="k">const</span><span class="p">]</span><span class="o">*</span></code> (null terminated C strings, inluding string literals)</p></li>
+<li><p><code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span><span class="w"> </span><span class="p">[</span><span class="k">const</span><span class="p">]</span><span class="o">*</span></code> (<a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a>s, inluding string literals)</p></li>
 </ul>
 <p>From C++ code, any type convertible to <a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string_view" title="(in cppreference v0)"><code class="docutils literal notranslate"><span class="pre">std::string_view</span></code></a> may be used.</p>
 </dd></dl>

@@ -100,9 +100,9 @@ countdown reaches zero.
   :end-at: }
 
 The `amongoc_just` function creates a pseudo-async operation that resolves
-immediately with the given result. Here, we create a successful status with
-`amongoc_okay` and use `amongoc_box_uint64` to create a box that stores the
-final calculation. This result value box will appear at the end of our loop.
+immediately with the given result. Here, we use `amongoc_box_uint64` to create a
+box that stores the final calculation. This result value box will appear at the
+end of our loop.
 
 
 Starting a Timer
@@ -196,14 +196,14 @@ program. We check for errors, either printing the error message or printing the
 final result:
 
 .. literalinclude:: looping.example.c
-  :start-at: is_error
+  :start-at: if_error (status, msg)
   :end-at: return 0;
   :lineno-match:
 
-We use `amongoc_is_error` to test the final status for an error condition. If it
-is an error, we get and print the error message to stderr, and we must destroy
-the final result box because it may contain an unspecified value related to the
-error, but we don't want to do anything with it.
+We use :c:macro:`amongoc_if_error` to test the final status for an error
+condition. If it is an error, we get and print the error message to stderr, and
+we must destroy the final result box because it may contain an unspecified value
+related to the error, but we don't want to do anything with it.
 
 In the success case, we extract the value returned in `amongoc_just` as a
 ``uint64_t`` and print it to stdout. Note that because the box returned by

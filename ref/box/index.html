@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/box.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/box.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/box.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -517,7 +602,7 @@ equivalent to <a class="reference internal" href="#_CPPv411amongoc_nil" title="a
 specifies the type that is expected to be contained within the box. The
 special type <code class="docutils literal notranslate"><span class="pre">[[type(nil)]]</span></code> refers to a the <a class="reference internal" href="#_CPPv411amongoc_nil" title="amongoc_nil"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_nil</span></code></a> special box
 value.</p>
-<p>In C code, use <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> to initialize box objects.</p>
+<p>In C code, use <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a> to initialize box objects.</p>
 <p>When working with C++ code, prefer to use <a class="reference internal" href="#_CPPv4N7amongoc10unique_boxE" title="amongoc::unique_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box</span></code></a>, as it will
 prevent accidental copying and ensures the destructor is executed on the box
 when it goes out of scope.</p>
@@ -726,7 +811,7 @@ function is used to interface with C APIs that will <a class="reference internal
 <dd><p>Obtain a pointer to the data stored in the box.</p>
 <dl class="field-list simple">
 <dt class="field-odd">C API<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#_CPPv416amongoc_box_data12amongoc_view" title="amongoc_box_data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv416amongoc_box_data11amongoc_box" title="amongoc_box_data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_data()</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -870,7 +955,7 @@ of type <code class="code highlight cpp c++ docutils literal highlight-c++"><spa
 returned pointer is a pointer-to-<code class="code highlight cpp c++ docutils literal highlight-c++"><span class="k">const</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">C++ API<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4NK7amongoc10unique_box4dataEv" title="amongoc::unique_box::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::data()</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4N7amongoc10unique_box4dataEv" title="amongoc::unique_box::data"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::data()</span></code></a></p>
 </dd>
 </dl>
 <div class="admonition note">
@@ -1035,7 +1120,7 @@ be treated as trivially relocatable.</p>
 <span id="box-active"></span><h3>State: Active for type <span class="math notranslate nohighlight">\(T\)</span><a class="headerlink" href="#state-active-for-type-t" title="Link to this heading">#</a></h3>
 <p>A box <span class="math notranslate nohighlight">\(B\)</span> is <em>active</em> for type <span class="math notranslate nohighlight">\(T\)</span> if <strong>either</strong>:</p>
 <ul class="simple">
-<li><p><span class="math notranslate nohighlight">\(B\)</span> was used with <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>/<a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a> with the type
+<li><p><span class="math notranslate nohighlight">\(B\)</span> was used with <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>/<a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a> with the type
 <span class="math notranslate nohighlight">\(T\)</span></p></li>
 <li><p><strong>OR</strong> <span class="math notranslate nohighlight">\(B\)</span> was created with a C++ API that constructs a box,</p></li>
 <li><p><strong>OR</strong> <span class="math notranslate nohighlight">\(B\)</span> is a by-value copy of an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a> that was already
@@ -1085,7 +1170,7 @@ than two pointers.</p>
 <section id="non-relocatable-types">
 <h3>Non-Relocatable Types<a class="headerlink" href="#non-relocatable-types" title="Link to this heading">#</a></h3>
 <p>To store an object that cannot be trivially relocated within an <a class="reference internal" href="#_CPPv411amongoc_box" title="amongoc_box"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box</span></code></a>,
-one should use <a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a>, which forcibly disables the
+one should use <a class="reference internal" href="#_CPPv425amongoc_box_init_noinline11amongoc_box6__type" title="amongoc_box_init_noinline"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init_noinline()</span></code></a>, which forcibly disables the
 small-object optimization within the created box.</p>
 <p>The C++ APIs <a class="reference internal" href="#_CPPv4I0EN7amongoc10unique_box4fromE10unique_boxN4mlib9allocatorIEERR1T" title="amongoc::unique_box::from"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::unique_box::from()</span></code></a> will automatically handle this
 distiction by consulting <a class="reference internal" href="#_CPPv4I0EN7amongoc30enable_trivially_relocatable_vE" title="amongoc::enable_trivially_relocatable_v"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc::enable_trivially_relocatable_v</span></code></a>.</p>
@@ -1100,7 +1185,7 @@ distiction by consulting <a class="reference internal" href="#_CPPv4I0EN7amongoc
 and each copy has a distinct identity.</p></li>
 <li><p>It is safe to discard a trivial box (allow it to leave scope) without ever
 calling <a class="reference internal" href="#_CPPv419amongoc_box_destroy11amongoc_box" title="amongoc_box_destroy"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_destroy()</span></code></a>.</p></li>
-<li><p>It is safe to overwrite or reinitialize the box (e.g. <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type22amongoc_box_destructor14mlib_allocator" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)
+<li><p>It is safe to overwrite or reinitialize the box (e.g. <a class="reference internal" href="#_CPPv416amongoc_box_init11amongoc_box6__type" title="amongoc_box_init"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_box_init()</span></code></a>)
 with a new value without first destroying the box.</p></li>
 </ol>
 <p>In general: the semantics of the <a class="reference internal" href="../meta-attrs/#doc-attr-transfer"><code class="xref std std-doc-attr docutils literal notranslate"><span class="pre">[[transfer]]</span></code></a> attribute do not apply to

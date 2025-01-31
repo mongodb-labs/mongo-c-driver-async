@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/sphinx-book-theme.css?v=a3416100" />
-    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9c410b61" />
+    <link rel="stylesheet" type="text/css" href="../../_static/styles.css?v=9a558a22" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
@@ -160,10 +160,14 @@
 </ul>
 </details></li>
 <li class="toctree-l2"><a class="reference internal" href="../../learn/box/">Storing Values in a Type-Erased Box</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/connect/">Connecting to a MongoDB Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/write/">Writing Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../learn/read/">Reading Data</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../how-to/">How-to Guides</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../how-to/connect/">Connect to a Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/status-handling/">How to Handle <code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../how-to/communicate/">Communicating with a Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../how-to/looping/">Creating Asynchronous Loops</a></li>
 </ul>
 </details></li>
@@ -275,6 +279,87 @@
         <div class="header-article-item">
 
 <div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/blob/develop/docs/ref/status.rst?plain=1" target="_blank"
+   class="btn btn-sm btn-source-file-button dropdown-item"
+   title="Show source"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-code"></i>
+  </span>
+<span class="btn__text-container">Show source</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/edit/develop/docs/ref/status.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/mongodb-labs/mongo-c-driver-async/issues/new?title=Issue%20on%20page%20%2Fref/status.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
 
 
 
@@ -399,14 +484,14 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_is_error14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_error()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423amongoc_is_cancellation14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_cancellation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_is_timeout14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_timeout()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv429amongoc_status_strdup_message14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_status_strdup_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t"><code class="docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_okay"><code class="docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-categories">Status Categories</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv430amongoc_status_category_vtable"><code class="docutils literal notranslate"><span class="pre">amongoc_status_category_vtable</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable4nameEv"><code class="docutils literal notranslate"><span class="pre">name()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable14strdup_messageEi"><code class="docutils literal notranslate"><span class="pre">strdup_message()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t"><code class="docutils literal notranslate"><span class="pre">message()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable8is_errorEi"><code class="docutils literal notranslate"><span class="pre">is_error()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable15is_cancellationEi"><code class="docutils literal notranslate"><span class="pre">is_cancellation()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable10is_timeoutEi"><code class="docutils literal notranslate"><span class="pre">is_timeout()</span></code></a></li>
@@ -535,7 +620,7 @@ know to have a category belonging to <code class="project-name docutils literal 
 <span id="_CPPv3NK14amongoc_status7messageEv"></span><span id="_CPPv2NK14amongoc_status7messageEv"></span><span id="amongoc_status::messageC"></span><a class="reference external" href="https://en.cppreference.com/w/cpp/string/basic_string" title="(in cppreference v0)"><span class="n"><span class="pre">std::string</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4NK14amongoc_status7messageEv" title="Link to this definition">#</a><br /></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">C API<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#_CPPv429amongoc_status_strdup_message14amongoc_status" title="amongoc_status_strdup_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status_strdup_message()</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -574,6 +659,10 @@ know to have a category belonging to <code class="project-name docutils literal 
 <p class="admonition-title">Note</p>
 <p>The defintion of what constitutes an error depends on the
 <a class="reference internal" href="#_CPPv4N14amongoc_status8categoryE" title="amongoc_status::category"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::category</span></code></a>.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#c.amongoc_if_error" title="amongoc_if_error"><code class="xref c c-macro docutils literal notranslate"><span class="pre">amongoc_if_error</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -622,19 +711,94 @@ know to have a category belonging to <code class="project-name docutils literal 
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv429amongoc_status_strdup_message14amongoc_status">
-<span id="_CPPv329amongoc_status_strdup_message14amongoc_status"></span><span id="_CPPv229amongoc_status_strdup_message14amongoc_status"></span><span id="amongoc_status_strdup_message__amongoc_status"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_status_strdup_message</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv429amongoc_status_strdup_message14amongoc_status" title="Link to this definition">#</a><br /></dt>
-<dd><p>Obtain a <em>dynamically allocated</em> C string that describes the status in
-human-readable form.</p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The returned string must be freed with <code class="docutils literal notranslate"><span class="pre">free()</span></code></p>
-</div>
+<dt class="sig sig-object cpp" id="_CPPv415amongoc_message14amongoc_statusPc6size_t">
+<span id="_CPPv315amongoc_message14amongoc_statusPc6size_t"></span><span id="_CPPv215amongoc_message14amongoc_statusPc6size_t"></span><span id="amongoc_message__amongoc_status.cP.s"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">amongoc_message</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv414amongoc_status" title="amongoc_status"><span class="n"><span class="pre">amongoc_status</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">st</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buf</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">buflen</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><p>Obtain a human-readable message describing the status <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::st"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">st</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">C++ API<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#_CPPv4NK14amongoc_status7messageEv" title="amongoc_status::message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::message()</span></code></a></p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>st</strong> – The status to inspect.</p></li>
+<li><p><strong>buf</strong> – Pointer to a modifiable <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code> array of at least <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buflen"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buflen</span></code></a> <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code>s.
+This argument may be a null pointer if <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buflen"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buflen</span></code></a> is zero.</p></li>
+<li><p><strong>buflen</strong> – The length of the <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code> array pointed-to by <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>, or zero
+if <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a> is a null pointer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A non-null pointer <span class="math notranslate nohighlight">\(S\)</span> to a <a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a>.</p>
 </dd>
 </dl>
+<p>The buffer <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a> <em>may</em> be used by this function as storage for a
+dynamically-generated message string, but the function is not required to
+modify <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>. The returned pointer <span class="math notranslate nohighlight">\(S\)</span> is never null, and may or may not be
+equal to <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>.</p>
+<p>This function does not dynamically allocate any memory.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#c.amongoc_declmsg" title="amongoc_declmsg"><code class="xref c c-macro docutils literal notranslate"><span class="pre">amongoc_declmsg</span></code></a> for concisely obtaining the message from a
+status object.</p></li>
+<li><p><a class="reference internal" href="#c.amongoc_if_error" title="amongoc_if_error"><code class="xref c c-macro docutils literal notranslate"><span class="pre">amongoc_if_error</span></code></a> to check for an error and extract the message
+in a single line.</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.amongoc_declmsg">
+<span class="sig-name descname"><span class="n"><span class="pre">amongoc_declmsg</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">MsgVar</span></span>, <span class="n"><span class="pre">Status</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.amongoc_declmsg" title="Link to this definition">#</a><br /></dt>
+<dd><p>This statement-like macro will obtain the status message <a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a> from
+the given status <code class="docutils literal notranslate"><span class="pre">Status</span></code> and place it in a variable identified by
+<code class="docutils literal notranslate"><span class="pre">MsgVar</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>MsgVar</strong> – Must be an identifier. This macro will declare a variable of
+type <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">char*</span></code> with this name, which will contain the message from
+<code class="docutils literal notranslate"><span class="pre">Status</span></code>.</p></li>
+<li><p><strong>Status</strong> – Any expression of type <a class="reference internal" href="#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This macro is a shorthand for the following:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span><span class="w"> </span><span class="n">__buffer</span><span class="p">[</span><span class="mi">128</span><span class="p">];</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">MsgVar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amongoc_message</span><span class="p">(</span><span class="n">Status</span><span class="p">,</span><span class="w"> </span><span class="n">__buffer</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">__buffer</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.amongoc_if_error">
+<span class="sig-name descname"><span class="n"><span class="pre">amongoc_if_error</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Status</span></span>, <span class="n"><span class="pre">MsgVar</span></span>, <span class="n"><span class="pre">StatusVar</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.amongoc_if_error" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a branch on whether the given status represents an error. This macro
+supports being called with two arguments, or with three:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg_varname</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Error message: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msg_varname</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">amongoc_if_error</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">msg_varname</span><span class="p">,</span><span class="w"> </span><span class="n">status_varname</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Error code %d has message: %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">status_varname</span><span class="p">.</span><span class="n">code</span><span class="p">,</span><span class="w"> </span><span class="n">msg_varname</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Status</strong> – The first argument must be an expression of type <a class="reference internal" href="#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a>. This is
+the status to be inspected.</p></li>
+<li><p><strong>MsgVar</strong> – This argument should be a plain identifier, which will be declared within
+the scope of the statement as the <a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a> for the status.</p></li>
+<li><p><strong>StatusVar</strong> – If provided, a variable of type <a class="reference internal" href="#_CPPv414amongoc_status" title="amongoc_status"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status</span></code></a> will be declared within
+the statement scope that captures the value of the <code class="docutils literal notranslate"><span class="pre">Status</span></code> argument.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If you are using <code class="docutils literal notranslate"><span class="pre">clang-format</span></code>, add <code class="docutils literal notranslate"><span class="pre">amongoc_if_error</span></code> to the
+<code class="docutils literal notranslate"><span class="pre">IfMacros</span></code> for your <code class="docutils literal notranslate"><span class="pre">clang-format</span></code> configuration.</p>
+</div>
 </dd></dl>
 
 <dl class="cpp var">
@@ -669,18 +833,41 @@ uniquely identifies the category.</p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N30amongoc_status_category_vtable14strdup_messageEi">
-<span id="_CPPv3N30amongoc_status_category_vtable14strdup_messageEi"></span><span id="_CPPv2N30amongoc_status_category_vtable14strdup_messageEi"></span><span id="amongoc_status_category_vtable::strdup_message__i"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">strdup_message</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N30amongoc_status_category_vtable14strdup_messageEi" title="Link to this definition">#</a><br /></dt>
-<dd><dl class="field-list simple">
+<dt class="sig sig-object cpp" id="_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t">
+<span id="_CPPv3N30amongoc_status_category_vtable7messageEiPc6size_t"></span><span id="_CPPv2N30amongoc_status_category_vtable7messageEiPc6size_t"></span><span id="amongoc_status_category_vtable::message__i.cP.s"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">message</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">code</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">buf</span></span>, <a class="reference external" href="https://en.cppreference.com/w/c/types/size_t" title="(in cppreference v0)"><span class="n"><span class="pre">size_t</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">buflen</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="Link to this definition">#</a><br /></dt>
+<dd><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>User code should use <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a> instead of calling this function directly.</p>
+</div>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>code</strong> – The integer status code from <a class="reference internal" href="#_CPPv4N14amongoc_status4codeE" title="amongoc_status::code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::code</span></code></a></p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>code</strong> – The integer status code from <a class="reference internal" href="#_CPPv4N14amongoc_status4codeE" title="amongoc_status::code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::code</span></code></a></p></li>
+<li><p><strong>buf</strong> – Pointer to an array of <code class="code highlight cpp c++ docutils literal highlight-c++"><span class="kt">char</span></code> at least <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buflen"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buflen</span></code></a> long. This may be null
+if <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buflen"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buflen</span></code></a> is zero.</p></li>
+<li><p><strong>buflen</strong> – The length of the character array pointed-to by <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>. If this
+is zero, then <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a> may be a null pointer.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Must return a dynamically allocated null-terminated string that
-describes the status in a human-readable format. The returned string will
-be freed with <code class="docutils literal notranslate"><span class="pre">free()</span></code>.</p>
+<dd class="field-even"><p>Should return a pointer to a <a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a> that provides a
+human-readable message describing the status code <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">code</span></code></a>. May return a null
+pointer if there is a failure to generate the message text.</p>
 </dd>
 </dl>
+<p>A valid implementation of <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">message()</span></code></a> should do the following:</p>
+<ol class="arabic simple">
+<li><p>If the message for <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">code</span></code></a> is a statically allocated <a class="reference internal" href="../glossary/#term-C-string"><span class="xref std std-term">C string</span></a> <span class="math notranslate nohighlight">\(S\)</span>,
+return <span class="math notranslate nohighlight">\(S\)</span> without inspecting <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>.</p></li>
+<li><p>If the message <span class="math notranslate nohighlight">\(M\)</span> needs to be dynamically generated and <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a> is not
+null, generate the message string in <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>, ensuring that <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a> contains
+a nul terminator. The written length with nul terminator must not exceed <span class="cpp-expr sig sig-inline cpp"><a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buflen"><span class="n">buflen</span></a></span> (use of <code class="docutils literal notranslate"><span class="pre">snprintf</span></code> is
+recommended). Return <a class="reference internal" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t" title="amongoc_status_category_vtable::message::buf"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">buf</span></code></a>.</p></li>
+<li><p>Otherwise, return a fallback message string or a null pointer.</p></li>
+</ol>
+<p>If this function returns a null pointer, then <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a> will replace
+it with a fallback message telling the caller that the message text is
+unavailable.</p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -812,7 +999,7 @@ from OpenSSL. Error reason values are stored in <a class="reference internal" hr
 <dt><em>unknown</em> (<code class="docutils literal notranslate"><span class="pre">amongoc.unknown</span></code>)</dt><dd><p>This status category appears if the status was constructed from an unknown
 source. In this case, no status messages or status semantics are defined, except
 that <a class="reference internal" href="#_CPPv416amongoc_is_error14amongoc_status" title="amongoc_is_error"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_is_error()</span></code></a> returns <code class="docutils literal notranslate"><span class="pre">false</span></code> only if the <a class="reference internal" href="#_CPPv4N14amongoc_status4codeE" title="amongoc_status::code"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status::code</span></code></a> is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
-<p>The message returned from <a class="reference internal" href="#_CPPv429amongoc_status_strdup_message14amongoc_status" title="amongoc_status_strdup_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_status_strdup_message()</span></code></a> will always be
+<p>The message returned from <a class="reference internal" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t" title="amongoc_message"><code class="xref cpp cpp-any docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a> will always be
 “<code class="docutils literal notranslate"><span class="pre">amongoc.unknown:&lt;n&gt;</span></code>” where <code class="docutils literal notranslate"><span class="pre">&lt;n&gt;</span></code> is the numeric value of the error
 code.</p>
 </dd>
@@ -981,14 +1168,14 @@ return a non-zero <a class="reference internal" href="#_CPPv416amongoc_tls_errc"
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv416amongoc_is_error14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_error()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv423amongoc_is_cancellation14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_cancellation()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv418amongoc_is_timeout14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_is_timeout()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv429amongoc_status_strdup_message14amongoc_status"><code class="docutils literal notranslate"><span class="pre">amongoc_status_strdup_message()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv415amongoc_message14amongoc_statusPc6size_t"><code class="docutils literal notranslate"><span class="pre">amongoc_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv412amongoc_okay"><code class="docutils literal notranslate"><span class="pre">amongoc_okay</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-categories">Status Categories</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv430amongoc_status_category_vtable"><code class="docutils literal notranslate"><span class="pre">amongoc_status_category_vtable</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable4nameEv"><code class="docutils literal notranslate"><span class="pre">name()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable14strdup_messageEi"><code class="docutils literal notranslate"><span class="pre">strdup_message()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable7messageEiPc6size_t"><code class="docutils literal notranslate"><span class="pre">message()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable8is_errorEi"><code class="docutils literal notranslate"><span class="pre">is_error()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable15is_cancellationEi"><code class="docutils literal notranslate"><span class="pre">is_cancellation()</span></code></a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N30amongoc_status_category_vtable10is_timeoutEi"><code class="docutils literal notranslate"><span class="pre">is_timeout()</span></code></a></li>
