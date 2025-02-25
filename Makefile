@@ -1,6 +1,6 @@
 .SILENT:
 
-.PHONY: poetry-install docs-html docs-serve default build test format format-check
+.PHONY: poetry-install docs-html docs-serve default build test format format-check packages
 
 default: docs-html
 
@@ -17,7 +17,7 @@ $(_poetry_stamp): $(THIS_DIR)/poetry.lock $(THIS_DIR)/pyproject.toml
 	touch $@
 
 SPHINX_JOBS ?= auto
-SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -a -b dirhtml
+SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
@@ -47,3 +47,6 @@ format: poetry-install
 _format:
 	$(POETRY) run python tools/include-fixup.py
 	$(POETRY) run clang-format --verbose -i $(all_sources)
+
+packages:
+	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs
