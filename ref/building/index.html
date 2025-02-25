@@ -214,6 +214,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../vec/">Vector Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../time/">Time Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../glossary/">Terminology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../features/"><code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> Features</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../explain/">Design &amp; Explanation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -574,14 +575,14 @@ them:</p>
 <dt class="sig sig-object cmake" id="variable:AMONGOC_INSTALL_CMAKEDIR">
 <span class="sig-name descname"><span class="pre">AMONGOC_INSTALL_CMAKEDIR</span></span><a class="headerlink" href="#variable:AMONGOC_INSTALL_CMAKEDIR" title="Link to this definition">#</a></dt>
 <dd><p>Set the installation path for CMake package files that are to be found using
-<span class="target" id="index-0-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a></p>
+<span class="target" id="index-0-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v4.0.0)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Default<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="code highlight sh docutils literal highlight-sh"><span class="si">${</span><span class="nv">CMAKE_INSTALL_LIBDIR</span><span class="si">}</span>/cmake</code></p>
 </dd>
 </dl>
 <p>This is based on the similar variables that are used in
-<span class="target" id="index-0-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a>.</p>
+<span class="target" id="index-0-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v4.0.0)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a>.</p>
 </dd></dl>
 
 <dl class="cmake variable">
@@ -609,7 +610,7 @@ default.</p>
 <dl class="cmake variable">
 <dt class="sig sig-object cmake" id="variable:BUILD_TESTING">
 <span class="sig-name descname"><span class="pre">BUILD_TESTING</span></span><a class="headerlink" href="#variable:BUILD_TESTING" title="Link to this definition">#</a></dt>
-<dd><p>This variables comes from the <span class="target" id="index-0-module:module:CTest"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">CTest</span></code></a> CMake
+<dd><p>This variables comes from the <span class="target" id="index-0-module:module:CTest"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CTest.html#module:CTest" title="(in CMake v4.0.0)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">CTest</span></code></a> CMake
 module and can toggle the generation/building of tests.</p>
 </dd></dl>
 
@@ -621,7 +622,7 @@ module and can toggle the generation/building of tests.</p>
 <dt class="sig sig-object cmake" id="variable:CMAKE_INSTALL_INCLUDEDIR">
 <span class="sig-name descname"><span class="pre">CMAKE_INSTALL_INCLUDEDIR</span></span><a class="headerlink" href="#variable:CMAKE_INSTALL_INCLUDEDIR" title="Link to this definition">#</a></dt>
 <dd><p>These variables come from
-<span class="target" id="index-1-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v3.31.5)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a> and control
+<span class="target" id="index-1-module:module:GNUInstallDirs"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html#module:GNUInstallDirs" title="(in CMake v4.0.0)"><code class="xref cmake cmake-module docutils literal notranslate"><span class="pre">GNUInstallDirs</span></code></a> and control
 the paths to installed files for separate package components. Refer to that
 module for details.</p>
 </dd></dl>
@@ -641,7 +642,7 @@ otherwise (e.g. when added as a sub-project)</p>
 configuration to download and build the dependencies required by <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>.</p>
 <p>If you want to manage dependencies yourself, disable this toggle. You will
 need to ensure that the <a class="reference internal" href="#building-deps"><span class="std std-ref">configure-time dependencies</span></a> are
-available to <span class="target" id="index-1-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a>.</p>
+available to <span class="target" id="index-1-command:command:find_package"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/command/find_package.html#command:find_package" title="(in CMake v4.0.0)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_package</span></code></a>.</p>
 </dd></dl>
 
 </section>
@@ -717,7 +718,7 @@ can be linked into an application:</p>
 </pre></div>
 </div>
 <p>By default, the <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> CMake package will attempt to import dependencies
-using <span class="target" id="index-0-command:command:find_dependency"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html#command:find_dependency" title="(in CMake v3.31.5)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_dependency</span></code></a>. This import
+using <span class="target" id="index-0-command:command:find_dependency"></span><a class="reference external" href="https://cmake.org/cmake/help/latest/module/CMakeFindDependencyMacro.html#command:find_dependency" title="(in CMake v4.0.0)"><code class="xref cmake cmake-command docutils literal notranslate"><span class="pre">find_dependency</span></code></a>. This import
 can be disabled by changing <span class="target" id="index-0-variable:AMONGOC_FIND_DEPENDENCIES"></span><a class="reference internal" href="#variable:AMONGOC_FIND_DEPENDENCIES" title="AMONGOC_FIND_DEPENDENCIES"><code class="xref cmake cmake-variable docutils literal notranslate"><span class="pre">AMONGOC_FIND_DEPENDENCIES</span></code></a>.</p>
 <p><strong>If you build</strong> <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code> using <a class="reference external" href="https://vcpkg.io/">vcpkg</a> (the default) it is highly recommended
 to use vcpkg in your own project to install <code class="project-name docutils literal notranslate"><span class="pre">amongoc</span></code>’s dependencies, as it is
