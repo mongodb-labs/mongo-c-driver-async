@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 /**
  * @brief State for the program
@@ -32,7 +33,7 @@ amongoc_emitter loop_step(amongoc_box    state_ptr,  //
     uint64_t sum = s->a + s->b;
     s->a         = s->b;
     s->b         = sum;
-    fprintf(stderr, "%d seconds remain, current value: %lu\n", s->countdown, cur);
+    fprintf(stderr, "%d seconds remain, current value: %" PRIu64 "\n", s->countdown, cur);
     // Check if we are done
     if (s->countdown == 0) {
         // No more looping to do. Return a final result

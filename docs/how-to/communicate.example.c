@@ -5,6 +5,8 @@
 #include <bson/mut.h>
 #include <bson/view.h>
 
+#include <time.h>
+
 /**
  * @brief Shared state for the application. This is passed through the app as pointer stored
  * in a box

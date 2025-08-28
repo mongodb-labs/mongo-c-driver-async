@@ -310,7 +310,7 @@ result<connection_uri> connection_uri::parse(std::string_view                   
             // Handled this parameter
         } else {
             // Unknown parameter name
-            warn.fire(defer_convert([&] -> uri_warning_event {
+            warn.fire(defer_convert([&]() -> uri_warning_event {
                 return uri_warning_event{
                     amongoc::format(alloc, "Unknown URI parameter “{}”", std::string_view(qp.key))};
             }));

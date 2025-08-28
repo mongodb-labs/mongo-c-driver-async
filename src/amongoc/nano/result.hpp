@@ -389,7 +389,7 @@ struct nanosender_traits<result<T, E>> {
             if (_result.has_value()) {
                 // The input result has a value, which is the nanosender that we
                 // will connect immediately here:
-                _real_oper.emplace(defer_convert([&] -> connect_t<T, wrapped_recv> {
+                _real_oper.emplace(defer_convert([&]() -> connect_t<T, wrapped_recv> {
                     return amongoc::connect(std::move(_result).value(),
                                             wrapped_recv{mlib_fwd(_recv)});
                 }));

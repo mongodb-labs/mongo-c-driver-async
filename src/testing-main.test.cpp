@@ -1,7 +1,10 @@
 #include <catch2/catch_session.hpp>
 #include <catch2/internal/catch_clara.hpp>
 
+#include <stdlib.h>
 #include <test_params.test.hpp>
+
+#include "catch2/catch_test_macros.hpp"
 
 int main(int argc, char** argv) {
     Catch::Session session;

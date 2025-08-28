@@ -14,6 +14,8 @@
 #endif
 #endif
 
+#include <iso646.h>
+
 typedef struct bson_view bson_view;
 struct bson_iterator;
 
@@ -344,7 +346,7 @@ inline bson_view bson_view::from_data(const bson_byte* b, size_t datalen) {
         X(bson_view_errc_invalid_terminator);
     }
 #undef X
-    __builtin_unreachable();
+    mlib_unreachable();
 }
 
 #endif  // C++

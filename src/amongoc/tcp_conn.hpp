@@ -159,7 +159,7 @@ inline nanosender_of<result<address_info>> auto
 async_resolve(amongoc_loop& loop, const char* name, const char* svc) {
     return make_simple_sender<result<address_info>>([=, &loop](auto&& recv) {
         return simple_operation(
-            [r = mlib::as_object(mlib_fwd(recv)), name, svc, &loop] mutable -> void {
+            [r = mlib::as_object(mlib_fwd(recv)), name, svc, &loop]() mutable -> void {
                 loop.vtable->getaddrinfo(  //
                     &loop,
                     name,
@@ -185,7 +185,7 @@ inline nanosender_of<result<tcp_connection_rw_stream>> auto async_connect(amongo
         [ai = std::move(ai),
          &loop]<nanoreceiver_of<result<tcp_connection_rw_stream>> R>(R&& recv) mutable {
             return simple_operation(
-                [ai = std::move(ai), r = mlib::as_object(mlib_fwd(recv)), &loop] mutable {
+                [ai = std::move(ai), r = mlib::as_object(mlib_fwd(recv)), &loop]() mutable {
                     loop.vtable->tcp_connect(  //
                         &loop,
                         ai.box,

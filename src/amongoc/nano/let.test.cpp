@@ -4,6 +4,7 @@
 #include <amongoc/nano/just.hpp>
 
 #include <functional>
+#include <string>
 
 using namespace amongoc;
 

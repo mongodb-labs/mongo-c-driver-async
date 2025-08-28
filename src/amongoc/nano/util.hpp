@@ -10,6 +10,7 @@
 #include <neo/like.hpp>
 
 #include <concepts>
+#include <optional>
 #include <ranges>
 #include <type_traits>
 

@@ -8,7 +8,9 @@
  */
 #pragma once
 
-#include <sys/param.h>
+#ifndef _WIN32
+#include <sys/param.h>  // Endian detection
+#endif
 
 #if __cplusplus
 #if __has_include(<version>)
@@ -78,11 +80,10 @@
  * @brief If the argument expands to `0`, `false`, or nothing, expands to `0`.
  * Otherwise expands to `1`.
  */
-#define MLIB_BOOLEAN(...)                                                      \
-  MLIB_IS_NOT_EMPTY(_mlibPaste1(_mlibBool_, __VA_ARGS__))
-#define _mlibBool_0
-#define _mlibBool_false
-#define _mlibBool_
+#define MLIB_BOOLEAN(...) MLIB_IS_NOT_EMPTY(_mlibPaste1(_mlibBool_, __VA_ARGS__)())
+#define _mlibBool_0()
+#define _mlibBool_false()
+#define _mlibBool_()
 
 /**
  * @brief A ternary macro. Expects three parenthesized argument lists in
@@ -116,7 +117,7 @@
  * @brief Expands to `noexcept` when compiled as C++, otherwise expands to
  * an empty attribute
  */
-#define mlib_noexcept MLIB_LANG_PICK([[]])(noexcept)
+#define mlib_noexcept MLIB_LANG_PICK()(noexcept)
 
 /**
  * @brief Expands to `constexpr` when compiled as C++, otherwise `inline`
@@ -129,12 +130,13 @@
 #define mlib_alignas(T) MLIB_LANG_PICK(_Alignas)(alignas)(T)
 #define mlib_alignof(T) MLIB_LANG_PICK(_Alignof)(alignof)(T)
 
-#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__)
-#define mlib_is_little_endian()                                                \
-  mlib_parenthesized_expression(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#ifdef _WIN32
+#define mlib_is_little_endian() 1
+#elif defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__)
+#define mlib_is_little_endian()                                                                    \
+    mlib_parenthesized_expression(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
 #elif defined(__BYTE_ORDER) && defined(__LITTLE_ENDIAN)
-#define mlib_is_little_endian()                                                \
-  mlib_parenthesized_expression(__BYTE_ORDER == __LITTLE_ENDIAN)
+#define mlib_is_little_endian() mlib_parenthesized_expression(__BYTE_ORDER == __LITTLE_ENDIAN)
 #else
 #error "Do not know how to detect endianness on this platform."
 #endif
@@ -193,19 +195,17 @@
 #endif
 #define mlib_is_msvc() 0
 #elif _MSC_VER
+#define mlib_is_gcc() 0
+#define mlib_is_clang() 0
 #define mlib_is_gnu_like() 0
 #define mlib_is_msvc() 1
 #endif
 
-#define MLIB_IF_CLANG(...)                                                     \
-  MLIB_IF_ELSE(mlib_is_clang())(__VA_ARGS__)(MLIB_NOTHING(#__VA_ARGS__))
-#define MLIB_IF_GCC(...)                                                       \
-  MLIB_IF_ELSE(mlib_is_gcc())(__VA_ARGS__)(MLIB_NOTHING(#__VA_ARGS__))
-#define MLIB_IF_MSVC(...)                                                      \
-  MLIB_IF_ELSE(mlib_is_msvc())(__VA_ARGS__)(MLIB_NOTHING(#__VA_ARGS__))
+#define MLIB_IF_CLANG(...) MLIB_IF_ELSE(mlib_is_clang())(__VA_ARGS__)()
+#define MLIB_IF_GCC(...) MLIB_IF_ELSE(mlib_is_gcc())(__VA_ARGS__)()
+#define MLIB_IF_MSVC(...) MLIB_IF_ELSE(mlib_is_msvc())(__VA_ARGS__)()
 
-#define MLIB_IF_GNU_LIKE(...)                                                  \
-  MLIB_IF_GCC(__VA_ARGS__) MLIB_IF_CLANG(__VA_ARGS__)
+#define MLIB_IF_GNU_LIKE(...) MLIB_IF_GCC(__VA_ARGS__) MLIB_IF_CLANG(__VA_ARGS__)
 
 #if mlib_is_msvc()
 #define mlib_no_unique_address [[msvc::no_unique_address]]
@@ -213,78 +213,78 @@
 #define mlib_no_unique_address [[no_unique_address]]
 #endif
 
-#define mlib_nodiscard(Msg) MLIB_LANG_PICK([[]])([[nodiscard(Msg)]])
+#define mlib_nodiscard(Msg) MLIB_LANG_PICK()([[nodiscard(Msg)]])
 
 #if defined __cpp_concepts
-#define MLIB_RETURNS(...)                                                      \
-  noexcept(noexcept(__VA_ARGS__))                                              \
-      ->decltype(auto)                                                         \
-    requires requires { (__VA_ARGS__); }                                       \
-  {                                                                            \
-    return __VA_ARGS__;                                                        \
-  }                                                                            \
-  static_assert(true)
+#define MLIB_RETURNS(...)                                                                          \
+    noexcept(noexcept(__VA_ARGS__))                                                                \
+        ->decltype(auto)                                                                           \
+        requires requires { (__VA_ARGS__); }                                                       \
+    {                                                                                              \
+        return __VA_ARGS__;                                                                        \
+    }                                                                                              \
+    static_assert(true)
 #else
-#define MLIB_RETURNS(...)                                                      \
-  noexcept(noexcept(__VA_ARGS__))->decltype(auto) { return __VA_ARGS__; }      \
-  static_assert(true)
+#define MLIB_RETURNS(...)                                                                          \
+    noexcept(noexcept(__VA_ARGS__))->decltype(auto) { return __VA_ARGS__; }                        \
+    static_assert(true)
 #endif
 
-#define mlib_always_inline                                                     \
-  MLIB_IF_GNU_LIKE(__attribute__((always_inline)))                             \
-  MLIB_IF_MSVC(__forceinline) inline
+#define mlib_always_inline                                                                         \
+    MLIB_IF_GNU_LIKE(__attribute__((always_inline)) inline)                                        \
+    MLIB_IF_MSVC(__forceinline)
+
+// Annotate an entity that might be unused
+#define mlib_maybe_unused MLIB_IF_GNU_LIKE(__attribute__((unused)))
 
 #define mlib_pragma(...) _Pragma(#__VA_ARGS__)
 
-#define mlib_diagnostic_push()                                                 \
-  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic push))                           \
-  MLIB_IF_MSVC(mlib_pragma(warning(push)))                                     \
-  mlib_static_assert(true, "")
+#define mlib_diagnostic_push()                                                                     \
+    MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic push))                                             \
+    MLIB_IF_MSVC(mlib_pragma(warning(push)))                                                       \
+    mlib_static_assert(true, "")
 
-#define mlib_diagnostic_pop()                                                  \
-  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic pop))                            \
-  MLIB_IF_MSVC(mlib_pragma(warning(pop)))                                      \
-  mlib_static_assert(true, "")
+#define mlib_diagnostic_pop()                                                                      \
+    MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic pop))                                              \
+    MLIB_IF_MSVC(mlib_pragma(warning(pop)))                                                        \
+    mlib_static_assert(true, "")
 
-#define mlib_gcc_warning_disable(Warning)                                      \
-  MLIB_IF_GCC(mlib_pragma(GCC diagnostic ignored Warning))                     \
-  mlib_static_assert(true, "")
+#define mlib_gcc_warning_disable(Warning)                                                          \
+    MLIB_IF_GCC(mlib_pragma(GCC diagnostic ignored Warning))                                       \
+    mlib_static_assert(true, "")
 
-#define mlib_gnu_warning_disable(Warning)                                      \
-  MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                \
-  mlib_static_assert(true, "")
+#define mlib_gnu_warning_disable(Warning)                                                          \
+    MLIB_IF_GNU_LIKE(mlib_pragma(GCC diagnostic ignored Warning))                                  \
+    mlib_static_assert(true, "")
 
-#define mlib_extern_c MLIB_LANG_PICK([[]])(extern "C")
+#define mlib_extern_c MLIB_LANG_PICK()(extern "C")
 
-#define mlib_parenthesized_expression(...)                                     \
-  MLIB_IF_CXX(mlib::identity{})(__VA_ARGS__)
+#define mlib_parenthesized_expression(...) MLIB_IF_CXX(mlib::identity{})(__VA_ARGS__)
 
 /**
  * @brief Test whether the current compiler version is at least the given
  * version
  */
-#define mlib_compiler_version_gte(Major, Minor, Patch)                         \
-  MLIB_IF_GCC(((__GNUC__ > Major) ||                                           \
-               (__GNUC__ >= Major && __GNUC_MINOR__ > Minor) ||                \
-               (__GNUC__ > Major && __GNUC_MINOR__ >= Minor &&                 \
-                __GNUC_PATCHLEVEL__ >= Patch)))                                \
-  MLIB_IF_CLANG(((__clang_major__ > Major) ||                                  \
-                 (__clang_major__ >= Major && __clang_minor__ > Minor) ||      \
-                 (__clang_major__ > Major && __clang_minor__ >= Minor &&       \
-                  __clang_patchlevel__ >= Patch)))                             \
-  MLIB_IF_MSVC(((_MSC_VER / 100 > Major) ||                                    \
-                (_MSC_VER / 100 >= Major && _MSC_VER % 100 > Minor) ||         \
-                (_MSC_VER / 100 >= Major && _MSC_VER % 100 >= Minor &&         \
-                 _MSC_FULL_VER % 100000 >= Patch)))
+#define mlib_compiler_version_gte(Major, Minor, Patch)                                             \
+    MLIB_IF_GCC(                                                                                   \
+        ((__GNUC__ > Major) || (__GNUC__ >= Major && __GNUC_MINOR__ > Minor)                       \
+         || (__GNUC__ > Major && __GNUC_MINOR__ >= Minor && __GNUC_PATCHLEVEL__ >= Patch)))        \
+    MLIB_IF_CLANG(((__clang_major__ > Major)                                                       \
+                   || (__clang_major__ >= Major && __clang_minor__ > Minor)                        \
+                   || (__clang_major__ > Major && __clang_minor__ >= Minor                         \
+                       && __clang_patchlevel__ >= Patch)))                                         \
+    MLIB_IF_MSVC(((_MSC_VER / 100 > Major) || (_MSC_VER / 100 >= Major && _MSC_VER % 100 > Minor)  \
+                  || (_MSC_VER / 100 >= Major && _MSC_VER % 100 >= Minor                           \
+                      && _MSC_FULL_VER % 100000 >= Patch)))
 
-#define mlib_is_gcc_at_least(Major, Minor, Patch)                              \
-  (mlib_is_gcc() && mlib_compiler_version_gte(Major, Minor, Patch))
+#define mlib_is_gcc_at_least(Major, Minor, Patch)                                                  \
+    (mlib_is_gcc() && mlib_compiler_version_gte(Major, Minor, Patch))
 
-#define mlib_is_clang_at_least(Major, Minor, Patch)                            \
-  (mlib_is_clang() && mlib_compiler_version_gte(Major, Minor, Patch))
+#define mlib_is_clang_at_least(Major, Minor, Patch)                                                \
+    (mlib_is_clang() && mlib_compiler_version_gte(Major, Minor, Patch))
 
-#define mlib_is_msvc_at_least(Major, Minor, Patch)                             \
-  (mlib_is_msvc() && mlib_compiler_version_gte(Major, Minor, Patch))
+#define mlib_is_msvc_at_least(Major, Minor, Patch)                                                 \
+    (mlib_is_msvc() && mlib_compiler_version_gte(Major, Minor, Patch))
 
 #if mlib_is_cxx() || defined(MLIB_FORCE_DISABLE_GENERIC_SELECTION)
 // Never use _Generic in C++
@@ -324,15 +324,19 @@
  * unspecified field of type `char`. This unspecified field should not be used
  * for any reason.
  */
-#define mlib_empty_aggregate_c_compat                                          \
-  MLIB_LANG_PICK(char _placeholder)(static_assert(true, ""))
+#define mlib_empty_aggregate_c_compat MLIB_LANG_PICK(char _placeholder)(static_assert(true, ""))
 
 /**
  * @brief Expand to a call expression `Prefix##_argc_N(...)`, where `N` is the
  * number of macro arguments.
  */
-#define MLIB_ARGC_PICK(Prefix, ...)                                            \
-  MLIB_PASTE_3(Prefix, _argc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+#define MLIB_ARGC_PICK(Prefix, ...)                                                                \
+    MLIB_PASTE_3(Prefix, _argc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
+
+MLIB_LANG_PICK()([[noreturn]]) mlib_constexpr void mlib_unreachable() mlib_noexcept {
+    MLIB_IF_GNU_LIKE(__builtin_unreachable();)
+    MLIB_IF_MSVC(__assume(0);)
+}
 
 #if mlib_is_cxx()
 

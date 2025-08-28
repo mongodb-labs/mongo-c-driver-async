@@ -136,7 +136,7 @@ struct default_loop {
                    mlib::bind_allocator(a,
                                         [st,
                                          res = mlib_fwd(res).as_unique(),
-                                         h   = mlib_fwd(h).as_unique()] mutable {
+                                         h   = mlib_fwd(h).as_unique()]() mutable {
                                             h.complete(st, mlib_fwd(res));
                                         }));
     }

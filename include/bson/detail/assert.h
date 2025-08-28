@@ -35,7 +35,8 @@ enum {
         _bson_assert_fail(#Cond, __FILE__, __LINE__);                                              \
         abort();                                                                                   \
     } else if (!(Cond)) {                                                                          \
-        __builtin_unreachable();                                                                   \
+        MLIB_IF_MSVC(__assume(0));                                                                 \
+        MLIB_IF_GNU_LIKE(__builtin_unreachable());                                                 \
     } else                                                                                         \
         ((void)0)
 

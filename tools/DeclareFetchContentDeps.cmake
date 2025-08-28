@@ -34,6 +34,7 @@ file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/neo-funExtra.cmake" [=[
         PRIVATE ${__nf_sources}
         PUBLIC FILE_SET HEADERS BASE_DIRS ${__neo_fun_src_dir} FILES ${__nf_headers}
         )
+    target_compile_options(neo-fun PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/Zc:preprocessor>)
     target_compile_features(neo-fun PUBLIC cxx_std_20)
 ]=])
 
