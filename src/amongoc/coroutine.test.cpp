@@ -135,6 +135,7 @@ TEST_CASE("Coroutine/immediate await") {
 emitter throws_early(mlib::allocator<>) {
     throw std::system_error(std::make_error_code(std::errc::address_in_use));
     co_await ramp_end;
+    co_return 0;
 }
 
 TEST_CASE("Coroutine/Throw before suspend") {
