@@ -88,10 +88,10 @@ TEST_CASE("Stop/Racing Stop") {
                                             did_stop = true;
                                         }});
         }));
+        bool        stopped = false;
         std::thread thr{[&] {
-            bool stopped = stop.request_stop();
-            CHECK(stopped);
-            CHECK(did_stop);
+            stopped = stop.request_stop();
+            assert(did_stop);
         }};
         while (not stop.stop_requested()) {
             ;  // spin
@@ -101,6 +101,7 @@ TEST_CASE("Stop/Racing Stop") {
         }
         REQUIRE_FALSE(cb.has_value());
         thr.join();
+        CHECK(stopped);
     }
 }
 
