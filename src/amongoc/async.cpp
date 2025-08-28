@@ -19,11 +19,12 @@
 using namespace amongoc;
 
 emitter amongoc_timeout(amongoc_loop* loop, emitter em, std::timespec tim) noexcept {
+    // Grab full ownership of the emitter before suspending
+    auto uq_em = std::move(em).as_unique();
     // Create and start a race between the two operations
     co_await ramp_end;
     std::variant<emitter_result, emitter_result> race
-        = co_await first_completed(mlib_fwd(em).as_unique(),
-                                   amongoc_schedule_later(loop, tim).as_unique());
+        = co_await first_completed(mlib_fwd(uq_em), amongoc_schedule_later(loop, tim).as_unique());
     // The winner of the race fulfills the variant
     if (race.index() == 0) {
         // The main task completed first.
