@@ -266,7 +266,9 @@ explicit range(R&&) -> range<R>;
  */
 template <typename... Els>
 struct doc : doc<std::index_sequence_for<Els...>, Els...> {
-    using doc<std::index_sequence_for<Els...>, Els...>::doc;
+    template <typename... Es>
+    explicit doc(Es&&... es)
+        : doc<std::index_sequence_for<Els...>, Els...>(mlib_fwd(es)...) {}
 };
 
 template <std::size_t N, typename Elem>

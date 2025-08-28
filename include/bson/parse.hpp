@@ -121,7 +121,10 @@ struct variadic_nth_storage {
 
 template <typename... Rs>
 struct variadic_base : variadic_base<std::index_sequence_for<Rs...>, Rs...> {
-    using variadic_base<std::index_sequence_for<Rs...>, Rs...>::variadic_base;
+    // Cannot inherit constructor due to MSVC bugs
+    template <typename... Args>
+    constexpr explicit variadic_base(Args&&... args)
+        : variadic_base<std::index_sequence_for<Rs...>, Rs...>(mlib_fwd(args)...) {}
 };
 
 template <std::size_t... Ns, typename... Rs>
@@ -129,7 +132,7 @@ struct variadic_base<std::index_sequence<Ns...>, Rs...> : variadic_nth_storage<N
     variadic_base() = default;
     constexpr explicit variadic_base(Rs&&... ps)
         requires(sizeof...(ps) != 0)
-        : variadic_nth_storage<Ns, Rs>{mlib_fwd(ps)}... {}
+        : variadic_nth_storage<Ns, Rs>(mlib_fwd(ps))... {}
 
     template <typename F>
     constexpr decltype(auto) apply_all(F&& fn) {
@@ -201,13 +204,16 @@ struct any : variadic_base<Rs...> {
         requires(rule<Rs, T> and ...)
     result<T> operator()(const T& obj) {
         result<T> ret;
-        this->apply_all([&](auto&... rules) {
-            ret.apply_all([&](auto&... subresults_opts) {
-                // Invoke each sub-parser in order until one accepts or errors
-                static_cast<void>(
-                    (((subresults_opts.emplace(rules(obj))).state() != pstate::reject) or ...));
+        // if-constexpr is not strictly necessary, but works around an MSVC bug
+        if constexpr (sizeof...(Rs)) {
+            this->apply_all([&](auto&... rules) {
+                ret.apply_all([&](auto&... subresults_opts) {
+                    // Invoke each sub-parser in order until one accepts or errors
+                    static_cast<void>(
+                        (((subresults_opts.emplace(rules(obj))).state() != pstate::reject) or ...));
+                });
             });
-        });
+        }
         return ret;
     }
 };
@@ -276,13 +282,16 @@ struct all : variadic_base<Rs...> {
         requires(rule<Rs, T> and ...)
     result<T> operator()(const T& obj) {
         result<T> ret;
-        this->apply_all([&](auto&... rules) {
-            ret.apply_all([&](auto&... subresults_opts) {
-                // Invoke each sub-parser in order until one does not accept
-                static_cast<void>(
-                    (((subresults_opts.emplace(rules(obj))).state() == pstate::accept) and ...));
+        // if-constexpr is not strictly necessary, but works around an MSVC bug
+        if constexpr (sizeof...(Rs)) {
+            this->apply_all([&](auto&... rules) {
+                ret.apply_all([&](auto&... subresults_opts) {
+                    // Invoke each sub-parser in order until one does not accept
+                    static_cast<void>((
+                        ((subresults_opts.emplace(rules(obj))).state() == pstate::accept) and ...));
+                });
             });
-        });
+        }
         return ret;
     }
 };
@@ -811,11 +820,17 @@ struct doc_impl::part<reject_others> {
 
 template <typename... Ts>
 struct doc : variadic_base<Ts...> {
-    using doc::variadic_base::variadic_base;
+    // Cannot inherit constructor due to MSVC bugs
+    template <typename... Args>
+    constexpr explicit doc(Args&&... args)
+        : variadic_base<Ts...>(mlib_fwd(args)...) {}
 
     struct final_result;
 
     struct stateful : variadic_base<doc_impl::part<Ts>...> {
+        explicit stateful(Ts&... args)
+            : variadic_base<doc_impl::part<Ts>...>(doc_impl::part<Ts>(args)...) {}
+
         constexpr final_result parse(bson::view view);
     };
 
@@ -869,7 +884,7 @@ struct doc : variadic_base<Ts...> {
 
     constexpr stateful stateful_parser() noexcept {
         return this->apply_all([](Ts&... rules) -> stateful {  //
-            return stateful{variadic_base<doc_impl::part<Ts>...>{doc_impl::part<Ts>{rules}...}};
+            return stateful{rules...};
         });
     }
 

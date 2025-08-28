@@ -20,9 +20,10 @@ template <typename F>
 struct deferred_conversion {
     mlib::object_t<F> _func;
 
-    constexpr operator mlib::invoke_result_t<F>() { return mlib::invoke(static_cast<F&&>(_func)); }
+    // Need to use std::invoke_result for MSVC bugs, not mlib::invoke_result
+    constexpr operator std::invoke_result_t<F>() { return std::invoke(static_cast<F&&>(_func)); }
 
-    constexpr operator mlib::invoke_result_t<const F>() const {
+    constexpr operator std::invoke_result_t<const F>() const {
         return mlib::invoke(static_cast<F const&&>(_func));
     }
 };
