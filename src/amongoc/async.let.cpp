@@ -33,9 +33,9 @@ template <>
 struct let_forward_errors<true> {
     template <typename CompressedUserdata, typename GetAllocator>
     struct continuation {
-        amongoc_let_transformer                  transform;
-        [[no_unique_address]] CompressedUserdata userdata;
-        [[no_unique_address]] GetAllocator       get_alloc;
+        amongoc_let_transformer                   transform;
+        mlib_no_unique_address CompressedUserdata userdata;
+        mlib_no_unique_address GetAllocator       get_alloc;
 
         unique_emitter operator()(emitter_result&& res) {
             if (res.status.is_error()) {
@@ -53,8 +53,8 @@ template <>
 struct let_forward_errors<false> {
     template <typename CompressedUserdata>
     struct continuation_ {
-        amongoc_let_transformer                  transform;
-        [[no_unique_address]] CompressedUserdata userdata;
+        amongoc_let_transformer                   transform;
+        mlib_no_unique_address CompressedUserdata userdata;
 
         // Mimic the constructor that takes the get_alloc object. We don't need it, so just throw it
         // away

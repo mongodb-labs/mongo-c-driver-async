@@ -216,8 +216,8 @@ public:
     constexpr allocator_type get_allocator() const noexcept { return _alloc; }
 
 private:
-    [[no_unique_address]] T              _object;
-    [[no_unique_address]] allocator_type _alloc;
+    mlib_no_unique_address T              _object;
+    mlib_no_unique_address allocator_type _alloc;
 
 public:
     template <typename... Args>

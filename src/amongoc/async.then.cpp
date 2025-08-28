@@ -9,8 +9,8 @@ namespace {
 
 template <bool ForwardErrors, typename CompressedUserdata>
 struct then_continuation {
-    amongoc_then_transformer                 tr;
-    [[no_unique_address]] CompressedUserdata ud;
+    amongoc_then_transformer                  tr;
+    mlib_no_unique_address CompressedUserdata ud;
 
     emitter_result operator()(emitter_result&& res) && {
         if constexpr (ForwardErrors) {
@@ -89,8 +89,8 @@ emitter amongoc_then_just(amongoc_emitter          in,
                                                                   Compressed&& compressed)
                                                                   -> emitter {
             struct value_with_status {
-                status                           st;
-                [[no_unique_address]] Compressed value;
+                status                            st;
+                mlib_no_unique_address Compressed value;
             };
             return amongoc_then(  //
                 in,

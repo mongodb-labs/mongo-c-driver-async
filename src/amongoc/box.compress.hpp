@@ -190,7 +190,7 @@ struct compressed_emitter {
     // Vtable pointer for the emitter
     amongoc_emitter_vtable const* vtable;
     // Compressed version of the userdata for the emitter
-    [[no_unique_address]] CompressedUserdata userdata;
+    mlib_no_unique_address CompressedUserdata userdata;
 
     using sends_type = emitter_result;
 

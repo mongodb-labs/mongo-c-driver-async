@@ -13,16 +13,16 @@ emitter(amongoc_just)(status st, box value, mlib_allocator alloc_) noexcept {
     auto just_2 = [&]<typename GetStatus, typename Compressed>(GetStatus    get_st,
                                                                Compressed&& c) -> unique_emitter {
         struct starter {
-            [[no_unique_address]] Compressed value;
-            [[no_unique_address]] GetStatus  get_status;
-            void                             operator()(amongoc_handler& hnd) {
+            mlib_no_unique_address Compressed value;
+            mlib_no_unique_address GetStatus  get_status;
+            void                              operator()(amongoc_handler& hnd) {
                 ::amongoc_handler_complete(&hnd, get_status(), mlib_fwd(value).recover().release());
             }
         };
 
         struct connector {
-            [[no_unique_address]] Compressed value;
-            [[no_unique_address]] GetStatus  get_status;
+            mlib_no_unique_address Compressed value;
+            mlib_no_unique_address GetStatus  get_status;
 
             unique_operation operator()(unique_handler&& hnd) {
                 return unique_operation::from_starter(mlib_fwd(hnd),

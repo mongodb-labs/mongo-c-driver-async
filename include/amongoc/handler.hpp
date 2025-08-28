@@ -52,7 +52,7 @@ public:
         }
 
         // The function object to be called
-        [[no_unique_address]] F _fn;
+        mlib_no_unique_address F _fn;
         // The stop registration cookie
         unique_box _reg_cookie;
     };
@@ -141,8 +141,8 @@ private:
     // Implement the wrapper for invocable objects, used by from()
     template <typename R>
     struct wrapper {
-        mlib::allocator<>       _alloc;
-        [[no_unique_address]] R _fn;
+        mlib::allocator<>        _alloc;
+        mlib_no_unique_address R _fn;
         AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<R>, wrapper);
 
         static void _complete(amongoc_handler* self, status st, box result) noexcept {
@@ -169,7 +169,7 @@ private:
         explicit wrapper(mlib::allocator<>, R&& r)
             : _fn(mlib_fwd(r)) {}
 
-        [[no_unique_address]] R _fn;
+        mlib_no_unique_address R _fn;
         AMONGOC_TRIVIALLY_RELOCATABLE_THIS(amongoc::enable_trivially_relocatable_v<R>, wrapper);
 
         static void _complete(amongoc_handler* self, status st, box result) noexcept {
