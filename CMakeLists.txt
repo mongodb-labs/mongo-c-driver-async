@@ -3,6 +3,11 @@ project(amongoc VERSION 0.1.0 DESCRIPTION "An Asynchronous MongoDB Library for C
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/tools")
 
+# Declare that we are compiling with C++23 before we proceed. This must be near
+# the top before we import other libraries that might depend on our toolchain
+# settings (e.g. Catch2)
+set(CMAKE_CXX_STANDARD 23)
+
 # Pull our deps with PMM+vcpkg
 option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ${PROJECT_IS_TOP_LEVEL})
 if(AMONGOC_USE_PMM)
@@ -23,6 +28,12 @@ find_package(Threads REQUIRED)
 # Enable testing with CTest
 # Note: We respect the BUILD_TESTING option from CTest.cmake
 include(CTest)
+
+# Tweak some options if we are added as a subdirectory project
+if(NOT PROJECT_IS_TOP_LEVEL)
+    # We aren't the top-level project. Don't define test cases
+    set(BUILD_TESTING FALSE)
+endif()
 
 if(BUILD_TESTING)
     find_package(Catch2 CONFIG REQUIRED)
@@ -54,12 +65,6 @@ if(PROJECT_IS_TOP_LEVEL)
         gnu-like:-Wsign-conversion
         gnu-like:-Wsign-compare
     )
-endif()
-
-# Tweak some options if we are added as a subdirectory project
-if(NOT PROJECT_IS_TOP_LEVEL)
-    # We aren't the top-level project. Don't define test cases
-    set(BUILD_TESTING FALSE)
 endif()
 
 # When compiling C++ with GCC, set a deeper diagnostics depth
@@ -125,7 +130,19 @@ target_compile_definitions(amongoc PRIVATE NEO_ENABLE_CHECKS=0)
 # Enable C++23 features on the target
 # We currently only use C++23 for `auto(). Future revisions
 # can remove these requirements for greater portability.
-target_compile_features(amongoc PRIVATE cxx_std_23)
+target_compile_features(amongoc PRIVATE cxx_std_23 PUBLIC cxx_std_20 c_std_11)
+
+# Tweaks for MSVC/Windows
+target_compile_options(amongoc
+    PUBLIC
+        # Enable the conforming preprocessor
+        $<$<C_COMPILER_ID:MSVC>:/Zc:preprocessor>
+    PRIVATE
+        # Add caret diagnostics, they're prettier
+        $<$<CXX_COMPILER_ID:MSVC>:/diagnostics:caret>
+    )
+# Set the Windows SDK target to Windows 7+
+add_compile_definitions($<$<PLATFORM_ID:Windows>:_WIN32_WINNT=0x601>)
 
 # Link deps and platform libs.
 target_link_libraries(amongoc
@@ -155,7 +172,9 @@ if(BUILD_TESTING)
         )
     target_include_directories(amongoc-test PRIVATE src)
     catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
-        PROPERTIES SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
+        PROPERTIES
+            SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
+            TIMEOUT 5
         )
     target_compile_features(amongoc-test PRIVATE cxx_std_23)
 
