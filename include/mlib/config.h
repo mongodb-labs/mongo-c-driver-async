@@ -25,10 +25,8 @@
 
 #define MLIB_PASTE(A, ...) _mlibPaste1(A, __VA_ARGS__)
 #define MLIB_PASTE_3(A, B, ...) MLIB_PASTE(A, MLIB_PASTE(B, __VA_ARGS__))
-#define MLIB_PASTE_4(A, B, C, ...)                                             \
-  MLIB_PASTE(A, MLIB_PASTE_3(B, C, __VA_ARGS__))
-#define MLIB_PASTE_5(A, B, C, D, ...)                                          \
-  MLIB_PASTE(A, MLIB_PASTE_4(B, C, D, __VA_ARGS__))
+#define MLIB_PASTE_4(A, B, C, ...) MLIB_PASTE(A, MLIB_PASTE_3(B, C, __VA_ARGS__))
+#define MLIB_PASTE_5(A, B, C, D, ...) MLIB_PASTE(A, MLIB_PASTE_4(B, C, D, __VA_ARGS__))
 #define _mlibPaste1(A, ...) A##__VA_ARGS__
 
 #define MLIB_STR(...) _mlibStr(__VA_ARGS__)
@@ -51,9 +49,8 @@
 #define MLIB_EVAL_2(...) MLIB_EVAL_1(MLIB_EVAL_1(__VA_ARGS__))
 #define MLIB_EVAL_1(...) __VA_ARGS__
 
-#if defined(__cpp_concepts) && __cpp_concepts >= 201907L &&                    \
-    defined(__cpp_impl_three_way_comparison) &&                                \
-    __cpp_impl_three_way_comparison >= 201907L
+#if defined(__cpp_concepts) && __cpp_concepts >= 201907L                                           \
+    && defined(__cpp_impl_three_way_comparison) && __cpp_impl_three_way_comparison >= 201907L
 #define mlib_have_cxx20() 1
 #else
 #define mlib_have_cxx20() 0
@@ -69,12 +66,26 @@
  * @brief Expands to an integer literal corresponding to the number of macro
  * arguments. Supports up to fifteen arguments.
  */
-#define MLIB_ARG_COUNT(...)                                                    \
-  _mlibPickSixteenth(__VA_ARGS__ __VA_OPT__(, ) 15, 14, 13, 12, 11, 10, 9, 8,  \
-                     7, 6, 5, 4, 3, 2, 1, 0)
-#define _mlibPickSixteenth(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,  \
-                           _13, _14, _15, _16, ...)                            \
-  _16
+#define MLIB_ARG_COUNT(...)                                                                        \
+    _mlibPickSixteenth(__VA_ARGS__ __VA_OPT__(, ) 15,                                              \
+                       14,                                                                         \
+                       13,                                                                         \
+                       12,                                                                         \
+                       11,                                                                         \
+                       10,                                                                         \
+                       9,                                                                          \
+                       8,                                                                          \
+                       7,                                                                          \
+                       6,                                                                          \
+                       5,                                                                          \
+                       4,                                                                          \
+                       3,                                                                          \
+                       2,                                                                          \
+                       1,                                                                          \
+                       0)
+#define _mlibPickSixteenth(                                                                        \
+    _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, ...)                    \
+    _16
 
 /**
  * @brief If the argument expands to `0`, `false`, or nothing, expands to `0`.
@@ -93,8 +104,7 @@
  * list. Otherwise, expands to the third argument list. The unused argument list
  * is not expanded and is discarded.
  */
-#define MLIB_IF_ELSE(...)                                                      \
-  MLIB_PASTE(_mlibIfElseBranch_, MLIB_BOOLEAN(__VA_ARGS__))
+#define MLIB_IF_ELSE(...) MLIB_PASTE(_mlibIfElseBranch_, MLIB_BOOLEAN(__VA_ARGS__))
 #define _mlibIfElseBranch_1(...) __VA_ARGS__ _mlibNoExpandNothing
 #define _mlibIfElseBranch_0(...) MLIB_NOTHING(#__VA_ARGS__) MLIB_JUST
 #define _mlibNoExpandNothing(...) MLIB_NOTHING(#__VA_ARGS__)
@@ -152,8 +162,8 @@
 #define mlib_static_assert MLIB_LANG_PICK(_Static_assert)(static_assert)
 
 #define mlib_extern_c_begin() MLIB_IF_CXX(extern "C" {) mlib_static_assert(1, "")
-#define mlib_extern_c_end() MLIB_IF_CXX(                                       \
-  }) mlib_static_assert(1, "")
+#define mlib_extern_c_end() MLIB_IF_CXX(                                                           \
+    }) mlib_static_assert(1, "")
 
 /**
  * @brief Use as the prefix of a braced initializer within C headers, allowing
@@ -168,13 +178,13 @@
  * @brief (C++ only) Expands to a `static_cast` expression that perfect-forwards
  * the argument.
  */
-#define mlib_fwd(...) (static_cast<decltype(__VA_ARGS__) &&>(__VA_ARGS__))
+#define mlib_fwd(...) (static_cast<decltype(__VA_ARGS__)&&>(__VA_ARGS__))
 
 #ifdef __has_include
 #if __has_include(<mlib.tweaks.h>)
 #include <mlib.tweaks.h>
-#endif // __has_include()
-#endif // __has_include
+#endif  // __has_include()
+#endif  // __has_include
 
 #ifndef mlib_audit_allocator_passing
 /**
@@ -182,7 +192,7 @@
  * pass default allocators.
  */
 #define mlib_audit_allocator_passing() 1
-#endif // mlib_audit_allocator_passing
+#endif  // mlib_audit_allocator_passing
 
 #ifdef __GNUC__
 #define mlib_is_gnu_like() 1
@@ -292,13 +302,13 @@
 #elif __STDC__ == 1 && __STDC_VERSION >= 201112L
 // Declares C11 support
 #define mlib_has_generic_selection() 1
-#elif mlib_is_gcc_at_least(4, 9, 0) || mlib_is_clang_at_least(3, 0, 0) ||      \
-    mlib_is_msvc_at_least(19, 28, 0)
+#elif mlib_is_gcc_at_least(4, 9, 0) || mlib_is_clang_at_least(3, 0, 0)                             \
+    || mlib_is_msvc_at_least(19, 28, 0)
 // Other compilers that support _Generic() without full C11
 #define mlib_has_generic_selection() 1
 #else
 #define mlib_has_generic_selection() 0
-#endif // Check for _Generic() support
+#endif  // Check for _Generic() support
 
 /**
  * @brief Create a generic selection expression with fallback compatibility for
@@ -310,11 +320,10 @@
  * @param SelectorExpression The Selector expression for _Generic()
  * @param __VA_ARGS__ All remaining arguments are the selectors for _Generic()
  */
-#define mlib_generic(CxxExpression, DefaultExpression, SelectorExpression,     \
-                     ...)                                                      \
-  MLIB_LANG_PICK(MLIB_IF_ELSE(mlib_has_generic_selection())(                   \
-      _Generic((SelectorExpression), __VA_ARGS__))(DefaultExpression))         \
-  (CxxExpression)
+#define mlib_generic(CxxExpression, DefaultExpression, SelectorExpression, ...)                    \
+    MLIB_LANG_PICK(MLIB_IF_ELSE(mlib_has_generic_selection())(                                     \
+        _Generic((SelectorExpression), __VA_ARGS__))(DefaultExpression))                           \
+    (CxxExpression)
 
 /**
  * @brief For empty struct/union types, this must be the sole non-static
@@ -348,30 +357,30 @@ namespace mlib {
  */
 mlib_constexpr bool is_constant_evaluated() noexcept {
 #ifdef __cpp_if_consteval
-  if consteval {
-    return true;
-  } else {
-    return false;
-  }
+    if consteval {
+        return true;
+    } else {
+        return false;
+    }
 #endif
 #if mlib_is_gnu_like() || mlib_is_msvc()
-  // GNU and MSVC share the builtin
-  return __builtin_is_constant_evaluated();
+    // GNU and MSVC share the builtin
+    return __builtin_is_constant_evaluated();
 #endif
-  // Otherwise we cannot check
-  return false;
+    // Otherwise we cannot check
+    return false;
 }
 
 /**
  * @brief An invocable object that simply returns its argument unchanged
  */
 struct identity {
-  template <typename T>
-  mlib_always_inline constexpr T &&operator()(T &&arg) const noexcept {
-    return static_cast<T &&>(arg);
-  }
+    template <typename T>
+    mlib_always_inline constexpr T&& operator()(T&& arg) const noexcept {
+        return static_cast<T&&>(arg);
+    }
 };
 
-} // namespace mlib
+}  // namespace mlib
 
-#endif // C++
+#endif  // C++

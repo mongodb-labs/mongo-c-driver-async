@@ -62,6 +62,7 @@ SpaceBeforeAssignmentOperators: true
 ContinuationIndentWidth: 4
 CommentPragmas: "^ IWYU pragma:"
 SpaceBeforeParens: ControlStatements
+SortIncludes: CaseSensitive
 DisableFormat: false
 IncludeBlocks: Regroup
 IncludeCategories:
@@ -69,9 +70,9 @@ IncludeCategories:
     Priority: 10
   - Regex: '<amongoc/|"amongoc/' # amongoc headers first
     Priority: 20
-  - Regex: '<bson/|"bson/' # bson headers next
+  - Regex: "<bson/" # bson headers next
     Priority: 25
-  - Regex: '<mlib/|"mlib/' # mlib headers next
+  - Regex: "<mlib/" # mlib headers next
     Priority: 30
   - Regex: '<.*/.*\.h>|<.*/.*\.hpp>' # Other non-standard headres
     Priority: 40
@@ -79,6 +80,23 @@ IncludeCategories:
     Priority: 50
   - Regex: '<[[:alnum:]_.]+>|<std.*\.h>' # Standard headres
     Priority: 60
+  # Unix platform headers
+  - Regex: '<(unistd|netdb|pthread|netinet/.*|sys/.*|netdb|fcntl|arpa/.*|resolv|sched|poll)\.h>'
+    Priority: 90
+  # Darwin platform headers
+  - Regex: '<(Availability|AvailabilityMacros|TargetConditionals|CommonCrypto/.*|Security/.*|CoreFoundation/.*)\.h>'
+    CaseSensitive: false
+    Priority: 90
+  # Windows platform headers
+  - Regex: '<(win(dows|sock2|error|trnl|error|crypt|ver|dns)|sspi|ws2tcpip|ntstatus|mstcpip|process)\.h>'
+    CaseSensitive: false
+    Priority: 90
+  # Standard library headers are near last
+  - Regex: "<(assert|string|ctype|limits|time|math|errno|inttypes|signal).h>|<std|<[^.]+>"
+    Priority: 100
+  # Other -I headers get sorted before platform headers
+  - Regex: "<"
+    Priority: 80
 InsertNewlineAtEOF: true
 IfMacros:
   - mlib_math_catch

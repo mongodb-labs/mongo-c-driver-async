@@ -255,7 +255,7 @@ public:
  * @param s The nanosender being awaited
  */
 template <nanosender S>
-nanosender_awaiter<S> operator co_await(S && s) {
+nanosender_awaiter<S> operator co_await(S&& s) {
     return nanosender_awaiter<S>{mlib_fwd(s)};
 }
 

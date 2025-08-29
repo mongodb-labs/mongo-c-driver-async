@@ -67,9 +67,9 @@ _parse_cursor(::amongoc_collection& coll, int batch_size, bson_view resp) {
     return mlib::unique(std::move(curs));
 }
 
-::amongoc_collection*(amongoc_collection_new)(amongoc_client* cl,
-                                              mlib_str_view   db_name,
-                                              mlib_str_view   coll_name) noexcept try {
+::amongoc_collection*(amongoc_collection_new)(amongoc_client * cl,
+                                              mlib_str_view db_name,
+                                              mlib_str_view coll_name) noexcept try {
     auto ptr = cl->get_allocator().rebind<amongoc_collection>().new_(*cl,
                                                                      string(db_name,
                                                                             cl->get_allocator()),

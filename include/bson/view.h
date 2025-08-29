@@ -58,7 +58,8 @@ typedef struct bson_view {
      * The `static_cast` in the return type will SFINAE-away invalid operands
      */
     template <typename T>
-    [[nodiscard]] constexpr static auto from(T&& o) noexcept -> decltype(static_cast<bson_view>(o)) {
+    [[nodiscard]] constexpr static auto from(T&& o) noexcept
+        -> decltype(static_cast<bson_view>(o)) {
         return static_cast<bson_view>(o);
     }
 

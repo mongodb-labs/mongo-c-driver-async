@@ -32,9 +32,9 @@ mlib_extern_c_begin();
  */
 #define amongoc_collection_new(Client, DbName, CollName)                                           \
     amongoc_collection_new(Client, mlib_str_view_from(DbName), mlib_str_view_from(CollName))
-amongoc_collection*(amongoc_collection_new)(amongoc_client* cl,
-                                            mlib_str_view   db_name,
-                                            mlib_str_view   coll_name)mlib_noexcept;
+amongoc_collection*(amongoc_collection_new)(amongoc_client * cl,
+                                            mlib_str_view db_name,
+                                            mlib_str_view coll_name) mlib_noexcept;
 
 /**
  * @brief Delete a collection handle. Is a no-op for null handles.
