@@ -89,6 +89,6 @@ int main(int argc, char const* const* argv) {
         return 2;
     }
     // Get the value returned with `amongoc_just` in `loop_step`
-    printf("Got final value: %lu\n", amongoc_box_cast(uint64_t, result));
+    printf("Got final value: %" PRIu64 "\n", amongoc_box_cast(uint64_t, result));
     return 0;
 }
