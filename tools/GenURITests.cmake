@@ -31,6 +31,10 @@ set(GenURITests_HEAD [[// clang-format off
 
 using namespace amongoc;
 
+// Guard this section to support unity builds involving these files
+#ifndef URI_TESTS_COMMON_BLOCK
+#define URI_TESTS_COMMON_BLOCK
+
 inline std::variant<string, int> w_parameter(int n) {
     return n;
 }
@@ -73,6 +77,9 @@ consteval server_monitoring_mode smm(std::string_view sv) {
         throw;
     }
 }
+
+#endif // URI_TESTS_COMMON_BLOCK
+
 ]])
 
 set(__param_canon_spelling [[{

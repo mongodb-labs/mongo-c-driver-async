@@ -67,8 +67,12 @@ if(PROJECT_IS_TOP_LEVEL)
     )
 endif()
 
-# When compiling C++ with GCC, set a deeper diagnostics depth
-add_compile_options($<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>)
+add_compile_options(
+    # When compiling C++ with GCC, set a deeper diagnostics depth
+    $<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>
+    # Enable large object files with MSVC
+    $<$<CXX_COMPILER_ID:MSVC>:/bigobj>
+)
 
 # If we generate any DLLs, use a .dll.lib suffix for the importlibs, to distinguish
 # them from actual static libraries
