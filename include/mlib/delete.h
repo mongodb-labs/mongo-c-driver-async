@@ -29,8 +29,10 @@
  * and a deletion function for that type. In C, expands to an empty declaration
  */
 #define mlib_assoc_deleter(T, DelFn)                                                               \
-    MLIB_IF_CXX(extern "C++" template <>                                                           \
-                struct mlib::unique_deleter<T> : ::mlib::just_invokes<DelFn>{};)                   \
+    MLIB_IF_CXX(extern "C++" {                                                                     \
+        template <>                                                                                \
+        struct mlib::unique_deleter<T> : ::mlib::just_invokes<DelFn> {};                           \
+    })                                                                                             \
     mlib_static_assert(true, "")
 
 /**
