@@ -3,7 +3,7 @@
  * @brief C type deletion registration
  * @date 2024-10-29
  *
- * This file is used to define how to "delete" C types that acts as owners or
+ * This file is used to define how to "delete" C types that acts as owners of
  * resources.
  *
  * Refer to `dev/deletion` for details
@@ -11,10 +11,6 @@
 #pragma once
 
 #include <mlib/config.h>
-
-#if mlib_is_cxx()
-#include <type_traits>
-#endif
 
 /**
  * @brief Use inline within a struct to declare a deletion spec that invokes
@@ -35,6 +31,7 @@
     })                                                                                             \
     mlib_static_assert(true, "")
 
+// clang-format off
 /**
  * @brief Declares a C API function `FuncName` that invokes the default deletion
  * method for `Type`.
@@ -47,10 +44,21 @@
  */
 #define mlib_declare_c_deletion_function(FuncName, Type)                                           \
     MLIB_IF_ELSE(mlib_have_cxx20())                                                                \
+    /*-
+     * If C++ declare and define an inline deleter function that just invokes the delete_unique()
+     * for the given type.
+     */ \
     (extern "C" MLIB_IF_GNU_LIKE([[gnu::used]]) inline void FuncName(Type inst) noexcept {         \
         ::mlib::delete_unique(inst);                                                               \
-    } static_assert(true, "")) /*                */                                                \
-        (void FuncName(Type inst))
+    }) \
+    /*-
+     * If C, just declares the function signature, which will be defined in some C++ translation
+     * unit.
+     */ \
+     (void FuncName(Type inst);) \
+     /* Trailing static-assert to force a semicolon */\
+     mlib_static_assert(true, "")
+// clang-format on
 
 #if mlib_is_cxx()
 
