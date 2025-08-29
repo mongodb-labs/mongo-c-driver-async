@@ -53,8 +53,11 @@ void stream_base::operation_base::reenter(std::error_code ec) noexcept {
         break;
 
     case SSL_ERROR_SYSCALL:
-        // TODO: This should use GetLastError() on Windows
+#if _WIN32
+        ec = std::error_code(::GetLastError(), std::system_category());
+#else
         ec = std::error_code(eno, std::system_category());
+#endif
         break;
     case SSL_ERROR_SSL:
         ec = std::error_code(sys_err, amongoc::tls_category());
@@ -164,4 +167,18 @@ stream_base::_replace_ssl_verify(std::unique_ptr<stream_base::verify_callback_ba
     // Attach the C callback
     ::SSL_set_verify(_ssl.get(), ::SSL_get_verify_mode(_ssl.get()), ssl_verifiy_cb);
     return {};
+}
+
+void amongoc::tls::detail::init_context_certificates(asio::ssl::context& ctx) {
+#ifdef _WIN32
+    // Newer OpenSSL has built-in support for loading CA certificates from the Windows
+    // certificate store. Use that instead to the default paths.
+    const int okay = ::SSL_CTX_load_verify_store(ctx.native_handle(), "org.openssl.winstore://");
+    if (not okay) {
+        throw std::system_error(std::error_code(::ERR_get_error(), tls_category()),
+                                "Error opening Windows certificate store");
+    }
+#else
+    ctx.set_default_verify_paths();
+#endif
 }

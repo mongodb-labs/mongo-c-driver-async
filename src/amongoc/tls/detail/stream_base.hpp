@@ -22,6 +22,13 @@ mlib_assoc_deleter(::BIO*, ::BIO_free);
 namespace amongoc::tls::detail {
 
 /**
+ * @brief Initialize a TLS context with the default certificates for the current platform.
+ *
+ * This differs from set_default_verify_paths in that it also loads Win32 certificates
+ */
+void init_context_certificates(asio::ssl::context&);
+
+/**
  * @brief Abstract base class for OpenSSL stream wrappers. Derived by `amongoc::tls::stream<>`
  */
 class stream_base {
