@@ -25,6 +25,10 @@ cmake_push_check_state(RESET)
     check_c_source_compiles([[
         #include <stdio.h>
 
+        #ifdef _MSC_VER
+        #error No LLD support in MSVC
+        #endif
+
         int main(void) {
             puts("Hello, world!");
             return 0;
