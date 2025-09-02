@@ -13,10 +13,8 @@
 
 #include <mlib/alloc.h>
 #include <mlib/config.h>
-#include <mlib/object_t.hpp>
 
 #include <algorithm>  // std::ranges::copy
-#include <csignal>
 #include <iterator>
 #include <string>
 #include <string_view>
@@ -404,7 +402,7 @@ constexpr type_rule<T, P> type(P&& parse = {}) {
  */
 template <typename F>
 struct action {
-    mlib::object_t<F> _action;
+    F _action;
 
     template <typename T>
     constexpr basic_result operator()(T&& value) {

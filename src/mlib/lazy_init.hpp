@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mlib/config.h>
+#include <mlib/invoke.hpp>
 #include <mlib/object_t.hpp>
 
 #include <concepts>
