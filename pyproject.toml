@@ -1,25 +1,31 @@
-[tool.poetry]
+[project]
 name = "amongoc"
-version = "0.1.0"
+version = "0.0.0"
 description = "An asynchronous MongoDB C driver library"
 authors = []
 readme = "README.md"
-package-mode = false
+requires-python = ">=3.11"
 
-[tool.poetry.dependencies]
-python = "^3.11"
+[tool.uv]
+# We aren't a Python package, just using UV for env management
+package = false
 
+[dependency-groups]
+build = [
+    "cmake~=3.25.0",
+    "ninja~=1.13.0",
+]
 
-[tool.poetry.group.dev.dependencies]
-sphinx = "^8.0.2"
-sphinx-autobuild = "^2024.4.16"
-sphinx-book-theme = "^1.1.3"
-clang-format = "^19.1.7"
-sphinxcontrib-moderncmakedomain = "^3.29.0"
+format = [
+    "clang-format~=20.1.0"
+]
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+docs = [
+    "sphinx~=8.0.2",
+    "sphinx-autobuild~=2024.4.16",
+    "sphinx-book-theme~=1.1.3",
+    "sphinxcontrib-moderncmakedomain~=3.29.0",
+]
 
 [tool.ruff]
 line-length = 120
