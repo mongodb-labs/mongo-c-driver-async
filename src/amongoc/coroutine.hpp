@@ -239,7 +239,7 @@ public:
         // Connect the sender and receiver in our type-erased box
         _operation_state = unique_box::make<operation_type>(  //
             mlib::get_allocator(suspender.promise()),
-            defer_convert([&] -> operation_type {
+            defer_convert([&]() -> operation_type {
                 return amongoc::connect(static_cast<S&&>(_sender),
                                         receiver<Promise>{this, suspender});
             }));
@@ -255,7 +255,7 @@ public:
  * @param s The nanosender being awaited
  */
 template <nanosender S>
-nanosender_awaiter<S> operator co_await(S && s) {
+nanosender_awaiter<S> operator co_await(S&& s) {
     return nanosender_awaiter<S>{mlib_fwd(s)};
 }
 

@@ -95,7 +95,7 @@ mlib_constexpr mlib_str_view _mlib_str_view_self(mlib_str_view s) mlib_noexcept 
 /// @internal Create an mlib_str_view from a C string
 mlib_constexpr mlib_str_view _mlib_str_view_cstr(const char* s) mlib_noexcept {
     if (mlib_is_consteval()) {
-        return mlib_str_view_data(s, mlib_strnlen(s, SSIZE_MAX));
+        return mlib_str_view_data(s, mlib_strnlen(s, PTRDIFF_MAX));
     } else {
         return mlib_str_view_data(s, strlen(s));
     }
@@ -301,7 +301,7 @@ inline bool mlib_str_mut_resize(mlib_str_mut* s, size_t new_len) mlib_noexcept {
     if (new_len == old_len) {
         return true;
     }
-    if (new_len > (SSIZE_MAX - sizeof(size_t)) - 1) {
+    if (new_len > (PTRDIFF_MAX - sizeof(size_t)) - 1) {
         return false;
     }
     // Allocate enough room for the cookie and the nul

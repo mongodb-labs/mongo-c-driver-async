@@ -60,7 +60,7 @@ mlib_extern_c_begin();
 
 vec_extern_inline T*     fn(begin)(VecName v) mlib_noexcept { return v.data; }
 vec_extern_inline T*     fn(end)(VecName v) mlib_noexcept { return v.data + v.size; }
-vec_extern_inline size_t fn(max_size)(void) mlib_noexcept { return SSIZE_MAX / sizeof(T); }
+vec_extern_inline size_t fn(max_size)(void) mlib_noexcept { return PTRDIFF_MAX / sizeof(T); }
 
 mlib_nodiscard("Check the returned bool to detect allocation failure")  //
     vec_extern_inline bool fn(resize(VecName* const self, size_t const count)) mlib_noexcept {

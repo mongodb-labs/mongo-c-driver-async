@@ -652,7 +652,7 @@ mlib_constexpr mlib_integer _mlib_math_set_flags(mlib_integer            v,
 }
 
 mlib_constexpr mlib_integer _mlib_math_from_i64(int64_t val) mlib_noexcept {
-    return (mlib_integer){val, mlib_integer_okay};
+    return mlib_init(mlib_integer){val, mlib_integer_okay};
 }
 
 mlib_constexpr mlib_integer _mlib_math_from_u64(uint64_t val) mlib_noexcept {

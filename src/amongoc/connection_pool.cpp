@@ -48,6 +48,7 @@ struct asio_ssl_init {
      */
     asio::ssl::context operator()() {
         asio::ssl::context ctx{asio::ssl::context::method::tls_client};
+        tls::detail::init_context_certificates(ctx);
         // Load an alternative CA file
         if (uri.params.tlsCAFile.has_value()) {
             ctx.load_verify_file(std::string(*uri.params.tlsCAFile));

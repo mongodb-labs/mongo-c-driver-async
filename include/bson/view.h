@@ -14,6 +14,8 @@
 #endif
 #endif
 
+#include <iso646.h>
+
 typedef struct bson_view bson_view;
 struct bson_iterator;
 
@@ -56,7 +58,8 @@ typedef struct bson_view {
      * The `static_cast` in the return type will SFINAE-away invalid operands
      */
     template <typename T>
-    [[nodiscard]] constexpr static auto from(T o) noexcept -> decltype(static_cast<bson_view>(o)) {
+    [[nodiscard]] constexpr static auto from(T&& o) noexcept
+        -> decltype(static_cast<bson_view>(o)) {
         return static_cast<bson_view>(o);
     }
 
@@ -344,7 +347,7 @@ inline bson_view bson_view::from_data(const bson_byte* b, size_t datalen) {
         X(bson_view_errc_invalid_terminator);
     }
 #undef X
-    __builtin_unreachable();
+    mlib_unreachable();
 }
 
 #endif  // C++

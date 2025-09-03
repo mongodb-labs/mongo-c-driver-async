@@ -246,7 +246,7 @@ TEST_CASE("bson/view/foreach/Once evaluation") {
     bson::document doc{::mlib_default_allocator};
 
     bool once = false;
-    auto get  = [&] -> bson_view {
+    auto get  = [&]() -> bson_view {
         CHECK_FALSE(once);
         once = true;
         return doc;

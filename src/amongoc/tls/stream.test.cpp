@@ -34,7 +34,7 @@ TEST_CASE("amongoc/tls/stream") {
 
     // Default regular TLS clent
     asio::ssl::context ctx{asio::ssl::context::method::tls_client};
-    ctx.set_default_verify_paths();
+    amongoc::tls::detail::init_context_certificates(ctx);
 
     // Connect to `example.com`
     asio::ip::tcp::resolver r{ioc};
@@ -86,7 +86,7 @@ TEST_CASE("amongoc/tls/Bad hostname") {
     asio::ip::tcp::socket sock{ioc};
 
     asio::ssl::context ctx{asio::ssl::context::method::tls_client};
-    ctx.set_default_verify_paths();
+    amongoc::tls::detail::init_context_certificates(ctx);
 
     asio::ip::tcp::resolver r{ioc};
     auto                    res = r.resolve("example.com", "443");

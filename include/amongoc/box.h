@@ -82,7 +82,7 @@ struct _amongoc_dynamic_box {
     mlib_allocator         alloc;
     amongoc_box_destructor destroy;
     size_t                 alloc_size;
-    mlib_alignas(max_align_t) char object[1];
+    mlib_alignas(intmax_t) char object[1];
 };
 
 union _amongoc_box_union {
@@ -92,7 +92,7 @@ union _amongoc_box_union {
 };
 
 struct _amongoc_box_storage {
-    alignas(max_align_t) union _amongoc_box_union u;
+    alignas(intmax_t) union _amongoc_box_union u;
     // Non-zero if the box storage is dynamically allocated
     unsigned char is_dynamic : 1;
     // Non-zero if the box has an associated destructor function

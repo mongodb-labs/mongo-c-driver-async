@@ -78,7 +78,7 @@ mlib_constexpr void* mlib_reallocate(mlib_allocator alloc,
  * Returns NULL on allocation failure.
  */
 mlib_constexpr void* mlib_allocate(mlib_allocator alloc, size_t sz) mlib_noexcept {
-    return mlib_reallocate(alloc, NULL, sz, mlib_alignof(max_align_t), 0, &sz);
+    return mlib_reallocate(alloc, NULL, sz, mlib_alignof(intmax_t), 0, &sz);
 }
 
 /**
@@ -135,7 +135,7 @@ public:
 
     // Allocate N objects
     constexpr pointer allocate(size_t n) const {
-        const size_t max_count = SSIZE_MAX / sizeof(T);
+        const size_t max_count = PTRDIFF_MAX / sizeof(T);
         if (n > max_count) {
             // Multiplying would overflow
             throw std::bad_alloc();
@@ -216,8 +216,8 @@ public:
     constexpr allocator_type get_allocator() const noexcept { return _alloc; }
 
 private:
-    [[no_unique_address]] T              _object;
-    [[no_unique_address]] allocator_type _alloc;
+    mlib_no_unique_address T              _object;
+    mlib_no_unique_address allocator_type _alloc;
 
 public:
     template <typename... Args>

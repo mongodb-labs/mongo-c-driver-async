@@ -33,6 +33,7 @@ static inline void* default_reallocate(void*,
     } else {
         // The requested alignment is greater than the default alignment from realloc()
         if (ptr) {
+#ifndef _WIN32
             // Reallocating an old over-aligned region.
             void* new_ptr;
             if (posix_memalign(&new_ptr, alignment, req_size)) {
@@ -43,14 +44,30 @@ static inline void* default_reallocate(void*,
             std::memcpy(new_ptr, ptr, (std::min)(req_size, prev_size));
             // Release the prior region
             std::free(ptr);
+#else  // Windows:
+            void* const new_ptr = ::_aligned_malloc(req_size, alignment);
+            if (not new_ptr) {
+                // Failure
+                return nullptr;
+            }
+            std::memcpy(new_ptr, ptr, (std::min)(req_size, prev_size));
+            ::_aligned_free(ptr);
+#endif
             (out_new_size and (*out_new_size = req_size));
             return new_ptr;
         } else {
-            // Allocated a new over-aligned region
+// Allocated a new over-aligned region
+#ifndef _WIN32
             int err = posix_memalign(&ptr, alignment, req_size);
             if (err == 0 and out_new_size) {
                 *out_new_size = req_size;
             }
+#else
+            ptr = _aligned_malloc(req_size, alignment);
+            if (ptr and out_new_size) {
+                *out_new_size = req_size;
+            }
+#endif
             return ptr;
         }
     }

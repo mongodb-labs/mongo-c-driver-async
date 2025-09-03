@@ -30,15 +30,15 @@ int main(int argc, char** argv) {
     mlib_str               u8str      = mlib_str_null;
     mlib_str_view          u8view     = mlib_str_view_null;
     bson_iterator          iter       = BSON_ITERATOR_NULL;
-    bson_code_view         code;
-    bson_symbol_view       sym;
-    bson_datetime          dt;
-    bson_timestamp         ts;
-    bson_binary_view       bin;
-    bson_oid               oid;
-    bson_regex_view        rx;
-    struct bson_decimal128 dec;
-    bson_dbpointer_view    dbp;
+    bson_code_view         code       = {0};
+    bson_symbol_view       sym        = {0};
+    bson_datetime          dt         = {0};
+    bson_timestamp         ts         = {0};
+    bson_binary_view       bin        = {0};
+    bson_oid               oid        = {0};
+    bson_regex_view        rx         = {0};
+    struct bson_decimal128 dec        = {0};
+    bson_dbpointer_view    dbp        = {0};
 
     bson_value_ref vref = bson_value_ref_from(42);
     bson_value     val  = bson_value_copy(42);

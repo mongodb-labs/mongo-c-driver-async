@@ -64,7 +64,7 @@ inline uint32_t bson_mut_capacity(bson_mut d) mlib_noexcept {
  * @param pos An element iterator
  */
 inline bson_byte* _bson_mut_data_at(bson_mut doc, bson_iterator pos) mlib_noexcept {
-    const ssize_t off = bson_iterator_data(pos) - bson_data(doc);
+    const ptrdiff_t off = bson_iterator_data(pos) - bson_data(doc);
     return bson_mut_data(doc) + off;
 }
 
@@ -97,7 +97,7 @@ inline bson_byte* _bson_splice_region(bson_mut* const        mut,
                                       const bson_byte* const insert_from) mlib_noexcept {
     // The offset of the position. We use this to later recover a pointer upon
     // reallocation
-    const ssize_t pos_offset = position - bson_data(*mut);
+    const ptrdiff_t pos_offset = position - bson_data(*mut);
     //  Check that we aren't splicing within our document header:
     BV_ASSERT(pos_offset >= 4);
     // Check that we aren't splicing at/beyond the doc's null terminator:

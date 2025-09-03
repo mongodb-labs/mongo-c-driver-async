@@ -2,8 +2,6 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <unistd.h>
-
 #include <cstdlib>
 #include <optional>
 #include <string>
@@ -19,22 +17,19 @@ inline std::optional<std::string> default_from_env(const char* envvar) {
 }
 
 struct parameters_type {
-    std::optional<std::string> mongodb_uri = default_from_env("AMONGOC_TEST_MONGODB_URI");
-    std::string                app_name;
+    std::string mongodb_uri = default_from_env("AMONGOC_TEST_MONGODB_URI").value_or("");
+    std::string app_name;
 
-    parameters_type() {
-        // Generate a unique name for the client application to isolate failpoints
-        app_name = "test-app-" + std::to_string(::getpid());
-    }
+    parameters_type();
 
     /**
      * @brief Check that a MongoDB URI has been specified for testing, or SKIP the current test
      */
     std::string require_uri() const {
-        if (not mongodb_uri.has_value()) {
+        if (mongodb_uri.empty()) {
             SKIP("No MongoDB URI was set (pass --mongodb-uri or set $AMONGOC_TEST_MONGODB_URI)");
         }
-        auto s = *mongodb_uri;
+        auto s = mongodb_uri;
         if (s.contains("?")) {
             s.append("&appName=" + this->app_name);
         } else {

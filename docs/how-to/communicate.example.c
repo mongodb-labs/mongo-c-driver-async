@@ -5,6 +5,8 @@
 #include <bson/mut.h>
 #include <bson/view.h>
 
+#include <time.h>
+
 /**
  * @brief Shared state for the application. This is passed through the app as pointer stored
  * in a box
@@ -21,8 +23,9 @@ typedef struct app_state {
  * @param resp_data A `bson_mut` object that contains the response message
  * @return amongoc_box Returns `amongoc_nil`
  */
-amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp_data) {
-    (void)state_ptr;
+amongoc_box after_hello(amongoc_box _state_ptr, amongoc_status* _status, amongoc_box resp_data) {
+    (void)_status;
+    (void)_state_ptr;
     bson_view resp = bson_view_from(amongoc_box_cast(bson_doc, resp_data));
     // Just print the response message
     fprintf(stdout, "Got response: ");
@@ -40,7 +43,9 @@ amongoc_box after_hello(amongoc_box state_ptr, amongoc_status*, amongoc_box resp
  * @param cl_box An `amongoc_client*`
  * @return amongoc_emitter
  */
-amongoc_emitter after_connect_say_hello(amongoc_box state_ptr, amongoc_status, amongoc_box cl_box) {
+amongoc_emitter
+after_connect_say_hello(amongoc_box state_ptr, amongoc_status _status, amongoc_box cl_box) {
+    (void)_status;
     printf("Connected to server\n");
     // Store the connection in our app state
     amongoc_box_take(amongoc_box_cast(app_state*, state_ptr)->client, cl_box);

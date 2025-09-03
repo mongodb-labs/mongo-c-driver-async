@@ -90,7 +90,7 @@ constexpr simple_sender<T, F> make_simple_sender(F&& fn) {
  */
 template <typename R>
 struct cxx_recv_as_c_handler {
-    [[no_unique_address]] R _recv;
+    mlib_no_unique_address R _recv;
 
     struct stopper {
         void* userdata;
@@ -100,49 +100,57 @@ struct cxx_recv_as_c_handler {
 
     using stop_callback = stop_callback_t<effective_stop_token_t<R>, stopper>;
 
+    static void _on_complete(amongoc_handler* hnd, amongoc_status st, amongoc_box value) noexcept {
+        auto& self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
+        auto  val  = mlib_fwd(value).as_unique();
+        R&    r    = self._recv;
+        if constexpr (nanoreceiver_of<R, emitter_result>) {
+            // Invoke with an emitter_result
+            static_cast<R&&>(r)(emitter_result(st, mlib_fwd(val)));
+        } else if constexpr (nanoreceiver_of<R, result<unique_box>>) {
+            // Invoke with a result<T>
+            if (st.is_error()) {
+                static_cast<R&&>(r)(result<unique_box>(error(st)));
+            } else {
+                static_cast<R&&>(r)(result<unique_box>(success(mlib_fwd(val))));
+            }
+        } else {
+            // Neither invocation works. Generate an error that describes the problem:
+            static_assert(nanoreceiver_of<R, result<unique_box>>
+                              or nanoreceiver_of<R, emitter_result>,
+                          "Receiver does not have an appropriate callback signature");
+        }
+    }
+
+    static box
+    _register_stop(amongoc_handler const* hnd, void* userdata, void (*callback)(void*)) noexcept {
+        auto&                self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
+        stoppable_token auto tk   = get_stop_token(self._recv);
+        if (not tk.stop_possible()) {
+            // Optimize: No stop is possible with this token. Don't bother
+            // constructing a stop callback
+            return amongoc_nil;
+        }
+        return unique_box::make<
+                   stop_callback>(::amongoc_handler_get_allocator(hnd, ::mlib_default_allocator),
+                                  tk,
+                                  stopper{userdata, callback})
+            .release();
+    }
+
+    static mlib_allocator _get_allocator(amongoc_handler const* self, ::mlib_allocator) noexcept {
+        mlib::allocator<> a
+            = mlib::get_allocator(self->userdata.view.as<cxx_recv_as_c_handler>()._recv);
+        return a.c_allocator();
+    }
+
     static constexpr amongoc_handler_vtable handler_vtable = {
-        .complete =
-            [](amongoc_handler* hnd, amongoc_status st, amongoc_box value) noexcept {
-                auto& self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
-                auto  val  = mlib_fwd(value).as_unique();
-                R&    r    = self._recv;
-                if constexpr (nanoreceiver_of<R, emitter_result>) {
-                    // Invoke with an emitter_result
-                    static_cast<R&&>(r)(emitter_result(st, mlib_fwd(val)));
-                } else if constexpr (nanoreceiver_of<R, result<unique_box>>) {
-                    // Invoke with a result<T>
-                    if (st.is_error()) {
-                        static_cast<R&&>(r)(result<unique_box>(error(st)));
-                    } else {
-                        static_cast<R&&>(r)(result<unique_box>(success(mlib_fwd(val))));
-                    }
-                } else {
-                    // Neither invocation works. Generate an error that describes the problem:
-                    static_assert(nanoreceiver_of<R, result<unique_box>>
-                                      or nanoreceiver_of<R, emitter_result>,
-                                  "Receiver does not have an appropriate callback signature");
-                }
-            },
+        .complete = &_on_complete,
         .register_stop =
             [] {
                 if constexpr (has_stop_token<R>) {
                     // Expose the stop token to the handler
-                    return [](amongoc_handler const* hnd,
-                              void*                  userdata,
-                              void (*callback)(void*)) noexcept {
-                        auto&                self = hnd->userdata.view.as<cxx_recv_as_c_handler>();
-                        stoppable_token auto tk   = get_stop_token(self._recv);
-                        if (not tk.stop_possible()) {
-                            // Optimize: No stop is possible with this token. Don't bother
-                            // constructing a stop callback
-                            return amongoc_nil;
-                        }
-                        return unique_box::make<stop_callback>(
-                                   ::amongoc_handler_get_allocator(hnd, ::mlib_default_allocator),
-                                   tk,
-                                   stopper{userdata, callback})
-                            .release();
-                    };
+                    return _register_stop;
                 } else {
                     return nullptr;
                 }
@@ -150,13 +158,8 @@ struct cxx_recv_as_c_handler {
         .get_allocator =
             [] {
                 if constexpr (mlib::has_mlib_allocator<R>) {
-                    // Expose the associated allocator to the hnadler
-                    return [](amongoc_handler const* self,
-                              ::mlib_allocator) noexcept -> ::mlib_allocator {
-                        mlib::allocator<> a = mlib::get_allocator(
-                            self->userdata.view.as<cxx_recv_as_c_handler>()._recv);
-                        return a.c_allocator();
-                    };
+                    // Expose the associated allocator to the handler
+                    return _get_allocator;
                 } else {
                     return nullptr;
                 }
