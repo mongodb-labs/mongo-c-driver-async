@@ -1,3 +1,6 @@
+# Default build directory
 _build/
-# PAckages installed by vcpkg in manifest mode
+# Packages installed by vcpkg in manifest mode
 vcpkg_installed/
+# Python virtualenv created by uv automatically
+.venv/

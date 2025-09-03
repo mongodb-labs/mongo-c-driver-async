@@ -1,52 +1,56 @@
 .SILENT:
+.PHONY: docs-html docs-serve default build test format format-check packages
 
-.PHONY: poetry-install docs-html docs-serve default build test format format-check packages
+# If given no other target, runs the build
+default: build
 
-default: docs-html
-
+# The absolute path that refers to this Makefile
 THIS_FILE := $(realpath $(lastword $(MAKEFILE_LIST)))
+# The directory that contains this Makefile (the repository root directory)
 THIS_DIR := $(shell dirname $(THIS_FILE))
-POETRY := poetry -C $(THIS_DIR)
 
-BUILD_DIR := $(THIS_DIR)/_build/auto
-_poetry_stamp := $(BUILD_DIR)/.poetry-install.stamp
-poetry-install: $(_poetry_stamp)
-$(_poetry_stamp): $(THIS_DIR)/poetry.lock $(THIS_DIR)/pyproject.toml
-	$(POETRY) install --with=dev
-	mkdir -p $(BUILD_DIR)
-	touch $@
+# Directory where we will scribble build files
+BUILD_DIR ?= $(THIS_DIR)/_build/auto
+
+# uv commands used in this file
+UV_RUN     := uv run
+DOCS_RUN   := $(UV_RUN) --isolated --group=docs
+FORMAT_RUN := $(UV_RUN) --isolated --group=format
+# Build is not isolated, because CMake caches paths to certain files
+BUILD_RUN  := $(UV_RUN) --group=build
+# Run CMake within the uv environment
+CMAKE_RUN := $(BUILD_RUN) cmake
 
 SPHINX_JOBS ?= auto
 SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
-docs-html: poetry-install
-	$(POETRY) run sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+docs-html:
+	$(DOCS_RUN) sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
-docs-serve: poetry-install
-	$(POETRY) run sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+docs-serve:
+	$(DOCS_RUN) sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
-CONFIG ?= RelWithDebInfo
 build:
-	cmake -S . -B "$(BUILD_DIR)" -G "Ninja" -D CMAKE_BUILD_TYPE=$(CONFIG)
-	cmake --build "$(BUILD_DIR)" --config $(CONFIG)
+	$(CMAKE_RUN) \
+		-S "$(THIS_DIR)" \
+		-B "$(BUILD_DIR)" \
+		--fresh \
+		-D CMAKE_CROSS_CONFIGS="Debug" \
+		-D CMAKE_DEFAULT_CONFIGS=all \
+		-G "Ninja Multi-Config"
+	$(CMAKE_RUN) --build "$(BUILD_DIR)"
 
 test: build
-	cmake -E chdir "$(BUILD_DIR)" ctest -C "$(CONFIG)" --output-on-failure -j8
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
+		ctest -C Debug -j4 --output-on-failure
 
-all_sources := $(shell find $(THIS_DIR)/src/ $(THIS_DIR)/include/ $(THIS_DIR)/tests/ $(THIS_DIR)/docs/ -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp')
-format-check: poetry-install
-	$(POETRY) run python tools/include-fixup.py --check
-	$(POETRY) run $(MAKE) _format-check
-_format-check:
-	$(POETRY) run clang-format --dry-run $(all_sources)
+format-check:
+	$(UV_RUN) --group format tools/format.py --mode=check
 
-format: poetry-install
-	$(POETRY) run $(MAKE) _format
-_format:
-	$(POETRY) run python tools/include-fixup.py
-	$(POETRY) run clang-format --verbose -i $(all_sources)
+format:
+	$(UV_RUN) --group format tools/format.py
 
 packages:
 	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs
