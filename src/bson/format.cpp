@@ -2,7 +2,7 @@
 #include <bson/iterator.h>
 #include <bson/types.h>
 
-#include <fmt/base.h>
+#include <fmt/core.h>
 
 mlib_diagnostic_push();
 mlib_gcc_warning_disable("-Wstringop-overflow");
