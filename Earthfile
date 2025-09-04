@@ -1,14 +1,22 @@
 VERSION 0.8
 
+ARG --global default_container_registry = "docker.io"
+
+build-gcc:
+    ARG --required gcc_version
+    FROM $default_container_registry/gcc:$gcc_version
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
+        --build_deps "perl pkg-config linux-libc-dev curl zip unzip"
+
 build-alpine:
-    FROM alpine:3.20
+    FROM $default_container_registry/alpine:3.20
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
         --build_deps "build-base git cmake gcc g++ ninja make ccache python3" \
         --vcpkg_bs_deps "pkgconfig linux-headers perl bash tar zip unzip curl" \
         --third_deps "fmt-dev boost-dev openssl-dev"
 
 build-debian:
-    FROM debian:12
+    FROM $default_container_registry/debian:12
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
         # Spec test generation requires a Python newer than what is on Debian 12
         --BUILD_SPEC_TESTS=FALSE \
@@ -17,7 +25,7 @@ build-debian:
         --third_deps "libfmt-dev libboost-url1.81-dev libboost-container1.81-dev libssl-dev"
 
 build-rl:
-    FROM rockylinux:8
+    FROM $default_container_registry/rockylinux:8
     RUN dnf -y install epel-release unzip
     LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
     RUN curl "$cmake_url" -Lo cmake.sh && \
@@ -32,14 +40,14 @@ build-rl:
         --vcpkg_bs_deps "zip unzip git perl"
 
 build-fedora:
-    FROM fedora:41
+    FROM $default_container_registry/fedora:41
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
         --build_deps "cmake ninja-build git gcc gcc-c++ python3.12 ccache" \
         --vcpkg_bs_deps "zip unzip perl" \
         --third_deps "boost-devel boost-url fmt-devel openssl-devel"
 
 build-multi:
-    FROM alpine
+    FROM $default_container_registry/alpine
     # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
     COPY (+build-debian/ --use_vcpkg=false) out/debian/
     COPY (+build-alpine/ --use_vcpkg=false) out/alpine/
@@ -61,6 +69,13 @@ run:
 INIT:
     FUNCTION
     COPY --chmod=755 tools/__install /usr/local/bin/__install
+    RUN __install curl
+    ARG uv_version = "0.8.15"
+    ARG uv_install_sh_url = "https://astral.sh/uv/$uv_version/install.sh"
+    RUN (curl -LsSf "$uv_install_sh_url" || wget -qO- "$uv_install_sh_url") \
+        | env UV_UNMANAGED_INSTALL=/opt/uv sh - \
+        && ln -s /opt/uv/uv /usr/local/bin/uv \
+        && uv --version
 
 BOOTSTRAP_BUILD_INSTALL_EXPORT:
     FUNCTION
@@ -110,12 +125,14 @@ BOOTSTRAP_DEPS:
         # Running CMake now will prepare our dependencies without configuring the rest of the project
         CACHE ~/.cache/vcpkg
         ARG launcher
-        RUN $launcher cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+        RUN $launcher uv run --with=cmake~=3.20 --with=ninja cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
     END
 
 COPY_SRC:
     FUNCTION
-    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ tests/ .
+    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ \
+            tests/ Makefile pyproject.toml uv.lock \
+        .
 
 BUILD:
     FUNCTION
@@ -132,13 +149,13 @@ BUILD:
     ARG use_vcpkg=true
     LET __use_vcpkg=$(echo "$use_vcpkg" | tr "[:lower:]" "[:upper:]")
     # Configure
-    RUN $launcher cmake -S . -B _build -G "Ninja Multi-Config" \
-        -D CMAKE_CROSS_CONFIGS="all" \
-        -D CMAKE_INSTALL_PREFIX=$prefix \
-        -D AMONGOC_USE_PMM=$__use_vcpkg \
-        -D BUILD_TESTING=$__test \
-        -D BUILD_SPEC_TESTS=$BUILD_SPEC_TESTS \
-        -D CMAKE_DEFAULT_CONFIGS=all
+    RUN $launcher make test \
+            LAUNCHER='uv run --group=build' \
+            CONFIGS="Debug" \
+            TEST_CONFIG="Debug" \
+            USE_PMM=$__use_vcpkg \
+            INSTALL_PREFIX=$prefix \
+            BUILD_TESTING=$__test
     # Build
     RUN $launcher cmake --build _build
     IF test "$install_prefix" != ""
