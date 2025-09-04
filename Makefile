@@ -74,6 +74,23 @@ test-fast:
 	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
 		ctest -C $(TEST_CONFIG) -j4 --output-on-failure --progress -E CMake/\|URI/spec/
 
+install: build
+	$(MAKE) install-fast
+
+INSTALL_CONFIG := Release
+install-fast:
+	$(CMAKE_RUN) --install "$(BUILD_DIR)" --config "$(INSTALL_CONFIG)" --prefix="$(INSTALL_PREFIX)"
+
+package: build
+	$(MAKE) package-fast
+
+CPACK_OUT := _cpack
+PACKAGE_CONFIGS = Debug;Release;RelWithDebInfo
+package-fast:
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
+		cpack -B "$(CPACK_OUT)" -C "$(PACKAGE_CONFIGS)" -G "STGZ;TGZ;ZIP"
+	rm -r -- "$(CPACK_OUT)/_CPack_Packages"
+
 format-check:
 	$(PYTHON_RUN) tools/format.py --mode=check
 

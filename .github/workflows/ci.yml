@@ -24,3 +24,24 @@ jobs:
       - *checkout
       - name: Run Build
         run: bash tools/earthly.sh +build-alpine --use_vcpkg=false
+
+  build-gcc-matrix:
+    strategy:
+      fail-fast: true
+      matrix:
+        gcc_version:
+          - 15.2.0
+          - 14.3.0
+          - 13.4.0
+          - 12.5.0
+        use_vcpkg: ["true", "false"]
+    runs-on: ubuntu-latest
+    name: "Build with GCC"
+    steps:
+      - *checkout
+      - name: Build
+        run: |
+          bash tools/earthly.sh +build-gcc \
+            --gcc_version=${{matrix.gcc_version}} \
+            --use_vcpkg=${{matrix.use_vcpkg}} \
+            --test=false

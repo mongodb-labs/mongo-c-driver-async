@@ -6,7 +6,8 @@ build-gcc:
     ARG --required gcc_version
     FROM $default_container_registry/gcc:$gcc_version
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "perl pkg-config linux-libc-dev curl zip unzip"
+        --build_deps "perl pkg-config linux-libc-dev curl zip unzip ccache" \
+        --third_deps "libfmt-dev libboost-url1.81-dev libboost-container1.81-dev libssl-dev"
 
 build-alpine:
     FROM $default_container_registry/alpine:3.20
@@ -154,17 +155,15 @@ BUILD:
             CONFIGS="Debug" \
             TEST_CONFIG="Debug" \
             USE_PMM=$__use_vcpkg \
-            INSTALL_PREFIX=$prefix \
+            INSTALL_PREFIX=$install_prefix \
             BUILD_TESTING=$__test
-    # Build
-    RUN $launcher cmake --build _build
     IF test "$install_prefix" != ""
-        RUN cmake --install _build --prefix="$install_prefix" --config Debug
-        RUN cmake --install _build --prefix="$install_prefix" --config Release
-        RUN cmake --install _build --prefix="$install_prefix" --config RelWithDebInfo
+        FOR conf IN Debug # Release RelWithDebInfo
+            RUN $launcher make install-fast LAUNCHER='uv run --group=build' INSTALL_PREFIX=$install_prefix INSTALL_CONFIG=$conf
+        END
     END
     IF test "$cpack_out" != ""
-        RUN cmake -E chdir _build \
-            cpack -B "$cpack_out" -C "Debug;Release;RelWithDebInfo" -G "STGZ;TGZ;ZIP" && \
-            rm "$cpack_out/_CPack_Packages" -rf
+        RUN $launcher make package-fast LAUNCHER='uv run --group=build' \
+            CPACK_OUT="$cpack_out" \
+            PACKAGE_CONFIGS=Debug
     END
