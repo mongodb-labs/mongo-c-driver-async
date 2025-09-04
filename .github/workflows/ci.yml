@@ -1,0 +1,16 @@
+name: Build and Test
+on: [push, pull_request]
+
+jobs:
+  check-format:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get UV
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.8.15
+      - name: Check Formatting
+        run: make format-check PYTHON_RUN="uv run --group=format"

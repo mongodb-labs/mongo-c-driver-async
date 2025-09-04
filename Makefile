@@ -1,3 +1,25 @@
+# *** Build Parameters ***
+# Whether to use PMM for the build process
+USE_PMM := TRUE
+# Whether to build tests
+BUILD_TESTING := TRUE
+# Sanitizers to request (Comma-separated list)
+SANITIZE :=
+# The configurations to build (Semicolon-separated, or "all")
+CONFIGS := Debug
+# If running tests, the configuration to test
+TEST_CONFIG := Debug
+# Set the CMAKE_INSTALL_PREFIX and the `--prefix` arg for installs
+INSTALL_PREFIX :=
+
+# *** Execution Parameters ***
+# Set the LAUNCHER parameter to prefix all executed commands
+LAUNCHER :=
+
+# Update the shell to be executed by the launching command. Make will use
+# this to execute all commands in the Makefile:
+SHELL := $(LAUNCHER) $(SHELL)
+
 .SILENT:
 .PHONY: docs-html docs-serve default build test format format-check packages
 
@@ -12,14 +34,9 @@ THIS_DIR := $(shell dirname $(THIS_FILE))
 # Directory where we will scribble build files
 BUILD_DIR ?= $(THIS_DIR)/_build/auto
 
-# uv commands used in this file
-UV_RUN     := uv run
-DOCS_RUN   := $(UV_RUN) --isolated --group=docs
-FORMAT_RUN := $(UV_RUN) --isolated --group=format
-# Build is not isolated, because CMake caches paths to certain files
-BUILD_RUN  := $(UV_RUN) --group=build
+PYTHON_RUN :=
 # Run CMake within the uv environment
-CMAKE_RUN := $(BUILD_RUN) cmake
+CMAKE_RUN := cmake
 
 SPHINX_JOBS ?= auto
 SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
@@ -27,30 +44,41 @@ SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
 docs-html:
-	$(DOCS_RUN) sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+	sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
 docs-serve:
-	$(DOCS_RUN) sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+	sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
-build:
+configure:
 	$(CMAKE_RUN) \
 		-S "$(THIS_DIR)" \
 		-B "$(BUILD_DIR)" \
-		--fresh \
-		-D CMAKE_CROSS_CONFIGS="Debug" \
+		-D CMAKE_CROSS_CONFIGS="$(CONFIGS)" \
 		-D CMAKE_DEFAULT_CONFIGS=all \
+		-D AMONGOC_USE_PMM=$(USE_PMM) \
+		-D BUILD_TESTING=$(BUILD_TESTING) \
+		-D MONGO_SANITIZE="$(SANITIZE)" \
+		-D CMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) \
 		-G "Ninja Multi-Config"
+
+build: configure
+	$(MAKE) build-fast
+
+build-fast:
 	$(CMAKE_RUN) --build "$(BUILD_DIR)"
 
 test: build
+	$(MAKE) test-fast
+
+test-fast:
 	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
-		ctest -C Debug -j4 --output-on-failure
+		ctest -C $(TEST_CONFIG) -j4 --output-on-failure --progress -E CMake/\|URI/spec/
 
 format-check:
-	$(UV_RUN) --group format tools/format.py --mode=check
+	$(PYTHON_RUN) tools/format.py --mode=check
 
 format:
-	$(UV_RUN) --group format tools/format.py
+	$(PYTHON_RUN) tools/format.py
 
 packages:
 	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs
