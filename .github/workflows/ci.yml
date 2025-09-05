@@ -17,96 +17,42 @@ jobs:
       - name: Check Formatting
         run: make format-check PYTHON_RUN="uv run --group=format"
 
-  build-alpine:
+  build-matrix:
+    name: Build & Test
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        alpine_version:
-          - "3.19"
-          - "3.20"
-          - "3.21"
-          - "3.22"
-          - latest
-          - edge
-        # This arg is formatted in this way so that it is easily understandable in
-        # the GitHub Actions web interface
+        from:
+          # Alpine
+          - alpine:3.19
+          - alpine:3.20
+          - alpine:3.21
+          - alpine:3.22
+          - alpine:latest
+          - alpine:edge
+          # Ubuntu
+          - ubuntu:24.04
+          - ubuntu:latest
+          # Debian
+          - debian:12.11
+          - debian:latest
+          - debian:unstable
+          # GCC versions
+          - gcc:15.2.0
+          - gcc:14.3.0
+          - gcc:13.4.0
+          - gcc:12.5.0
+          - gcc:latest
+          # Clang versions
+          - +env.llvm --llvm_major_version=19
+          - +env.llvm --llvm_major_version=20
         vcpkg_arg: &vcpkg_arg
           - use_vcpkg=false
           - use_vcpkg=true
-    name: Build on Alpine
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - name: Run Build
-        run: |
-          bash tools/earthly.sh +build-alpine \
-            --alpine_version=${{matrix.alpine_version}} \
-            --${{matrix.vcpkg_arg}}
-
-  build-ubuntu:
-    strategy:
-      matrix:
-        ubuntu_version:
-          - "24.04"
-          - latest
-        vcpkg_arg: *vcpkg_arg
-    name: Build on Ubuntu
-    runs-on: ubuntu-latest
     steps:
       - *checkout
       - run: |
-          bash tools/earthly.sh +build-ubuntu \
-            --ubuntu_version=${{matrix.ubuntu_version}} \
+          bash tools/earthly.sh +build \
+            --from=${{matrix.from}} \
             --${{matrix.vcpkg_arg}}
-
-  build-debian:
-    strategy:
-      fail-fast: true
-      matrix:
-        debian_version:
-          - "12.11"
-          - latest
-          - unstable
-        vcpkg_arg: *vcpkg_arg
-    name: Build on Debian
-    runs-on: ubuntu-latest
-    steps:
-      - *checkout
-      - run: |
-          bash tools/earthly.sh +build-debian \
-            --debian_version=${{matrix.debian_version}} \
-            --${{matrix.vcpkg_arg}}
-
-  build-gcc-matrix:
-    strategy:
-      fail-fast: true
-      matrix:
-        gcc_version:
-          - 15.2.0
-          - 14.3.0
-          - 13.4.0
-          - 12.5.0
-
-    runs-on: ubuntu-latest
-    name: "Build with GCC"
-    steps:
-      - *checkout
-      - name: Build
-        run: |
-          bash tools/earthly.sh +build-gcc \
-            --gcc_version=${{matrix.gcc_version}}
-
-  build-clang-matrix:
-    strategy:
-      fail-fast: true
-      matrix:
-        version_arg:
-          - clang_version_major=20
-          - clang_version_major=19
-    runs-on: ubuntu-latest
-    name: Build with Clang
-    steps:
-      - *checkout
-      - name: Build
-        run: |
-          bash tools/earthly.sh +build-clang \
-            --${{matrix.version_arg}}

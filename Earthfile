@@ -3,14 +3,13 @@ VERSION 0.8
 # Tweak the default container registry used for pulling system images.
 ARG --global default_container_registry = "docker.io"
 
-build-gcc:
-    ARG --required gcc_version
-    # GCC provides a GCC container, based on Debian
-    FROM $default_container_registry/gcc:$gcc_version
+build:
+    ARG --required from
+    FROM --pass-args $from
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
-build-clang:
-    ARG --required clang_version_major
+env.llvm:
+    ARG --required llvm_major_version
     # LLVM doesn't provide a container, so we just use Ubuntu and the automated
     # LLVM installser script to get the appropriate major version
     FROM $default_container_registry/ubuntu:24.04
@@ -19,26 +18,10 @@ build-clang:
     RUN __install lsb-release software-properties-common gnupg
     # Install the major version using the automated LLVM installer:
     RUN curl -Ls https://apt.llvm.org/llvm.sh -o llvm.sh && \
-        bash llvm.sh "$clang_version_major"
+        bash llvm.sh "$llvm_major_version"
     # Declare our preferred compiler version using CC and CXX env vars
-    ENV CC=clang-$clang_version_major
-    ENV CXX=clang++-$clang_version_major
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
-
-build-alpine:
-    ARG alpine_version=3.20
-    FROM $default_container_registry/alpine:$alpine_version
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
-
-build-debian:
-    ARG debian_version=12.11
-    FROM $default_container_registry/debian:$debian_version
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
-
-build-ubuntu:
-    ARG ubuntu_version=24.04
-    FROM $default_container_registry/ubuntu:$ubuntu_version
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
+    ENV CC=clang-$llvm_major_version
+    ENV CXX=clang++-$llvm_major_version
 
 build-rl:
     FROM $default_container_registry/rockylinux:8
