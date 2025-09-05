@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+# Evaluate the argument as a boolean-like string, according to CMake's boolean
+# conditional rules
+
+set -eu
+
+bool=$(printf "%s" "$1" | tr '[:lower:]' '[:upper:]')
+
+case "$bool" in
+    0|OFF|NO|FALSE|N|IGNORE|NOTFOUND|""|*-NOTFOUND)
+        exit 1;;
+    *)
+        exit 0;;
+esac

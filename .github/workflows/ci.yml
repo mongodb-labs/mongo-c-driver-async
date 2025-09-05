@@ -18,12 +18,26 @@ jobs:
         run: make format-check PYTHON_RUN="uv run --group=format"
 
   build-alpine:
-    name: Build on Alpine 3.20
+    strategy:
+      matrix:
+        alpine_version:
+          - 3.21
+          - 3.20
+          - 3.19
+        # This arg is formatted in this way so that it is easily understandable in
+        # the GitHub Actions web interface
+        vcpkg_arg: &vcpkg_arg
+          - use_vcpkg=false
+          - use_vcpkg=true
+    name: Build on Alpine
     runs-on: ubuntu-latest
     steps:
       - *checkout
       - name: Run Build
-        run: bash tools/earthly.sh +build-alpine --use_vcpkg=false
+        run: |
+          bash tools/earthly.sh +build-alpine \
+            --alpine_version=${{matrix.alpine_version}} \
+            --${{matrix.vcpkg_arg}}
 
   build-gcc-matrix:
     strategy:
@@ -34,6 +48,7 @@ jobs:
           - 14.3.0
           - 13.4.0
           - 12.5.0
+
     runs-on: ubuntu-latest
     name: "Build with GCC"
     steps:
@@ -41,5 +56,21 @@ jobs:
       - name: Build
         run: |
           bash tools/earthly.sh +build-gcc \
-            --gcc_version=${{matrix.gcc_version}} \
-            --test=false
+            --gcc_version=${{matrix.gcc_version}}
+
+  build-clang-matrix:
+    strategy:
+      fail-fast: true
+      matrix:
+        version_arg:
+          - clang_major_version=20
+          - clang_major_version=19
+        # vcpkg_arg: *vcpkg_arg
+    runs-on: ubuntu-latest
+    name: Build with Clang
+    steps:
+      - *checkout
+      - name: Build
+        run: |
+          bash tools/earthly.sh +build-clang \
+            --${{matrix.version_arg}}

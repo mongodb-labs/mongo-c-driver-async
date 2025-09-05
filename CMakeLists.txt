@@ -15,6 +15,11 @@ if(AMONGOC_USE_PMM)
     pmm(VCPKG REVISION 2024.08.23)
 endif()
 
+# A toggle to enable warnings-as-errors. We don't use CMAKE_COMPILE_WARNING_AS_ERROR,
+# because we don't want to enable -Werror on dependencies that we might be importing
+# and building
+option(AMONGOC_COMPILE_WARNING_AS_ERROR "Treat compiler warnings as errors" FALSE)
+
 # Set up `find_package()` to trigger FetchContent for certain deps
 include(DeclareFetchContentDeps)
 
@@ -160,7 +165,11 @@ target_link_libraries(amongoc
         $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
         OpenSSL::SSL
-    )
+)
+
+# Toggle warnings-as-errors
+set_property(TARGET amongoc PROPERTY COMPILE_WARNING_AS_ERROR "${AMONGOC_COMPILE_WARNING_AS_ERROR}")
+
 if(BUILD_TESTING)
     # Add Catch integrations
     include(Catch)
@@ -173,14 +182,19 @@ if(BUILD_TESTING)
         $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
         Boost::container
-        )
+    )
     target_include_directories(amongoc-test PRIVATE src)
-    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
+    catch_discover_tests(
+        amongoc-test
+        DISCOVERY_MODE PRE_TEST
         PROPERTIES
             SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
             TIMEOUT 5
-        )
+    )
     target_compile_features(amongoc-test PRIVATE cxx_std_23)
+
+    # Also add -Werror to the test target, if requested for amongoc
+    set_property(TARGET amongoc-test PROPERTY COMPILE_WARNING_AS_ERROR "${AMONGOC_COMPILE_WARNING_AS_ERROR}")
 
     # A test case that simply invokes each BSON API
     add_executable(bson-use-test tests/use-bson.test.c)

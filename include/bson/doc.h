@@ -402,11 +402,11 @@ public:
 
     using enable_trivially_relocatable = document;
 
-#if !mlib_audit_allocator_passing()
+#if mlib_allocator_default_constructible()
     document() noexcept
-        : document(allocator_type(mlib_default_allocator)) {}
+        : document(allocator_type()) {}
     explicit document(bson_view v)
-        : document(v, allocator_type(mlib_default_allocator)) {}
+        : document(v, allocator_type()) {}
 #endif
 
     ~document() { _del(); }

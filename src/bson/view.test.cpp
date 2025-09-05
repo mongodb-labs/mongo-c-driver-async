@@ -13,6 +13,9 @@ using bson::testing::chars;
 
 using std::operator""sv;
 
+// Don't warn about braces surrounding `bson_byte` subobjects
+mlib_clang_warning_disable("-Wmissing-braces");
+
 static_assert(std::forward_iterator<::bson_iterator>);
 static_assert(std::ranges::forward_range<bson::view>);
 
@@ -261,12 +264,12 @@ TEST_CASE("bson/view/foreach/Once evaluation") {
 TEST_CASE("bson/view/structured binding pair") {
     // clang-format off
     bson_byte dat[] = {
-        13, 0, 0, 0,
+        16, 0, 0, 0,
         bson_type_regex, 'r', 0,
         // rx
         'f', 'o', 'o', 0,
         // opts
-        0,
+        'b', 'a', 'r', 0,
         0,
     };
     // clang-format on
@@ -275,6 +278,6 @@ TEST_CASE("bson/view/structured binding pair") {
         CHECK(key == "r");
         CHECK(val.type == bson_type_regex);
         CHECK(val.get_regex().regex == "foo");
-        CHECK(val.get_regex().options == "foo");
+        CHECK(val.get_regex().options == "bar");
     }
 }

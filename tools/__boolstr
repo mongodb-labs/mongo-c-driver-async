@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+set -eu
+
+if __bool "$@"; then
+    printf "TRUE"
+else
+    printf "FALSE"
+fi

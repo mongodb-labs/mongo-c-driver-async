@@ -1,8 +1,8 @@
 # *** Build Parameters ***
 # Whether to use PMM for the build process
-USE_PMM := TRUE
+USE_PMM := true
 # Whether to build tests
-BUILD_TESTING := TRUE
+BUILD_TESTING := true
 # Sanitizers to request (Comma-separated list)
 SANITIZE :=
 # The configurations to build (Semicolon-separated, or "all")
@@ -11,6 +11,8 @@ CONFIGS := Debug
 TEST_CONFIG := Debug
 # Set the CMAKE_INSTALL_PREFIX and the `--prefix` arg for installs
 INSTALL_PREFIX :=
+# Treat compiler warnings as errors (Sets COMPILE_WARNING_AS_ERROR on amongoc)
+WARNINGS_AS_ERRORS := false
 
 # *** Execution Parameters ***
 # Set the LAUNCHER parameter to prefix all executed commands
@@ -55,6 +57,7 @@ configure:
 		-B "$(BUILD_DIR)" \
 		-D CMAKE_CROSS_CONFIGS="$(CONFIGS)" \
 		-D CMAKE_DEFAULT_CONFIGS=all \
+		-D AMONGOC_COMPILE_WARNING_AS_ERROR=$(WARNINGS_AS_ERRORS) \
 		-D AMONGOC_USE_PMM=$(USE_PMM) \
 		-D BUILD_TESTING=$(BUILD_TESTING) \
 		-D MONGO_SANITIZE="$(SANITIZE)" \
@@ -92,10 +95,10 @@ package-fast:
 	rm -r -- "$(CPACK_OUT)/_CPack_Packages"
 
 format-check:
-	$(PYTHON_RUN) tools/format.py --mode=check
+	uv run --group=format --isolated $(PYTHON_RUN) tools/format.py --mode=check
 
 format:
-	$(PYTHON_RUN) tools/format.py
+	uv run --group=format --isolated $(PYTHON_RUN) tools/format.py
 
 packages:
 	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs
