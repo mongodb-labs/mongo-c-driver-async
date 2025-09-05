@@ -120,8 +120,8 @@ BOOTSTRAP_DEPS:
     ARG use_vcpkg=true
     IF ! __bool $use_vcpkg
         # No vcpkg. Install system dependencies
-        COPY tools/ci/install-third-deps.sh /
-        RUN bash /install-third-deps.sh
+        ARG third_deps
+        RUN __install $third_deps
         # Install system deps for testing, if needed
         ARG test_deps
         ARG test=true
