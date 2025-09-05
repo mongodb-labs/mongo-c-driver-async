@@ -63,9 +63,8 @@ jobs:
       fail-fast: true
       matrix:
         version_arg:
-          - clang_major_version=20
-          - clang_major_version=19
-        # vcpkg_arg: *vcpkg_arg
+          - clang_version_major=20
+          - clang_version_major=19
     runs-on: ubuntu-latest
     name: Build with Clang
     steps:
