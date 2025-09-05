@@ -21,9 +21,9 @@ jobs:
     strategy:
       matrix:
         alpine_version:
-          - 3.21
-          - 3.20
-          - 3.19
+          - "3.21"
+          - "3.20"
+          - "3.19"
         # This arg is formatted in this way so that it is easily understandable in
         # the GitHub Actions web interface
         vcpkg_arg: &vcpkg_arg
