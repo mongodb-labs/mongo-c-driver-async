@@ -21,9 +21,12 @@ jobs:
     strategy:
       matrix:
         alpine_version:
-          - "3.21"
-          - "3.20"
           - "3.19"
+          - "3.20"
+          - "3.21"
+          - "3.22"
+          - latest
+          - edge
         # This arg is formatted in this way so that it is easily understandable in
         # the GitHub Actions web interface
         vcpkg_arg: &vcpkg_arg
@@ -37,6 +40,40 @@ jobs:
         run: |
           bash tools/earthly.sh +build-alpine \
             --alpine_version=${{matrix.alpine_version}} \
+            --${{matrix.vcpkg_arg}}
+
+  build-ubuntu:
+    strategy:
+      matrix:
+        ubuntu_version:
+          - "24.04"
+          - latest
+        vcpkg_arg: *vcpkg_arg
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - run: |
+          bash tools/earthly.sh +build-ubuntu \
+            --ubuntu_version=${{matrix.ubuntu_version}} \
+            --${{matrix.vcpkg_arg}}
+
+  build-debian:
+    strategy:
+      fail-fast: true
+      matrix:
+        debian_version:
+          - "12.11"
+          - latest
+          - unstable
+        vcpkg_arg: *vcpkg_arg
+    name: Build on Debian
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - run: |
+          bash tools/earthly.sh +build-debian \
+            --debian_version=${{matrix.debian_version}} \
             --${{matrix.vcpkg_arg}}
 
   build-gcc-matrix:

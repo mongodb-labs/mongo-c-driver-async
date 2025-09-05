@@ -5,44 +5,40 @@ ARG --global default_container_registry = "docker.io"
 
 build-gcc:
     ARG --required gcc_version
+    # GCC provides a GCC container, based on Debian
     FROM $default_container_registry/gcc:$gcc_version
-    ARG warnings_as_errors=true
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --warnings_as_errors=$warnings_as_errors \
-        --build_deps "ccache" \
-        --vcpkg_bs_deps "build-essential perl git pkg-config linux-libc-dev curl zip unzip"
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-clang:
     ARG --required clang_version_major
+    # LLVM doesn't provide a container, so we just use Ubuntu and the automated
+    # LLVM installser script to get the appropriate major version
     FROM $default_container_registry/ubuntu:24.04
     DO +INIT
     # Required for the LLVM installer:
     RUN __install lsb-release software-properties-common gnupg
+    # Install the major version using the automated LLVM installer:
     RUN curl -Ls https://apt.llvm.org/llvm.sh -o llvm.sh && \
         bash llvm.sh "$clang_version_major"
+    # Declare our preferred compiler version using CC and CXX env vars
     ENV CC=clang-$clang_version_major
     ENV CXX=clang++-$clang_version_major
-    ARG warnings_as_errors=true
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --warnings_as_errors=$warnings_as_errors \
-        --build_deps "ccache" \
-        --vcpkg_bs_deps "build-essential perl git pkg-config linux-libc-dev curl zip unzip"
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-alpine:
     ARG alpine_version=3.20
     FROM $default_container_registry/alpine:$alpine_version
-    ARG warnings_as_errors=true
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "build-base git cmake gcc g++ ninja make ccache python3" \
-        --vcpkg_bs_deps "pkgconfig linux-headers perl bash tar zip unzip curl" \
-        --third_deps "fmt-dev boost-dev openssl-dev"
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-debian:
-    FROM $default_container_registry/debian:12
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "build-essential cmake git ninja-build python3 ccache" \
-        --vcpkg_bs_deps "perl pkg-config linux-libc-dev curl zip unzip" \
-        --third_deps "libfmt-dev libboost-url1.81-dev libboost-container1.81-dev libssl-dev"
+    ARG debian_version=12.11
+    FROM $default_container_registry/debian:$debian_version
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
+
+build-ubuntu:
+    ARG ubuntu_version=24.04
+    FROM $default_container_registry/ubuntu:$ubuntu_version
+    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
 build-rl:
     FROM $default_container_registry/rockylinux:8
@@ -88,13 +84,17 @@ run:
 # Miscellaneous system init
 INIT:
     FUNCTION
-    COPY --chmod=755 tools/__install tools/__bool tools/__boolstr /usr/local/bin/
-    RUN __install curl
+    COPY --chmod=755 tools/__tool /usr/local/bin/__tool
+    RUN __tool __init
+    # Basic requirements to even function:
+    RUN __install lsb-release curl
+
+    # Obtain uv
     ARG uv_version = "0.8.15"
     ARG uv_install_sh_url = "https://astral.sh/uv/$uv_version/install.sh"
-    IF ! uv --version
-        RUN (curl -LsSf "$uv_install_sh_url" || wget -qO- "$uv_install_sh_url") \
-            | env UV_UNMANAGED_INSTALL=/opt/uv sh - \
+    IF ! test -f /usr/local/bin/uv
+        RUN curl -LsSf "$uv_install_sh_url" \
+                | env UV_UNMANAGED_INSTALL=/opt/uv sh - \
             && ln -s /opt/uv/uv /usr/local/bin/uv \
             && uv --version
     END
@@ -113,28 +113,47 @@ BOOTSTRAP_BUILD_INSTALL_EXPORT:
 BOOTSTRAP_DEPS:
     FUNCTION
     DO +INIT
-    # Dependencies that are required for the build. Always installed
-    ARG build_deps
-    RUN __install $build_deps
-    # Switch behavior based on whether we use vcpkg
+    # Do we want to use vcpkg?
     ARG use_vcpkg=true
-    IF ! __bool $use_vcpkg
-        # No vcpkg. Install system dependencies
-        ARG third_deps
-        RUN __install $third_deps
-        # Install system deps for testing, if needed
-        ARG test_deps
-        ARG test=true
-        IF $test
-            RUN __install $test_deps
+    # Are we installing test-only dependencies?
+    ARG test=true
+
+    IF __bool $test
+        # We use Git to obtain certain test artifacts.
+        RUN __install git
+    END
+
+    IF __distro_is "Alpine-*"
+        # Basic Alpine requirements:
+        RUN __install build-base
+        IF __bool $use_vcpkg
+            # Requirements for vcpkg to install our dependencies:
+            RUN __install pkgconfig linux-headers perl bash tar zip unzip git
+        ELSE
+            # Our dependencies, obtained from the system package manager:
+            RUN __install fmt-dev boost-dev openssl-dev
         END
-    ELSE
-        # vcpkg may have dependencies that need to be installed to bootstrap
-        ARG vcpkg_bs_deps
-        RUN __install $vcpkg_bs_deps
+    ELSE IF __distro_is "Debian-*" "Ubuntu-*"
+        RUN __install build-essential
+        IF __bool $use_vcpkg
+            RUN __install zip unzip pkg-config
+        ELSE
+            RUN __install libfmt-dev libssl-dev
+            IF apt-cache show libboost-url-dev 2>&1 > /dev/null
+                # Install the default version, if available
+                RUN __install libboost-url-dev libboost-container-dev
+            ELSE
+                # Older debian requires qualified versions
+                RUN __install libboost-url1.81-dev libboost-container1.81-dev
+            END
+        END
+    END
+
+    # Do some additional setup for vcpkg
+    IF __bool $use_vcpkg
         # Required when bootstrapping vcpkg on Alpine:
         ENV VCPKG_FORCE_SYSTEM_BINARIES=1
-        # Bootstrap dependencies
+        # Bootstrap dependencies, warming the user-local binary cache
         LET src_tmp=/s-tmp
         WORKDIR $src_tmp
         COPY --dir vcpkg*.json $src_tmp
