@@ -41,7 +41,7 @@ PYTHON_RUN :=
 CMAKE_RUN := cmake
 
 SPHINX_JOBS ?= auto
-SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
+SPHINX_ARGS := --jobs="$(SPHINX_JOBS)" --write-all --show-traceback --builder=dirhtml --fail-on-warning
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
@@ -96,11 +96,12 @@ install-fast:
 package: build
 	$(MAKE) package-fast
 
-CPACK_OUT := _cpack
-PACKAGE_CONFIGS = Debug;Release;RelWithDebInfo
+CPACK_OUT 		:= _cpack
+PACKAGE_CONFIGS := Debug;Release;RelWithDebInfo
+PACKAGE_FORMATS := STGZ;TGZ;ZIP
 package-fast:
 	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
-		cpack -B "$(CPACK_OUT)" -C "$(PACKAGE_CONFIGS)" -G "STGZ;TGZ;ZIP"
+		cpack -B "$(CPACK_OUT)" -C "$(PACKAGE_CONFIGS)" -G "$(PACKAGE_FORMATS)"
 	rm -r -- "$(CPACK_OUT)/_CPack_Packages"
 
 format-check:
