@@ -15,10 +15,10 @@ if(AMONGOC_USE_PMM)
     pmm(VCPKG REVISION 2024.08.23)
 endif()
 
-# A toggle to enable warnings-as-errors. We don't use CMAKE_COMPILE_WARNING_AS_ERROR,
-# because we don't want to enable -Werror on dependencies that we might be importing
-# and building
-option(AMONGOC_COMPILE_WARNING_AS_ERROR "Treat compiler warnings as errors" FALSE)
+# A toggle to enable warnings-as-errors. We don't rely on CMAKE_COMPILE_WARNING_AS_ERROR
+# directly, because we don't want to enable -Werror on dependencies that we might
+# be importing and building as sub-projects.
+option(AMONGOC_COMPILE_WARNING_AS_ERROR "Treat compiler warnings as errors" "${CMAKE_COMPILE_WARNING_AS_ERROR}")
 
 # Set up `find_package()` to trigger FetchContent for certain deps
 include(DeclareFetchContentDeps)
