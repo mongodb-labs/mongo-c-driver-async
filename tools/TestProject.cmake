@@ -146,6 +146,10 @@ function(add_test_cmake_project name path)
             -D __test_project_run=1
             -P "${CMAKE_CURRENT_FUNCTION_LIST_FILE}"
     )
+    set_tests_properties(
+        "${name}" PROPERTIES
+        LABELS "cmake"
+    )
 endfunction()
 
 # This function implements the actual test.

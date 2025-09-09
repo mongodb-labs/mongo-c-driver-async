@@ -193,6 +193,7 @@ if(BUILD_TESTING)
         PROPERTIES
             SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
             TIMEOUT 5
+            LABELS Catch2
     )
     target_compile_features(amongoc-test PRIVATE cxx_std_23)
 
