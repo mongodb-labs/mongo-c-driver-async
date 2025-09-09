@@ -60,9 +60,10 @@ jobs:
     steps:
       - *checkout
       - name: Build
-        run: bash tools/earthly.sh +build \
-          --from=${{matrix.from}} \
-          --${{matrix.vcpkg_arg}}
+        run: |
+          bash tools/earthly.sh +build \
+            --from=${{matrix.from}} \
+            --${{matrix.vcpkg_arg}}
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent. Make sure of that!
       - name: Test
