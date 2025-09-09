@@ -73,9 +73,18 @@ build-fast:
 test: build
 	$(MAKE) test-fast
 
+CTEST_ARGS := -C $(TEST_CONFIG) -j4 --output-on-failure --progress \
+		-LE cmake\|uri/spec -E "URI/spec"
 test-fast:
-	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
-		ctest -C $(TEST_CONFIG) -j4 --output-on-failure --progress -E CMake/\|URI/spec/
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" ctest $(CTEST_ARGS)
+
+JUNIT_OUTPUT := $(BUILD_DIR)/TestResults.xml
+ctest-run:
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" ctest $(CTEST_ARGS) \
+		-T Start -T Test \
+		--output-junit "$(JUNIT_OUTPUT)" \
+	 	|| :
+	uv tool run --isolated junit2html "$(JUNIT_OUTPUT)" "$(JUNIT_OUTPUT).html"
 
 install: build
 	$(MAKE) install-fast
