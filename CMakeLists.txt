@@ -189,6 +189,7 @@ if(BUILD_TESTING)
     catch_discover_tests(
         amongoc-test
         DISCOVERY_MODE PRE_TEST
+        ADD_TAGS_AS_LABELS
         PROPERTIES
             SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
             TIMEOUT 5
