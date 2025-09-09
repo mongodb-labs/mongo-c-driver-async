@@ -8,6 +8,12 @@ build:
     FROM --pass-args $from
     DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
 
+test:
+    FROM --pass-args +build
+    RUN uv run --group=build \
+        make ctest-run TEST_CONFIG=Debug JUNIT_OUTPUT=/results.xml || :
+    SAVE ARTIFACT /results.xml
+
 env.llvm:
     ARG --required llvm_major_version
     # LLVM doesn't provide a container, so we just use Ubuntu and the automated
@@ -108,7 +114,7 @@ BOOTSTRAP_DEPS:
 
     IF __distro_is "Alpine-*"
         # Basic Alpine requirements:
-        RUN __install build-base
+        RUN __install build-base ccache
         IF __bool $use_vcpkg
             # Requirements for vcpkg to install our dependencies:
             RUN __install pkgconfig linux-headers perl bash tar zip unzip git
@@ -117,9 +123,9 @@ BOOTSTRAP_DEPS:
             RUN __install fmt-dev boost-dev openssl-dev
         END
     ELSE IF __distro_is "Debian-*" "Ubuntu-*"
-        RUN __install build-essential
+        RUN __install build-essential ccache
         IF __bool $use_vcpkg
-            RUN __install zip unzip pkg-config
+            RUN __install zip unzip pkg-config git
         ELSE
             RUN __install libfmt-dev libssl-dev
             IF apt-cache show libboost-url-dev 2>&1 > /dev/null
@@ -130,7 +136,18 @@ BOOTSTRAP_DEPS:
                 RUN __install libboost-url1.81-dev libboost-container1.81-dev
             END
         END
+    ELSE IF test -f /etc/redhat-release
+        RUN __install python3.12 ccache gcc gcc-c++
+        IF __bool $use_vcpkg
+            RUN __install zip unzip perl git
+        ELSE
+            RUN __install boost-devel fmt-devel openssl-devel boost-url
+        END
     END
+
+    # Set the directory where Ccache writes its data, and cache that across runs
+    ENV CCACHE_DIR = /run/ccache
+    CACHE /run/ccache
 
     # Do some additional setup for vcpkg
     IF __bool $use_vcpkg
@@ -164,31 +181,31 @@ BUILD:
     ARG cpack_out
     ARG launcher
     DO +COPY_SRC
-    CACHE ~/.cache/ccache
     # Toggle testing
     ARG test=true
     # Enable -Werror
-    ARG warnings_as_errors=false
+    ARG warnings_as_errors=true
     # Toggle PMM in the build
     ARG use_vcpkg=true
     # The configurations to build (semicolon-separated list)
     ARG configs=Debug
     # Configure
-    RUN $launcher make test \
-            LAUNCHER='uv run --group=build' \
-            CONFIGS="$configs" \
-            TEST_CONFIG="Debug" \
-            INSTALL_PREFIX=$install_prefix \
-            USE_PMM=$(__boolstr $use_vcpkg) \
-            WARNINGS_AS_ERRORS=$(__boolstr $warnings_as_errors) \
-            BUILD_TESTING=$(__boolstr $test)
+    RUN $launcher uv run --group=build \
+            make build \
+                CONFIGS="$configs" \
+                INSTALL_PREFIX=$install_prefix \
+                USE_PMM=$(__boolstr $use_vcpkg) \
+                WARNINGS_AS_ERRORS=$(__boolstr $warnings_as_errors) \
+                BUILD_TESTING=$(__boolstr $test)
     IF test "$install_prefix" != ""
         FOR conf IN Debug # Release RelWithDebInfo
-            RUN $launcher make install-fast LAUNCHER='uv run --group=build' INSTALL_PREFIX=$install_prefix INSTALL_CONFIG=$conf
+            RUN $launcher uv run --group=build \
+                    make install-fast INSTALL_PREFIX=$install_prefix INSTALL_CONFIG=$conf
         END
     END
     IF test "$cpack_out" != ""
-        RUN $launcher make package-fast LAUNCHER='uv run --group=build' \
-            CPACK_OUT="$cpack_out" \
-            PACKAGE_CONFIGS=Debug
+        RUN $launcher uv run --group=build \
+                make package-fast \
+                    CPACK_OUT="$cpack_out" \
+                    PACKAGE_CONFIGS="$configs"
     END
