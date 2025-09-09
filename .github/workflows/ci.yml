@@ -38,6 +38,13 @@ jobs:
           - debian:12.11
           - debian:latest
           - debian:unstable
+          # Fedora
+          - fedora:40
+          - fedora:41
+          - fedora:42
+          - fedora:43
+          - fedora:latest
+          - fedora:rawhide
           # GCC versions
           - gcc:15.2.0
           - gcc:14.3.0
