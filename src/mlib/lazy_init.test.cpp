@@ -38,6 +38,9 @@ struct throws_on_first_call {
 };
 
 TEST_CASE("mlib/lazy_init/Throw during init") {
+#if !(defined(_MSC_VER) || defined(__USE_GNU))
+    SKIP("call_once implementation is incorrect in musl C regarding exceptions");
+#endif
     mlib::lazy_threadsafe<int, throws_on_first_call> i;
     // Throwing during init will throw
     CHECK_THROWS_AS(*i, std::runtime_error);
