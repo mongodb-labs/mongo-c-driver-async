@@ -77,7 +77,7 @@ jobs:
       - name: Post Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Packages (${{matrix.env}} ${{matrix.vcpkg_arg}})
+          name: Packages (Job ${{strategy.job-index}})
           path: "pkg/*"
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent. Make sure of that!
