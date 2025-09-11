@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        from:
+        env:
           # Alpine
           - alpine:3.19
           - alpine:3.20
@@ -59,23 +59,25 @@ jobs:
           - use_vcpkg=true
         include:
           # Add Almalinux (RHEL) targets, alwasy using vcpkg
-          - { from: almalinux:latest, vcpkg_arg: use_vcpkg=true }
-          - { from: almalinux:10, vcpkg_arg: use_vcpkg=true }
-          # RHEL 9 requires a newer GCC, using the GCC toolset:
-          - { from: almalinux:9 --gts_version=12, vcpkg_arg: use_vcpkg=true }
-          - { from: almalinux:9 --gts_version=13, vcpkg_arg: use_vcpkg=true }
-          - { from: almalinux:9 --gts_version=14, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:10, vcpkg_arg: use_vcpkg=true }
+          # RHEL ≤9 requires a newer GCC, using the GCC toolset:
+          - { env: almalinux:9 --gts_version=14, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:9 --gts_version=13, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:9 --gts_version=12, vcpkg_arg: use_vcpkg=true }
+          # RHEL 8
+          - { env: almalinux:8 --gts_version=13, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:8 --gts_version=12, vcpkg_arg: use_vcpkg=true }
     steps:
       - *checkout
       - name: Build
         run: |
           bash tools/earthly.sh +build \
-            --from=${{matrix.from}} \
+            --env=${{matrix.env}} \
             --${{matrix.vcpkg_arg}}
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent. Make sure of that!
       - name: Test
         run: |
           bash tools/earthly.sh -a +test/results.xml results.xml \
-            --from=${{matrix.from}} \
+            --env=${{matrix.env}} \
             --${{matrix.vcpkg_arg}}

@@ -4,12 +4,12 @@ VERSION 0.8
 ARG --global default_container_registry = "docker.io"
 
 init:
-    ARG --required from
+    ARG --required env
     # Toggle the building of test programs
     ARG test = true
     # Toggle whether we use vcpkg to obtain dependencies
     ARG use_vcpkg = true
-    FROM --pass-args $from
+    FROM --pass-args $env
     DO --pass-args +INSTALL_DEPS
 
 build:
@@ -23,7 +23,7 @@ build:
 test:
     FROM --pass-args +build
     RUN uv run --group=build \
-        make ctest-run TEST_CONFIG=Debug JUNIT_OUTPUT=/results.xml || :
+        make ctest-run TEST_CONFIG=Debug JUNIT_OUTPUT=/results.xml
     SAVE ARTIFACT /results.xml
 
 # Target used to install LLVM for a build. Not used outside this file
@@ -65,7 +65,7 @@ BASE:
         # Install EPEL on RHEL-based platforms
         RUN __install epel-release
     END
-    RUN __install lsb-release && \
+    RUN (__install lsb-release || __install redhat-lsb-core) && \
         (curl --version || __install curl)
 
     # Obtain uv
