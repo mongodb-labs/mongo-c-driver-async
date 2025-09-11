@@ -69,6 +69,11 @@ jobs:
           - { env: almalinux:8 --gts_version=12, vcpkg_arg: use_vcpkg=true }
     steps:
       - *checkout
+      - name: Environment Prep
+        run: |
+          bash tools/earthly.sh +init \
+            --env=${{matrix.env}} \
+            --${{matrix.vcpkg_arg}}
       - name: Build
         run: |
           bash tools/earthly.sh -a "+build/pkg/*" pkg/ \
