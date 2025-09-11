@@ -14,7 +14,7 @@ init:
 
 build:
     ARG warnings_as_errors = true
-    ARG configs   = Debug
+    ARG configs   = Debug;RelWithDebInfo
     ARG test      = true
     ARG use_vcpkg = true
     FROM --pass-args +init
