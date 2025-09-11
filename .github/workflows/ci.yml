@@ -57,6 +57,14 @@ jobs:
         vcpkg_arg: &vcpkg_arg
           - use_vcpkg=false
           - use_vcpkg=true
+        include:
+          # Add Almalinux (RHEL) targets, alwasy using vcpkg
+          - { from: almalinux:latest, vcpkg_arg: use_vcpkg=true }
+          - { from: almalinux:10, vcpkg_arg: use_vcpkg=true }
+          # RHEL 9 requires a newer GCC, using the GCC toolset:
+          - { from: almalinux:9 --gts_version=12, vcpkg_arg: use_vcpkg=true }
+          - { from: almalinux:9 --gts_version=13, vcpkg_arg: use_vcpkg=true }
+          - { from: almalinux:9 --gts_version=14, vcpkg_arg: use_vcpkg=true }
     steps:
       - *checkout
       - name: Build

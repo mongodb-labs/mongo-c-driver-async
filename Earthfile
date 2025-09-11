@@ -3,10 +3,22 @@ VERSION 0.8
 # Tweak the default container registry used for pulling system images.
 ARG --global default_container_registry = "docker.io"
 
-build:
+init:
     ARG --required from
+    # Toggle the building of test programs
+    ARG test = true
+    # Toggle whether we use vcpkg to obtain dependencies
+    ARG use_vcpkg = true
     FROM --pass-args $from
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT
+    DO --pass-args +INSTALL_DEPS
+
+build:
+    ARG warnings_as_errors = true
+    ARG configs   = Debug
+    ARG test      = true
+    ARG use_vcpkg = true
+    FROM --pass-args +init
+    DO --pass-args +BUILD_INSTALL_EXPORT
 
 test:
     FROM --pass-args +build
@@ -14,12 +26,13 @@ test:
         make ctest-run TEST_CONFIG=Debug JUNIT_OUTPUT=/results.xml || :
     SAVE ARTIFACT /results.xml
 
+# Target used to install LLVM for a build. Not used outside this file
 env.llvm:
     ARG --required llvm_major_version
     # LLVM doesn't provide a container, so we just use Ubuntu and the automated
     # LLVM installser script to get the appropriate major version
     FROM $default_container_registry/ubuntu:24.04
-    DO +INIT
+    DO +BASE
     # Required for the LLVM installer:
     RUN __install lsb-release software-properties-common gnupg
     # Install the major version using the automated LLVM installer:
@@ -29,28 +42,6 @@ env.llvm:
     ENV CC=clang-$llvm_major_version
     ENV CXX=clang++-$llvm_major_version
 
-build-rl:
-    FROM $default_container_registry/rockylinux:8
-    RUN dnf -y install epel-release unzip
-    LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
-    RUN curl "$cmake_url" -Lo cmake.sh && \
-        sh cmake.sh --exclude-subdir --prefix=/usr/local/ --skip-license
-    LET ninja_url = "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip"
-    RUN curl -L "$ninja_url" -o ninja.zip && \
-        unzip ninja.zip -d /usr/local/bin/
-    CACHE ~/.ccache  # Epel Ccache still uses the old cache location
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --launcher "scl run gcc-toolset-12 --" \
-        --build_deps "gcc-toolset-12 python3.12 ccache" \
-        --vcpkg_bs_deps "zip unzip git perl"
-
-build-fedora:
-    FROM $default_container_registry/fedora:41
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "cmake ninja-build git gcc gcc-c++ python3.12 ccache" \
-        --vcpkg_bs_deps "zip unzip perl" \
-        --third_deps "boost-devel boost-url fmt-devel openssl-devel"
-
 build-multi:
     FROM $default_container_registry/alpine
     # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
@@ -59,24 +50,23 @@ build-multi:
     COPY (+build-fedora/ --use_vcpkg=false) out/fedora/
     SAVE ARTIFACT out/* /
 
-matrix:
-    BUILD +run \
-        --target +build-debian --target +build-alpine --target +build-fedora \
-        --use_vcpkg=true --use_vcpkg=false \
-        --test=false --test=true
-
 run:
     LOCALLY
     ARG --required target
     BUILD --pass-args $target
 
 # Miscellaneous system init
-INIT:
+BASE:
     FUNCTION
     COPY --chmod=755 tools/__tool /usr/local/bin/__tool
     RUN __tool __init
     # Basic requirements to even function:
-    RUN __install lsb-release curl
+    IF test -f /etc/redhat-release && ! test -f /etc/fedora-release
+        # Install EPEL on RHEL-based platforms
+        RUN __install epel-release
+    END
+    RUN __install lsb-release && \
+        (curl --version || __install curl)
 
     # Obtain uv
     ARG uv_version = "0.8.15"
@@ -88,10 +78,8 @@ INIT:
             && uv --version
     END
 
-BOOTSTRAP_BUILD_INSTALL_EXPORT:
+BUILD_INSTALL_EXPORT:
     FUNCTION
-    # Bootstrap
-    DO --pass-args +BOOTSTRAP_DEPS
     # Build and install
     DO --pass-args +BUILD --install_prefix=/opt/amongoc --cpack_out=/tmp/pkg
     # Export
@@ -99,9 +87,9 @@ BOOTSTRAP_BUILD_INSTALL_EXPORT:
     SAVE ARTIFACT /opt/amongoc/* /install/
 
 # Install dependencies, possibly warming up the user-local vcpkg cache if vcpkg is used
-BOOTSTRAP_DEPS:
+INSTALL_DEPS:
     FUNCTION
-    DO +INIT
+    DO +BASE
     # Do we want to use vcpkg?
     ARG use_vcpkg=true
     # Are we installing test-only dependencies?
@@ -138,6 +126,15 @@ BOOTSTRAP_DEPS:
         END
     ELSE IF test -f /etc/redhat-release
         RUN __install python3.12 ccache gcc gcc-c++
+        # Specify a version of the GCC toolset to be installed, available in
+        # RHEL-based systems ≤9.x
+        ARG gts_version
+        IF test "$gts_version" != ''
+            RUN __install scl-utils gcc-toolset-$gts_version
+            ENV LAUNCHER = "scl run gcc-toolset-$gts_version -- "
+        ELSE
+            RUN __install gcc gcc-c++
+        END
         IF __bool $use_vcpkg
             RUN __install zip unzip perl git
         ELSE
@@ -165,8 +162,7 @@ BOOTSTRAP_DEPS:
             " > $src_tmp/CMakeLists.txt
         # Running CMake now will prepare our dependencies without configuring the rest of the project
         CACHE ~/.cache/vcpkg
-        ARG launcher
-        RUN $launcher uv run --with=cmake~=3.20 --with=ninja cmake -G Ninja -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+        RUN $LAUNCHER uv run --with=cmake~=3.20 --with=ninja cmake -G Ninja -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
     END
 
 COPY_SRC:
@@ -179,18 +175,13 @@ BUILD:
     FUNCTION
     ARG install_prefix
     ARG cpack_out
-    ARG launcher
     DO +COPY_SRC
-    # Toggle testing
-    ARG test=true
-    # Enable -Werror
-    ARG warnings_as_errors=true
-    # Toggle PMM in the build
-    ARG use_vcpkg=true
-    # The configurations to build (semicolon-separated list)
-    ARG configs=Debug
+    ARG --required test
+    ARG --required warnings_as_errors
+    ARG --required use_vcpkg
+    ARG --required configs
     # Configure
-    RUN $launcher uv run --group=build \
+    RUN $LAUNCHER uv run --group=build \
             make build \
                 CONFIGS="$configs" \
                 INSTALL_PREFIX=$install_prefix \
@@ -199,12 +190,12 @@ BUILD:
                 BUILD_TESTING=$(__boolstr $test)
     IF test "$install_prefix" != ""
         FOR conf IN Debug # Release RelWithDebInfo
-            RUN $launcher uv run --group=build \
+            RUN $LAUNCHER uv run --group=build \
                     make install-fast INSTALL_PREFIX=$install_prefix INSTALL_CONFIG=$conf
         END
     END
     IF test "$cpack_out" != ""
-        RUN $launcher uv run --group=build \
+        RUN $LAUNCHER uv run --group=build \
                 make package-fast \
                     CPACK_OUT="$cpack_out" \
                     PACKAGE_CONFIGS="$configs"
