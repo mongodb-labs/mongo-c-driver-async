@@ -71,9 +71,14 @@ jobs:
       - *checkout
       - name: Build
         run: |
-          bash tools/earthly.sh +build \
+          bash tools/earthly.sh -a "+build/pkg/*" pkg/ \
             --env=${{matrix.env}} \
             --${{matrix.vcpkg_arg}}
+      - name: Post Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Packages
+          path: "pkg/*"
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent. Make sure of that!
       - name: Test
