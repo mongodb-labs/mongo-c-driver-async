@@ -30,7 +30,7 @@ test:
 env.llvm:
     ARG --required llvm_major_version
     # LLVM doesn't provide a container, so we just use Ubuntu and the automated
-    # LLVM installser script to get the appropriate major version
+    # LLVM installer script to get the appropriate major version
     FROM $default_container_registry/ubuntu:24.04
     DO +BASE
     # Required for the LLVM installer:
@@ -41,14 +41,6 @@ env.llvm:
     # Declare our preferred compiler version using CC and CXX env vars
     ENV CC=clang-$llvm_major_version
     ENV CXX=clang++-$llvm_major_version
-
-build-multi:
-    FROM $default_container_registry/alpine
-    # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
-    COPY (+build-debian/ --use_vcpkg=false) out/debian/
-    COPY (+build-alpine/ --use_vcpkg=false) out/alpine/
-    COPY (+build-fedora/ --use_vcpkg=false) out/fedora/
-    SAVE ARTIFACT out/* /
 
 run:
     LOCALLY
@@ -61,12 +53,7 @@ BASE:
     COPY --chmod=755 tools/__tool /usr/local/bin/__tool
     RUN __tool __init
     # Basic requirements to even function:
-    IF test -f /etc/redhat-release && ! test -f /etc/fedora-release
-        # Install EPEL on RHEL-based platforms
-        RUN __install epel-release
-    END
-    RUN (__install lsb-release || __install redhat-lsb-core) && \
-        (curl --version || __install curl)
+    RUN (curl --version || __install curl)
 
     # Obtain uv
     ARG uv_version = "0.8.15"
@@ -100,7 +87,7 @@ INSTALL_DEPS:
         RUN __install git
     END
 
-    IF __distro_is "Alpine-*"
+    IF test -f /etc/alpine-release
         # Basic Alpine requirements:
         RUN __install build-base ccache
         IF __bool $use_vcpkg
@@ -110,7 +97,7 @@ INSTALL_DEPS:
             # Our dependencies, obtained from the system package manager:
             RUN __install fmt-dev boost-dev openssl-dev
         END
-    ELSE IF __distro_is "Debian-*" "Ubuntu-*"
+    ELSE IF test -f /etc/debian_version
         RUN __install build-essential ccache
         IF __bool $use_vcpkg
             RUN __install zip unzip pkg-config git

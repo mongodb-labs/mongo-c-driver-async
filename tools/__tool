@@ -96,27 +96,6 @@ __boolstr() {
     fi
 }
 
-# Get the current distro name. Requires lsb_release to be installed
-__distro() {
-    dist=$(lsb_release --short --id)
-    release=$(lsb_release --short --release)
-    printf "%s-%s" "$dist" "$release"
-    return 0
-}
-
-# Test whether the current distro matches any of a number of patterns
-__distro_is() {
-    distro=$(__distro) || return
-    # Test whether the distro matches any of the arguments as fnmatch patterns
-    for pattern in "$@"; do
-        # shellcheck disable=SC2295
-        if test "${distro##$pattern}" = ""; then
-            return 0
-        fi
-    done
-    return 1
-}
-
 # Install the named packages using the platform's package manager.
 # This script "just does the right thing" to install a package as a step in a
 #   caching container build, as a bare "pkg-tool install" might be insufficient
@@ -168,8 +147,6 @@ __init() {
     __alias __install   __tool __install
     __alias __bool      __tool __bool
     __alias __boolstr   __tool __boolstr
-    __alias __distro    __tool __distro
-    __alias __distro_is __tool __distro_is
 }
 
 cmd=$1
