@@ -59,6 +59,9 @@ struct body_section {
     std::uint8_t const& kind() const noexcept { return kind_byte; }
 };
 
+template <typename B>
+explicit body_section(const B&) -> body_section<B>;
+
 // Common body section type:
 extern template struct body_section<bson_view>;
 using bson_view_body_section = body_section<bson_view>;
