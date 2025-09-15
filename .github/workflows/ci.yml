@@ -25,6 +25,8 @@ jobs:
       matrix:
         env:
           # Alpine
+          - alpine:3.17
+          - alpine:3.18
           - alpine:3.19
           - alpine:3.20
           - alpine:3.21
@@ -52,11 +54,16 @@ jobs:
           - gcc:12.5.0
           - gcc:latest
           # Clang versions
+          - +env.llvm --llvm_major_version=17
+          - +env.llvm --llvm_major_version=18
           - +env.llvm --llvm_major_version=19
           - +env.llvm --llvm_major_version=20
         vcpkg_arg: &vcpkg_arg
           - use_vcpkg=false
           - use_vcpkg=true
+        exclude:
+          # Older Alpine requires using vcpkg:
+          - { env: alpine:3.17, vcpkg_arg: use_vcpkg=false }
         include:
           # Add Almalinux (RHEL) targets, alwasy using vcpkg
           - { env: almalinux:10, vcpkg_arg: use_vcpkg=true }
