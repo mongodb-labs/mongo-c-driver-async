@@ -74,6 +74,13 @@ if(PROJECT_IS_TOP_LEVEL)
     )
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
+    # XXX: GCC 12 and 13 can compile the library, but if the `tree-slp-vectorize` optimization
+    # is enabled, then GCC will malform certain coroutine codegen, producing linker errors. This
+    # is enabled by -O2, so we explicitly disable this single optimization to support GCC 12/13
+    add_compile_options(-fno-tree-slp-vectorize -Wno-unknown-pragmas)
+endif()
+
 add_compile_options(
     # When compiling C++ with GCC, set a deeper diagnostics depth
     $<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>
@@ -83,7 +90,9 @@ add_compile_options(
 
 # If we generate any DLLs, use a .dll.lib suffix for the importlibs, to distinguish
 # them from actual static libraries
-set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
+if(WIN32)
+    set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
+endif()
 
 # Debug binaries will have a `-dbg` suffix to allow multi-conf installation
 set(CMAKE_DEBUG_POSTFIX -dbg)
