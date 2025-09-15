@@ -142,11 +142,57 @@ __install() {
     fi
 }
 
+__can_install() {
+    # Refresh local package databases
+    if test -f /etc/debian_version; then
+        apt-get -y update
+    elif test -f /etc/alpine-release; then
+        apk update
+    elif test -f /etc/arch-release; then
+        pacman --sync --refresh --quiet --noconfirm || :
+    fi
+    # If more than one package, test each one individually:
+    if test $# -ne 1; then
+        for pkg in "$@"; do
+            __can_install_1 "$pkg" || return
+        done
+        return 0
+    fi
+    __can_install_1 "$1"
+}
+
+__can_install_1() {
+    local package="$1"
+    # Package checks:
+    if test -f /etc/debian_version; then
+        __silent apt-cache show -- "$package"
+        return
+    elif test -f /etc/redhat-release; then
+        # "Yum" may be an alias for dnf, but this still works:
+        __silent yum info "$package"
+        return
+    elif test -f /etc/arch-release; then
+        __silent pacman --sync --info -- "$package"
+        return
+    elif test -f /etc/alpine-release; then
+        __silent apk info -- "$package"
+        return
+    else
+        echo "$0: We don't know how to manage packages on this system" 1>&2
+        return 1
+    fi
+}
+
+__silent() {
+    "$@" > /dev/null 2>&1
+}
+
 __init() {
-    __alias __alias     __tool __alias
-    __alias __install   __tool __install
-    __alias __bool      __tool __bool
-    __alias __boolstr   __tool __boolstr
+    __alias __alias       __tool __alias
+    __alias __install     __tool __install
+    __alias __bool        __tool __bool
+    __alias __boolstr     __tool __boolstr
+    __alias __can_install __tool __can_install
 }
 
 cmd=$1

@@ -52,7 +52,10 @@ BASE:
     FUNCTION
     COPY --chmod=755 tools/__tool /usr/local/bin/__tool
     RUN __tool __init
-    # Basic requirements to even function:
+    # Basic requirements:
+    IF __can_install epel-release # test -f /etc/redhat-release && ! test -f /etc/fedora-release
+        RUN __install epel-release
+    END
     RUN (curl --version || __install curl)
 
     # Obtain uv
@@ -103,7 +106,7 @@ INSTALL_DEPS:
             RUN __install zip unzip pkg-config git
         ELSE
             RUN __install libfmt-dev libssl-dev
-            IF apt-cache show libboost-url-dev 2>&1 > /dev/null
+            IF __can_install libboost-url-dev
                 # Install the default version, if available
                 RUN __install libboost-url-dev libboost-container-dev
             ELSE
@@ -155,7 +158,7 @@ INSTALL_DEPS:
 COPY_SRC:
     FUNCTION
     COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ \
-            tests/ Makefile pyproject.toml uv.lock \
+            tests/ docs/ Makefile pyproject.toml uv.lock \
         .
 
 BUILD:
