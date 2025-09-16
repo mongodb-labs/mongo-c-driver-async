@@ -83,7 +83,7 @@ jobs:
             --${{matrix.vcpkg_arg}}
       - name: Build
         run: |
-          bash tools/earthly.sh -a +build \
+          bash tools/earthly.sh +build \
             --env=${{matrix.env}} \
             --${{matrix.vcpkg_arg}}
       # This step will use the same cached +build results as long as all Earthly
