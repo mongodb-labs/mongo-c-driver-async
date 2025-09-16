@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 23)
 option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ${PROJECT_IS_TOP_LEVEL})
 if(AMONGOC_USE_PMM)
     include(pmm)
-    pmm(VCPKG REVISION 2024.08.23)
+    pmm(VCPKG REVISION 2025.08.27)
 endif()
 
 # A toggle to enable warnings-as-errors. We don't rely on CMAKE_COMPILE_WARNING_AS_ERROR

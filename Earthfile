@@ -148,7 +148,7 @@ INSTALL_DEPS:
         RUN printf %s "cmake_minimum_required(VERSION 3.20)
             project(tmp)
             include(tools/pmm.cmake)
-            pmm(VCPKG REVISION 2024.08.23)
+            pmm(VCPKG REVISION 2025.08.27)
             " > $src_tmp/CMakeLists.txt
         # Running CMake now will prepare our dependencies without configuring the rest of the project
         CACHE ~/.cache/vcpkg
