@@ -97,11 +97,17 @@ jobs:
   build-windows:
     name: Build & Test (Windows, VS 2022)
     strategy:
+      fail-fast: false
       matrix:
         arch: [x86, amd64, arm64]
     runs-on: windows-2022
     steps:
       - *checkout
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/_cache
+          key: msvc-${{matrix.arch}}
       - name: Build & Test
         shell: pwsh
         # 17.* select VS 2022
