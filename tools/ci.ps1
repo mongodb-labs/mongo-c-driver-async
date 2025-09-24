@@ -30,15 +30,15 @@ $root = Split-Path -Parent $this_dir
 Write-Verbose "Loading uv environment..."
 $uv_env = Get-UvEnvironment -ArgumentList "--group=build"
 Write-Verbose "Loading MSVS environment..."
-$vs_env = Invoke-WithEnvironment $uv_env {
+[hashtable]$uv_vs_env = Invoke-WithEnvironment $uv_env {
     Get-VsEnvironment -Version:$VSVersion -TargetArch:$TargetArch
 }
 # Set the CC and CXX env vars to point to MSVC to prevent Ninja generation from
 # attempting to use MinGW GCC instead, even if its available on the path
-$vs_env["CC"] = "cl.exe"
-$vs_env["CXX"] = "cl.exe"
+$uv_vs_env.Add("CC", "cl.exe")
+$uv_vs_env.Add("CXX", "cl.exe")
 
-Invoke-WithEnvironment $vs_env {
+Invoke-WithEnvironment $uv_vs_env {
     $settings = @{
         AMONGOC_USE_PMM                  = $UseVcpkg;
         BUILD_TESTING                    = $Test;
