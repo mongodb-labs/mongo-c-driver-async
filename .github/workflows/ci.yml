@@ -108,6 +108,13 @@ jobs:
         with:
           path: _build/_cache
           key: msvc-${{matrix.arch}}
+      # This step only warms up the uv cache for the `build` group used by the
+      # main build process
+      - name: Prepare uv Environment
+        shell: pwsh
+        run: |
+          Import-Module ./tools/uv
+          [void](Get-UvEnvironment "--group=build")
       - name: Build & Test
         shell: pwsh
         # 17.* select VS 2022
