@@ -18,7 +18,7 @@ jobs:
         run: make format-check PYTHON_RUN="uv run --group=format"
 
   build-matrix:
-    name: Build & Test
+    name: Build & Test (Linux)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -93,3 +93,17 @@ jobs:
           bash tools/earthly.sh -a +test/results.xml results.xml \
             --env=${{matrix.env}} \
             --${{matrix.vcpkg_arg}}
+
+  build-windows:
+    name: Build & Test (Windows, VS 2022)
+    strategy:
+      matrix:
+        arch: [x86, amd64, arm64]
+    runs-on: windows-2022
+    steps:
+      - *checkout
+      - name: Build & Test
+        shell: pwsh
+        # 17.* select VS 2022
+        run: |
+          tools/ci.ps1 -VSVersion 17.* -TargetArch "${{matrix.arch}}" -UseVcpkg
