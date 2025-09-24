@@ -150,7 +150,7 @@ function Get-VsEnvironment {
         $ScratchDir = Join-Path (Split-Path -Parent $this_dir) "_build"
     }
 
-    New-Item $ScratchDir -ItemType Directory -ErrorAction Ignore
+    [void](New-Item $ScratchDir -ItemType Directory -ErrorAction Ignore)
 
     $vs_versions = Get-VsInstallations
 
