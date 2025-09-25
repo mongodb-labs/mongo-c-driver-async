@@ -117,6 +117,6 @@ jobs:
           [void](Get-UvEnvironment "--group=build")
       - name: Build & Test
         shell: pwsh
-        # 17.* select VS 2022
+        # 17.* selects VS 2022
         run: |
-          tools/ci.ps1 -VSVersion 17.* -TargetArch "${{matrix.arch}}" -UseVcpkg
+          tools/ci.ps1 -VSVersion 17.* -TargetArch ${{matrix.arch}} -UseVcpkg -BuildTesting

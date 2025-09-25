@@ -46,7 +46,7 @@ $uv_vs_env.Add("CXX", "cl.exe")
 Invoke-WithEnvironment $uv_vs_env {
     $settings = @{
         AMONGOC_USE_PMM                  = $UseVcpkg;
-        BUILD_TESTING                    = $Test;
+        BUILD_TESTING                    = $Test -or $BuildTesting;
         AMONGOC_COMPILE_WARNING_AS_ERROR = $WarningsAsErrors;
         CMAKE_CROSS_CONFIGS              = $Configs -join ';';
         CMAKE_DEFAULT_CONFIGS            = "all";
