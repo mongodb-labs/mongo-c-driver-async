@@ -17,6 +17,17 @@ jobs:
       - name: Check Formatting
         run: uv run --group=format --isolated make format-check
 
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *get-uv
+      - name: Build Documentation
+        run: uv run --group=docs --isolated make docs-html
+
+  # XXX: NOTE: The following are used to validate the content of our "ref/platform-support"
+  #      page. Any changes here should be reflected in the platform support page.
   build-matrix:
     name: Build & Test (Linux)
     runs-on: ubuntu-latest
