@@ -15,7 +15,7 @@ jobs:
         with:
           version: 0.8.15
       - name: Check Formatting
-        run: make format-check PYTHON_RUN="uv run --group=format"
+        run: uv run --group=format --isolated make format-check
 
   build-matrix:
     name: Build & Test (Linux)

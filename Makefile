@@ -14,16 +14,8 @@ INSTALL_PREFIX :=
 # Treat compiler warnings as errors (Sets COMPILE_WARNING_AS_ERROR on amongoc)
 WARNINGS_AS_ERRORS := false
 
-# *** Execution Parameters ***
-# Set the LAUNCHER parameter to prefix all executed commands
-LAUNCHER :=
-
-# Update the shell to be executed by the launching command. Make will use
-# this to execute all commands in the Makefile:
-SHELL := $(LAUNCHER) $(SHELL)
-
 .SILENT:
-.PHONY: docs-html docs-serve default build test format format-check packages
+.PHONY: default
 
 # If given no other target, runs the build
 default: build
@@ -36,7 +28,7 @@ THIS_DIR := $(shell dirname $(THIS_FILE))
 # Directory where we will scribble build files
 BUILD_DIR ?= $(THIS_DIR)/_build/auto
 
-PYTHON_RUN :=
+PYTHON_RUN := python
 # Run CMake within the uv environment
 CMAKE_RUN := cmake
 
@@ -45,12 +37,15 @@ SPHINX_ARGS := --jobs="$(SPHINX_JOBS)" --write-all --show-traceback --builder=di
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
+.PHONY: docs-html docs-serve
 docs-html:
 	sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
 docs-serve:
 	sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
+CMAKE_CONFIGURE_ARGS :=
+.PHONY: configure build build-fast
 configure:
 	$(CMAKE_RUN) \
 		-S "$(THIS_DIR)" \
@@ -62,6 +57,7 @@ configure:
 		-D BUILD_TESTING=$(BUILD_TESTING) \
 		-D MONGO_SANITIZE="$(SANITIZE)" \
 		-D CMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) \
+		$(CMAKE_CONFIGURE_ARGS) \
 		-G "Ninja Multi-Config"
 
 build: configure
@@ -70,6 +66,7 @@ build: configure
 build-fast:
 	$(CMAKE_RUN) --build "$(BUILD_DIR)"
 
+.PHONY: test test-fast ctest-run
 test: build
 	$(MAKE) test-fast
 
@@ -86,6 +83,7 @@ ctest-run:
 	 	|| :
 	uv tool run --isolated junit2html "$(JUNIT_OUTPUT)" "$(JUNIT_OUTPUT).html"
 
+.PHONY: install install-fast package
 install: build
 	$(MAKE) install-fast
 
@@ -104,11 +102,13 @@ package-fast:
 		cpack -B "$(CPACK_OUT)" -C "$(PACKAGE_CONFIGS)" -G "$(PACKAGE_FORMATS)"
 	rm -r -- "$(CPACK_OUT)/_CPack_Packages"
 
+.PHONY: format format-check
 format-check:
-	uv run --group=format --isolated $(PYTHON_RUN) tools/format.py --mode=check
+	$(PYTHON_RUN) tools/format.py --mode=check
 
 format:
-	uv run --group=format --isolated $(PYTHON_RUN) tools/format.py
+	$(PYTHON_RUN) tools/format.py
 
+.PHONY: packages
 packages:
 	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs
