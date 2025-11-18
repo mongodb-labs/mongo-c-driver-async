@@ -29,9 +29,10 @@ test:
 # Target used to install LLVM for a build. Not used outside this file
 env.llvm:
     ARG --required llvm_major_version
+    ARG llvm_ubuntu_version = 24.04
     # LLVM doesn't provide a container, so we just use Ubuntu and the automated
     # LLVM installer script to get the appropriate major version
-    FROM $default_container_registry/ubuntu:24.04
+    FROM $default_container_registry/ubuntu:$llvm_ubuntu_version
     DO +BASE
     # Required for the LLVM installer:
     RUN __install lsb-release software-properties-common gnupg
