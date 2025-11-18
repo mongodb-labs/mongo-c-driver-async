@@ -74,6 +74,22 @@ if(PROJECT_IS_TOP_LEVEL)
     )
 endif()
 
+string(CONCAT disable_unity_subobject_linkage_warning
+    $<
+    $<AND:
+        # If we are building a unity target
+        $<BOOL:$<TARGET_PROPERTY:UNITY_BUILD>>,
+        # And the compiler is GCC
+        $<CXX_COMPILER_ID:GNU>,
+        # And we are compiling a C++ file
+        $<COMPILE_LANGUAGE:CXX>
+    >:
+        # Disable warnings about subobject linkage, which are false positives in
+        # unity builds.
+        -Wno-subobject-linkage
+    >)
+add_compile_options(${disable_unity_subobject_linkage_warning})
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
     # XXX: GCC 12 and 13 can compile the library, but if the `tree-slp-vectorize` optimization
     # is enabled, then GCC will malform certain coroutine codegen, producing linker errors. This

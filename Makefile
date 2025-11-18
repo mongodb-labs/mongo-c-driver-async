@@ -13,6 +13,9 @@ TEST_CONFIG := Debug
 INSTALL_PREFIX :=
 # Treat compiler warnings as errors (Sets COMPILE_WARNING_AS_ERROR on amongoc)
 WARNINGS_AS_ERRORS := false
+# Enable CMake unity builds
+UNITY_BUILD := false
+UNITY_BUILD_BATCH_SIZE := 16
 
 .SILENT:
 .PHONY: default
@@ -57,6 +60,8 @@ configure:
 		-D BUILD_TESTING=$(BUILD_TESTING) \
 		-D MONGO_SANITIZE="$(SANITIZE)" \
 		-D CMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) \
+		-D CMAKE_UNITY_BUILD=$(UNITY_BUILD) \
+		-D CMAKE_UNITY_BUILD_BATCH_SIZE=$(UNITY_BUILD_BATCH_SIZE) \
 		$(CMAKE_CONFIGURE_ARGS) \
 		-G "Ninja Multi-Config"
 
