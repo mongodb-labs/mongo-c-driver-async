@@ -140,7 +140,7 @@ mlib_nodiscard("Check the returned pointer for failure")
 /**
  * @brief Create a new empty vector
  */
-vec_extern_inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
+vec_extern_inline VecName fn(new (mlib_allocator alloc)) mlib_noexcept {
     VecName ret;
     ret.data      = NULL;
     ret.size      = 0;
@@ -148,7 +148,7 @@ vec_extern_inline VecName fn(new(mlib_allocator alloc)) mlib_noexcept {
     return ret;
 }
 
-vec_extern_inline void fn(delete(VecName v)) mlib_noexcept { (void)fn(resize(&v, 0)); }
+vec_extern_inline void fn(delete (VecName v)) mlib_noexcept { (void)fn(resize(&v, 0)); }
 mlib_assoc_deleter(VecName, fn(delete));
 
 /**

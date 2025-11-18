@@ -92,8 +92,7 @@ public:
     [[nodiscard(
         "release() returns the coroutine handle without destroying it. "
         "Did you mean to use reset()?")]]  //
-    constexpr coroutine_handle_type
-    release() noexcept {
+    constexpr coroutine_handle_type release() noexcept {
         return std::exchange(_co, nullptr);
     }
 

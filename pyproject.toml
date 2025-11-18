@@ -13,7 +13,9 @@ package = false
 [dependency-groups]
 build = ["cmake~=3.25.0", "ninja~=1.13.0"]
 
-format = ["clang-format~=20.1.0"]
+format = [
+    "clang-format>=21.1.5",
+]
 
 docs = [
     "sphinx~=8.0.2",
