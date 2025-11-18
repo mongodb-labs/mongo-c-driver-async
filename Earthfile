@@ -91,69 +91,80 @@ INSTALL_DEPS:
         RUN __install git
     END
 
+    # Accumulate packages to be installed
+    LET pkgs = ""
+
     IF test -f /etc/alpine-release
         # Basic Alpine requirements:
-        RUN __install build-base ccache
+        SET pkgs = $pkgs build-base
         IF __bool $use_vcpkg
             # Requirements for vcpkg to install our dependencies:
-            RUN __install pkgconfig linux-headers perl bash tar zip unzip git
+            SET pkgs = $pkgs pkgconfig linux-headers perl bash tar zip unzip git
         ELSE
             # Our dependencies, obtained from the system package manager:
-            RUN __install fmt-dev boost-dev openssl-dev
+            SET pkgs = $pkgs fmt-dev boost-dev openssl-dev
         END
     ELSE IF test -f /etc/debian_version
-        RUN __install build-essential ccache
+        SET pkgs = $pkgs build-essential
         IF __bool $use_vcpkg
-            RUN __install zip unzip pkg-config git
+            SET pkgs = $pkgs zip unzip pkg-config git
         ELSE
-            RUN __install libfmt-dev libssl-dev
+            SET pkgs = $pkgs libfmt-dev libssl-dev
             IF __can_install libboost-url-dev
                 # Install the default version, if available
-                RUN __install libboost-url-dev libboost-container-dev
+                SET pkgs = $pkgs libboost-url-dev libboost-container-dev
             ELSE
                 # Older debian requires qualified versions
-                RUN __install libboost-url1.81-dev libboost-container1.81-dev
+                SET pkgs = $pkgs libboost-url1.81-dev libboost-container1.81-dev
             END
         END
     ELSE IF test -f /etc/redhat-release
-        RUN __install python3.12 ccache gcc gcc-c++
+        SET pkgs = $pkgs python3.12 gcc gcc-c++
         # Specify a version of the GCC toolset to be installed, available in
         # RHEL-based systems ≤9.x
         ARG gts_version
         IF test "$gts_version" != ''
-            RUN __install scl-utils gcc-toolset-$gts_version
+            SET pkgs = $pkgs scl-utils gcc-toolset-$gts_version
             ENV LAUNCHER = "scl run gcc-toolset-$gts_version -- "
         ELSE
-            RUN __install gcc gcc-c++
+            SET pkgs = $pkgs gcc gcc-c++
         END
         IF __bool $use_vcpkg
-            RUN __install zip unzip perl git
+            SET pkgs = $pkgs zip unzip perl git
         ELSE
-            RUN __install boost-devel fmt-devel openssl-devel boost-url
+            SET pkgs = $pkgs boost-devel fmt-devel openssl-devel boost-url
         END
     END
 
-    # Set the directory where Ccache writes its data, and cache that across runs
-    ENV CCACHE_DIR = /run/ccache
-    CACHE /run/ccache
+    RUN __install $pkgs
 
-    # Do some additional setup for vcpkg
+    DO +ADD_CCACHE
+
+ADD_CCACHE:
+    FUNCTION
+    IF ! ccache -v && __can_install ccache
+        RUN __install ccache
+    END
+    IF ccache -v
+        ENV CCACHE_DIR = /run/ccache
+        CACHE /run/ccache
+        ENV CMAKE_C_COMPILER_LAUNCHER=ccache
+        ENV CMAKE_CXX_COMPILER_LAUNCHER=ccache
+    END
+
+VCPKG_SETUP:
+    FUNCTION
+    # Toggle whether this function actually does anything
+    ARG --required use_vcpkg
     IF __bool $use_vcpkg
         # Required when bootstrapping vcpkg on Alpine:
         ENV VCPKG_FORCE_SYSTEM_BINARIES=1
-        # Bootstrap dependencies, warming the user-local binary cache
-        LET src_tmp=/s-tmp
-        WORKDIR $src_tmp
-        COPY --dir vcpkg*.json $src_tmp
-        COPY tools/pmm.cmake $src_tmp/tools/
-        RUN printf %s "cmake_minimum_required(VERSION 3.20)
-            project(tmp)
-            include(tools/pmm.cmake)
-            pmm(VCPKG REVISION 2025.08.27)
-            " > $src_tmp/CMakeLists.txt
-        # Running CMake now will prepare our dependencies without configuring the rest of the project
-        CACHE ~/.cache/vcpkg
-        RUN $LAUNCHER uv run --with=cmake~=3.20 --with=ninja cmake -G Ninja -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+        # Set a specific directory as the binary cache location that vcpkg will use
+        ENV VCPKG_DEFAULT_BINARY_CACHE = "/run/cache/vcpkg/binary"
+        # Prepare the area
+        RUN mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+        # Persist that directory between target executions
+        CACHE $VCPKG_DEFAULT_BINARY_CACHE
     END
 
 COPY_SRC:
@@ -164,13 +175,19 @@ COPY_SRC:
 
 BUILD:
     FUNCTION
+    # Enable vcpkg
+    ARG --required use_vcpkg
+    DO --pass-args +VCPKG_SETUP
+    # Enable Ccache caching between container runs
+    DO +ADD_CCACHE
+
     ARG install_prefix
     ARG cpack_out
     DO +COPY_SRC
     ARG --required test
     ARG --required warnings_as_errors
-    ARG --required use_vcpkg
     ARG --required configs
+    ARG unity_build = false
     # Configure
     RUN $LAUNCHER uv run --group=build \
             make build \
@@ -178,7 +195,8 @@ BUILD:
                 INSTALL_PREFIX=$install_prefix \
                 USE_PMM=$(__boolstr $use_vcpkg) \
                 WARNINGS_AS_ERRORS=$(__boolstr $warnings_as_errors) \
-                BUILD_TESTING=$(__boolstr $test)
+                BUILD_TESTING=$(__boolstr $test) \
+                UNITY_BUILD=$unity_build
     IF test "$install_prefix" != ""
         FOR conf IN Debug # Release RelWithDebInfo
             RUN $LAUNCHER uv run --group=build \
