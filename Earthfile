@@ -142,10 +142,10 @@ INSTALL_DEPS:
 
 ADD_CCACHE:
     FUNCTION
-    IF ! ccache -v && __can_install ccache
+    IF ! ccache --version && __can_install ccache
         RUN __install ccache
     END
-    IF ccache -v
+    IF ccache --version
         ENV CCACHE_DIR = /run/ccache
         CACHE /run/ccache
         ENV CMAKE_C_COMPILER_LAUNCHER=ccache
