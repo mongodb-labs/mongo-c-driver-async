@@ -23,9 +23,6 @@ option(AMONGOC_COMPILE_WARNING_AS_ERROR "Treat compiler warnings as errors" "${C
 # Set up `find_package()` to trigger FetchContent for certain deps
 include(DeclareFetchContentDeps)
 
-# Import our Ccache detection before subprojects that might use the compiler launcher
-include(Ccache)
-
 find_package(asio 1.25.0 REQUIRED)
 find_package(Boost CONFIG REQUIRED URL Container)
 find_package(fmt CONFIG REQUIRED)
