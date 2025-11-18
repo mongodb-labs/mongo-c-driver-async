@@ -96,14 +96,16 @@ jobs:
         run: |
           bash tools/earthly.sh +build \
             --env=${{matrix.env}} \
-            --${{matrix.vcpkg_arg}}
+            --${{matrix.vcpkg_arg}} \
+            --unity_build=true
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent. Make sure of that!
       - name: Test
         run: |
           bash tools/earthly.sh -a +test/results.xml results.xml \
             --env=${{matrix.env}} \
-            --${{matrix.vcpkg_arg}}
+            --${{matrix.vcpkg_arg}} \
+            --unity_build=true
 
   build-windows:
     name: Build & Test (Windows, VS 2022)
@@ -130,4 +132,4 @@ jobs:
         shell: pwsh
         # 17.* selects VS 2022
         run: |
-          tools/ci.ps1 -VSVersion 17.* -TargetArch ${{matrix.arch}} -UseVcpkg -BuildTesting
+          tools/ci.ps1 -VSVersion 17.* -TargetArch ${{matrix.arch}} -UseVcpkg -BuildTesting -UnityBuild

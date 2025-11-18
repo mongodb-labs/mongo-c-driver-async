@@ -14,7 +14,8 @@ param(
     [switch]$UseVcpkg,
     [switch]$BuildTesting,
     [switch]$WarningsAsErrors,
-    [switch]$Test
+    [switch]$Test,
+    [switch]$UnityBuild
 )
 
 $ErrorActionPreference = "Stop"
@@ -50,6 +51,8 @@ Invoke-WithEnvironment $uv_vs_env {
         AMONGOC_COMPILE_WARNING_AS_ERROR = $WarningsAsErrors;
         CMAKE_CROSS_CONFIGS              = $Configs -join ';';
         CMAKE_DEFAULT_CONFIGS            = "all";
+        CMAKE_UNITY_BUILD                = $UnityBuild;
+        CMAKE_UNITY_BUILD_BATCH_SIZE     = 16;
     }
     Build-CMakeProject -SourceDir $root -BuildDir $root/_build `
         -Settings $settings `
