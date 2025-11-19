@@ -96,20 +96,19 @@ jobs:
         run: |
           # Set Earthly args in the .arg file, which will persist across subsequent
           # steps, ensuring each step uses the same argument set
-          echo "env=${{matrix.env}}"      >  .arg
-          echo "${{matrix.vcpkg_arg}}"    >> .arg
+          echo "${{matrix.vcpkg_arg}}"    > .arg
           # Persist caches into a host directory to be persisted between runs
           echo "host_cache=_build/.cache" >> .arg
           # Enable unity builds in CI for faster compilation
           echo "unity_build=true"         >> .arg
 
-          bash tools/earthly.sh +init
+          bash tools/earthly.sh +init --env=${{matrix.env}}
       - name: Build
-        run: bash tools/earthly.sh +build
+        run: bash tools/earthly.sh +build --env=${{matrix.env}}
       # This step will use the same cached +build results as long as all Earthly
       # build arguments are equivalent.
       - name: Test
-        run: bash tools/earthly.sh -a +test/results.xml results.xml
+        run: bash tools/earthly.sh -a +test/results.xml results.xml --env=${{matrix.env}}
 
   build-macos:
     name: Build & Test (macOS)
@@ -194,7 +193,7 @@ jobs:
         run: |
           tools/ci.ps1 -VSVersion 17.* `
             -TargetArch ${{matrix.arch}} `
-            -VcpkgBinaryCachePath "_build/.cache/vcpkg"
+            -VcpkgBinaryCachePath "_build/.cache/vcpkg" `
             -UseVcpkg `
             -BuildTesting `
             -UnityBuild
