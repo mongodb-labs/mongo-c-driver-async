@@ -128,7 +128,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: _build/.cache
-          key: macos-15 / ${{matrix.compiler_spec}} / ${{martix.target_arch}}
+          key: macos-15 / ${{matrix.compiler_spec}} / ${{matrix.target_arch}}
       - name: Prepare uv Environment
         run: uv run --group=build true
       - name: Build & Test
