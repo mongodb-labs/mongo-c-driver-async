@@ -108,6 +108,10 @@ mlib_extern_c_end();
 
 #if mlib_is_cxx()
 
+#ifndef mlib_allocator_default_constructible
+#define mlib_allocator_default_constructible() !mlib_audit_allocator_passing()
+#endif
+
 namespace mlib {
 
 /**
@@ -120,6 +124,11 @@ class allocator {
 public:
     using value_type = T;
     using pointer    = value_type*;
+
+#if mlib_allocator_default_constructible()
+    allocator() noexcept
+        : _alloc(::mlib_default_allocator) {}
+#endif
 
     // Construct around an existing mlib_allocator object
     constexpr allocator(mlib_allocator a) noexcept

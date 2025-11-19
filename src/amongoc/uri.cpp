@@ -9,7 +9,9 @@
 #include <mlib/alloc.h>
 
 #include <boost/url.hpp>
-#include <fmt/chrono.h>  // Enable duration formatting
+// XXX: We would like to format date types, but a Clang bug prevents it from
+//      working. Disable that for now.
+// #include <fmt/chrono.h>  // Enable duration formatting
 #include <neo/tokenize.hpp>
 #include <neo/utility.hpp>
 
@@ -201,14 +203,21 @@ result<connection_uri> connection_uri::parse(std::string_view                   
             return [=](I ival) -> I {
                 if (ival < min or ival > max) {
                     warn.fire(defer_convert([&] {
-                        return uri_warning_event(
-                            format(alloc,
-                                   "URI parameter “{}”: Value {} is outside the supported range "
-                                   "(min: {}, max: {})",
-                                   std::string_view(qp.key),
-                                   ival,
-                                   min,
-                                   max));
+                        if constexpr (fmt::is_formattable<I>::value) {
+                            return uri_warning_event(format(
+                                alloc,
+                                "URI parameter “{}”: Value {} is outside the supported range "
+                                "(min: {}, max: {})",
+                                std::string_view(qp.key),
+                                ival,
+                                min,
+                                max));
+                        } else {
+                            return uri_warning_event(
+                                format(alloc,
+                                       "URI parameter “{}” is outside the supported range",
+                                       std::string_view(qp.key)));
+                        }
                     }));
                 }
                 return std::clamp(ival, min, max);

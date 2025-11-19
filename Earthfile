@@ -1,56 +1,51 @@
 VERSION 0.8
 
-build-alpine:
-    FROM alpine:3.20
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "build-base git cmake gcc g++ ninja make ccache python3" \
-        --vcpkg_bs_deps "pkgconfig linux-headers perl bash tar zip unzip curl" \
-        --third_deps "fmt-dev boost-dev openssl-dev"
+# Tweak the default container registry used for pulling system images.
+ARG --global default_container_registry = "docker.io"
 
-build-debian:
-    FROM debian:12
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        # Spec test generation requires a Python newer than what is on Debian 12
-        --BUILD_SPEC_TESTS=FALSE \
-        --build_deps "build-essential cmake git ninja-build python3 ccache" \
-        --vcpkg_bs_deps "perl pkg-config linux-libc-dev curl zip unzip" \
-        --third_deps "libfmt-dev libboost-url1.81-dev libboost-container1.81-dev libssl-dev"
+# Directory on the host where we will copy in/out cache files. If unset/falsey, then
+# caches will not be persisted on the host, only within the containers
+ARG --global host_cache
 
-build-rl:
-    FROM rockylinux:8
-    RUN dnf -y install epel-release unzip
-    LET cmake_url = "https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-linux-x86_64.sh"
-    RUN curl "$cmake_url" -Lo cmake.sh && \
-        sh cmake.sh --exclude-subdir --prefix=/usr/local/ --skip-license
-    LET ninja_url = "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip"
-    RUN curl -L "$ninja_url" -o ninja.zip && \
-        unzip ninja.zip -d /usr/local/bin/
-    CACHE ~/.ccache  # Epel Ccache still uses the old cache location
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --launcher "scl run gcc-toolset-12 --" \
-        --build_deps "gcc-toolset-12 python3.12 ccache" \
-        --vcpkg_bs_deps "zip unzip git perl"
+init:
+    ARG --required env
+    # Toggle the building of test programs
+    ARG test = true
+    # Toggle whether we use vcpkg to obtain dependencies
+    ARG use_vcpkg = true
+    FROM --pass-args $env
+    DO --pass-args +INSTALL_DEPS
 
-build-fedora:
-    FROM fedora:41
-    DO --pass-args +BOOTSTRAP_BUILD_INSTALL_EXPORT \
-        --build_deps "cmake ninja-build git gcc gcc-c++ python3.12 ccache" \
-        --vcpkg_bs_deps "zip unzip perl" \
-        --third_deps "boost-devel boost-url fmt-devel openssl-devel"
+build:
+    ARG warnings_as_errors = true
+    ARG configs   = Debug;RelWithDebInfo
+    ARG test      = true
+    ARG use_vcpkg = true
+    FROM --pass-args +init
+    DO --pass-args +BUILD_INSTALL_EXPORT
 
-build-multi:
-    FROM alpine
-    # COPY +build-rl/ out/rl/  ## XXX: Redhat build is broken: Investigate GCC linker issues
-    COPY (+build-debian/ --use_vcpkg=false) out/debian/
-    COPY (+build-alpine/ --use_vcpkg=false) out/alpine/
-    COPY (+build-fedora/ --use_vcpkg=false) out/fedora/
-    SAVE ARTIFACT out/* /
+test:
+    FROM --pass-args +build
+    RUN uv run --group=build \
+        make ctest-run TEST_CONFIG=Debug JUNIT_OUTPUT=/results.xml
+    SAVE ARTIFACT /results.xml
 
-matrix:
-    BUILD +run \
-        --target +build-debian --target +build-alpine --target +build-fedora \
-        --use_vcpkg=true --use_vcpkg=false \
-        --test=false --test=true
+# Target used to install LLVM for a build. Not used outside this file
+env.llvm:
+    ARG --required llvm_major_version
+    ARG llvm_ubuntu_version = 24.04
+    # LLVM doesn't provide a container, so we just use Ubuntu and the automated
+    # LLVM installer script to get the appropriate major version
+    FROM $default_container_registry/ubuntu:$llvm_ubuntu_version
+    DO +BASE
+    # Required for the LLVM installer:
+    RUN __install lsb-release software-properties-common gnupg
+    # Install the major version using the automated LLVM installer:
+    RUN curl -Ls https://apt.llvm.org/llvm.sh -o llvm.sh && \
+        bash llvm.sh "$llvm_major_version"
+    # Declare our preferred compiler version using CC and CXX env vars
+    ENV CC=clang-$llvm_major_version
+    ENV CXX=clang++-$llvm_major_version
 
 run:
     LOCALLY
@@ -58,14 +53,28 @@ run:
     BUILD --pass-args $target
 
 # Miscellaneous system init
-INIT:
+BASE:
     FUNCTION
-    COPY --chmod=755 tools/__install /usr/local/bin/__install
+    COPY --chmod=755 tools/__tool /usr/local/bin/__tool
+    RUN __tool __init
+    # Basic requirements:
+    IF __can_install epel-release # test -f /etc/redhat-release && ! test -f /etc/fedora-release
+        RUN __install epel-release
+    END
+    RUN (curl --version || __install curl)
 
-BOOTSTRAP_BUILD_INSTALL_EXPORT:
+    # Obtain uv
+    ARG uv_version = "0.8.15"
+    ARG uv_install_sh_url = "https://astral.sh/uv/$uv_version/install.sh"
+    IF ! test -f /usr/local/bin/uv
+        RUN curl -LsSf "$uv_install_sh_url" \
+                | env UV_UNMANAGED_INSTALL=/opt/uv sh - \
+            && ln -s /opt/uv/uv /usr/local/bin/uv \
+            && uv --version
+    END
+
+BUILD_INSTALL_EXPORT:
     FUNCTION
-    # Bootstrap
-    DO --pass-args +BOOTSTRAP_DEPS
     # Build and install
     DO --pass-args +BUILD --install_prefix=/opt/amongoc --cpack_out=/tmp/pkg
     # Export
@@ -73,81 +82,161 @@ BOOTSTRAP_BUILD_INSTALL_EXPORT:
     SAVE ARTIFACT /opt/amongoc/* /install/
 
 # Install dependencies, possibly warming up the user-local vcpkg cache if vcpkg is used
-BOOTSTRAP_DEPS:
+INSTALL_DEPS:
     FUNCTION
-    DO +INIT
-    # Dependencies that are required for the build. Always installed
-    ARG build_deps
-    RUN __install $build_deps
-    # Switch behavior based on whether we use vcpkg
+    DO +BASE
+    # Do we want to use vcpkg?
     ARG use_vcpkg=true
-    IF ! $use_vcpkg
-        # No vcpkg. Install system dependencies
-        ARG third_deps
-        RUN __install $third_deps
-        # Install system deps for testing, if needed
-        ARG test_deps
-        ARG test=true
-        IF $test
-            RUN __install $test_deps
+    # Are we installing test-only dependencies?
+    ARG test=true
+
+    IF __bool $test
+        # We use Git to obtain certain test artifacts.
+        RUN __install git
+    END
+
+    # Accumulate packages to be installed
+    LET pkgs = ""
+
+    IF test -f /etc/alpine-release
+        # Basic Alpine requirements:
+        SET pkgs = $pkgs build-base
+        IF __bool $use_vcpkg
+            # Requirements for vcpkg to install our dependencies:
+            SET pkgs = $pkgs pkgconfig linux-headers perl bash tar zip unzip git
+        ELSE
+            # Our dependencies, obtained from the system package manager:
+            SET pkgs = $pkgs fmt-dev boost-dev openssl-dev
         END
-    ELSE
-        # vcpkg may have dependencies that need to be installed to bootstrap
-        ARG vcpkg_bs_deps
-        RUN __install $vcpkg_bs_deps
+    ELSE IF test -f /etc/debian_version
+        SET pkgs = $pkgs build-essential
+        IF __bool $use_vcpkg
+            SET pkgs = $pkgs zip unzip pkg-config git
+        ELSE
+            SET pkgs = $pkgs libfmt-dev libssl-dev
+            IF __can_install libboost-url-dev
+                # Install the default version, if available
+                SET pkgs = $pkgs libboost-url-dev libboost-container-dev
+            ELSE
+                # Older debian requires qualified versions
+                SET pkgs = $pkgs libboost-url1.81-dev libboost-container1.81-dev
+            END
+        END
+    ELSE IF test -f /etc/redhat-release
+        SET pkgs = $pkgs python3.12 gcc gcc-c++
+        # Specify a version of the GCC toolset to be installed, available in
+        # RHEL-based systems ≤9.x
+        ARG gts_version
+        IF test "$gts_version" != ''
+            SET pkgs = $pkgs scl-utils gcc-toolset-$gts_version
+            ENV LAUNCHER = "scl run gcc-toolset-$gts_version -- "
+        ELSE
+            SET pkgs = $pkgs gcc gcc-c++
+        END
+        IF __bool $use_vcpkg
+            SET pkgs = $pkgs zip unzip perl git
+        ELSE
+            SET pkgs = $pkgs boost-devel fmt-devel openssl-devel boost-url
+        END
+    END
+
+    RUN __install $pkgs
+
+    DO +CCACHE_INIT
+
+CCACHE_INIT:
+    FUNCTION
+    IF ! ccache --version && __can_install ccache
+        RUN __install ccache
+    END
+    ARG host_cache = false
+    IF ccache --version
+        ENV CCACHE_DIR = /run/ccache
+        ENV CMAKE_C_COMPILER_LAUNCHER=ccache
+        ENV CMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+        IF __bool $host_cache
+            COPY --if-exists $host_cache/ccache $CCACHE_DIR
+        ELSE
+            CACHE $CCACHE_DIR
+        END
+    END
+
+CCACHE_FINISH:
+    FUNCTION
+    IF __bool $host_cache
+        SAVE ARTIFACT $CCACHE_DIR AS LOCAL $host_cache/ccache
+    END
+
+VCPKG_INIT:
+    FUNCTION
+    # Toggle whether this function actually does anything
+    ARG --required use_vcpkg
+    IF __bool $use_vcpkg
         # Required when bootstrapping vcpkg on Alpine:
         ENV VCPKG_FORCE_SYSTEM_BINARIES=1
-        # Bootstrap dependencies
-        LET src_tmp=/s-tmp
-        WORKDIR $src_tmp
-        COPY --dir vcpkg*.json $src_tmp
-        COPY tools/pmm.cmake $src_tmp/tools/
-        RUN printf %s "cmake_minimum_required(VERSION 3.20)
-            project(tmp)
-            include(tools/pmm.cmake)
-            pmm(VCPKG REVISION 2024.08.23)
-            " > $src_tmp/CMakeLists.txt
-        # Running CMake now will prepare our dependencies without configuring the rest of the project
-        CACHE ~/.cache/vcpkg
-        ARG launcher
-        RUN $launcher cmake -S $src_tmp -B $src_tmp/_build/vcpkg-bootstrapping
+        # Set a specific directory as the binary cache location that vcpkg will use
+        ENV VCPKG_DEFAULT_BINARY_CACHE = "/run/cache/vcpkg/binary"
+        # Prepare the area
+        RUN mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
+        IF __bool $host_cache
+            # We are going to copy in/out caches from the host
+            COPY --if-exists $host_cache/vcpkg $VCPKG_DEFAULT_BINARY_CACHE
+        ELSE
+            # Don't use a host directory, use Earthly's caching volume instead
+            CACHE $VCPKG_DEFAULT_BINARY_CACHE
+        END
+    END
+
+VCPKG_FINISH:
+    FUNCTION
+    ARG --required use_vcpkg
+    IF __bool $use_vcpkg && __bool $host_cache
+        SAVE ARTIFACT $VCPKG_DEFAULT_BINARY_CACHE AS LOCAL $host_cache/vcpkg
     END
 
 COPY_SRC:
     FUNCTION
-    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ tests/ .
+    COPY --dir CMakeLists.txt vcpkg*.json etc/ src/ tools/ include/ etc/ \
+            tests/ docs/ Makefile pyproject.toml uv.lock \
+        .
 
 BUILD:
     FUNCTION
+    # Enable vcpkg
+    ARG --required use_vcpkg
+    DO --pass-args +VCPKG_INIT
+    # Enable Ccache caching between container runs
+    DO --pass-args +CCACHE_INIT
+
     ARG install_prefix
     ARG cpack_out
-    ARG launcher
     DO +COPY_SRC
-    CACHE ~/.cache/ccache
-    # Toggle testing
-    ARG test=true
-    LET __test=$(echo $test | tr [:lower:] [:upper:])
-    ARG BUILD_SPEC_TESTS=TRUE
-    # Toggle PMM in the build
-    ARG use_vcpkg=true
-    LET __use_vcpkg=$(echo "$use_vcpkg" | tr "[:lower:]" "[:upper:]")
+    ARG --required test
+    ARG --required warnings_as_errors
+    ARG --required configs
+    ARG unity_build = false
     # Configure
-    RUN $launcher cmake -S . -B _build -G "Ninja Multi-Config" \
-        -D CMAKE_CROSS_CONFIGS="all" \
-        -D CMAKE_INSTALL_PREFIX=$prefix \
-        -D AMONGOC_USE_PMM=$__use_vcpkg \
-        -D BUILD_TESTING=$__test \
-        -D BUILD_SPEC_TESTS=$BUILD_SPEC_TESTS \
-        -D CMAKE_DEFAULT_CONFIGS=all
-    # Build
-    RUN $launcher cmake --build _build
+    RUN $LAUNCHER uv run --group=build \
+            make build \
+                CONFIGS="$configs" \
+                INSTALL_PREFIX=$install_prefix \
+                USE_PMM=$(__boolstr $use_vcpkg) \
+                WARNINGS_AS_ERRORS=$(__boolstr $warnings_as_errors) \
+                BUILD_TESTING=$(__boolstr $test) \
+                UNITY_BUILD=$unity_build
     IF test "$install_prefix" != ""
-        RUN cmake --install _build --prefix="$install_prefix" --config Debug
-        RUN cmake --install _build --prefix="$install_prefix" --config Release
-        RUN cmake --install _build --prefix="$install_prefix" --config RelWithDebInfo
+        FOR conf IN Debug # Release RelWithDebInfo
+            RUN $LAUNCHER uv run --group=build \
+                    make install-fast INSTALL_PREFIX=$install_prefix INSTALL_CONFIG=$conf
+        END
     END
     IF test "$cpack_out" != ""
-        RUN cmake -E chdir _build \
-            cpack -B "$cpack_out" -C "Debug;Release;RelWithDebInfo" -G "STGZ;TGZ;ZIP" && \
-            rm "$cpack_out/_CPack_Packages" -rf
+        RUN $LAUNCHER uv run --group=build \
+                make package-fast \
+                    CPACK_OUT="$cpack_out" \
+                    PACKAGE_CONFIGS="$configs"
     END
+
+    DO --pass-args +VCPKG_FINISH
+    DO --pass-args +CCACHE_FINISH

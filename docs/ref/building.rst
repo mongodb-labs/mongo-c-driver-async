@@ -8,15 +8,12 @@ Configuring, Building, & Using
 Building |amongoc| requires a C++20 compiler. The following tools are known to
 work:
 
+- :doc:`A supported operating system and toolchain <platform-support>`
 - CMake_ 3.25 or newer
-- GCC ≥12.0\ [#fn-redhat-issue]_ **or** Clang ≥17.0
 - Earthly_ 0.8 or newer (for :ref:`building with Earthly <building.earthly>`)
 
-Building on Windows or with MSVC is not currently supported.
-
-Builds are only currently tested with Debian 12 and Alpine 3.20. Support for
-other platforms may be considered in the future, but are not currently planned
-for this prototype.
+Support for other platforms and toolchains may be considered in the future, but
+are not currently planned for this prototype.
 
 .. _CMake: https://cmake.org/
 .. _Earthly: https://earthly.dev/
@@ -86,7 +83,6 @@ them:
     - CMake built-in
     - CMake built-in
     - CMake built-in
-
 
 
 Build Configuration

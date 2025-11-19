@@ -10,7 +10,7 @@ TEST_CASE("Status/Okay") {
     CHECK(st.category == &amongoc_generic_category);
 
     bool took_else = false;
-    amongoc_if_error (st, _) {
+    amongoc_if_error (st, _ [[maybe_unused]]) {
         FAIL_CHECK("Did not expect an error");
     } else {
         took_else = true;
@@ -23,7 +23,7 @@ TEST_CASE("Status/From an Error") {
     CHECK(st.category == &amongoc_generic_category);
     CHECK(st.code == EIO);
     bool took_err = false;
-    amongoc_if_error (st, _) {
+    amongoc_if_error (st, _ [[maybe_unused]]) {
         took_err = true;
     } else {
         FAIL_CHECK("Did not take the error branch");

@@ -40,3 +40,5 @@ extern mlib_constexpr int32_t _bson_valsize(bson_type              tag,
 
 extern inline bson_iterator _bson_recover_iterator(const bson_byte* doc_data_begin,
                                                    ptrdiff_t        elem_offset) mlib_noexcept;
+
+extern inline uint32_t bson_iterator_data_size(const bson_iterator it) mlib_noexcept;

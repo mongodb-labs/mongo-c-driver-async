@@ -476,6 +476,9 @@ struct opt_fmap {
     }
 };
 
+template <typename F>
+explicit opt_fmap(F const&) -> opt_fmap<F>;
+
 /**
  * @brief Decay-copy an object.
  *

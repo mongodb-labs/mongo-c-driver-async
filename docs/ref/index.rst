@@ -9,6 +9,7 @@ Reference
 
   meta-attrs
   api-patterns
+  platform-support
   building
 
   box

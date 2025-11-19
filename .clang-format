@@ -1,5 +1,4 @@
 ---
-Language: Cpp
 # Access specifiers are best unindented, to keep them easy to spot:
 AccessModifierOffset: -4
 # Keep them together. Would be preferable to put all arguments on a new line

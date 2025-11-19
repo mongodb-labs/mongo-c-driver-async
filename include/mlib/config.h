@@ -191,7 +191,7 @@
  * @brief Macro that should be used to toggle convenience APIs that will
  * pass default allocators.
  */
-#define mlib_audit_allocator_passing() 1
+#define mlib_audit_allocator_passing() 0
 #endif  // mlib_audit_allocator_passing
 
 #ifdef __GNUC__
@@ -261,6 +261,10 @@
 
 #define mlib_gcc_warning_disable(Warning)                                                          \
     MLIB_IF_GCC(mlib_pragma(GCC diagnostic ignored Warning))                                       \
+    mlib_static_assert(true, "")
+
+#define mlib_clang_warning_disable(Warning)                                                        \
+    MLIB_IF_CLANG(mlib_pragma(clang diagnostic ignored Warning))                                   \
     mlib_static_assert(true, "")
 
 #define mlib_gnu_warning_disable(Warning)                                                          \
@@ -342,7 +346,7 @@
 #define MLIB_ARGC_PICK(Prefix, ...)                                                                \
     MLIB_PASTE_3(Prefix, _argc_, MLIB_ARG_COUNT(__VA_ARGS__))(__VA_ARGS__)
 
-MLIB_LANG_PICK()([[noreturn]]) mlib_constexpr void mlib_unreachable() mlib_noexcept {
+MLIB_LANG_PICK()([[noreturn]]) static inline void mlib_unreachable() mlib_noexcept {
     MLIB_IF_GNU_LIKE(__builtin_unreachable();)
     MLIB_IF_MSVC(__assume(0);)
 }

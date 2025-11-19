@@ -12,8 +12,13 @@ set(CMAKE_CXX_STANDARD 23)
 option(AMONGOC_USE_PMM "Enable PMM execution to bootstrap dependency packages automatically" ${PROJECT_IS_TOP_LEVEL})
 if(AMONGOC_USE_PMM)
     include(pmm)
-    pmm(VCPKG REVISION 2024.08.23)
+    pmm(VCPKG REVISION 2025.08.27)
 endif()
+
+# A toggle to enable warnings-as-errors. We don't rely on CMAKE_COMPILE_WARNING_AS_ERROR
+# directly, because we don't want to enable -Werror on dependencies that we might
+# be importing and building as sub-projects.
+option(AMONGOC_COMPILE_WARNING_AS_ERROR "Treat compiler warnings as errors" "${CMAKE_COMPILE_WARNING_AS_ERROR}")
 
 # Set up `find_package()` to trigger FetchContent for certain deps
 include(DeclareFetchContentDeps)
@@ -47,7 +52,6 @@ include(MongoSettings)
 include(MongoPlatform)
 # Developer aides
 include(Sanitizers)
-include(Ccache)
 include(LLDLinker)
 include(MongoWarnings)
 
@@ -67,6 +71,29 @@ if(PROJECT_IS_TOP_LEVEL)
     )
 endif()
 
+string(CONCAT disable_unity_subobject_linkage_warning
+    $<
+    $<AND:
+        # If we are building a unity target
+        $<BOOL:$<TARGET_PROPERTY:UNITY_BUILD>>,
+        # And the compiler is GCC
+        $<CXX_COMPILER_ID:GNU>,
+        # And we are compiling a C++ file
+        $<COMPILE_LANGUAGE:CXX>
+    >:
+        # Disable warnings about subobject linkage, which are false positives in
+        # unity builds.
+        -Wno-subobject-linkage
+    >)
+add_compile_options(${disable_unity_subobject_linkage_warning})
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14")
+    # XXX: GCC 12 and 13 can compile the library, but if the `tree-slp-vectorize` optimization
+    # is enabled, then GCC will malform certain coroutine codegen, producing linker errors. This
+    # is enabled by -O2, so we explicitly disable this single optimization to support GCC 12/13
+    add_compile_options(-fno-tree-slp-vectorize -Wno-unknown-pragmas)
+endif()
+
 add_compile_options(
     # When compiling C++ with GCC, set a deeper diagnostics depth
     $<$<AND:$<CXX_COMPILER_ID:GNU>,$<COMPILE_LANGUAGE:CXX>>:-fconcepts-diagnostics-depth=4>
@@ -76,7 +103,9 @@ add_compile_options(
 
 # If we generate any DLLs, use a .dll.lib suffix for the importlibs, to distinguish
 # them from actual static libraries
-set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
+if(WIN32)
+    set(CMAKE_IMPORT_LIBRARY_SUFFIX .dll.lib)
+endif()
 
 # Debug binaries will have a `-dbg` suffix to allow multi-conf installation
 set(CMAKE_DEBUG_POSTFIX -dbg)
@@ -160,7 +189,11 @@ target_link_libraries(amongoc
         $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
         OpenSSL::SSL
-    )
+)
+
+# Toggle warnings-as-errors
+set_property(TARGET amongoc PROPERTY COMPILE_WARNING_AS_ERROR "${AMONGOC_COMPILE_WARNING_AS_ERROR}")
+
 if(BUILD_TESTING)
     # Add Catch integrations
     include(Catch)
@@ -173,14 +206,21 @@ if(BUILD_TESTING)
         $<BUILD_INTERFACE:asio::asio>
         $<BUILD_INTERFACE:neo::fun>
         Boost::container
-        )
+    )
     target_include_directories(amongoc-test PRIVATE src)
-    catch_discover_tests(amongoc-test DISCOVERY_MODE PRE_TEST
+    catch_discover_tests(
+        amongoc-test
+        DISCOVERY_MODE PRE_TEST
+        ADD_TAGS_AS_LABELS
         PROPERTIES
             SKIP_REGULAR_EXPRESSION ":[0-9]+: SKIPPED:"
             TIMEOUT 5
-        )
+            LABELS Catch2
+    )
     target_compile_features(amongoc-test PRIVATE cxx_std_23)
+
+    # Also add -Werror to the test target, if requested for amongoc
+    set_property(TARGET amongoc-test PROPERTY COMPILE_WARNING_AS_ERROR "${AMONGOC_COMPILE_WARNING_AS_ERROR}")
 
     # A test case that simply invokes each BSON API
     add_executable(bson-use-test tests/use-bson.test.c)

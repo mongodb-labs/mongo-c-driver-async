@@ -121,9 +121,8 @@ mlib_constexpr mlib_str_view _mlib_str_view_chopnulls(mlib_str_view str) mlib_no
  * remaining length.
  */
 #define mlib_str_subview(S, Pos, Len) _mlib_str_subview(mlib_str_view_from((S)), Pos, Len)
-mlib_constexpr mlib_str_view _mlib_str_subview(mlib_str_view s,
-                                               size_t        at,
-                                               size_t        len) mlib_noexcept {
+mlib_constexpr
+    mlib_str_view _mlib_str_subview(mlib_str_view s, size_t at, size_t len) mlib_noexcept {
     assert(at <= s.len);
     const size_t remain = s.len - at;
     if (len > remain) {
@@ -232,7 +231,7 @@ typedef struct mlib_str_mut {
 
 #if mlib_is_cxx()
     bool operator==(std::string_view sv) const noexcept { return sv == std::string_view(*this); }
-    operator std::string_view() const noexcept {
+         operator std::string_view() const noexcept {
         return std::string_view(data, _mlib_str_length(str));
     }
 #endif

@@ -15,6 +15,6 @@ int main(int argc, char** argv) {
     if (rc) {
         return rc;
     }
-    int r = session.run(argc, argv);
+    int r = session.run();
     return r;
 }

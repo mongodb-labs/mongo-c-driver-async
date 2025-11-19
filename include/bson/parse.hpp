@@ -559,6 +559,9 @@ struct integer {
     }
 };
 
+template <typename R>
+explicit integer(R const&) -> integer<R>;
+
 /**
  * @brief A parser combinator that attempts to parse each element in a document/array
  *

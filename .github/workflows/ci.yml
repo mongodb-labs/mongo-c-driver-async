@@ -1,0 +1,202 @@
+name: Build and Test
+on: [push, pull_request]
+
+jobs:
+  check-format:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - &checkout
+        name: Checkout
+        uses: actions/checkout@v4
+      - &get-uv
+        name: Get UV
+        uses: astral-sh/setup-uv@v6
+        with:
+          version: 0.8.15
+      - name: Check Formatting
+        run: uv run --group=format --isolated make format-check
+
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - *checkout
+      - *get-uv
+      - name: Build Documentation
+        run: uv run --group=docs --isolated make docs-html
+
+  # XXX: NOTE: The following are used to validate the content of our "ref/platform-support"
+  #      page. Any changes here should be reflected in the platform support page.
+  build-matrix:
+    name: Build & Test (Linux)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        env:
+          # Alpine
+          - alpine:3.17
+          - alpine:3.18
+          - alpine:3.19
+          - alpine:3.20
+          - alpine:3.21
+          - alpine:3.22
+          - alpine:latest
+          - alpine:edge
+          # Ubuntu
+          - ubuntu:24.04
+          - ubuntu:latest
+          # Debian
+          - debian:12.11
+          - debian:latest
+          - debian:unstable
+          # Fedora
+          - fedora:40
+          - fedora:41
+          - fedora:42
+          - fedora:43
+          - fedora:latest
+          - fedora:rawhide
+          # GCC versions
+          - gcc:15.2.0
+          - gcc:14.3.0
+          - gcc:13.4.0
+          - gcc:12.5.0
+          - gcc:latest
+          # Clang versions
+          - +env.llvm --llvm_major_version=17
+          - +env.llvm --llvm_major_version=18
+          - +env.llvm --llvm_major_version=19
+          - +env.llvm --llvm_major_version=20
+        vcpkg_arg: &vcpkg_arg
+          - use_vcpkg=false
+          - use_vcpkg=true
+        exclude:
+          # Older Alpine requires using vcpkg:
+          - { env: alpine:3.17, vcpkg_arg: use_vcpkg=false }
+        include:
+          # Add Almalinux (RHEL) targets, alwasy using vcpkg
+          - { env: almalinux:10, vcpkg_arg: use_vcpkg=true }
+          # RHEL ≤9 requires a newer GCC, using the GCC toolset:
+          - { env: almalinux:9 --gts_version=14, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:9 --gts_version=13, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:9 --gts_version=12, vcpkg_arg: use_vcpkg=true }
+          # RHEL 8
+          - { env: almalinux:8 --gts_version=13, vcpkg_arg: use_vcpkg=true }
+          - { env: almalinux:8 --gts_version=12, vcpkg_arg: use_vcpkg=true }
+    steps:
+      - *checkout
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/.cache
+          key: linux / ${{matrix.env}} / ${{matrix.vcpkg_arg}}
+      - name: Environment Prep
+        run: |
+          # Set Earthly args in the .arg file, which will persist across subsequent
+          # steps, ensuring each step uses the same argument set
+          echo "${{matrix.vcpkg_arg}}"    > .arg
+          # Persist caches into a host directory to be persisted between runs
+          echo "host_cache=_build/.cache" >> .arg
+          # Enable unity builds in CI for faster compilation
+          echo "unity_build=true"         >> .arg
+
+          bash tools/earthly.sh +init --env=${{matrix.env}}
+      - name: Build
+        run: bash tools/earthly.sh +build --env=${{matrix.env}}
+      # This step will use the same cached +build results as long as all Earthly
+      # build arguments are equivalent.
+      - name: Test
+        run: bash tools/earthly.sh -a +test/results.xml results.xml --env=${{matrix.env}}
+
+  build-macos:
+    name: Build & Test (macOS)
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler_spec: [GCC 13, GCC 14, GCC 15, Clang 18]
+        target_arch:
+          - arm64
+          # XXX: The x86_64 target appears to be broken with GCC. Will need to investigate
+          # - x86_64
+    steps:
+      - *checkout
+      - *get-uv
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/.cache
+          key: macos-15 / ${{matrix.compiler_spec}} / ${{matrix.target_arch}}
+      - name: Prepare uv Environment
+        run: uv run --group=build true
+      - name: Build & Test
+        run: |
+          set -eu
+
+          # Set the compiler that CMake will use:
+          _spec="${{matrix.compiler_spec}}"
+          # Trim out the major version number
+          _compiler_id="${_spec% *}"
+          _compiler_major="${_spec#* }"
+
+          if test "$_compiler_id" = "GCC"; then
+            export CC=gcc-$_compiler_major
+            export CXX=g++-$_compiler_major
+          elif test "$_compiler_id" = "Clang"; then
+            _llvm_prefix=$(brew --prefix llvm@$_compiler_major)
+            export CC=$_llvm_prefix/bin/clang
+            export CXX=$_llvm_prefix/bin/clang++
+          else
+            echo "Unknown compiler ID" 1>&2
+            exit 2
+          fi
+
+          # Tell CMake what arch we are targetting
+          export CMAKE_OSX_ARCHITECTURES="${{matrix.target_arch}}"
+
+          # Create a directory for vcpkg binary caches
+          export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/.cache/vcpkg
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+          # Do the build
+          uv run --group=build \
+            make build \
+              CONFIGS="Debug;RelWithDebInfo" \
+              USE_PMM=TRUE \
+              WARNINGS_AS_ERRORS=FALSE \
+              BUILD_TESTING=TRUE \
+              UNITY_BUILD=TRUE
+
+  build-windows:
+    name: Build & Test (Windows, VS 2022)
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86, amd64, arm64]
+    runs-on: windows-2022
+    steps:
+      - *checkout
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/.cache
+          key: msvc-${{matrix.arch}}
+      # This step only warms up the uv cache for the `build` group used by the
+      # main build process
+      - name: Prepare uv Environment
+        shell: pwsh
+        run: |
+          Import-Module ./tools/uv
+          [void](Get-UvEnvironment "--group=build")
+      - name: Build & Test
+        shell: pwsh
+        # 17.* selects VS 2022
+        run: |
+          tools/ci.ps1 -VSVersion 17.* `
+            -TargetArch ${{matrix.arch}} `
+            -VcpkgBinaryCachePath "_build/.cache/vcpkg" `
+            -UseVcpkg `
+            -BuildTesting `
+            -UnityBuild

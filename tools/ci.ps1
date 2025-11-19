@@ -1,0 +1,70 @@
+[CmdletBinding(PositionalBinding = $false)]
+param(
+    # The MSVS version to be loaded
+    [Parameter(Mandatory)]
+    [string]$VSVersion,
+    # The target architecture
+    [Parameter(Mandatory)]
+    [string]$TargetArch,
+    # The configurations to be built
+    [string[]]$Configs = @("Debug"; "RelWithDebInfo"),
+    [int]$Jobs,
+    [switch]$Fresh,
+    [switch]$Clean,
+    [switch]$UseVcpkg,
+    [switch]$BuildTesting,
+    [switch]$WarningsAsErrors,
+    [switch]$Test,
+    [switch]$UnityBuild,
+    # Directory where vcpkg will stores its binary caches
+    [string]$VcpkgBinaryCachePath
+)
+
+$ErrorActionPreference = "Stop"
+
+Import-Module $PSScriptRoot/vsutil -Force
+Import-Module $PSScriptRoot/uv -Force
+Import-Module $PSScriptRoot/cmake -Force
+
+$this_dir = $PSScriptRoot
+
+$root = Split-Path -Parent $this_dir
+
+if (-not [string]::IsNullOrEmpty($VcpkgBinaryCachePath)) {
+    # Set the directory where vcpkg will store its binary cache artifacts. This can
+    # be persisted between CI runs
+    $VcpkgBinaryCachePath = [IO.Path]::GetFullPath($VcpkgBinaryCachePath)
+    $env:VCPKG_DEFAULT_BINARY_CACHE = "$VcpkgBinaryCachePath"
+    [void](New-Item -ItemType Directory $env:VCPKG_DEFAULT_BINARY_CACHE -Force)
+}
+
+Write-Verbose "Loading uv environment..."
+$uv_env = Get-UvEnvironment -ArgumentList "--group=build"
+Write-Verbose "Loading MSVS environment..."
+[hashtable]$uv_vs_env = Invoke-WithEnvironment $uv_env {
+    Get-VsEnvironment -Version:$VSVersion -TargetArch:$TargetArch
+}
+# Set the CC and CXX env vars to point to MSVC to prevent Ninja generation from
+# attempting to use MinGW GCC instead, even if its available on the path
+$uv_vs_env.Add("CC", "cl.exe")
+$uv_vs_env.Add("CXX", "cl.exe")
+
+Invoke-WithEnvironment $uv_vs_env {
+    $settings = @{
+        AMONGOC_USE_PMM                  = $UseVcpkg;
+        BUILD_TESTING                    = $Test -or $BuildTesting;
+        AMONGOC_COMPILE_WARNING_AS_ERROR = $WarningsAsErrors;
+        CMAKE_CROSS_CONFIGS              = $Configs -join ';';
+        CMAKE_DEFAULT_CONFIGS            = "all";
+        CMAKE_UNITY_BUILD                = $UnityBuild;
+        CMAKE_UNITY_BUILD_BATCH_SIZE     = 16;
+    }
+    Build-CMakeProject -SourceDir $root -BuildDir $root/_build `
+        -Settings $settings `
+        -Generator "Ninja Multi-Config" `
+        -Fresh:$Fresh -Clean:$Clean `
+        -Jobs:$Jobs -Debug:$DebugPreference -Verbose:$VerbosePreference
+    if ($Test) {
+        Test-CMakeProject -BuildDir $root/_build -Configuration $Configs[0] -Progress -Jobs:$Jobs
+    }
+}

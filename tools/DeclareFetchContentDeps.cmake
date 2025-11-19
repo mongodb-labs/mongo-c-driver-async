@@ -17,8 +17,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     neo-fun
-    URL https://github.com/vector-of-bool/neo-fun/archive/refs/tags/0.14.2.tar.gz
-    URL_HASH SHA256=2d845c107961d5c6fda1ca41b7c201648a22cfb0d109f974758ba4c29838c01c
+    URL https://github.com/vector-of-bool/neo-fun/archive/refs/tags/0.14.3.tar.gz
+    URL_HASH SHA256=834de27a88d9726a59bb30cfef8bc47819a4f5bf0cebb4c2074d0172da9f0e34
     OVERRIDE_FIND_PACKAGE
 )
 file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/neo-funExtra.cmake" [=[
@@ -55,7 +55,10 @@ file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/asioExtra.cmake" [[
 
 FetchContent_Declare(
     Catch2
-    URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.7.1.tar.gz
-    URL_HASH SHA256=c991b247a1a0d7bb9c39aa35faf0fe9e19764213f28ffba3109388e62ee0269c
+    URL https://github.com/catchorg/Catch2/archive/refs/tags/v3.10.0.tar.gz
+    URL_HASH SHA256=fc4303a5c2738beaa727066e126b5a28837a812230a3c5826caa38e7ab99ca48
     OVERRIDE_FIND_PACKAGE
 )
+# Disable reproducible build of Catch2. When this is enabled, Catch2 adds -ffile-prefix-map
+# to its source compilation, which  hinders the debugability of Catch2 code.
+set(CATCH_ENABLE_REPRODUCIBLE_BUILD OFF)

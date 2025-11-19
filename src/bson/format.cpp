@@ -2,12 +2,13 @@
 #include <bson/iterator.h>
 #include <bson/types.h>
 
-#include <fmt/base.h>
+#include <fmt/core.h>
 
-mlib_diagnostic_push();
-mlib_gcc_warning_disable("-Wstringop-overflow");
-#include <fmt/chrono.h>
-mlib_diagnostic_pop();
+#include <ranges>
+
+// XXX: We would like to format date types, but a Clang bug prevents it from
+//      working. Disable that for now.
+// #include <fmt/chrono.h>
 
 namespace {
 
@@ -157,24 +158,9 @@ struct bson_writer {
     void write_value(std::string_view sv) { write("{:?}", sv); }
     void write_value(bson_symbol_view s) { write("Symbol({:?})", std::string_view(s.utf8)); }
 
-    auto _as_formattable_time_point(std::int64_t utc_ms_offset) {
-#if FMT_USE_UTC_TIME
-        // C++20 UTC time point is supported
-        return std::chrono::utc_clock::time_point(std::chrono::milliseconds(utc_ms_offset));
-#else
-        // Fall back to the system clock. This is not certain to give the correct answer,
-        // but we're just logging, not saving the world
-        return std::chrono::system_clock::time_point(std::chrono::milliseconds(utc_ms_offset));
-#endif
-    }
-
-    void write_value(::bson_datetime dt) {
-        auto tp = _as_formattable_time_point(dt.utc_ms_offset);
-        write("Datetime⟨{:%c}⟩", tp);
-    }
+    void write_value(::bson_datetime dt) { write("Datetime⟨UTC+{:L}ms⟩", dt.utc_ms_offset); }
     void write_value(::bson_timestamp ts) {
-        auto tp = _as_formattable_time_point(ts.utc_sec_offset);
-        write("Timestamp(⟨{:%c}⟩ : {})", tp, ts.increment);
+        write("Timestamp(⟨{:L}s⟩ : {})", ts.utc_sec_offset, ts.increment);
     }
     void write_value(::bson_code_view c) { write("Code({:?})", std::string_view(c.utf8)); }
     void write_value(::bson_decimal128) { write("[[Unimplemented: Decimal128 printing]]"); }

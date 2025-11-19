@@ -1,5 +1,24 @@
+# *** Build Parameters ***
+# Whether to use PMM for the build process
+USE_PMM := true
+# Whether to build tests
+BUILD_TESTING := true
+# Sanitizers to request (Comma-separated list)
+SANITIZE :=
+# The configurations to build (Semicolon-separated, or "all")
+CONFIGS := Debug
+# If running tests, the configuration to test
+TEST_CONFIG := Debug
+# Set the CMAKE_INSTALL_PREFIX and the `--prefix` arg for installs
+INSTALL_PREFIX :=
+# Treat compiler warnings as errors (Sets COMPILE_WARNING_AS_ERROR on amongoc)
+WARNINGS_AS_ERRORS := false
+# Enable CMake unity builds
+UNITY_BUILD := false
+UNITY_BUILD_BATCH_SIZE := 16
+
 .SILENT:
-.PHONY: docs-html docs-serve default build test format format-check packages
+.PHONY: default
 
 # If given no other target, runs the build
 default: build
@@ -12,45 +31,89 @@ THIS_DIR := $(shell dirname $(THIS_FILE))
 # Directory where we will scribble build files
 BUILD_DIR ?= $(THIS_DIR)/_build/auto
 
-# uv commands used in this file
-UV_RUN     := uv run
-DOCS_RUN   := $(UV_RUN) --isolated --group=docs
-FORMAT_RUN := $(UV_RUN) --isolated --group=format
-# Build is not isolated, because CMake caches paths to certain files
-BUILD_RUN  := $(UV_RUN) --group=build
+PYTHON_RUN := python
 # Run CMake within the uv environment
-CMAKE_RUN := $(BUILD_RUN) cmake
+CMAKE_RUN := cmake
 
 SPHINX_JOBS ?= auto
-SPHINX_ARGS := -W -j "$(SPHINX_JOBS)" -aT -b dirhtml
+SPHINX_ARGS := --jobs="$(SPHINX_JOBS)" --write-all --show-traceback --builder=dirhtml --fail-on-warning
 
 DOCS_SRC := $(THIS_DIR)/docs
 DOCS_OUT := $(BUILD_DIR)/docs/dev/html
+.PHONY: docs-html docs-serve
 docs-html:
-	$(DOCS_RUN) sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+	sphinx-build $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
 docs-serve:
-	$(DOCS_RUN) sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
+	sphinx-autobuild $(SPHINX_ARGS) $(DOCS_SRC) $(DOCS_OUT)
 
-build:
+CMAKE_CONFIGURE_ARGS :=
+.PHONY: configure build build-fast
+configure:
 	$(CMAKE_RUN) \
 		-S "$(THIS_DIR)" \
 		-B "$(BUILD_DIR)" \
-		--fresh \
-		-D CMAKE_CROSS_CONFIGS="Debug" \
+		-D CMAKE_CROSS_CONFIGS="$(CONFIGS)" \
 		-D CMAKE_DEFAULT_CONFIGS=all \
+		-D AMONGOC_COMPILE_WARNING_AS_ERROR=$(WARNINGS_AS_ERRORS) \
+		-D AMONGOC_USE_PMM=$(USE_PMM) \
+		-D BUILD_TESTING=$(BUILD_TESTING) \
+		-D MONGO_SANITIZE="$(SANITIZE)" \
+		-D CMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX) \
+		-D CMAKE_UNITY_BUILD=$(UNITY_BUILD) \
+		-D CMAKE_UNITY_BUILD_BATCH_SIZE=$(UNITY_BUILD_BATCH_SIZE) \
+		$(CMAKE_CONFIGURE_ARGS) \
 		-G "Ninja Multi-Config"
+
+build: configure
+	$(MAKE) build-fast
+
+build-fast:
 	$(CMAKE_RUN) --build "$(BUILD_DIR)"
 
+.PHONY: test test-fast ctest-run
 test: build
-	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
-		ctest -C Debug -j4 --output-on-failure
+	$(MAKE) test-fast
 
+CTEST_ARGS := -C $(TEST_CONFIG) -j4 --output-on-failure --progress \
+		-LE cmake\|uri/spec -E "URI/spec"
+test-fast:
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" ctest $(CTEST_ARGS)
+
+JUNIT_OUTPUT := $(BUILD_DIR)/TestResults.xml
+ctest-run:
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" ctest $(CTEST_ARGS) \
+		-T Start -T Test \
+		--output-junit "$(JUNIT_OUTPUT)" \
+	 	|| :
+	uv tool run --isolated junit2html "$(JUNIT_OUTPUT)" "$(JUNIT_OUTPUT).html"
+
+.PHONY: install install-fast package
+install: build
+	$(MAKE) install-fast
+
+INSTALL_CONFIG := Release
+install-fast:
+	$(CMAKE_RUN) --install "$(BUILD_DIR)" --config "$(INSTALL_CONFIG)" --prefix="$(INSTALL_PREFIX)"
+
+package: build
+	$(MAKE) package-fast
+
+CPACK_OUT 		:= _cpack
+PACKAGE_CONFIGS := Debug;Release;RelWithDebInfo
+PACKAGE_FORMATS := STGZ;TGZ;ZIP
+package-fast:
+	$(CMAKE_RUN) -E chdir "$(BUILD_DIR)" \
+		cpack -B "$(CPACK_OUT)" -C "$(PACKAGE_CONFIGS)" -G "$(PACKAGE_FORMATS)"
+	rm -r -- "$(CPACK_OUT)/_CPack_Packages"
+
+.PHONY: format format-check
 format-check:
-	$(UV_RUN) --group format tools/format.py --mode=check
+	$(PYTHON_RUN) tools/format.py --mode=check
 
 format:
-	$(UV_RUN) --group format tools/format.py
+	$(PYTHON_RUN) tools/format.py
 
+.PHONY: packages
 packages:
 	bash $(THIS_DIR)/tools/earthly.sh -a +build-multi/ _build/pkgs

@@ -3,6 +3,7 @@
 #include <mlib/config.h>
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #if mlib_is_cxx()
 #include <string>
