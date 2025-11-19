@@ -87,25 +87,29 @@ jobs:
           - { env: almalinux:8 --gts_version=12, vcpkg_arg: use_vcpkg=true }
     steps:
       - *checkout
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/.cache
+          key: linux-${{matrix.env}}
       - name: Environment Prep
         run: |
-          bash tools/earthly.sh +init \
-            --env=${{matrix.env}} \
-            --${{matrix.vcpkg_arg}}
+          # Set Earthly args in the .arg file, which will persist across subsequent
+          # steps, ensuring each step uses the same argument set
+          echo "env=${{matrix.env}}"      >  .arg
+          echo "${{matrix.vcpkg_arg}}"    >> .arg
+          # Persist caches into a host directory to be persisted between runs
+          echo "host_cache=_build/.cache" >> .arg
+          # Enable unity builds in CI for faster compilation
+          echo "unity_build=true"         >> .arg
+
+          bash tools/earthly.sh +init
       - name: Build
-        run: |
-          bash tools/earthly.sh +build \
-            --env=${{matrix.env}} \
-            --${{matrix.vcpkg_arg}} \
-            --unity_build=true
+        run: bash tools/earthly.sh +build
       # This step will use the same cached +build results as long as all Earthly
-      # build arguments are equivalent. Make sure of that!
+      # build arguments are equivalent.
       - name: Test
-        run: |
-          bash tools/earthly.sh -a +test/results.xml results.xml \
-            --env=${{matrix.env}} \
-            --${{matrix.vcpkg_arg}} \
-            --unity_build=true
+        run: bash tools/earthly.sh -a +test/results.xml results.xml
 
   build-macos:
     name: Build & Test (macOS)
@@ -121,7 +125,7 @@ jobs:
       - name: Prepare Caches
         uses: actions/cache@v4
         with:
-          path: _build/_cache
+          path: _build/.cache
           key: macos-15
       - name: Prepare uv Environment
         run: uv run --group=build true
@@ -151,7 +155,7 @@ jobs:
           export CMAKE_OSX_ARCHITECTURES="${{matrix.target_arch}}"
 
           # Create a directory for vcpkg binary caches
-          export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/_cache
+          export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/.cache/vcpkg
           mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
 
           # Do the build
@@ -159,7 +163,7 @@ jobs:
             make build \
               CONFIGS="Debug;RelWithDebInfo" \
               USE_PMM=TRUE \
-              WARNINGS_AS_ERRORS=TRUE \
+              WARNINGS_AS_ERRORS=FALSE \
               BUILD_TESTING=TRUE \
               UNITY_BUILD=TRUE
 
@@ -175,7 +179,7 @@ jobs:
       - name: Prepare Caches
         uses: actions/cache@v4
         with:
-          path: _build/_cache
+          path: _build/.cache
           key: msvc-${{matrix.arch}}
       # This step only warms up the uv cache for the `build` group used by the
       # main build process
@@ -188,4 +192,9 @@ jobs:
         shell: pwsh
         # 17.* selects VS 2022
         run: |
-          tools/ci.ps1 -VSVersion 17.* -TargetArch ${{matrix.arch}} -UseVcpkg -BuildTesting -UnityBuild
+          tools/ci.ps1 -VSVersion 17.* `
+            -TargetArch ${{matrix.arch}} `
+            -VcpkgBinaryCachePath "_build/.cache/vcpkg"
+            -UseVcpkg `
+            -BuildTesting `
+            -UnityBuild

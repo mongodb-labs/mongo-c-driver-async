@@ -15,7 +15,9 @@ param(
     [switch]$BuildTesting,
     [switch]$WarningsAsErrors,
     [switch]$Test,
-    [switch]$UnityBuild
+    [switch]$UnityBuild,
+    # Directory where vcpkg will stores its binary caches
+    [string]$VcpkgBinaryCachePath
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,10 +30,13 @@ $this_dir = $PSScriptRoot
 
 $root = Split-Path -Parent $this_dir
 
-# Set the directory where vcpkg will store its binary cache artifacts. This can
-# be persisted between CI runs
-$env:VCPKG_DEFAULT_BINARY_CACHE = "$root/_build/_cache/vcpkg"
-[void](New-Item -ItemType Directory $env:VCPKG_DEFAULT_BINARY_CACHE -Force)
+if (-not [string]::IsNullOrEmpty($VcpkgBinaryCachePath)) {
+    # Set the directory where vcpkg will store its binary cache artifacts. This can
+    # be persisted between CI runs
+    $VcpkgBinaryCachePath = [IO.Path]::GetFullPath($VcpkgBinaryCachePath)
+    $env:VCPKG_DEFAULT_BINARY_CACHE = "$VcpkgBinaryCachePath"
+    [void](New-Item -ItemType Directory $env:VCPKG_DEFAULT_BINARY_CACHE -Force)
+}
 
 Write-Verbose "Loading uv environment..."
 $uv_env = Get-UvEnvironment -ArgumentList "--group=build"

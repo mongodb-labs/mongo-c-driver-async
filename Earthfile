@@ -3,6 +3,10 @@ VERSION 0.8
 # Tweak the default container registry used for pulling system images.
 ARG --global default_container_registry = "docker.io"
 
+# Directory on the host where we will copy in/out cache files. If unset/falsey, then
+# caches will not be persisted on the host, only within the containers
+ARG --global host_cache
+
 init:
     ARG --required env
     # Toggle the building of test programs
@@ -138,21 +142,33 @@ INSTALL_DEPS:
 
     RUN __install $pkgs
 
-    DO +ADD_CCACHE
+    DO +CCACHE_INIT
 
-ADD_CCACHE:
+CCACHE_INIT:
     FUNCTION
     IF ! ccache --version && __can_install ccache
         RUN __install ccache
     END
+    ARG host_cache = false
     IF ccache --version
         ENV CCACHE_DIR = /run/ccache
-        CACHE /run/ccache
         ENV CMAKE_C_COMPILER_LAUNCHER=ccache
         ENV CMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+        IF __bool $host_cache
+            COPY --if-exists $host_cache/ccache $CCACHE_DIR
+        ELSE
+            CACHE $CCACHE_DIR
+        END
     END
 
-VCPKG_SETUP:
+CCACHE_FINISH:
+    FUNCTION
+    IF __bool $host_cache
+        SAVE ARTIFACT $CCACHE_DIR AS LOCAL $host_cache/ccache
+    END
+
+VCPKG_INIT:
     FUNCTION
     # Toggle whether this function actually does anything
     ARG --required use_vcpkg
@@ -163,8 +179,20 @@ VCPKG_SETUP:
         ENV VCPKG_DEFAULT_BINARY_CACHE = "/run/cache/vcpkg/binary"
         # Prepare the area
         RUN mkdir -p $VCPKG_DEFAULT_BINARY_CACHE
-        # Persist that directory between target executions
-        CACHE $VCPKG_DEFAULT_BINARY_CACHE
+        IF __bool $host_cache
+            # We are going to copy in/out caches from the host
+            COPY --if-exists $host_cache/vcpkg $VCPKG_DEFAULT_BINARY_CACHE
+        ELSE
+            # Don't use a host directory, use Earthly's caching volume instead
+            CACHE $VCPKG_DEFAULT_BINARY_CACHE
+        END
+    END
+
+VCPKG_FINISH:
+    FUNCTION
+    ARG --required use_vcpkg
+    IF __bool $use_vcpkg && __bool $host_cache
+        SAVE ARTIFACT $VCPKG_DEFAULT_BINARY_CACHE AS LOCAL $host_cache/vcpkg
     END
 
 COPY_SRC:
@@ -177,9 +205,9 @@ BUILD:
     FUNCTION
     # Enable vcpkg
     ARG --required use_vcpkg
-    DO --pass-args +VCPKG_SETUP
+    DO --pass-args +VCPKG_INIT
     # Enable Ccache caching between container runs
-    DO +ADD_CCACHE
+    DO --pass-args +CCACHE_INIT
 
     ARG install_prefix
     ARG cpack_out
@@ -209,3 +237,6 @@ BUILD:
                     CPACK_OUT="$cpack_out" \
                     PACKAGE_CONFIGS="$configs"
     END
+
+    DO --pass-args +VCPKG_FINISH
+    DO --pass-args +CCACHE_FINISH

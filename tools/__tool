@@ -79,7 +79,7 @@ __alias() {
 }
 
 __bool() {
-    bool=$(printf "%s" "$1" | tr '[:lower:]' '[:upper:]')
+    bool=$(printf "%s" "${1-}" | tr '[:lower:]' '[:upper:]')
     case "$bool" in
         0|OFF|NO|FALSE|N|IGNORE|NOTFOUND|""|*-NOTFOUND)
             return 1;;
