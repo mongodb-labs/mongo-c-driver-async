@@ -17,8 +17,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     neo-fun
-    URL https://github.com/vector-of-bool/neo-fun/archive/refs/tags/0.14.2.tar.gz
-    URL_HASH SHA256=2d845c107961d5c6fda1ca41b7c201648a22cfb0d109f974758ba4c29838c01c
+    URL https://github.com/vector-of-bool/neo-fun/archive/refs/tags/0.14.3.tar.gz
+    URL_HASH SHA256=834de27a88d9726a59bb30cfef8bc47819a4f5bf0cebb4c2074d0172da9f0e34
     OVERRIDE_FIND_PACKAGE
 )
 file(WRITE "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/neo-funExtra.cmake" [=[
