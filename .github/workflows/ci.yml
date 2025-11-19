@@ -110,6 +110,11 @@ jobs:
   build-macos:
     name: Build & Test (macOS)
     runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler_spec: [GCC 13, GCC 14, GCC 15, Clang 18]
+        target_arch: [x86_x64, arm64]
     steps:
       - *checkout
       - *get-uv
@@ -122,10 +127,34 @@ jobs:
         run: uv run --group=build true
       - name: Build & Test
         run: |
-          export CC=gcc-13
-          export CXX=g++-13
+          set -eu
+
+          # Set the compiler that CMake will use:
+          _spec="${{matrix.compiler_spec}}"
+          # Trim out the major version number
+          _compiler_id="${_spec% *}"
+          _compiler_major="${_spec#* }"
+
+          if test "$_compiler_id" = "GCC"; then
+            export CC=gcc-$_compiler_major
+            export CXX=g++-$_compiler_major
+          elif test "$_compiler_id" = "Clang"; then
+            _llvm_prefix=$(brew --prefix llvm@$_compiler_major)
+            export CC=$_llvm_prefix/bin/clang
+            export CXX=$_llvm_prefix/bin/clang++
+          else
+            echo "Unknown compiler ID" 1>&2
+            exit 2
+          fi
+
+          # Tell CMake what arch we are targetting
+          export CMAKE_OSX_ARCHITECTURES="${{matrix.target_arch}}"
+
+          # Create a directory for vcpkg binary caches
           export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/_cache
-          export CMAKE_OSX_ARCHITECTURES="arm64"
+          mkdir -p "$VCPKG_DEFAULT_BINARY_CACHE"
+
+          # Do the build
           uv run --group=build \
             make build \
               CONFIGS="Debug;RelWithDebInfo" \
