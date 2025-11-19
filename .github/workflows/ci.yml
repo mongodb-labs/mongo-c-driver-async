@@ -107,6 +107,32 @@ jobs:
             --${{matrix.vcpkg_arg}} \
             --unity_build=true
 
+  build-macos:
+    name: Build & Test (macOS)
+    runs-on: macos-15
+    steps:
+      - *checkout
+      - *get-uv
+      - name: Prepare Caches
+        uses: actions/cache@v4
+        with:
+          path: _build/_cache
+          key: macos-15
+      - name: Prepare uv Environment
+        run: uv run --group=build true
+      - name: Build & Test
+        run: |
+          export CC=gcc-13
+          export CXX=g++-13
+          export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/_cache
+          uv run --group=build \
+            make build \
+              CONFIGS="Debug;RelWithDebInfo" \
+              USE_PMM=TRUE \
+              WARNINGS_AS_ERRORS=TRUE \
+              BUILD_TESTING=TRUE \
+              UNITY_BUILD=TRUE
+
   build-windows:
     name: Build & Test (Windows, VS 2022)
     strategy:
