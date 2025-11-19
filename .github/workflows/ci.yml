@@ -91,7 +91,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: _build/.cache
-          key: linux-${{matrix.env}}
+          key: linux / ${{matrix.env}} / ${{matrix.vcpkg_arg}}
       - name: Environment Prep
         run: |
           # Set Earthly args in the .arg file, which will persist across subsequent
