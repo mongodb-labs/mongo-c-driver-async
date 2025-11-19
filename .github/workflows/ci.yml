@@ -114,7 +114,7 @@ jobs:
       fail-fast: false
       matrix:
         compiler_spec: [GCC 13, GCC 14, GCC 15, Clang 18]
-        target_arch: [x86_x64, arm64]
+        target_arch: [x86_64, arm64]
     steps:
       - *checkout
       - *get-uv
