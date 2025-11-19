@@ -6,6 +6,8 @@
 
 #include <mlib/config.h>
 
+#include <time.h>  // struct timespec
+
 typedef struct amongoc_loop_vtable amongoc_loop_vtable;
 typedef struct amongoc_loop        amongoc_loop;
 
