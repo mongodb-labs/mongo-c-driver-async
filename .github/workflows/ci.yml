@@ -125,6 +125,7 @@ jobs:
           export CC=gcc-13
           export CXX=g++-13
           export VCPKG_DEFAULT_BINARY_CACHE=$PWD/_build/_cache
+          export CMAKE_OSX_ARCHITECTURES="arm64"
           uv run --group=build \
             make build \
               CONFIGS="Debug;RelWithDebInfo" \
