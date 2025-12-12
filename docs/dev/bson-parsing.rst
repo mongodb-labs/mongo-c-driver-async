@@ -3,7 +3,7 @@ Declaratively Parsing BSON Objects
 ##################################
 
 |amongoc|'s BSON library contains a submodule for declaratively decomposing
-BSON values and heirarchies declaratively.
+BSON values and hierarchies declaratively.
 
 
 High-Level Constructs

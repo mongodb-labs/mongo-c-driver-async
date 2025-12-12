@@ -109,7 +109,7 @@ P2300 also defines query objects and query types, but with a few important
 differences:
 
 1. Queryable objects in P2300 may define a separate *environment* object so that
-   their queries can be performed on a separate instance from the underyling
+   their queries can be performed on a separate instance from the underlying
    object. Our querying code does not use separate environments, as we don't yet
    have a need for this. This may be added later if the need arises.
 2. P2300 queries can carry additional arguments to the ``query`` methods. We

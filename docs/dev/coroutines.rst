@@ -1,6 +1,6 @@
-###########
-Couroutines
-###########
+##########
+Coroutines
+##########
 
 .. warning:: |devdocs-page|
 .. namespace:: amongoc
@@ -116,7 +116,7 @@ If an `amongoc_emitter` coroutine throws an exception, the following will happen
 2. Otherwise, if the exception type is derived from an `amongoc::exception`,
    then the `exception::status` will be the result status of the emitter.
 3. Otherwise, if the exception type is `std__bad_alloc`, the emitter
-   will resolve with generic cateogry and ``ENOMEM``.
+   will resolve with generic category and ``ENOMEM``.
 4. Otherwise, **the program will terminate**. *Don't let this happen!*
 
 
@@ -371,7 +371,7 @@ Support Concepts
 
     When the parent coroutine suspends, it will call `await_suspend` with a
     :term:`handle to the coroutine <coroutine handle>` that is being suspended.
-    This give the awaiter the opportunity to reschedule the coroutine at some
+    This gives the awaiter the opportunity to reschedule the coroutine at some
     point in the future. If `await_suspend` returns a new coroutine handle |R|,
     then |R| will be resumed after the enclosing coroutine suspends (this is
     known as *symmetric transfer*). If `await_suspend` returns :cpp:`void`,
@@ -579,7 +579,7 @@ A coroutine promise should implement the following interface:
 
   .. function:: virtual in_place_stop_token stop_token() = 0
 
-    Obtian the stop token for use with the coroutine.
+    Obtain the stop token for use with the coroutine.
 
 .. struct:: template <typename T> co_task<T>::promise_type : coroutine_promise_allocator_mixin
 

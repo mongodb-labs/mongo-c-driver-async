@@ -73,7 +73,7 @@ External ``cppreference`` Links
 We use a custom-generated Sphinx inventory for objects documented on
 cppreference, because at time of writing, ``cppreference`` does not have a
 Sphinx inventory of its own. This inventory is generated with code in
-``docs/conf.py`` on-the-fly when documentation is buidt. Linking to external
+``docs/conf.py`` on-the-fly when documentation is built. Linking to external
 items requires that they are present in the custom inventory. If a link fails to
 generate, ensure it is present in the custom inventory.
 

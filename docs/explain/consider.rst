@@ -42,10 +42,10 @@ is invoked simultaneously? What APIs are thread-safe?
 All APIs *are* reentrant, but only because
 :ref:`they are written without shared state <no-globals>`.
 
-Additionally, becuase we have :ref:`no prescribed event loop <prescribe-loop>`,
+Additionally, because we have :ref:`no prescribed event loop <prescribe-loop>`,
 it is entirely up to the user on which thread(s) of execution their code will
 execute. We do not require the user bring their own thread to pump any global
-even loop.
+event loop.
 
 
 .. _prescribe-loop:

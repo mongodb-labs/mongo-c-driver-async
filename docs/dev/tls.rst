@@ -15,7 +15,7 @@ BIO, it just expects it to behave like a stream of bytes.
 Any I/O operation on the high-level TLS stream can be composed of an arbitrary
 number of reads and writes to the actual underlying stream. As such, it is not
 as simple as reading/writing data into the :struct:`SSL` and then receiving some
-plaintext/cyphertext. A single read or write of plaintext may invoke more reads
+plaintext/ciphertext. A single read or write of plaintext may invoke more reads
 or writes on the ciphertext stream, so the |amongoc| wrapper's read/write
 operations need to be able to handle such a situation.
 
