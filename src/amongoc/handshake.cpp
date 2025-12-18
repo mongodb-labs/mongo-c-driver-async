@@ -61,9 +61,8 @@ amongoc::handshake_response amongoc::handshake_response::parse(mlib::allocator<>
             field("saslSupportedMechs", must(append_strings(ret.saslSupportedMechs))),
             field("hosts", must(append_strings(ret.hosts))),
             field("setName", must(store_string(ret.setName))),
-            field("setVersion", must(store_string(ret.setVersion))),
-            field("secondary", must(integer(store(ret.setVersion)))),
-            field("secondary", must(integer(store(ret.setVersion)))),
+            field("setVersion", must(integer(store(ret.setVersion)))),
+            field("secondary", must(store(ret.secondary))),
             field("passives", must(append_strings(ret.passives))),
             field("arbiters", must(append_strings(ret.arbiters))),
             field("primary", must(store_string(ret.primary))),
@@ -71,7 +70,7 @@ amongoc::handshake_response amongoc::handshake_response::parse(mlib::allocator<>
             field("passive", must(integer(store(ret.passive)))),
             field("hidden", must(integer(store(ret.hidden)))),
             field("me", must(store_string(ret.me))),
-            field("electionId", must(store_string(ret.electionId))),
+            field("electionId", bson::parse::just_accept{}),  // TODO
             field("msg", must(store_string(ret.msg))),
             // TODO: lastWrite, tags
             bson::parse::just_accept{},
