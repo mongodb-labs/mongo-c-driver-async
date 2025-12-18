@@ -13,7 +13,7 @@
 
   .. type::
     success_type = T
-    error_type = T
+    error_type = E
 
     The success type and error type of the result, respectively.
 
@@ -25,8 +25,8 @@
     result(U&& arg)
 
     Conditionally-explicit converting constructor. Requires that `U` is
-    explicit-convertbile to `T` *but not* explicit-convertible to `E`. This
-    constructor is explicit unless `U` is implicit-convertbile to `T`.
+    explicit-convertible to `T` *but not* explicit-convertible to `E`. This
+    constructor is explicit unless `U` is implicit-convertible to `T`.
 
   .. function::
     template <typename... Args> \
@@ -37,7 +37,7 @@
     In-place constructs a success value or an error value, respectively.
 
     :param tag: The tag contains a tuple of bound constructor arguments that will
-      be forwarded to consrtuct the underlying object.
+      be forwarded to construct the underlying object.
 
     This requires that the corresponding contained type be constructible from
     the argument types that are bound within the tag.

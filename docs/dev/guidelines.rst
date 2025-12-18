@@ -72,7 +72,7 @@ compilation should be localized to the smallest lexical scope required.
 Use terse conditional compilation
 *********************************
 
-Prever to use :c:macro:`MLIB_IF_CXX` and :c:macro:`MLIB_IF_NOT_CXX` for more
+Prefer to use :c:macro:`MLIB_IF_CXX` and :c:macro:`MLIB_IF_NOT_CXX` for more
 concise conditional compilation/macro expansions.
 
 
@@ -163,8 +163,8 @@ semicolons when a user adds a semicolon to a macro expansion that doesn't need
 one.
 
 
-Add comments to distant :cpp:`endif` and :cpp:`#else` directives
-****************************************************************
+Add comments to distant :cpp:`#endif` and :cpp:`#else` directives
+*****************************************************************
 
 If an :cpp:`#endif` or :cpp:`#else` directive is far away from its associated
 conditional, add a comment explaining what it's for::

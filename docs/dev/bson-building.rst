@@ -2,11 +2,11 @@
 Declaratively Building BSON Documents
 #####################################
 
-|amongoc|'s BSON library contains a facility for building heirarchies of BSON
+|amongoc|'s BSON library contains a facility for building hierarchies of BSON
 objects declaratively in a single-shot. Usage of this facility is recommended
 for a few reasons:
 
-- It will always "do the right thing" -- Building large heirarchies of data
+- It will always "do the right thing" -- Building large hierarchies of data
   by-hand is tedious and error-prone.
 - The declarative structure mimics the generated data very closely, and is easy
   to understand and modify.
@@ -49,7 +49,7 @@ pair).
 
   .. note:: If you pull the ``bson::parse`` namespace, they both contain a `doc`
     declaration, and you will receive a compiler error about ambiguous name lookup.
-    Pull `bson::make::doc` with a :cpp:`using`, or use the fully-qualifeid name.
+    Pull `bson::make::doc` with a :cpp:`using`, or use the fully-qualified name.
 
   .. function:: bson::document build(mlib::allocator<>)
 
@@ -141,7 +141,7 @@ Low-Level Concepts
 
   .. seealso:: :ref:`bson.make.value-rules`.
 
-  **Any type** that can be inserted using `bson_insert` can be used as an
+  **Any type** that can be inserted using `bson_insert` can be used as a
   `value_rule`.
 
   **Other types** may also satisfy `value_rule` by meeting the below
